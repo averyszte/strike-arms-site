@@ -1,0 +1,92 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "dzuvQfufGjfJKSzrvIHEL"
+uri = "file://artifacts/strike-arms/public/images/hero-poster.png"
+type = "image"
+title = "Dark dramatic airsoft hero scene"
+
+[[generated]]
+id = "oxzPsN2GsxsIeg7dj9WAG"
+uri = "file://artifacts/strike-arms/public/images/category-rifles.png"
+type = "image"
+title = "Airsoft AEG rifle close-up"
+
+[[generated]]
+id = "bDXIoKWxDwu6pAIr_qY0v"
+uri = "file://artifacts/strike-arms/public/images/category-pistols.png"
+type = "image"
+title = "Airsoft gas pistol close-up"
+
+[[generated]]
+id = "a1jK1Ep9aprS86eXJ1NOk"
+uri = "file://artifacts/strike-arms/public/images/category-bbs.png"
+type = "image"
+title = "Airsoft BBs and packaging"
+
+[[generated]]
+id = "yexTQNJBRJHLqSzRaaDi-"
+uri = "file://artifacts/strike-arms/public/images/category-gear.png"
+type = "image"
+title = "Tactical vest flat lay"
+
+[[generated]]
+id = "38NHhdt5lJq5x2VjXHYdo"
+uri = "file://artifacts/strike-arms/public/images/category-accessories.png"
+type = "image"
+title = "Tactical accessories collection"
+
+[[generated]]
+id = "zSmirob8HAg9MVhNkVgPH"
+uri = "file://artifacts/strike-arms/public/images/category-repairs.png"
+type = "image"
+title = "Airsoft gearbox repair close-up"
+
+[[generated]]
+id = "FTmjsm4YqpzRBWSaqTHyU"
+uri = "file://artifacts/strike-arms/public/images/loadout-beginner.png"
+type = "image"
+title = "Beginner airsoft player gear"
+
+[[generated]]
+id = "U5v40ViH1Na0_OuJ1Z_Q5"
+uri = "file://artifacts/strike-arms/public/images/loadout-cqb.png"
+type = "image"
+title = "CQB airsoft loadout in dark"
+
+[[generated]]
+id = "yG3-HiK4A3yyYTEx9yYYL"
+uri = "file://artifacts/strike-arms/public/images/loadout-outdoor.png"
+type = "image"
+title = "Outdoor airsoft woodland loadout"
+
+[[generated]]
+id = "hprng___jIuZ0rveqP3WR"
+uri = "file://artifacts/strike-arms/public/images/why-buy.png"
+type = "image"
+title = "Interior tactical store"
+
+[[generated]]
+id = "LiypJWQpr8fOpDXs-sSjj"
+uri = "file://artifacts/strike-arms/public/images/promo-banner.png"
+type = "image"
+title = "Dramatic starter kit"
+
+[[generated]]
+id = "9utmPaH7rZcIu68t_d_ZH"
+uri = "file://artifacts/strike-arms/public/images/rifle-annotated.png"
+type = "image"
+title = "Detailed airsoft AEG rifle"
+
+[[generated]]
+id = "SPPzE5EubPJko-eFkVvJd"
+uri = "file://artifacts/strike-arms/public/images/expert-advice.png"
+type = "image"
+title = "Expert behind counter"
+
+[[generated]]
+id = "ykBY-a7h0yQ59y-v8dqVs"
+uri = "file://artifacts/strike-arms/public/images/about-store.png"
+type = "image"
+title = "Dublin airsoft store interior"

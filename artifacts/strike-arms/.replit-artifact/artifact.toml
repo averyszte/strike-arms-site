@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Strike Arms Airsoft"
+version = "1.0.0"
+id = "artifacts/strike-arms"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25530
+
+[services.development]
+run = "pnpm --filter @workspace/strike-arms run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/strike-arms", "run", "build" ]
+publicDir = "artifacts/strike-arms/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25530"
+BASE_PATH = "/"

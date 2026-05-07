@@ -1,0 +1,549 @@
+MASTER BUILD PROMPT
+
+Build a homepage-only demo for a local business called Strike Arms Airsoft, based in Dublin, designed as a premium catalog-style storefront with strong conversion focus and future ecommerce scalability.
+
+This is not a full ecommerce build yet.
+This is a high-end homepage demo that should look like a serious airsoft retail brand and a scalable future catalog site.
+
+Business context
+Business name: Strike Arms Airsoft
+Location: Dublin
+Phone: +353 87 273 6351
+Core business: airsoft store selling guns, BBs, gas, tactical gear, accessories, and related products
+Future site may later include:
+full product catalog
+payments
+user accounts / logins
+cart / checkout
+airsoft law page
+about us page
+category pages
+product pages
+Positioning
+
+This business should be positioned as:
+
+The expert airsoft store in Dublin
+Main pain point being solved:
+
+“I don’t know what to buy, and I don’t want to waste money on the wrong setup.”
+
+The site should communicate:
+
+expert advice
+beginner-friendly guidance
+fair pricing
+real support
+specialist knowledge
+a serious catalog/storefront identity
+
+Do not make this feel like a small generic local brochure website.
+It should feel like a premium catalog storefront first, with airsoft/tactical identity layered in.
+
+DESIGN DIRECTION
+Style
+Dark theme
+Premium airsoft armoury aesthetic
+Tactical retail influence
+Slight gritty Dublin specialist-shop edge
+Image-heavy
+Editorial retail feel
+Clean but not sterile
+Strong visual hierarchy
+Mobile-first
+Visual references to follow
+
+Use the following reference logic:
+
+Novritsch for airsoft catalog/header direction
+CQB for bold tactical hero composition
+Warby Parker for premium retail clarity and clean CTAs
+Public Goods for section composition and icon/benefit layouts
+Branch for polished retail blocks and split-section structure
+Strict anti-template rules
+
+Do not build:
+
+generic service cards
+repetitive bland sections
+local-business template layouts
+cheesy “tactical” overdesign
+cluttered product-dump homepage
+
+Must include:
+
+asymmetry where useful
+layered visuals
+varied section formats
+a premium storefront feel
+a mix of image-led and copy-led sections
+SEO RULES
+Primary keyword
+
+airsoft shop Dublin
+
+Use this as the H1 eyebrow only.
+
+Hero text structure
+
+Do not mix SEO and marketing in the same line.
+
+Hero eyebrow / H1:
+
+Airsoft Shop Dublin
+
+Main headline:
+
+Use a marketing headline, not keyword stuffing. Something in this direction:
+Get the right gear before you waste money on the wrong setup.
+
+Supporting paragraph:
+
+Focus on expert guidance, specialist gear, and help choosing the right setup.
+
+IMPORTANT MEDIA RULES
+Hero video rule
+
+Do not generate or fabricate a hero video.
+
+Instead:
+
+build the hero so it supports a background video area
+use a poster/fallback image for now
+clearly comment the code so the real video can be dropped in later
+allow the hero background area to easily swap to:
+MP4 video
+WebM video
+fallback image
+
+The user will provide the actual hero montage later.
+
+GIF / motion rule
+
+Some mid-page promo sections may be built to support:
+
+GIFs
+looping video snippets
+static fallback images
+
+But do not overuse motion.
+
+TECH / BUILD RULES
+Build this as a scalable foundation for future SEO pages
+Structure code so additional service/category/location pages can be added easily
+Use clean, modular components
+Keep the build lean
+Prioritize performance
+Mobile-first is non-negotiable
+Use semantic HTML structure
+Maintain proper heading hierarchy
+Prepare for future expansion to:
+/shop
+/categories/[category]
+/about
+/airsoft-law
+/contact
+/repairs
+/beginners
+/product/[slug]
+HEADER / NAVIGATION
+
+Create a premium ecommerce-style header.
+
+Top announcement bar
+
+Include a slim announcement bar above the header with example rotating or static messages like:
+
+“Dublin’s specialist airsoft store”
+“Beginner-friendly advice in store”
+“Shop rifles, pistols, BBs, gas & gear”
+“Need help choosing? Call Strike Arms”
+Main header
+
+Include:
+
+logo / wordmark: Strike Arms Airsoft
+navigation links:
+Rifles
+Pistols
+Ammo & BBs
+Tactical Gear
+Accessories
+Repairs
+Airsoft Law
+right-side icons / actions:
+search
+account/profile
+basket/cart
+mobile hamburger menu
+sticky header on scroll
+Important
+
+Even though this is homepage-only, the nav should look like a real catalog site.
+
+REQUIRED HOMEPAGE SECTION ORDER
+
+Build the homepage in this order.
+
+1. HERO SECTION
+Layout
+Full-width hero
+Supports background video / poster image
+Dark overlay for readability
+Strong copy on one side or lower-left depending on screen size
+2 CTA buttons
+Optional small supporting trust row below
+Content structure
+H1 eyebrow: Airsoft Shop Dublin
+Main headline
+supporting paragraph
+CTA 1: Shop Gear
+CTA 2: Get Expert Advice
+Supporting microproof under CTAs
+
+Examples:
+
+4.7★ Google rating
+90 reviews
+Beginner-friendly advice
+Specialist Dublin store
+Code rule
+
+Do not generate the hero video.
+Use a placeholder/fallback image and code comments for later video replacement.
+
+2. QUICK SHOP CATEGORY STRIP
+
+Create a visually clean row or card strip for quick browsing.
+
+Categories:
+
+Rifles
+Pistols
+BBs & Gas
+Tactical Gear
+Accessories
+Repairs
+
+This should feel like a premium storefront category entry, not a bland icon row.
+
+3. SHOP BY LOADOUT / PLAY STYLE SECTION
+
+Create a more immersive browsing section inspired by interactive retail/category scenes.
+
+Possible tabs:
+
+Beginner Setup
+CQB
+Outdoor
+Sniper
+Sidearms
+
+Inside the active tab:
+
+show a scene or lifestyle image
+place hotspot-style callouts or overlay labels on key items
+make it feel exploratory and premium
+
+This section should help the homepage feel more like a serious catalog.
+
+4. WHY BUY FROM STRIKE ARMS
+
+Use a split-section layout:
+
+one strong lifestyle/store-related image
+one content panel with 4 value props
+
+Suggested value props:
+
+Expert Gear Advice
+Beginner-Friendly Guidance
+Fair Pricing
+Real After-Sale Support
+
+This section should reinforce the main positioning clearly.
+
+5. FEATURED PROMO / CAMPAIGN BANNER
+
+Build an editorial retail-style spotlight section.
+
+Use this as a featured promotional area for something like:
+
+Starter kits
+Featured rifles
+Best-selling gas pistols
+New arrivals
+Tactical essentials
+
+This section should support either:
+
+static image
+GIF
+short looping video later
+
+Use a strong CTA like:
+
+Shop New Arrivals
+Explore Starter Kits
+View Featured Gear
+6. ANNOTATED FEATURED RIFLE SECTION
+
+This is important.
+
+Create a premium product education section inspired by the annotated product reference.
+
+Layout
+large detailed image of an airsoft rifle or featured gun
+text content on one side
+labeled callouts pointing to parts of the gun
+Example callouts
+Rail System
+Optic Mount
+Adjustable Stock
+Magazine
+Trigger Response
+Durable Build
+Battery / Gas System
+
+This section should feel visually premium and smart, not gimmicky.
+
+CTA:
+
+Explore Featured Rifles
+or
+Shop Rifles
+7. NEED HELP CHOOSING? / EXPERT GUIDANCE SECTION
+
+This is a core conversion section.
+
+Theme:
+Not sure what to buy? Get help choosing the right setup.
+
+Use a clean split layout with supportive image + text.
+
+Suggested copy themes:
+
+first-time buyers
+parents buying for teenagers
+players upgrading their setup
+advice on choosing rifles, pistols, BBs, gas, and gear
+
+CTAs:
+
+Talk to Alan
+Call the Shop
+Visit In Store
+
+This section must support the expert positioning hard.
+
+8. REVIEWS / TRUST SECTION
+
+Use real review content early enough to matter.
+
+Do not rewrite the reviews into fake corporate fluff.
+Use real wording pulled from the provided reviews.
+
+Show:
+
+overall 4.7 rating
+90 reviews
+selected review cards / carousel
+
+Prioritize review themes around:
+
+Alan’s knowledge
+helpful staff
+beginner support
+good prices
+friendly service
+repairs/help
+
+Use 4–6 review cards and keep them believable.
+
+9. ABOUT / CREDIBILITY / STATS SECTION
+
+Build a strong trust block around store credibility.
+
+Themes:
+
+expert advice
+real-world knowledge
+trusted by Dublin airsoft customers
+local specialist
+
+Include:
+
+short “About Strike Arms” paragraph
+image of store or relevant airsoft lifestyle image
+stats cards
+
+Suggested stats:
+
+4.7★ Google rating
+90 reviews
+Dublin specialist store
+Trusted by beginners and experienced players
+
+If needed, include light placeholder logic for years in business, but do not invent absurd claims.
+
+10. FAQ SECTION
+
+Place this near the end of the homepage.
+
+This is important because the homepage is doing a lot of work in a demo.
+
+Use an accordion FAQ layout.
+
+Suggested FAQs:
+
+What kind of airsoft gear do you sell?
+Can you help me choose my first airsoft gun?
+Do you stock BBs, gas, and accessories?
+Do you offer repairs or help with issues?
+Can I visit the store in person?
+Do you help beginners?
+What should I buy to get started?
+Do you sell gear suitable for younger players / gifts?
+
+Keep answers concise, useful, and conversion-friendly.
+
+11. FINAL CTA SECTION
+
+Strong closing call to action.
+
+Possible headline:
+Get the right setup with help from people who actually know the gear.
+
+CTAs:
+
+Shop Gear
+Call Strike Arms
+
+Include phone number clearly:
++353 87 273 6351
+
+12. FOOTER
+
+Build a real footer, not a lazy one.
+
+Include:
+
+logo / business name
+short business blurb
+quick links
+product/category links
+contact block
+phone number
+placeholder for email if needed
+future page links:
+About
+Airsoft Law
+Repairs
+Contact
+Shop Categories
+COPY DIRECTION
+
+Tone of copy:
+
+knowledgeable
+direct
+helpful
+specialist
+premium but not snobby
+beginner-friendly without sounding childish
+
+Avoid:
+
+overhyped tactical cringe
+fake macho language
+cheesy military clichés
+generic “we are passionate” filler
+MOBILE-FIRST RULES
+
+Design mobile first, then scale upward.
+
+On mobile:
+
+sticky bottom CTA bar:
+Call
+Shop Gear
+header must remain clean and usable
+section spacing should stay tight but premium
+hotspot/interactive section should degrade gracefully
+annotated gun section must remain readable
+review cards must stack cleanly
+FAQ accordion must be clean and thumb-friendly
+IMAGE / ASSET GUIDANCE
+
+Assume the user will optimize with Squoosh.
+
+Use these target dimensions and size guidelines:
+
+Hero poster image
+Desktop: 1920 × 1080
+Mobile: 1080 × 1350
+Target size: 250–450 KB
+Category cards / tiles
+800 × 1000
+Target size: 120–220 KB each
+Loadout scene image
+1600 × 1000
+Target size: 180–320 KB
+Split-section lifestyle images
+1200 × 1400
+Target size: 150–280 KB
+Promo banner images / GIF fallback stills
+1600 × 900
+Target size: 180–300 KB
+Annotated rifle image
+1800 × 1000
+Target size: 200–350 KB
+Review/about section image
+1200 × 900
+Target size: 140–250 KB
+
+Use modern image loading practices:
+
+lazy-load non-critical images
+prioritize hero poster image
+avoid layout shifts
+use proper object-fit handling
+UX / QUALITY RULES
+
+Must feel:
+
+premium
+intentional
+conversion-focused
+scalable
+retail-grade
+
+Must not feel:
+
+like a small local service template
+like a messy gun blog
+like a basic Shopify starter theme
+like a product grid pasted into a dark theme
+IMPORTANT IMPLEMENTATION NOTES
+Do not build a real checkout flow yet
+Do not build real login/auth yet
+Do not overbuild backend features
+This is a homepage demo only
+However, the design and code structure must clearly support future ecommerce expansion
+
+Use clear placeholder destinations for future pages:
+
+/shop
+/categories/rifles
+/categories/pistols
+/categories/ammo-bbs
+/categories/tactical-gear
+/repairs
+/airsoft-law
+/about
+/contact
+FINAL INSTRUCTION
+
+Design this as a scalable foundation for future SEO pages.
+Structure code so additional pages can be added easily.
+Build a beautiful, high-conversion, premium catalog-style homepage demo for Strike Arms Airsoft that feels like a real specialist storefront.
