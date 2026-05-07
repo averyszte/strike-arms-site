@@ -34,7 +34,7 @@ export function SiteHeader() {
             : "bg-transparent border-b border-transparent"
         }`}
       >
-        <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               className="md:hidden text-foreground hover:text-accent transition-colors"

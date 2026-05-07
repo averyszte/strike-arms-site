@@ -1,0 +1,63 @@
+Fix the hero section only. Do not rebuild the rest of the homepage.
+
+HERO FIX GOALS:
+1. Make the header shorter in height
+2. Center-align the hero content horizontally
+3. Ensure the hero background image fully fills the entire hero section
+4. Remove the black empty/dead space above the hero image
+5. Make the whole hero feel like one clean, full-bleed section
+6. Keep the overall dark premium airsoft aesthetic
+
+SPECIFIC CHANGES:
+
+1. HEADER HEIGHT
+- Reduce the header height noticeably
+- Make the header more compact and premium
+- Tighten vertical padding in the navbar
+- Keep logo left and nav/icons balanced, but reduce wasted space
+- The header should feel sleek, not oversized
+
+2. HERO LAYOUT
+- Center the hero content block within the hero section
+- Content should be centered horizontally on the page, not pushed too far left
+- Keep text aligned neatly within the centered content area
+- On desktop, the content should feel visually centered within the hero container
+- On mobile, keep the layout clean and readable with strong spacing
+
+3. HERO BACKGROUND / MEDIA
+- The background image must fully cover the hero section with no empty black area above it
+- The hero media must be true full-bleed inside the hero section
+- Use proper full coverage behavior:
+  - background-size: cover
+  - background-position: center center
+  - or the equivalent object-fit: cover if using an image/video element
+- Make sure the media fills the full hero height and width
+- Remove any layout bug, wrapper issue, margin, padding, or container constraint causing the black gap
+- The hero should visually begin immediately under the header with no dead zone
+
+4. HERO HEIGHT
+- Adjust the hero height so it feels strong and cinematic, but not absurdly tall
+- Desktop: strong immersive height
+- Mobile: tighter but still impactful
+- The section should feel intentional and balanced
+
+5. OVERLAY / READABILITY
+- Keep a dark overlay for readability
+- Preserve strong contrast for text and CTA buttons
+- Do not make the overlay so heavy that the image disappears
+
+6. KEEP THESE ELEMENTS
+Preserve:
+- eyebrow text
+- main headline
+- supporting paragraph
+- CTA buttons
+- trust row underneath
+
+But improve their positioning so the whole hero looks cleaner and more premium.
+
+IMPORTANT:
+- Do not redesign the whole site
+- Do not change the copy
+- Do not generate a new hero concept
+- Only refine the current hero section layout, spacing, alignment, and media behavior

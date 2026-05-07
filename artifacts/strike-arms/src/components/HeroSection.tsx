@@ -20,27 +20,29 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[100dvh] min-h-[600px] flex items-end pb-24 md:items-center md:pb-0 pt-16 overflow-hidden">
+    <section className="relative w-full h-[90vh] min-h-[580px] max-h-[900px] flex items-center justify-center overflow-hidden">
       {/* Background container - ready for video swap */}
-      {/* TODO: To use a video background, replace the img tag with:
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
-            <source src="/videos/hero-bg.mp4" type="video/mp4" />
+      {/* TODO: To use a video background, replace the img tag below with:
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover object-center">
+            <source src="/videos/hero-montage.mp4" type="video/mp4" />
+            <source src="/videos/hero-montage.webm" type="video/webm" />
           </video>
       */}
-      <div className="absolute inset-0 z-0 bg-background">
+      <div className="absolute inset-0 z-0">
         <img
           src="/images/hero-poster.png"
           alt="Airsoft players in tactical gear"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center"
           loading="eager"
         />
-        {/* Dark gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 md:via-background/50 to-transparent md:bg-gradient-to-r md:from-background md:via-background/80 md:to-transparent" />
+        {/* Dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/50 to-background/80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 md:px-6">
+      <div className="container relative z-10 mx-auto px-4 md:px-6 flex justify-center">
         <motion.div
-          className="max-w-2xl"
+          className="max-w-2xl text-center md:text-left"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
