@@ -22,10 +22,10 @@ export function HeroSection() {
   return (
     <section className="relative w-full h-[90vh] min-h-[580px] max-h-[900px] flex items-center justify-center overflow-hidden">
       {/* ── HERO BACKGROUND ──────────────────────────────────────────────
-          Video active: strike-arms-hero-desktop.webm
+          Video:   /videos/strike-arms-hero-desktop.webm
+          Poster:  /images/strike-arms-hero-poster-desktop.webp
           To add an MP4 source, place it at /videos/strike-arms-hero-desktop.mp4
           and add: <source src="/videos/strike-arms-hero-desktop.mp4" type="video/mp4" />
-          Fallback image: /images/hero-poster.png
       ─────────────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
         <video
