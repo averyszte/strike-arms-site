@@ -34,7 +34,7 @@ export function HeroSection() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero-poster.png"
+          poster="/images/strike-arms-hero-poster-desktop.webp"
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
           <source src="/videos/strike-arms-hero-desktop.webm" type="video/webm" />
