@@ -225,37 +225,38 @@ export function SiteHeader() {
   return (
     <>
       <header className="relative bg-background border-b border-border/60">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[52px] flex items-center gap-4">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[60px] grid grid-cols-[1fr_auto_1fr] md:grid-cols-3 items-center">
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden text-foreground hover:text-accent transition-colors mr-1"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          {/* LEFT ZONE — hamburger + logo */}
+          <div className="flex items-center gap-3">
+            <button
+              className="md:hidden text-foreground hover:text-accent transition-colors"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-          {/* Logo */}
-          <Link href="/" className="flex flex-col items-start leading-none group shrink-0">
-            <span className="font-black text-base md:text-lg tracking-tighter uppercase text-foreground group-hover:text-accent transition-colors">
-              Strike Arms
-            </span>
-            <span className="text-[0.55rem] text-muted-foreground tracking-[0.25em] font-semibold uppercase">
-              Airsoft
-            </span>
-          </Link>
+            <Link href="/" className="flex flex-col items-start leading-none group shrink-0">
+              <span className="font-black text-base md:text-[1.1rem] tracking-tighter uppercase text-foreground group-hover:text-accent transition-colors">
+                Strike Arms
+              </span>
+              <span className="text-[0.55rem] text-muted-foreground tracking-[0.25em] font-semibold uppercase">
+                Airsoft
+              </span>
+            </Link>
+          </div>
 
-          {/* Primary nav — desktop */}
+          {/* CENTER ZONE — primary nav */}
           <nav
-            className="hidden md:flex items-center h-full ml-6"
+            className="hidden md:flex items-center justify-center h-full"
             onMouseLeave={handleNavLeave}
           >
             {navItems.map((item) => (
               <button
                 key={item.name}
                 onMouseEnter={() => handleNavEnter(item.name)}
-                className={`relative h-full px-4 flex items-center gap-1 text-sm font-medium transition-colors group ${
+                className={`relative h-full px-4 flex items-center gap-1.5 text-[0.9rem] font-medium transition-colors ${
                   activeMenu === item.name
                     ? "text-foreground"
                     : "text-foreground/75 hover:text-foreground"
@@ -267,7 +268,6 @@ export function SiteHeader() {
                     activeMenu === item.name ? "rotate-180" : ""
                   }`}
                 />
-                {/* Active underline */}
                 <span
                   className={`absolute bottom-0 left-3 right-3 h-[2px] bg-accent transition-opacity duration-150 ${
                     activeMenu === item.name ? "opacity-100" : "opacity-0"
@@ -277,31 +277,28 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Search bar — desktop */}
-          <div className="hidden md:flex items-center">
-            <div
-              className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
-                searchFocused
-                  ? "bg-card border-accent/60 w-48"
-                  : "bg-card border-border/60 w-36 hover:border-border"
-              }`}
-            >
-              <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-              />
+          {/* RIGHT ZONE — search + account + cart */}
+          <div className="flex items-center justify-end gap-3 text-foreground">
+            {/* Pill search — desktop only */}
+            <div className="hidden md:flex items-center">
+              <div
+                className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
+                  searchFocused
+                    ? "bg-card border-accent/60 w-48"
+                    : "bg-card border-border/60 w-36 hover:border-border"
+                }`}
+              >
+                <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setSearchFocused(false)}
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Right icons */}
-          <div className="flex items-center gap-3 text-foreground shrink-0">
+            {/* Search icon — mobile only */}
             <button className="md:hidden hover:text-accent transition-colors" aria-label="Search">
               <Search className="w-5 h-5" />
             </button>
@@ -310,7 +307,7 @@ export function SiteHeader() {
             </Link>
             <Link href="/cart" className="relative hover:text-accent transition-colors" aria-label="Cart">
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-1.5 -right-1.5 bg-accent text-[0px] text-accent-foreground font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] leading-none">
+              <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] leading-none">
                 0
               </span>
             </Link>

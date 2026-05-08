@@ -1,0 +1,68 @@
+Refine the header/navigation only. Do not change the hero section, hero video, hero copy, buttons, homepage sections, or footer.
+
+CURRENT ISSUE:
+The header structure is good, but the layout is not balanced enough.
+
+FIX THESE EXACT ITEMS:
+
+1. CENTER THE MAIN NAVIGATION
+- The main nav items must be visually centered in the header:
+  - Airsoft Guns
+  - Consumables
+  - Gear
+  - Repairs & Upgrades
+- They should sit in the center of the page, not too close to the logo.
+- Use a proper three-zone header layout:
+  - left: logo
+  - center: main nav
+  - right: search/account/cart
+- The center nav should remain centered regardless of logo/search width.
+- Keep nav dropdown/mega menu behavior working.
+
+2. REDUCE BRAND STRIP WIDTH
+- The top brand carousel/ticker should NOT span the full header width.
+- Make it a compact left-side brand strip only.
+- It should start near the far left and end roughly around where the main nav begins.
+- In the current desktop layout, it should end before or around the start of “Airsoft Guns”.
+- Keep it subtle and premium.
+- Do not let the brand strip dominate the top utility bar.
+- Show only a few brand names at a time or constrain it with max-width.
+- Add overflow hidden so it feels like a contained mini ticker, not a full-page banner.
+
+3. TOP UTILITY LINKS
+- Keep utility links on the right:
+  - Find a Store
+  - Help
+  - Airsoft Law
+  - Join Us
+  - Sign In
+- Make this text slightly larger and more readable.
+- Keep it clean and compact.
+- Do not make it bulky.
+
+4. MAIN HEADER HEIGHT
+- Make the main header slightly taller and more premium.
+- Add a little more vertical padding.
+- Do not make it huge.
+- It should feel like a real ecommerce header, not a thin admin bar.
+
+5. MAIN NAV TEXT
+- Make the primary nav text slightly larger and clearer.
+- Keep white/light text.
+- Keep hover states and dropdown arrows clean.
+
+6. SEARCH BAR
+- Keep the search pill on the right.
+- Do not enlarge it too much.
+- Keep it aligned vertically with the nav and icons.
+
+7. HEADER BACKGROUND
+- Keep the header solid/dark, not transparent.
+- Use subtle border/shadow separation.
+- Do not re-overlay it on the hero.
+
+IMPORTANT:
+- Do not change hero spacing unless required to account for header height naturally.
+- Do not change the hero video or poster.
+- Do not change hero headline or supporting copy.
+- Do not change homepage sections below the hero.
