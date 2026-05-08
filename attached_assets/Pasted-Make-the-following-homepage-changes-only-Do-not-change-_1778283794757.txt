@@ -1,0 +1,160 @@
+Make the following homepage changes only. Do not change the header, hero video, hero headline, hero buttons, Shop by Category cards, or Shop by Play Style section.
+
+GOAL:
+Rebuild the separator strips between sections.
+
+==================================================
+1. REMOVE THE CURRENT HERO TRUST ROW
+==================================================
+
+Remove the small trust/info row currently inside the hero section that says things like:
+- 4.7 Google Rating
+- 90 Reviews
+- Beginner-Friendly
+- Dublin Specialist
+
+Completely remove that row from the hero area.
+
+Do not leave an empty gap where it was.
+Tighten spacing so the hero still feels balanced.
+
+==================================================
+2. ADD A BRAND LOGO MARQUEE BETWEEN HERO AND SHOP BY CATEGORY
+==================================================
+
+Directly below the hero section and directly above the “Shop by Category” section, add a horizontal scrolling brand-logo strip / marquee.
+
+STYLE:
+- dark premium strip
+- subtle, clean, tactical ecommerce feel
+- visually separates hero from Shop by Category
+- should feel like a stocked-brands showcase
+- use logos, not just plain text
+- scrolling marquee style, smooth and continuous
+- not too fast
+- can loop infinitely
+- ideally pauses on hover
+- logos should be monochrome white / light grey or cleaned up to match the site style
+- include soft spacing between logos
+- vertically centered
+- subtle top and bottom border or gradient edge if needed
+
+BRAND CONTENT:
+Use actual or clean logo-style marks for these airsoft brands if available:
+- ASG
+- Vorsk
+- Nuprol
+- Valken
+- WE
+- Krytac
+- ICS
+- G&G
+- Specna Arms
+- Tokyo Marui
+
+If exact official logos are not available, create clean brand wordmark-style placeholders that visually feel like logos.
+Do not use just a plain text ticker. They should look like proper brand marks / logo treatments.
+
+LAYOUT:
+- full-width strip
+- medium height
+- not overly tall
+- enough padding to breathe
+- keep it visually distinct from the hero and the section below
+
+==================================================
+3. ADD A NEW TRUST / FEATURE STRIP BETWEEN SHOP BY CATEGORY AND SHOP BY PLAY STYLE
+==================================================
+
+Directly below the “Shop by Category” section and directly above the “Shop by Play Style” section, add a new horizontal icon-based trust strip.
+
+This replaces the current empty separator area there.
+
+STYLE REFERENCE:
+Use the idea of a premium icon + label + short supporting line strip, similar to the inspiration style shown:
+- icon at top
+- bold short title
+- small supporting line underneath
+- evenly spaced across the row
+- dark background
+- strong white icons
+- clean typography
+- premium ecommerce feel
+
+DESKTOP LAYOUT:
+- 4 items across is fine, or 5 if spacing works well
+- evenly distributed
+- centered vertically and horizontally
+- strong visual separation from sections above and below
+
+MOBILE LAYOUT:
+- stack cleanly or use a horizontal scroll if needed
+- maintain readability
+- keep icons visible and strong
+
+USE THESE TRUST ITEMS:
+
+1.
+Icon: star
+Title: 4.7 Google Rating
+Supporting text: 90 verified reviews
+
+2.
+Icon: shield-check or user-check
+Title: Beginner-Friendly
+Supporting text: Easy to shop, easy to start
+
+3.
+Icon: map-pin or store
+Title: Dublin Specialist
+Supporting text: Local airsoft store in Dublin
+
+4.
+Icon: package or grid
+Title: Serious Stock
+Supporting text: Rifles, gear, BBs, gas, and more
+
+Optional 5th item if spacing works:
+5.
+Icon: wrench
+Title: Repairs & Upgrades
+Supporting text: Support for maintenance and parts
+
+DESIGN RULES:
+- make the icons visually stronger than the current tiny trust row
+- keep the strip premium and polished
+- this should feel like a proper content band, not a tiny footer note
+- do not copy the Novritsch strip literally; adapt it to the Strike Arms brand
+- keep the section dark and consistent with the site
+
+==================================================
+4. SPACING / SECTION FLOW
+==================================================
+
+Make sure the section spacing is clean:
+
+Hero
+→ brand logo marquee
+→ Shop by Category
+→ icon-based trust strip
+→ Shop by Play Style
+
+No oversized empty black gaps.
+No awkward dead space.
+Each separator strip should feel intentional.
+
+==================================================
+5. DO NOT CHANGE
+==================================================
+
+Do not change:
+- header/navigation
+- hero video
+- hero headline
+- hero paragraph
+- hero buttons
+- Shop by Category cards/content
+- Shop by Play Style content
+- footer
+
+Only make the separator-strip changes described above.

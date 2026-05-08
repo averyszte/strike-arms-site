@@ -1,7 +1,9 @@
 import { UtilityBar } from "@/components/UtilityBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { HeroSection } from "@/components/HeroSection";
+import { BrandMarquee } from "@/components/BrandMarquee";
 import { CategoryStrip } from "@/components/CategoryStrip";
+import { TrustStrip } from "@/components/TrustStrip";
 import { ShopByLoadout } from "@/components/ShopByLoadout";
 import { WhyBuySection } from "@/components/WhyBuySection";
 import { PromoBannerSection } from "@/components/PromoBannerSection";
@@ -25,7 +27,9 @@ export default function Home() {
 
       <main className="flex-1">
         <HeroSection />
+        <BrandMarquee />
         <CategoryStrip />
+        <TrustStrip />
         <ShopByLoadout />
         <WhyBuySection />
         <PromoBannerSection />

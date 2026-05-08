@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Star } from "lucide-react";
 
 export function HeroSection() {
   const containerVariants = {
@@ -62,7 +61,7 @@ export function HeroSection() {
             variants={itemVariants}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.05] mb-6"
           >
-            Dublin’s Home for Airsoft Essentials.
+            Dublin's Home for Airsoft Essentials.
           </motion.h2>
 
           <motion.p
@@ -72,7 +71,7 @@ export function HeroSection() {
             Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/shop"
               className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
@@ -85,19 +84,6 @@ export function HeroSection() {
             >
               Get Expert Advice
             </Link>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground font-medium">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-accent text-accent" />
-              <span className="text-foreground">4.7 Google Rating</span>
-            </div>
-            <div className="w-1 h-1 rounded-full bg-border" />
-            <span>90 Reviews</span>
-            <div className="w-1 h-1 rounded-full bg-border" />
-            <span>Beginner-Friendly</span>
-            <div className="w-1 h-1 rounded-full bg-border" />
-            <span>Dublin Specialist</span>
           </motion.div>
         </motion.div>
       </div>
