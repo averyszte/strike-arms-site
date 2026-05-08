@@ -63,14 +63,14 @@ export function HeroSection() {
             variants={itemVariants}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.05] mb-6"
           >
-            Get the right gear before you waste money on the wrong setup.
+            Serious Airsoft Starts Here.
           </motion.h2>
 
           <motion.p
             variants={itemVariants}
             className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed"
           >
-            Strike Arms is Dublin's specialist airsoft store. Expert advice, trusted brands, and the setup guidance beginners actually need.
+            Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
