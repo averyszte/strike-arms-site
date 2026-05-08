@@ -236,7 +236,6 @@ const navItems: NavItem[] = [
         links: [
           { label: "Camping Gear", href: "/categories/camping" },
           { label: "Outdoor Gear", href: "/categories/outdoor" },
-          { label: "Gift Cards", href: "/gift-cards" },
         ],
       },
       {
@@ -245,6 +244,7 @@ const navItems: NavItem[] = [
           { label: "New Arrivals", href: "/new" },
           { label: "Sale", href: "/sale" },
           { label: "Brands", href: "/brands" },
+          { label: "Gift Cards", href: "/gift-cards" },
           { label: "Contact / Store Info", href: "/contact" },
         ],
       },
