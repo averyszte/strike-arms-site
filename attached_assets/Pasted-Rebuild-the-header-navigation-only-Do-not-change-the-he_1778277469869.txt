@@ -1,0 +1,217 @@
+Rebuild the header/navigation only. Do not change the hero section, hero video, homepage sections, copy, layout, or footer.
+
+GOAL:
+Change the current header into a Nike-style ecommerce navigation system:
+- top utility bar
+- main store header
+- centered primary navigation
+- logo top-left
+- search bar on the right
+- account and basket icons
+- hover mega menus
+- brand logo carousel/strip
+- solid visible header, not transparent
+
+IMPORTANT:
+The header should no longer be transparent over the hero.
+It should have a solid dark premium ecommerce background and stand out clearly.
+The hero should start directly below the header with no overlap bugs or black gaps.
+
+STYLE:
+- Premium tactical ecommerce
+- Inspired by Nike navigation structure, but adapted for airsoft
+- Dark theme
+- Clean, sharp, retail-grade
+- Text slightly larger than current nav
+- Header slightly taller and more intentional, but not bulky
+- Smooth hover states
+- No cheesy military styling
+
+STRUCTURE:
+
+1. TOP UTILITY BAR
+Create a slim top bar above the main header.
+
+Left side:
+- Optional small brand/logo carousel area using text placeholders for airsoft brands:
+  - G&G
+  - Specna Arms
+  - Tokyo Marui
+  - ASG
+  - Vorsk
+  - Nuprol
+  - Valken
+  - WE
+
+This should feel like Nike’s small brand/logo strip area, but for airsoft brands.
+Do not make it auto-scroll aggressively.
+Use a subtle horizontal carousel/brand strip feel.
+
+Right side utility links:
+- Find a Store
+- Help
+- Airsoft Law
+- Join Us
+- Sign In
+
+Keep these small, clean, and link-style.
+
+2. MAIN STORE HEADER
+Below the utility bar, create the main ecommerce header.
+
+Left:
+- STRIKE ARMS logo/wordmark
+- small “Airsoft” subtext if already used
+
+Center:
+Primary navigation items:
+- Airsoft Guns
+- Consumables
+- Gear
+- Repairs & Upgrades
+
+Right:
+- Search bar styled like Nike:
+  - rounded pill shape
+  - search icon
+  - placeholder text: “Search”
+  - visible input field, not just an icon
+- account/profile icon
+- basket/cart icon with small item count badge
+
+3. HOVER MEGA MENUS
+When hovering over each primary nav item, show a large dropdown mega menu similar to Nike.
+
+Mega menu behavior:
+- appears below the main header
+- full-width or wide centered dropdown
+- dark background or off-black panel
+- clean columns
+- smooth hover transition
+- should not push page content down
+- should overlay above the hero/content
+- keep readable spacing
+- desktop only; mobile should use hamburger/accordion menu
+
+Mega menu content:
+
+AIRSOFT GUNS:
+Column 1: Shop Airsoft Guns
+- All Airsoft Guns
+- Rifles
+- Pistols
+- Sniper Rifles
+- Shotguns
+- Electric AEGs
+- Gas Blowback
+- Spring Powered
+
+Column 2: Popular Categories
+- Beginner Rifles
+- CQB Rifles
+- Outdoor Rifles
+- Sidearms
+- Starter Setups
+
+Column 3: Shop by Use
+- New Arrivals
+- Best Sellers
+- Under €150
+- Premium Replicas
+- Gift Ideas
+
+CONSUMABLES:
+Column 1: BBs & Ammo
+- Airsoft BBs
+- Bio BBs
+- Tracer BBs
+- Heavy BBs
+
+Column 2: Gas & Power
+- Green Gas
+- CO2
+- Batteries
+- Chargers
+
+Column 3: Magazines & Essentials
+- Magazines
+- Speed Loaders
+- Targets
+- Maintenance Supplies
+
+GEAR:
+Column 1: Tactical Gear
+- Plate Carriers
+- Vests
+- Belts
+- Holsters
+- Gloves
+
+Column 2: Clothing & Protection
+- Eye Protection
+- Face Protection
+- Boots
+- Clothing
+- Ghillie Suits
+
+Column 3: Accessories
+- Optics
+- Rail Attachments
+- Slings
+- Pouches
+- Cases
+
+REPAIRS & UPGRADES:
+Column 1: Repairs
+- Repair Services
+- Troubleshooting
+- Servicing
+- Gas Leak Help
+
+Column 2: Upgrades
+- Internal Upgrades
+- External Upgrades
+- Batteries & Wiring
+- Hop-Up Parts
+
+Column 3: Support
+- Book a Repair
+- Call the Shop
+- Visit In Store
+- Parts Requests
+
+4. MOBILE HEADER
+On mobile:
+- keep utility bar minimal or hide non-essential utility links
+- main header should show logo, search icon/bar, cart, and hamburger
+- primary nav should collapse into a clean slide-out or accordion menu
+- mega menu content should become accordion groups
+- keep mobile navigation thumb-friendly
+
+5. HEADER POSITIONING
+- Header should be sticky at the top on scroll
+- It should have a solid background from the start
+- Use subtle shadow or border to separate it from the hero
+- Do not overlay the hero anymore
+- Make sure hero spacing adjusts naturally under the header
+
+6. SEARCH BAR
+Replace icon-only search with a real pill search input.
+Desktop:
+- visible rounded search box
+- placeholder: “Search”
+- search icon inside
+Mobile:
+- either compact search icon or expandable search input
+
+7. DO NOT CHANGE:
+- hero headline
+- hero video
+- hero poster
+- hero overlay
+- hero CTAs
+- homepage sections below
+- page copy outside header
+- footer
+
+Only rebuild the header/navigation system.

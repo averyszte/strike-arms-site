@@ -44,8 +44,7 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-black/30" />
       </div>
 
-      {/* pt offsets: announcement bar (h-9 = 36px) + header (h-12 = 48px) = 84px */}
-      <div className="container relative z-10 mx-auto px-4 md:px-6 flex justify-center pt-[84px]">
+      <div className="container relative z-10 mx-auto px-4 md:px-6 flex justify-center">
         <motion.div
           className="max-w-3xl w-full text-center"
           variants={containerVariants}
