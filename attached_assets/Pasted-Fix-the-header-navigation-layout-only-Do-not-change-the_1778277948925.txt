@@ -1,0 +1,62 @@
+Fix the header/navigation layout only. Do not change the hero section, hero video, hero copy, buttons, homepage sections, or footer.
+
+CURRENT ISSUE:
+The main navigation is visually broken.
+Some nav items are wrapping onto two lines, and the spacing/layout is not working properly.
+
+FIX THESE EXACT ISSUES:
+
+1. KEEP ALL MAIN NAV ITEMS ON ONE LINE
+The following nav items must stay on a single line:
+- Airsoft Guns
+- Consumables
+- Gear
+- Repairs & Upgrades
+
+Do not allow any of them to wrap onto two lines.
+Use white-space: nowrap or the equivalent.
+Increase layout space and adjust spacing so all four items fit cleanly on one row.
+
+2. FIX HEADER LAYOUT STRUCTURE
+Use a proper three-zone header layout:
+- left: logo
+- center: main nav
+- right: search bar + account icon + cart icon
+
+The center nav must be centered properly and have enough width to fit all items in one line.
+
+3. GIVE THE CENTER NAV MORE ROOM
+The nav area is too cramped.
+Reduce unnecessary width taken by other header elements if needed.
+Allow the center navigation block more horizontal space.
+Keep equal, clean spacing between nav items.
+
+4. REDUCE NAV ITEM CROWDING
+Slightly tighten or rebalance horizontal spacing between the main nav items so they fit properly, but do not make them feel cramped.
+Keep them readable and premium.
+
+5. ADJUST TYPOGRAPHY IF NEEDED
+If necessary, reduce the main nav font size very slightly so all items fit cleanly on one line.
+Do not make the text small.
+Keep it strong and readable.
+
+6. KEEP SEARCH / ICONS CLEAN
+Keep the search pill on the right, but if necessary make it slightly narrower so the main nav has enough room.
+Keep the account and cart icons aligned.
+Do not let the right-side area force the nav to wrap.
+
+7. KEEP TOP UTILITY BAR CLEAN
+Keep the utility links on the top right.
+Keep the mini brand strip on the top left.
+Do not let either of these affect the main nav layout below.
+
+8. MEGA MENUS
+Keep hover dropdown / mega menu functionality intact.
+Make sure the dropdowns still open properly from each nav item.
+
+IMPORTANT:
+- Do not change the hero
+- Do not change the header style direction
+- Do not remove the logo, utility links, search, account, or cart
+- Do not change the page content below
+- Only fix the navigation layout and spacing so the header looks clean and professional

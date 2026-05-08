@@ -225,7 +225,7 @@ export function SiteHeader() {
   return (
     <>
       <header className="relative bg-background border-b border-border/60">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[60px] grid grid-cols-[1fr_auto_1fr] md:grid-cols-3 items-center">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[60px] grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
 
           {/* LEFT ZONE — hamburger + logo */}
           <div className="flex items-center gap-3">
@@ -256,7 +256,7 @@ export function SiteHeader() {
               <button
                 key={item.name}
                 onMouseEnter={() => handleNavEnter(item.name)}
-                className={`relative h-full px-4 flex items-center gap-1.5 text-[0.9rem] font-medium transition-colors ${
+                className={`relative h-full px-3 flex items-center gap-1 whitespace-nowrap text-[0.85rem] font-medium transition-colors ${
                   activeMenu === item.name
                     ? "text-foreground"
                     : "text-foreground/75 hover:text-foreground"
@@ -284,8 +284,8 @@ export function SiteHeader() {
               <div
                 className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
                   searchFocused
-                    ? "bg-card border-accent/60 w-48"
-                    : "bg-card border-border/60 w-36 hover:border-border"
+                    ? "bg-card border-accent/60 w-40"
+                    : "bg-card border-border/60 w-28 hover:border-border"
                 }`}
               >
                 <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
