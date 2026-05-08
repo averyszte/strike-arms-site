@@ -21,28 +21,32 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full h-[90vh] min-h-[580px] max-h-[900px] flex items-center justify-center overflow-hidden">
-      {/* Background container - ready for video swap */}
-      {/* TODO: To use a video background, replace the img tag below with:
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover object-center">
-            <source src="/videos/hero-montage.mp4" type="video/mp4" />
-            <source src="/videos/hero-montage.webm" type="video/webm" />
-          </video>
-      */}
+      {/* ── HERO BACKGROUND ──────────────────────────────────────────────
+          Video active: strike-arms-hero-desktop.webm
+          To add an MP4 source, place it at /videos/strike-arms-hero-desktop.mp4
+          and add: <source src="/videos/strike-arms-hero-desktop.mp4" type="video/mp4" />
+          Fallback image: /images/hero-poster.png
+      ─────────────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="/images/hero-poster.png"
-          alt="Airsoft players in tactical gear"
-          className="w-full h-full object-cover object-center"
-          loading="eager"
-        />
-        {/* Dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/50 to-background/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/images/hero-poster.png"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        >
+          <source src="/videos/strike-arms-hero-desktop.webm" type="video/webm" />
+        </video>
+        {/* Overlays for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/40 to-background/75" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 md:px-6 flex justify-center">
         <motion.div
-          className="max-w-2xl text-center md:text-left"
+          className="max-w-3xl w-full text-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -63,12 +67,12 @@ export function HeroSection() {
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed"
+            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed"
           >
             Strike Arms is Dublin's specialist airsoft store. Expert advice, trusted brands, and the setup guidance beginners actually need.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
             <Link
               href="/shop"
               className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
@@ -83,7 +87,7 @@ export function HeroSection() {
             </Link>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground font-medium">
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground font-medium">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-accent text-accent" />
               <span className="text-foreground">4.7 Google Rating</span>
