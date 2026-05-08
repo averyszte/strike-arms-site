@@ -8,40 +8,66 @@ type NavItem = { name: string; href: string; mega?: MegaColumn[] };
 
 const navItems: NavItem[] = [
   {
-    name: "Airsoft Guns",
-    href: "/categories/guns",
+    name: "Rifles",
+    href: "/categories/rifles",
     mega: [
       {
-        title: "Shop Airsoft Guns",
+        title: "Electric (AEG)",
         links: [
-          { label: "All Airsoft Guns", href: "/categories/guns" },
-          { label: "Rifles", href: "/categories/rifles" },
-          { label: "Pistols", href: "/categories/pistols" },
+          { label: "AEG Rifles", href: "/categories/aeg-rifles" },
+          { label: "SMGs", href: "/categories/smgs" },
+          { label: "Support Guns / LMGs", href: "/categories/lmgs" },
+          { label: "DMR Rifles", href: "/categories/dmr" },
+        ],
+      },
+      {
+        title: "Gas & Spring",
+        links: [
+          { label: "Gas Rifles / GBBR", href: "/categories/gbbr" },
           { label: "Sniper Rifles", href: "/categories/sniper" },
           { label: "Shotguns", href: "/categories/shotguns" },
-          { label: "Electric AEGs", href: "/categories/aeg" },
-          { label: "Gas Blowback", href: "/categories/gbb" },
-          { label: "Spring Powered", href: "/categories/spring" },
+          { label: "Spring Rifles", href: "/categories/spring-rifles" },
         ],
       },
       {
-        title: "Popular Categories",
+        title: "Accessories",
         links: [
-          { label: "Beginner Rifles", href: "/categories/beginner" },
-          { label: "CQB Rifles", href: "/categories/cqb" },
-          { label: "Outdoor Rifles", href: "/categories/outdoor" },
-          { label: "Sidearms", href: "/categories/sidearms" },
-          { label: "Starter Setups", href: "/categories/starter" },
-        ],
-      },
-      {
-        title: "Shop by Use",
-        links: [
+          { label: "Rifle Magazines", href: "/categories/rifle-magazines" },
+          { label: "Rifle Accessories", href: "/categories/rifle-accessories" },
           { label: "New Arrivals", href: "/new" },
           { label: "Best Sellers", href: "/best-sellers" },
-          { label: "Under €150", href: "/categories/budget" },
-          { label: "Premium Replicas", href: "/categories/premium" },
-          { label: "Gift Ideas", href: "/categories/gifts" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Pistols",
+    href: "/categories/pistols",
+    mega: [
+      {
+        title: "Pistol Types",
+        links: [
+          { label: "Gas Blowback Pistols", href: "/categories/gbb-pistols" },
+          { label: "Electric Pistols", href: "/categories/electric-pistols" },
+          { label: "Spring Pistols", href: "/categories/spring-pistols" },
+          { label: "Revolvers", href: "/categories/revolvers" },
+          { label: "Machine Pistols", href: "/categories/machine-pistols" },
+        ],
+      },
+      {
+        title: "Parts & Accessories",
+        links: [
+          { label: "Pistol Magazines", href: "/categories/pistol-magazines" },
+          { label: "Pistol Parts", href: "/categories/pistol-parts" },
+          { label: "Holsters", href: "/categories/holsters" },
+        ],
+      },
+      {
+        title: "Gas & Power",
+        links: [
+          { label: "Green Gas Canisters", href: "/categories/green-gas" },
+          { label: "CO\u2082 Canisters", href: "/categories/co2" },
+          { label: "Gas Adapters", href: "/categories/gas-adapters" },
         ],
       },
     ],
@@ -53,28 +79,65 @@ const navItems: NavItem[] = [
       {
         title: "BBs & Ammo",
         links: [
-          { label: "Airsoft BBs", href: "/categories/bbs" },
+          { label: "BBs", href: "/categories/bbs" },
           { label: "Bio BBs", href: "/categories/bio-bbs" },
           { label: "Tracer BBs", href: "/categories/tracer-bbs" },
-          { label: "Heavy BBs", href: "/categories/heavy-bbs" },
+          { label: "Speed Loaders", href: "/categories/speed-loaders" },
+          { label: "Grenades", href: "/categories/grenades" },
         ],
       },
       {
         title: "Gas & Power",
         links: [
           { label: "Green Gas", href: "/categories/green-gas" },
-          { label: "CO2", href: "/categories/co2" },
+          { label: "CO\u2082 Cartridges", href: "/categories/co2" },
           { label: "Batteries", href: "/categories/batteries" },
           { label: "Chargers", href: "/categories/chargers" },
         ],
       },
       {
-        title: "Magazines & Essentials",
+        title: "Maintenance",
         links: [
           { label: "Magazines", href: "/categories/magazines" },
-          { label: "Speed Loaders", href: "/categories/speed-loaders" },
+          { label: "Lubricants", href: "/categories/lubricants" },
+          { label: "Maintenance Essentials", href: "/categories/maintenance" },
           { label: "Targets", href: "/categories/targets" },
-          { label: "Maintenance Supplies", href: "/categories/maintenance" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Accessories",
+    href: "/categories/accessories",
+    mega: [
+      {
+        title: "Sighting & Lighting",
+        links: [
+          { label: "Optics", href: "/categories/optics" },
+          { label: "Scopes", href: "/categories/scopes" },
+          { label: "Lens Protectors", href: "/categories/lens-protectors" },
+          { label: "Flashlights", href: "/categories/flashlights" },
+          { label: "Lasers", href: "/categories/lasers" },
+          { label: "Tracers", href: "/categories/tracers" },
+        ],
+      },
+      {
+        title: "Attachments",
+        links: [
+          { label: "Grips", href: "/categories/grips" },
+          { label: "Muzzle Devices", href: "/categories/muzzle-devices" },
+          { label: "Suppressors", href: "/categories/suppressors" },
+          { label: "Mounts", href: "/categories/mounts" },
+          { label: "Rails & Attachments", href: "/categories/rails" },
+          { label: "HPA Accessories", href: "/categories/hpa" },
+        ],
+      },
+      {
+        title: "Carry & Support",
+        links: [
+          { label: "Slings", href: "/categories/slings" },
+          { label: "Bipods", href: "/categories/bipods" },
+          { label: "Gun Bags / Cases", href: "/categories/cases" },
         ],
       },
     ],
@@ -84,66 +147,105 @@ const navItems: NavItem[] = [
     href: "/categories/gear",
     mega: [
       {
-        title: "Tactical Gear",
+        title: "Body Armour & Clothing",
         links: [
-          { label: "Plate Carriers", href: "/categories/plate-carriers" },
-          { label: "Vests", href: "/categories/vests" },
-          { label: "Belts", href: "/categories/belts" },
-          { label: "Holsters", href: "/categories/holsters" },
-          { label: "Gloves", href: "/categories/gloves" },
-        ],
-      },
-      {
-        title: "Clothing & Protection",
-        links: [
-          { label: "Eye Protection", href: "/categories/eye-protection" },
-          { label: "Face Protection", href: "/categories/face-protection" },
-          { label: "Boots", href: "/categories/boots" },
-          { label: "Clothing", href: "/categories/clothing" },
+          { label: "Plate Carriers / Vests", href: "/categories/plate-carriers" },
+          { label: "Chest Rigs", href: "/categories/chest-rigs" },
+          { label: "Battle Belts", href: "/categories/battle-belts" },
+          { label: "Uniforms", href: "/categories/uniforms" },
           { label: "Ghillie Suits", href: "/categories/ghillie" },
+          { label: "Camo Accessories", href: "/categories/camo" },
         ],
       },
       {
-        title: "Accessories",
+        title: "Protection & Clothing",
         links: [
-          { label: "Optics", href: "/categories/optics" },
-          { label: "Rail Attachments", href: "/categories/rail" },
-          { label: "Slings", href: "/categories/slings" },
+          { label: "Helmets", href: "/categories/helmets" },
+          { label: "Face & Eye Protection", href: "/categories/eye-protection" },
+          { label: "Gloves", href: "/categories/gloves" },
+          { label: "Footwear", href: "/categories/footwear" },
+          { label: "Headwear", href: "/categories/headwear" },
+          { label: "Comms", href: "/categories/comms" },
+        ],
+      },
+      {
+        title: "Pouches & Carry",
+        links: [
           { label: "Pouches", href: "/categories/pouches" },
-          { label: "Cases", href: "/categories/cases" },
+          { label: "Holsters", href: "/categories/holsters" },
+          { label: "Gun Bags / Transport", href: "/categories/gun-bags" },
+          { label: "Gun Covers", href: "/categories/gun-covers" },
+          { label: "Patches", href: "/categories/patches" },
         ],
       },
     ],
   },
   {
-    name: "Repairs & Upgrades",
+    name: "Upgrades & Repairs",
     href: "/repairs",
     mega: [
       {
-        title: "Repairs",
+        title: "Services",
         links: [
           { label: "Repair Services", href: "/repairs" },
-          { label: "Troubleshooting", href: "/repairs/troubleshooting" },
-          { label: "Servicing", href: "/repairs/servicing" },
-          { label: "Gas Leak Help", href: "/repairs/gas-leak" },
-        ],
-      },
-      {
-        title: "Upgrades",
-        links: [
-          { label: "Internal Upgrades", href: "/upgrades/internal" },
-          { label: "External Upgrades", href: "/upgrades/external" },
-          { label: "Batteries & Wiring", href: "/upgrades/batteries" },
-          { label: "Hop-Up Parts", href: "/upgrades/hop-up" },
-        ],
-      },
-      {
-        title: "Support",
-        links: [
+          { label: "Upgrade Services", href: "/upgrades" },
+          { label: "Custom Builds", href: "/repairs/custom" },
           { label: "Book a Repair", href: "/repairs/book" },
           { label: "Call the Shop", href: "tel:+353872736351" },
-          { label: "Visit In Store", href: "/contact" },
-          { label: "Parts Requests", href: "/repairs/parts" },
+        ],
+      },
+      {
+        title: "Internal Parts",
+        links: [
+          { label: "AEG Internal Parts", href: "/categories/aeg-parts" },
+          { label: "GBB / Pistol Parts", href: "/categories/gbb-parts" },
+          { label: "Sniper Parts", href: "/categories/sniper-parts" },
+          { label: "Hop-Up Units & Buckings", href: "/categories/hop-up" },
+          { label: "Barrels", href: "/categories/barrels" },
+          { label: "Motors", href: "/categories/motors" },
+        ],
+      },
+      {
+        title: "More Parts",
+        links: [
+          { label: "Gearboxes", href: "/categories/gearboxes" },
+          { label: "Springs", href: "/categories/springs" },
+          { label: "Pistons", href: "/categories/pistons" },
+          { label: "MOSFETs / ETUs", href: "/categories/mosfets" },
+          { label: "HPA Upgrades", href: "/categories/hpa-upgrades" },
+          { label: "External Parts", href: "/categories/external-parts" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "More",
+    href: "/more",
+    mega: [
+      {
+        title: "Equipment & Tools",
+        links: [
+          { label: "Chronographs", href: "/categories/chronographs" },
+          { label: "Targets", href: "/categories/targets" },
+          { label: "Tools", href: "/categories/tools" },
+          { label: "Maintenance Kits", href: "/categories/maintenance-kits" },
+        ],
+      },
+      {
+        title: "Outdoor",
+        links: [
+          { label: "Camping Gear", href: "/categories/camping" },
+          { label: "Outdoor Gear", href: "/categories/outdoor" },
+          { label: "Gift Cards", href: "/gift-cards" },
+        ],
+      },
+      {
+        title: "Store",
+        links: [
+          { label: "New Arrivals", href: "/new" },
+          { label: "Sale", href: "/sale" },
+          { label: "Brands", href: "/brands" },
+          { label: "Contact / Store Info", href: "/contact" },
         ],
       },
     ],
@@ -152,42 +254,79 @@ const navItems: NavItem[] = [
 
 const mobileAccordionGroups: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "Airsoft Guns",
+    title: "Rifles",
     links: [
-      { label: "All Airsoft Guns", href: "/categories/guns" },
-      { label: "Rifles", href: "/categories/rifles" },
-      { label: "Pistols", href: "/categories/pistols" },
+      { label: "AEG Rifles", href: "/categories/aeg-rifles" },
+      { label: "Gas Rifles / GBBR", href: "/categories/gbbr" },
       { label: "Sniper Rifles", href: "/categories/sniper" },
-      { label: "AEGs", href: "/categories/aeg" },
-      { label: "Gas Blowback", href: "/categories/gbb" },
+      { label: "DMR Rifles", href: "/categories/dmr" },
+      { label: "SMGs", href: "/categories/smgs" },
+      { label: "Shotguns", href: "/categories/shotguns" },
+    ],
+  },
+  {
+    title: "Pistols",
+    links: [
+      { label: "Gas Blowback Pistols", href: "/categories/gbb-pistols" },
+      { label: "Electric Pistols", href: "/categories/electric-pistols" },
+      { label: "Spring Pistols", href: "/categories/spring-pistols" },
+      { label: "Revolvers", href: "/categories/revolvers" },
+      { label: "Pistol Magazines", href: "/categories/pistol-magazines" },
+      { label: "Holsters", href: "/categories/holsters" },
     ],
   },
   {
     title: "Consumables",
     links: [
-      { label: "Airsoft BBs", href: "/categories/bbs" },
+      { label: "BBs", href: "/categories/bbs" },
+      { label: "Bio BBs", href: "/categories/bio-bbs" },
       { label: "Green Gas", href: "/categories/green-gas" },
-      { label: "CO2", href: "/categories/co2" },
+      { label: "CO\u2082 Cartridges", href: "/categories/co2" },
       { label: "Batteries", href: "/categories/batteries" },
       { label: "Magazines", href: "/categories/magazines" },
     ],
   },
   {
-    title: "Gear",
+    title: "Accessories",
     links: [
-      { label: "Plate Carriers", href: "/categories/plate-carriers" },
-      { label: "Eye Protection", href: "/categories/eye-protection" },
       { label: "Optics", href: "/categories/optics" },
-      { label: "Accessories", href: "/categories/accessories" },
+      { label: "Flashlights", href: "/categories/flashlights" },
+      { label: "Suppressors", href: "/categories/suppressors" },
+      { label: "Slings", href: "/categories/slings" },
+      { label: "Rails & Attachments", href: "/categories/rails" },
     ],
   },
   {
-    title: "Repairs & Upgrades",
+    title: "Gear",
+    links: [
+      { label: "Plate Carriers / Vests", href: "/categories/plate-carriers" },
+      { label: "Face & Eye Protection", href: "/categories/eye-protection" },
+      { label: "Helmets", href: "/categories/helmets" },
+      { label: "Ghillie Suits", href: "/categories/ghillie" },
+      { label: "Pouches", href: "/categories/pouches" },
+      { label: "Uniforms", href: "/categories/uniforms" },
+    ],
+  },
+  {
+    title: "Upgrades & Repairs",
     links: [
       { label: "Repair Services", href: "/repairs" },
-      { label: "Internal Upgrades", href: "/upgrades/internal" },
+      { label: "Upgrade Services", href: "/upgrades" },
+      { label: "AEG Internal Parts", href: "/categories/aeg-parts" },
+      { label: "Hop-Up Units & Buckings", href: "/categories/hop-up" },
       { label: "Book a Repair", href: "/repairs/book" },
       { label: "Call: +353 87 273 6351", href: "tel:+353872736351" },
+    ],
+  },
+  {
+    title: "More",
+    links: [
+      { label: "New Arrivals", href: "/new" },
+      { label: "Sale", href: "/sale" },
+      { label: "Brands", href: "/brands" },
+      { label: "Chronographs", href: "/categories/chronographs" },
+      { label: "Gift Cards", href: "/gift-cards" },
+      { label: "Contact / Store Info", href: "/contact" },
     ],
   },
 ];
@@ -256,20 +395,20 @@ export function SiteHeader() {
               <button
                 key={item.name}
                 onMouseEnter={() => handleNavEnter(item.name)}
-                className={`relative h-full px-3 flex items-center gap-1 whitespace-nowrap text-[0.85rem] font-medium transition-colors ${
+                className={`relative h-full px-2.5 flex items-center gap-1 whitespace-nowrap text-[0.82rem] font-medium tracking-wide transition-colors ${
                   activeMenu === item.name
                     ? "text-foreground"
-                    : "text-foreground/75 hover:text-foreground"
+                    : "text-foreground/70 hover:text-foreground"
                 }`}
               >
                 {item.name}
                 <ChevronDown
-                  className={`w-3 h-3 transition-transform duration-200 ${
+                  className={`w-3 h-3 shrink-0 transition-transform duration-200 ${
                     activeMenu === item.name ? "rotate-180" : ""
                   }`}
                 />
                 <span
-                  className={`absolute bottom-0 left-3 right-3 h-[2px] bg-accent transition-opacity duration-150 ${
+                  className={`absolute bottom-0 left-2 right-2 h-[2px] bg-accent transition-opacity duration-150 ${
                     activeMenu === item.name ? "opacity-100" : "opacity-0"
                   }`}
                 />

@@ -1,0 +1,130 @@
+Update the website header/navigation for the airsoft shop.
+
+Create a clean premium ecommerce-style navigation with these main tabs:
+
+1. Rifles
+2. Pistols
+3. Consumables
+4. Accessories
+5. Gear
+6. Upgrades & Repairs
+7. More
+
+Each tab should have a dropdown mega-menu on desktop and a clean accordion-style dropdown on mobile.
+
+Use this category structure:
+
+RIFLES:
+- AEG Rifles
+- Gas Rifles / GBBR
+- Sniper Rifles
+- DMR Rifles
+- SMGs
+- Shotguns
+- Support Guns / LMGs
+- Rifle Magazines
+- Rifle Accessories
+
+PISTOLS:
+- Gas Blowback Pistols
+- Electric Pistols
+- Spring Pistols
+- Revolvers
+- Machine Pistols
+- Pistol Magazines
+- Pistol Parts
+- Holsters
+- Green Gas Canisters
+- CO₂ Canisters
+
+CONSUMABLES:
+- BBs
+- Bio BBs
+- Tracer BBs
+- Green Gas
+- CO₂ Cartridges
+- Batteries
+- Chargers
+- Magazines
+- Speed Loaders
+- Grenades
+- Lubricants
+- Maintenance Essentials
+
+ACCESSORIES:
+- Optics
+- Scopes
+- Lens Protectors
+- Flashlights
+- Lasers
+- Grips
+- Muzzle Devices
+- Tracers
+- Suppressors
+- Mounts
+- Slings
+- Bipods
+- HPA Accessories
+- Rails & Attachments
+
+GEAR:
+- Ghillie Suits
+- Uniforms
+- Plate Carriers / Vests
+- Chest Rigs
+- Battle Belts
+- Helmets
+- Face & Eye Protection
+- Gloves
+- Footwear
+- Headwear
+- Pouches
+- Comms
+- Patches
+- Holsters
+- Gun Bags / Transport
+- Camo Accessories
+- Gun Covers
+
+UPGRADES & REPAIRS:
+- Repair Services
+- Upgrade Services
+- Custom Builds
+- AEG Internal Parts
+- GBB / Pistol Parts
+- Sniper Parts
+- Hop-Up Units & Buckings
+- Barrels
+- Motors
+- Gearboxes
+- Springs
+- Pistons
+- MOSFETs / ETUs
+- HPA Upgrades
+- External Parts
+
+MORE:
+- Chronographs
+- Targets
+- Tools
+- Maintenance Kits
+- Camping Gear
+- Outdoor Gear
+- Gift Cards
+- New Arrivals
+- Sale
+- Brands
+- Contact / Store Info
+
+Design requirements:
+- Keep the logo on the left.
+- Keep the main navigation centered.
+- Keep utility links/icons on the right.
+- Make the header taller and more premium-looking.
+- Use dropdown mega-menus on desktop.
+- Use accordion dropdowns on mobile.
+- Make sure dropdown items never overlap.
+- Use clean spacing, clear hover states, and readable text.
+- The dropdowns should feel like a real ecommerce store, not a basic list.
+- Do not overcrowd the top navigation.
+- Make sure the header is fully responsive on desktop, tablet, and mobile.
