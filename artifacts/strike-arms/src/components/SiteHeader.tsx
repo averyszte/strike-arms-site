@@ -19,19 +19,20 @@ export function SiteHeader() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 60);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
+      {/* Fixed header — overlays hero on load, becomes dark on scroll */}
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        className={`fixed left-0 right-0 z-40 w-full transition-all duration-500 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-md shadow-sm border-b border-border"
-            : "bg-transparent border-b border-transparent"
+            ? "top-0 bg-background/95 backdrop-blur-md border-b border-border/60 shadow-sm"
+            : "top-9 bg-transparent border-b border-transparent"
         }`}
       >
         <div className="container mx-auto px-4 md:px-6 h-12 flex items-center justify-between">
@@ -45,7 +46,7 @@ export function SiteHeader() {
             </button>
 
             <Link href="/" className="flex flex-col items-start leading-none group">
-              <span className="font-bold text-lg md:text-xl tracking-tighter uppercase group-hover:text-accent transition-colors">
+              <span className="font-bold text-lg md:text-xl tracking-tighter uppercase text-foreground group-hover:text-accent transition-colors">
                 Strike Arms
               </span>
               <span className="text-[0.65rem] md:text-xs text-muted-foreground tracking-widest font-semibold">
@@ -59,7 +60,7 @@ export function SiteHeader() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-accent transition-colors"
               >
                 {link.name}
               </Link>
@@ -83,6 +84,7 @@ export function SiteHeader() {
         </div>
       </header>
 
+      {/* Mobile full-screen menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div

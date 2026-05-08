@@ -19,7 +19,7 @@ export function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="bg-card border-b border-border h-9 flex items-center justify-center overflow-hidden px-4">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-9 flex items-center justify-center overflow-hidden px-4">
       <div className="flex items-center gap-2 text-xs md:text-sm font-medium tracking-wide text-foreground">
         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
         <AnimatePresence mode="wait">
