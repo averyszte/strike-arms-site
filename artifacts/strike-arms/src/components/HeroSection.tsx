@@ -63,7 +63,7 @@ export function HeroSection() {
             variants={itemVariants}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.05] mb-6"
           >
-            Serious Airsoft Starts Here.
+            Dublin’s Home for Airsoft Essentials.
           </motion.h2>
 
           <motion.p
