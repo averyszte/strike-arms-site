@@ -29,11 +29,6 @@ const loadouts = [
         desc: "Quality BBs for entry-level AEGs. Consistent, seamless feed.",
         price: "€12.00",
       },
-      {
-        name: "Nuprol Peak Smart Charger + Battery",
-        desc: "Tamiya mini connector. Safe trickle charge for NiMH packs.",
-        price: "€38.00",
-      },
     ],
   },
   {
@@ -61,11 +56,6 @@ const loadouts = [
         name: "G&G Mid-Cap Magazine — 5 Pack",
         desc: "110-round mid-caps. No winding, reliable feeding under pressure.",
         price: "€35.00",
-      },
-      {
-        name: "NcSTAR Tactical Flashlight",
-        desc: "600-lumen pressure-switch light. Compact, rail-mount ready.",
-        price: "€28.00",
       },
     ],
   },
@@ -95,11 +85,6 @@ const loadouts = [
         desc: "Fits M4/M16 magazines. Secure retention, fast draw.",
         price: "€18.00",
       },
-      {
-        name: "Earmor M32 Tactical Headset",
-        desc: "Electronic hearing protection with PTT comms compatibility.",
-        price: "€95.00",
-      },
     ],
   },
   {
@@ -127,11 +112,6 @@ const loadouts = [
         name: "Geoff's 0.43g Premium BBs",
         desc: "High-weight precision BBs for upgraded snipers. Consistent trajectory.",
         price: "€24.00",
-      },
-      {
-        name: "NcSTAR Bipod — Swivel Mount",
-        desc: "Lightweight aluminium bipod. Adjustable legs, quick-attach Picatinny.",
-        price: "€32.00",
       },
     ],
   },
