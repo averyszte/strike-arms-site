@@ -13,44 +13,64 @@ const brands: { name: string; src: string; h: number; w: number }[] = [
   { name: "Specna Arms",   src: "/images/brands/specna-arms.svg", h: 26, w: 150 },
 ];
 
+function BrandGroup() {
+  return (
+    <div className="flex items-center gap-10 shrink-0 pr-10" aria-hidden>
+      {brands.map((brand, i) => (
+        <span key={i} className="flex items-center gap-10 shrink-0">
+          <img
+            src={brand.src}
+            alt={brand.name}
+            draggable={false}
+            className="object-contain opacity-40 hover:opacity-70 transition-opacity duration-300"
+            style={{
+              height: brand.h,
+              width: brand.w,
+              filter: "brightness(0) invert(1)",
+            }}
+          />
+          <span className="w-px h-4 bg-white/8 shrink-0" />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function BrandMarquee() {
   const [paused, setPaused] = useState(false);
-  const doubled = [...brands, ...brands];
 
   return (
-    <div className="relative bg-background border-y border-border/50 overflow-hidden py-5">
+    <div
+      className="relative overflow-hidden py-5"
+      style={{
+        background: "#111111",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
       {/* Fade edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-background to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-background to-transparent" />
-
       <div
-        className="flex items-center"
+        className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10"
+        style={{ background: "linear-gradient(to right, #111111, transparent)" }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10"
+        style={{ background: "linear-gradient(to left, #111111, transparent)" }}
+      />
+
+      {/* Track — 3 copies so one-third translate = seamless loop */}
+      <div
+        className="flex items-center animate-marquee"
+        style={{
+          animationPlayState: paused ? "paused" : "running",
+          width: "max-content",
+        }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        <div
-          className="flex items-center gap-12 animate-marquee whitespace-nowrap"
-          style={{ animationPlayState: paused ? "paused" : "running" }}
-        >
-          {doubled.map((brand, i) => (
-            <span key={i} className="flex items-center gap-12 shrink-0">
-              <img
-                src={brand.src}
-                alt={brand.name}
-                height={brand.h}
-                width={brand.w}
-                className="object-contain transition-opacity duration-300 opacity-50 hover:opacity-80"
-                style={{
-                  height: brand.h,
-                  width: brand.w,
-                  filter: "brightness(0) invert(1)",
-                }}
-                draggable={false}
-              />
-              <span className="w-px h-4 bg-white/10 shrink-0" />
-            </span>
-          ))}
-        </div>
+        <BrandGroup />
+        <BrandGroup />
+        <BrandGroup />
       </div>
     </div>
   );

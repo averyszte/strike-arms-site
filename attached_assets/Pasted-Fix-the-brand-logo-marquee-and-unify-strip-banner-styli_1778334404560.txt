@@ -1,0 +1,80 @@
+Fix the brand logo marquee and unify strip/banner styling across the homepage.
+
+Do not change:
+- header
+- hero video
+- hero copy
+- Shop by Category cards
+- Shop by Play Style
+- product cards
+- footer content
+
+==================================================
+1. FIX BRAND LOGO MARQUEE LOOP
+==================================================
+
+The brand logo marquee currently leaves empty space after a cycle.
+
+Fix it so the scrolling logo strip loops seamlessly with no blank gaps.
+
+Requirements:
+- Duplicate the full logo list enough times to always fill more than the viewport width
+- The marquee should appear continuous and infinite
+- There must be no empty space before the next logo sequence appears
+- Use smooth linear animation
+- Keep the speed slow and premium, not fast or distracting
+- Keep all logos vertically centered
+- Keep consistent spacing between logos
+- Pause animation on hover if already supported
+- Do not show plain text fallback if logo assets exist
+
+Implementation guidance:
+- Render the logo group at least 3 times inside the marquee track
+- Animate the track by translating only one full group width, then repeat
+- Use overflow hidden on the outer marquee wrapper
+- Ensure the track width is max-content or equivalent
+- Do not rely on a single logo list moving across the screen
+
+==================================================
+2. UNIFY STRIP / BANNER BACKGROUNDS
+==================================================
+
+Make all horizontal strips/bands feel like part of the same premium dark design system.
+
+This includes:
+- brand logo marquee strip
+- icon trust strip
+- any separator/state/banner-style strips
+
+Use a consistent dark charcoal treatment:
+- background: #101010 or #111111
+- subtle border top/bottom: rgba(255,255,255,0.06)
+- optional very subtle gradient if needed
+- no random lighter grey bands
+- no harsh pure black slabs unless intentionally blending into a section
+
+The trust strip currently looks too light/grey and disconnected.
+Make it darker and closer to the brand marquee styling while still allowing the icons/text to stand out.
+
+==================================================
+3. VISUAL CONSISTENCY RULES
+==================================================
+
+- Strip backgrounds should feel related across the site
+- Use subtle variation only through borders, spacing, and gradients
+- Keep the site dark, premium, and retail-grade
+- Do not overuse orange
+- Orange should remain for CTAs, small highlights, icons, and hover accents
+- Keep white/off-white text readable
+- Keep muted secondary text consistent
+
+==================================================
+4. QUALITY CHECK
+==================================================
+
+After the update:
+- The brand logo marquee loops with no blank gaps
+- The logo strip does not stutter or jump obviously
+- The trust strip no longer looks like a random grey block
+- All horizontal bands feel cohesive
+- No homepage content or layout structure has changed
