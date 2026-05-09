@@ -1,0 +1,99 @@
+Update the “Shop by Play Style” section only. Do not change the header, hero, brand logo strip, Shop by Category section, trust strip, Why Buy section, promo sections, footer, images, tabs, hotspots, or layout structure.
+
+GOAL:
+Update the “Featured in this setup” product cards for every play-style tab.
+
+RULES:
+- Each tab must show exactly 3 featured product cards.
+- The gun/primary replica must always be the first product card.
+- Product order must go from most important to least important.
+- Replace every “ENQUIRE” CTA with “BUY NOW”.
+- Use the exact product names listed below.
+- Add a short product description for each item.
+- Use realistic placeholder euro prices.
+- Keep the same premium dark product-card styling.
+- Do not change the hotspot labels or coordinates.
+- Do not change tab names.
+
+==================================================
+BEGINNER SETUP PRODUCTS
+==================================================
+
+1. Specna Arms SA E14
+Price: €189.00
+Description: Reliable starter AEG with solid build quality, easy handling, and enough performance for first-time players.
+
+2. Theta Optics Monolith Red Dot
+Price: €39.00
+Description: Compact red dot sight for faster target pickup and a cleaner beginner rifle setup.
+
+3. Mid-cap Magazine 250 Rounds AMAROK (Black)
+Price: €18.00
+Description: Durable 250-round mid-cap magazine for carrying extra ammo without unnecessary rattle.
+
+==================================================
+CQB PRODUCTS
+==================================================
+
+1. Krytac Trident MK2 PDW-M
+Price: €429.00
+Description: Compact high-performance AEG built for fast close-quarters play and tight indoor layouts.
+
+2. Theta Optics Mini Reflex Rugged (Black)
+Price: €49.00
+Description: Low-profile reflex sight for quick aiming without adding bulk to a compact CQB build.
+
+3. Tango Down Vertical Grip (Stubby) (Black)
+Price: €24.00
+Description: Short vertical grip for better control, faster handling, and tighter movement around cover.
+
+==================================================
+MIL-SIM PRODUCTS
+==================================================
+
+1. SA-H20 EDGE 2.0
+Price: €329.00
+Description: Field-ready AEG platform with a serious tactical profile and strong upgrade potential.
+
+2. AIM-O XPS 2-0 Red-Green Holographic Sight (Black)
+Price: €69.00
+Description: Red-green holographic-style sight for fast sight picture and better target tracking in varied conditions.
+
+3. Action Army T10 Hive Suppressor
+Price: €42.00
+Description: Clean suppressor-style accessory that sharpens the look of a serious MIL-SIM loadout.
+
+==================================================
+SNIPER PRODUCTS
+==================================================
+
+1. SSG 10
+Price: €299.00
+Description: Bolt-action sniper platform built for precision-focused players and long-range woodland setups.
+
+2. Theta Optics 3-9x40 Scope
+Price: €59.00
+Description: Adjustable zoom scope for clearer sightlines and better long-range target identification.
+
+3. Invader Gear Base Leaf Ghillie
+Price: €79.00
+Description: Lightweight leaf-style concealment layer for players building a more hidden sniper setup.
+
+==================================================
+CTA UPDATE
+==================================================
+
+For every product card in every tab:
+- Replace CTA text “ENQUIRE” with “BUY NOW”
+- Keep the arrow/icon if already used
+- Make sure the CTA still looks clickable and premium
+
+QUALITY CHECK:
+- Beginner Setup shows exactly 3 products.
+- CQB shows exactly 3 products.
+- MIL-SIM shows exactly 3 products.
+- Sniper shows exactly 3 products.
+- The first product in each tab is the gun/primary replica.
+- No old product names remain.
+- No “ENQUIRE” text remains anywhere inside the Shop by Play Style product cards.
+- The section still looks clean and balanced.

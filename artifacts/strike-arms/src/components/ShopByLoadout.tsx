@@ -22,19 +22,19 @@ const loadouts: {
     ],
     products: [
       {
-        name: "Specna Arms Core M4",
-        desc: "Reliable entry-level AEG. Perfect first rifle straight out of the box.",
-        price: "€149.00",
+        name: "Specna Arms SA E14",
+        desc: "Reliable starter AEG with solid build quality, easy handling, and enough performance for first-time players.",
+        price: "€189.00",
       },
       {
-        name: "Bolle Tracker Safety Glasses",
-        desc: "ANSI-rated eye protection. Comfortable fit for full-day sessions.",
-        price: "€24.00",
+        name: "Theta Optics Monolith Red Dot",
+        desc: "Compact red dot sight for faster target pickup and a cleaner beginner rifle setup.",
+        price: "€39.00",
       },
       {
-        name: "Nuprol 0.20g BBs — 4,000 rounds",
-        desc: "Quality BBs for entry-level AEGs. Consistent, seamless feed.",
-        price: "€12.00",
+        name: "Mid-cap Magazine 250 Rounds AMAROK (Black)",
+        desc: "Durable 250-round mid-cap magazine for carrying extra ammo without unnecessary rattle.",
+        price: "€18.00",
       },
     ],
   },
@@ -50,19 +50,19 @@ const loadouts: {
     ],
     products: [
       {
-        name: "G&G ARP9",
-        desc: "Compact 9mm-style AEG. Fast rate of fire, purpose-built for CQB.",
-        price: "€245.00",
+        name: "Krytac Trident MK2 PDW-M",
+        desc: "Compact high-performance AEG built for fast close-quarters play and tight indoor layouts.",
+        price: "€429.00",
       },
       {
-        name: "Theta Optics Holosight",
-        desc: "Lightweight red dot with crisp 1 MOA reticle. Fits any 20mm rail.",
+        name: "Theta Optics Mini Reflex Rugged (Black)",
+        desc: "Low-profile reflex sight for quick aiming without adding bulk to a compact CQB build.",
         price: "€49.00",
       },
       {
-        name: "G&G Mid-Cap Magazine — 5 Pack",
-        desc: "110-round mid-caps. No winding, reliable feeding under pressure.",
-        price: "€35.00",
+        name: "Tango Down Vertical Grip (Stubby) (Black)",
+        desc: "Short vertical grip for better control, faster handling, and tighter movement around cover.",
+        price: "€24.00",
       },
     ],
   },
@@ -79,19 +79,19 @@ const loadouts: {
     ],
     products: [
       {
-        name: "Krytac Trident MK2 CRB",
-        desc: "Field-grade AEG with strong internals. Reliable in any conditions.",
-        price: "€399.00",
+        name: "SA-H20 EDGE 2.0",
+        desc: "Field-ready AEG platform with a serious tactical profile and strong upgrade potential.",
+        price: "€329.00",
       },
       {
-        name: "WOSPORT Plate Carrier",
-        desc: "Fully adjustable Molle vest with quick-release. Field-ready.",
-        price: "€89.00",
+        name: "AIM-O XPS 2-0 Red-Green Holographic Sight (Black)",
+        desc: "Red-green holographic-style sight for fast sight picture and better target tracking in varied conditions.",
+        price: "€69.00",
       },
       {
-        name: "Nuprol Molle Double Mag Pouch",
-        desc: "Fits M4/M16 magazines. Secure retention, fast draw.",
-        price: "€18.00",
+        name: "Action Army T10 Hive Suppressor",
+        desc: "Clean suppressor-style accessory that sharpens the look of a serious MIL-SIM loadout.",
+        price: "€42.00",
       },
     ],
   },
@@ -108,19 +108,19 @@ const loadouts: {
     ],
     products: [
       {
-        name: "Novritsch SSG10 A1",
-        desc: "Pre-upgraded bolt action. Exceptional range and out-of-box performance.",
+        name: "SSG 10",
+        desc: "Bolt-action sniper platform built for precision-focused players and long-range woodland setups.",
         price: "€299.00",
       },
       {
-        name: "Theta Optics 3–9×40 Scope",
-        desc: "Mil-dot reticle with adjustable magnification. Suits woodland ranges.",
-        price: "€69.00",
+        name: "Theta Optics 3-9x40 Scope",
+        desc: "Adjustable zoom scope for clearer sightlines and better long-range target identification.",
+        price: "€59.00",
       },
       {
-        name: "Geoff's 0.43g Premium BBs",
-        desc: "High-weight precision BBs for upgraded snipers. Consistent trajectory.",
-        price: "€24.00",
+        name: "Invader Gear Base Leaf Ghillie",
+        desc: "Lightweight leaf-style concealment layer for players building a more hidden sniper setup.",
+        price: "€79.00",
       },
     ],
   },
@@ -283,7 +283,7 @@ export function ShopByLoadout() {
                     </div>
                     <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{prod.desc}</p>
                     <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-accent transition-colors">
-                      Enquire <ArrowRight className="w-3 h-3" />
+                      Buy Now <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>
                 ))}
