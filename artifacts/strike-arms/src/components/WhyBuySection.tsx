@@ -1,4 +1,5 @@
-import { Shield, Users, Tag, Headphones } from "lucide-react";
+import { Shield, Users, Tag, Headphones, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 
 export function WhyBuySection() {
   return (
@@ -63,6 +64,14 @@ export function WhyBuySection() {
               </div>
             </div>
           </div>
+
+          <Link
+            href="/shop"
+            className="mt-10 inline-flex items-center gap-2 h-12 px-7 rounded-sm bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors self-start"
+          >
+            See Our Collection
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
         
       </div>
