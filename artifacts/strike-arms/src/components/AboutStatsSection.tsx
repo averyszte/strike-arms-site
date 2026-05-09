@@ -7,7 +7,7 @@ export function AboutStatsSection() {
   ];
 
   return (
-    <section className="bg-card border-y border-border">
+    <section className="bg-card border-y border-border/60">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         
         {/* Left: Text + Stats */}
@@ -34,7 +34,7 @@ export function AboutStatsSection() {
         </div>
 
         {/* Right: Image */}
-        <div className="relative min-h-[400px] lg:min-h-[600px] border-t lg:border-t-0 lg:border-l border-border bg-background">
+        <div className="relative min-h-[400px] lg:min-h-[600px] border-t lg:border-t-0 lg:border-l border-border/60 bg-background">
           <img
             src="/images/about-store.png"
             alt="Strike Arms Store Interior"

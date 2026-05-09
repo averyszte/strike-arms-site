@@ -13,12 +13,12 @@ export function AnnotatedRifleSection() {
   ];
 
   return (
-    <section className="bg-card border-b border-border overflow-hidden">
+    <section className="bg-card border-b border-border/60 overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-[600px] lg:h-[700px]">
         {/* Left: Image with Annotations */}
         <div className="w-full lg:w-[60%] relative bg-background flex items-center justify-center p-8 lg:p-0">
           {/* subtle background grid */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
           
           <div className="relative w-full max-w-4xl aspect-video lg:aspect-auto lg:h-full">
             <img
@@ -43,7 +43,7 @@ export function AnnotatedRifleSection() {
                   <div className="relative flex items-center justify-center">
                     <div className="w-3 h-3 bg-accent rounded-full absolute z-10 shadow-[0_0_10px_rgba(234,88,12,0.5)]" />
                     <div className="w-4 h-4 bg-accent/30 rounded-full absolute z-0 animate-ping" />
-                    <div className="absolute top-4 left-4 bg-background/95 backdrop-blur border border-border px-3 py-1.5 rounded-sm whitespace-nowrap">
+                    <div className="absolute top-4 left-4 bg-card/95 backdrop-blur border border-border/60 px-3 py-1.5 rounded-sm whitespace-nowrap">
                       <span className="text-xs font-bold text-foreground">{callout.label}</span>
                     </div>
                   </div>
@@ -68,7 +68,7 @@ export function AnnotatedRifleSection() {
           {/* Mobile-only list of features */}
           <div className="md:hidden flex flex-wrap gap-2 mb-8">
             {callouts.map((callout, i) => (
-              <span key={i} className="text-xs font-medium bg-background border border-border px-3 py-1.5 rounded-sm">
+              <span key={i} className="text-xs font-medium bg-muted border border-border/60 px-3 py-1.5 rounded-sm">
                 {callout.label}
               </span>
             ))}

@@ -35,7 +35,7 @@ const items = [
 
 export function TrustStrip() {
   return (
-    <div className="bg-card border-y border-border/50">
+    <div className="bg-card border-y border-border/60">
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-4">
           {items.map((item) => {
@@ -45,7 +45,7 @@ export function TrustStrip() {
                 key={item.title}
                 className="flex flex-col items-center text-center gap-3"
               >
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-background border border-border/60">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted border border-border/60">
                   <Icon
                     className={`w-5 h-5 ${
                       item.filled

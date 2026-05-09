@@ -18,10 +18,10 @@ export function BrandMarquee() {
   const doubled = [...brands, ...brands];
 
   return (
-    <div className="relative bg-[#0d0d0d] border-y border-border/40 overflow-hidden py-5">
+    <div className="relative bg-background border-y border-border/50 overflow-hidden py-5">
       {/* Fade edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-[#0d0d0d] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-[#0d0d0d] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-background to-transparent" />
 
       <div
         className="flex items-center"

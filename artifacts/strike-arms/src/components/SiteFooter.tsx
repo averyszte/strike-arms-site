@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-background pt-16 pb-24 md:pb-8 border-t border-border">
+    <footer className="bg-[#080808] pt-16 pb-24 md:pb-8 border-t border-border/60">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
           
@@ -70,7 +70,7 @@ export function SiteFooter() {
 
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Strike Arms Airsoft. All rights reserved.
           </p>

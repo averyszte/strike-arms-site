@@ -28,7 +28,7 @@ function StarRating({ rating }: { rating: number }) {
 
 export function ReviewsSection() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-24 bg-background border-b border-border/60">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
@@ -50,7 +50,7 @@ export function ReviewsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-card border border-border p-8 flex flex-col justify-between rounded-sm"
+              className="bg-card border border-border/60 p-8 flex flex-col justify-between rounded-sm hover:border-border transition-colors"
             >
               <div>
                 <StarRating rating={review.stars} />

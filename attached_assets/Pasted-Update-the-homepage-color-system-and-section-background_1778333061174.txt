@@ -1,0 +1,89 @@
+Update the homepage color system and section backgrounds only. Do not change layout, copy, images, tabs, hotspots, header structure, hero video, product cards, or footer content.
+
+CURRENT ISSUE:
+The homepage backgrounds look inconsistent and cheap. Some sections feel pasted together with harsh black blocks and weak transitions. The page needs a unified premium dark retail color system.
+
+GOAL:
+Create one cohesive premium dark ecommerce look across the entire homepage.
+
+COLOR DIRECTION:
+Use a controlled dark palette:
+- Main page background: near-black charcoal, not pure black
+- Section background 1: #080808 or similar
+- Section background 2: #111111 or similar
+- Elevated panels/cards: #151515 to #1A1A1A
+- Borders: subtle #242424 / rgba(255,255,255,0.08)
+- Text primary: off-white #F5F1EA
+- Text secondary: muted grey #A6A6A6
+- Accent orange: keep existing Strike Arms orange, but use it sparingly
+- Avoid random grey blocks
+- Avoid pure black section slabs unless intentional
+
+SECTION BACKGROUND RULES:
+1. Hero:
+- Keep existing video and overlay.
+- Do not change hero media.
+- Ensure the hero fades or transitions cleanly into the next brand marquee/section.
+
+2. Brand logo strip:
+- Keep dark, but make it feel integrated with the page.
+- Use subtle borders/gradients instead of a harsh black bar.
+
+3. Shop by Category:
+- Use a clean near-black background.
+- Cards should sit on the page naturally.
+- Avoid huge empty dead black areas.
+- Add subtle section padding and border rhythm if needed.
+
+4. Trust/icon strip:
+- Make this an elevated dark band, not a random black divider.
+- Use slightly different background from surrounding sections.
+- Icons should remain white/off-white with orange accents only where useful.
+
+5. Shop by Play Style:
+- Make the section background match the premium system.
+- Product cards should feel elevated with subtle borders.
+- Do not let the right product panel look like a cheap black table.
+
+6. Why Buy From Strike Arms:
+- This section currently feels like a pasted block.
+- Give it a premium split-section feel:
+  - image area can remain dark/visual
+  - content panel should use an elevated charcoal background
+  - value props should have subtle icon accents and spacing
+- Avoid harsh black-on-black.
+
+7. Promo / Starter Kit section:
+- Make the image and copy blend into a premium campaign-banner style.
+- Use a dark gradient overlay if needed.
+- Do not let it feel like a random black block with text slapped on.
+
+GLOBAL STYLE RULES:
+- Use consistent section padding.
+- Use subtle borders between major sections.
+- Add gentle gradients only where they improve flow.
+- Keep the site dark, premium, tactical, and retail-grade.
+- Do not make it grey, blue, or colorful.
+- Do not overuse orange.
+- Orange should be used for CTAs, small labels, hover accents, and important highlights only.
+- Make the page feel like one designed system, not separate generated sections.
+
+SPECIFIC BACKGROUND FIX:
+Replace any harsh pure-black backgrounds with controlled near-black/charcoal tones.
+Use alternating section backgrounds subtly:
+- #080808
+- #0D0D0D
+- #111111
+- #151515 for cards/panels
+
+QUALITY CHECK:
+After changes, scroll the homepage top to bottom and make sure:
+- sections flow cleanly
+- no awkward black gaps
+- no random mismatched background slabs
+- cards and panels have consistent treatment
+- the whole page feels premium and intentional
+
+IMPORTANT:
+Do not change content, section order, images, product names, hotspots, navigation labels, hero copy, or layout structure.
+Only fix the global colors, backgrounds, borders, gradients, and visual cohesion.

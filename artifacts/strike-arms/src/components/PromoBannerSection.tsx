@@ -3,10 +3,10 @@ import { ArrowRight } from "lucide-react";
 
 export function PromoBannerSection() {
   return (
-    <section className="border-y border-border">
+    <section className="border-y border-border/60">
       <div className="flex flex-col lg:flex-row">
         {/* Left Panel */}
-        <div className="w-full lg:w-5/12 bg-background p-8 md:p-16 lg:p-24 flex flex-col justify-center order-2 lg:order-1 relative overflow-hidden">
+        <div className="w-full lg:w-5/12 bg-card p-8 md:p-16 lg:p-24 flex flex-col justify-center order-2 lg:order-1 relative overflow-hidden">
           {/* Subtle noise texture */}
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
           
@@ -32,7 +32,7 @@ export function PromoBannerSection() {
         </div>
 
         {/* Right Panel */}
-        <div className="w-full lg:w-7/12 relative min-h-[400px] lg:min-h-[600px] bg-card order-1 lg:order-2">
+        <div className="w-full lg:w-7/12 relative min-h-[400px] lg:min-h-[600px] bg-background order-1 lg:order-2">
           {/* Replace right panel image with GIF or looping video when available */}
           <img
             src="/images/promo-banner.png"

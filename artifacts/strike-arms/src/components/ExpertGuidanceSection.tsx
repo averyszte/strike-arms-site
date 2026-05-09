@@ -10,10 +10,10 @@ export function ExpertGuidanceSection() {
   ];
 
   return (
-    <section className="bg-background border-b border-border">
+    <section className="bg-background border-y border-border/60">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Left: Image */}
-        <div className="relative min-h-[400px] lg:min-h-0 bg-card border-b lg:border-b-0 lg:border-r border-border">
+        <div className="relative min-h-[400px] lg:min-h-0 bg-card border-b lg:border-b-0 lg:border-r border-border/60">
           <img
             src="/images/expert-advice.png"
             alt="Strike Arms expert providing advice"
@@ -24,7 +24,7 @@ export function ExpertGuidanceSection() {
         </div>
 
         {/* Right: Content */}
-        <div className="p-8 md:p-16 lg:p-24 flex flex-col justify-center bg-card z-10">
+        <div className="p-8 md:p-16 lg:p-24 flex flex-col justify-center bg-card z-10 border-t lg:border-t-0">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
             Not sure what to buy?
           </h2>

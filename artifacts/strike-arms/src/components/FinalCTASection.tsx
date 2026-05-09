@@ -3,11 +3,11 @@ import { Phone } from "lucide-react";
 
 export function FinalCTASection() {
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden border-t border-border">
+    <section className="relative py-24 md:py-32 overflow-hidden border-t border-border/60">
       {/* Dynamic background effect */}
       <div className="absolute inset-0 bg-card">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-accent/8 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 md:px-6 text-center">
