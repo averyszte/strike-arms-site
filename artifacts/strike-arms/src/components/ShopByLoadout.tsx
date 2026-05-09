@@ -18,7 +18,7 @@ const loadouts: {
     hotspots: [
       { label: "Magazine",           x: 51, y: 45 },
       { label: "Red Dot Sight",      x: 57, y: 41 },
-      { label: "Specna Arms SA E14", x: 54, y: 39 },
+      { label: "Specna Arms SA E14", x: 54, y: 33 },
     ],
     products: [
       {
