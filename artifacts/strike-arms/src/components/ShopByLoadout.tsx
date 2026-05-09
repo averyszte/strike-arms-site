@@ -2,16 +2,23 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const loadouts = [
+type Hotspot = { label: string; x: number; y: number };
+
+const loadouts: {
+  id: string;
+  name: string;
+  image: string;
+  hotspots: Hotspot[];
+  products: { name: string; desc: string; price: string }[];
+}[] = [
   {
     id: "beginner",
     name: "Beginner Setup",
     image: "/images/playstyles/beginner-setup.webp",
     hotspots: [
-      { top: "38%", left: "48%", label: "Starter Rifle" },
-      { top: "16%", left: "56%", label: "Eye Protection" },
-      { top: "68%", left: "62%", label: "BBs" },
-      { top: "52%", left: "28%", label: "Battery / Charger" },
+      { label: "Magazine",           x: 51, y: 45 },
+      { label: "Red Dot Sight",      x: 57, y: 41 },
+      { label: "Specna Arms SA E14", x: 54, y: 39 },
     ],
     products: [
       {
@@ -36,10 +43,10 @@ const loadouts = [
     name: "CQB",
     image: "/images/playstyles/cqb.webp",
     hotspots: [
-      { top: "42%", left: "52%", label: "Compact Rifle / SMG" },
-      { top: "22%", left: "60%", label: "Red Dot Sight" },
-      { top: "34%", left: "32%", label: "Mid-Cap Magazine" },
-      { top: "60%", left: "44%", label: "Tactical Light" },
+      { label: "Vertical Foregrip",          x: 29, y: 50 },
+      { label: "Krytac Trident MK2 PDW-M",   x: 46, y: 36 },
+      { label: "Red Dot Sight",              x: 44, y: 15 },
+      { label: "Mask",                       x: 64, y:  6 },
     ],
     products: [
       {
@@ -64,10 +71,11 @@ const loadouts = [
     name: "MIL-SIM",
     image: "/images/playstyles/mil-sim.webp",
     hotspots: [
-      { top: "30%", left: "42%", label: "Primary Rifle" },
-      { top: "14%", left: "55%", label: "Comms / Headset" },
-      { top: "55%", left: "30%", label: "Plate Carrier" },
-      { top: "48%", left: "65%", label: "Pouches / Load Bearing Gear" },
+      { label: "Night-Vision",    x: 46, y: 23 },
+      { label: "Holo-Sight",      x: 44, y: 44 },
+      { label: "PEQ Box",         x: 56, y: 44 },
+      { label: "Suppressor",      x: 73, y: 53 },
+      { label: "SA-H20 EDGE 2.0", x: 48, y: 56 },
     ],
     products: [
       {
@@ -92,10 +100,11 @@ const loadouts = [
     name: "Sniper",
     image: "/images/playstyles/sniper.webp",
     hotspots: [
-      { top: "44%", left: "62%", label: "Bolt Action Rifle" },
-      { top: "18%", left: "38%", label: "High Power Scope" },
-      { top: "72%", left: "52%", label: "Heavy BBs" },
-      { top: "60%", left: "30%", label: "Bipod / Support Gear" },
+      { label: "SSG 10",       x: 32, y: 46 },
+      { label: "Ghillie Suit", x:  8, y: 43 },
+      { label: "Scope",        x: 39, y: 42 },
+      { label: "Camera",       x: 48, y: 55 },
+      { label: "Suppressor",   x: 58, y: 70 },
     ],
     products: [
       {
@@ -116,6 +125,51 @@ const loadouts = [
     ],
   },
 ];
+
+function HotspotPin({ spot, index }: { spot: Hotspot; index: number }) {
+  // Flip label left if dot is near the right edge (x > 62)
+  // Flip label right if dot is near the left edge (x < 18)
+  // Flip label below if dot is near the top edge (y < 12)
+  const flipLeft  = spot.x > 62;
+  const flipRight = spot.x < 18;
+  const flipDown  = spot.y < 12;
+
+  return (
+    <motion.div
+      key={index}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: index * 0.08 + 0.25 }}
+      className="absolute"
+      style={{
+        top: `${spot.y}%`,
+        left: `${spot.x}%`,
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      {/* Dot + label arranged based on edge proximity */}
+      <div
+        className={`flex items-center gap-1.5 ${
+          flipLeft  ? "flex-row-reverse" :
+          flipDown  ? "flex-col items-center" :
+                      "flex-row"
+        }`}
+      >
+        {/* Pulsing dot */}
+        <div className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse ring-[3px] ring-accent/30 shrink-0" />
+
+        {/* Label pill */}
+        <div
+          className={`bg-background/90 backdrop-blur-sm border border-border/60 px-2.5 py-1 rounded-sm
+            text-[11px] font-semibold text-foreground whitespace-nowrap shadow-md leading-none
+            ${flipDown ? "mt-0.5" : ""}`}
+        >
+          {spot.label}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export function ShopByLoadout() {
   const [activeTab, setActiveTab] = useState(loadouts[0].id);
@@ -184,19 +238,7 @@ export function ShopByLoadout() {
                 {/* Hotspots — desktop only */}
                 <div className="hidden md:block">
                   {activeData.hotspots.map((spot, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: i * 0.1 + 0.3 }}
-                      className="absolute flex items-center gap-2"
-                      style={{ top: spot.top, left: spot.left }}
-                    >
-                      <div className="w-3 h-3 rounded-full bg-accent animate-pulse ring-4 ring-accent/30 shrink-0" />
-                      <div className="bg-background/90 backdrop-blur-sm border border-border px-3 py-1.5 rounded-sm text-xs font-semibold text-foreground whitespace-nowrap shadow-lg">
-                        {spot.label}
-                      </div>
-                    </motion.div>
+                    <HotspotPin key={`${activeTab}-${i}`} spot={spot} index={i} />
                   ))}
                 </div>
               </motion.div>
@@ -205,12 +247,12 @@ export function ShopByLoadout() {
 
           {/* Products sidebar */}
           <div className="lg:col-span-5 flex flex-col justify-center gap-4">
-            {/* Mobile labels */}
+            {/* Mobile labels — compact chips */}
             <div className="md:hidden flex flex-wrap gap-2 mb-2">
               {activeData.hotspots.map((spot, i) => (
                 <span
                   key={i}
-                  className="bg-muted px-3 py-1 text-xs rounded-sm font-medium text-foreground"
+                  className="bg-muted px-2.5 py-1 text-xs rounded-sm font-medium text-foreground"
                 >
                   {spot.label}
                 </span>

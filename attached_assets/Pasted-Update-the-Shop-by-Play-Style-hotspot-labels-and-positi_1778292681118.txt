@@ -1,0 +1,233 @@
+Update the “Shop by Play Style” hotspot labels and positions only.
+
+Do not change:
+- header/navigation
+- hero section
+- hero video
+- brand logo strip
+- Shop by Category
+- trust strip
+- featured product card layout
+- footer
+- any other homepage section
+
+GOAL:
+Remove all existing/default hotspot labels already in the section and replace them with my exact hotspot labels and x/y percentage coordinates for each play-style tab.
+
+IMPORTANT CLEANUP RULE:
+Before adding my new hotspots, completely remove the existing hotspot data/labels currently in the code.
+
+Remove any old/default labels such as:
+- Starter Rifle
+- Eye Protection
+- BBs
+- Battery / Charger
+- Compact Rifle
+- Tactical Light
+- Plate Carrier
+- Primary Rifle
+- Comms / Headset
+- Bolt Action Rifle
+- Heavy BBs
+- Bipod
+- or any other previously generated hotspot labels
+
+After cleanup, only the hotspot labels listed below should appear.
+
+IMPORTANT IMPLEMENTATION RULES:
+- Use percentage-based positioning only.
+- x = left position as percentage of the displayed image width.
+- y = top position as percentage of the displayed image height.
+- Percentages must be relative to the image container, not the page.
+- Do not use pixel positioning.
+- Do not guess new positions.
+- Do not rename labels.
+- Do not remove labels.
+- Do not add extra labels.
+- Keep all hotspot data in one easy-to-edit config object or data array.
+- Keep orange pulsing dots.
+- Keep dark label pills.
+- Make sure labels do not get clipped by the image container.
+- Make sure labels stay readable on desktop.
+- On mobile, allow hotspot labels to scale/stack/compact if needed so they do not overflow badly.
+
+==================================================
+HOTSPOT DATA TO USE
+==================================================
+
+BEGINNER SETUP:
+Use exactly 3 hotspots:
+
+1.
+Label: Magazine
+x: 51
+y: 45
+
+2.
+Label: Red Dot Sight
+x: 57
+y: 41
+
+3.
+Label: Specna Arms SA E14
+x: 54
+y: 39
+
+CQB:
+Use exactly 4 hotspots:
+
+1.
+Label: Vertical Foregrip
+x: 29
+y: 50
+
+2.
+Label: Krytac Trident MK2 PDW-M
+x: 46
+y: 36
+
+3.
+Label: Red Dot Sight
+x: 44
+y: 15
+
+4.
+Label: Mask
+x: 64
+y: 6
+
+MIL-SIM:
+Use exactly 5 hotspots:
+
+1.
+Label: Night-Vision
+x: 46
+y: 23
+
+2.
+Label: Holo-Sight
+x: 44
+y: 44
+
+3.
+Label: PEQ Box
+x: 56
+y: 44
+
+4.
+Label: Suppressor
+x: 73
+y: 53
+
+5.
+Label: SA-H20 EDGE 2.0
+x: 48
+y: 56
+
+SNIPER:
+Use exactly 5 hotspots:
+
+1.
+Label: SSG 10
+x: 32
+y: 46
+
+2.
+Label: Ghillie Suit
+x: 8
+y: 43
+
+3.
+Label: Scope
+x: 39
+y: 42
+
+4.
+Label: Camera
+x: 48
+y: 55
+
+5.
+Label: Suppressor
+x: 58
+y: 70
+
+==================================================
+DISPLAY / STYLING RULES
+==================================================
+
+HOTSPOT DOT:
+- Orange pulsing dot
+- Dot should sit exactly at the x/y coordinate
+- Dot should be visually clear but not oversized
+- Use the existing orange brand accent
+
+LABEL PILL:
+- Dark pill label beside the dot
+- White or light text
+- Small but readable
+- Premium ecommerce feel
+- No giant labels
+- No ugly default tooltips
+
+POSITIONING:
+- The dot must be centered on the x/y point.
+- The label should sit near the dot without covering the important gear too much.
+- If a label is near an edge, automatically flip/adjust the label direction so it does not get clipped.
+- Especially check:
+  - CQB “Mask” at x 64, y 6
+  - MIL-SIM “Suppressor” at x 73, y 53
+  - Sniper “Ghillie Suit” at x 8, y 43
+
+DATA STRUCTURE:
+Create or update a play-style config object similar to this structure:
+
+{
+  beginner: {
+    hotspots: [
+      { label: "Magazine", x: 51, y: 45 },
+      { label: "Red Dot Sight", x: 57, y: 41 },
+      { label: "Specna Arms SA E14", x: 54, y: 39 }
+    ]
+  },
+  cqb: {
+    hotspots: [
+      { label: "Vertical Foregrip", x: 29, y: 50 },
+      { label: "Krytac Trident MK2 PDW-M", x: 46, y: 36 },
+      { label: "Red Dot Sight", x: 44, y: 15 },
+      { label: "Mask", x: 64, y: 6 }
+    ]
+  },
+  milsim: {
+    hotspots: [
+      { label: "Night-Vision", x: 46, y: 23 },
+      { label: "Holo-Sight", x: 44, y: 44 },
+      { label: "PEQ Box", x: 56, y: 44 },
+      { label: "Suppressor", x: 73, y: 53 },
+      { label: "SA-H20 EDGE 2.0", x: 48, y: 56 }
+    ]
+  },
+  sniper: {
+    hotspots: [
+      { label: "SSG 10", x: 32, y: 46 },
+      { label: "Ghillie Suit", x: 8, y: 43 },
+      { label: "Scope", x: 39, y: 42 },
+      { label: "Camera", x: 48, y: 55 },
+      { label: "Suppressor", x: 58, y: 70 }
+    ]
+  }
+}
+
+Use the actual existing tab keys in the code if they differ, but keep the visible tab labels:
+- Beginner Setup
+- CQB
+- MIL-SIM
+- Sniper
+
+QUALITY CHECK BEFORE FINISHING:
+- Confirm all old/default hotspot labels have been removed.
+- Switch through all 4 tabs and confirm the correct new hotspots appear for each tab.
+- Confirm the coordinates match the image positions.
+- Confirm there are no old hotspot labels left anywhere.
+- Confirm labels are not cut off.
+- Confirm the Shop by Play Style section still looks clean and premium.
