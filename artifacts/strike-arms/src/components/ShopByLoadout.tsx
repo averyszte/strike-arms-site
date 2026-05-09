@@ -16,9 +16,9 @@ const loadouts: {
     name: "Beginner Setup",
     image: "/images/playstyles/beginner-setup.webp",
     hotspots: [
-      { label: "Magazine",           x: 51, y: 45 },
-      { label: "Red Dot Sight",      x: 57, y: 41 },
-      { label: "Specna Arms SA E14", x: 54, y: 33 },
+      { label: "Red Dot Sight",      x: 56, y: 59 },
+      { label: "Specna Arms SA E14", x: 48, y: 50 },
+      { label: "Magazine",           x: 45, y: 80 },
     ],
     products: [
       {
