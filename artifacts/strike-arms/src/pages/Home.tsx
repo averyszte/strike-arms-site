@@ -6,7 +6,6 @@ import { CategoryStrip } from "@/components/CategoryStrip";
 import { TrustStrip } from "@/components/TrustStrip";
 import { ShopByLoadout } from "@/components/ShopByLoadout";
 import { WhyBuySection } from "@/components/WhyBuySection";
-import { PromoBannerSection } from "@/components/PromoBannerSection";
 import { AnnotatedRifleSection } from "@/components/AnnotatedRifleSection";
 import { ExpertGuidanceSection } from "@/components/ExpertGuidanceSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
@@ -32,7 +31,6 @@ export default function Home() {
         <TrustStrip />
         <ShopByLoadout />
         <WhyBuySection />
-        <PromoBannerSection />
         <AnnotatedRifleSection />
         <ExpertGuidanceSection />
         <ReviewsSection />
