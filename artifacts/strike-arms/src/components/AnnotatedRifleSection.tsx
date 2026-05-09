@@ -54,7 +54,7 @@ export function AnnotatedRifleSection() {
         </div>
 
         {/* Right: Content */}
-        <div className="w-full lg:w-[40%] flex flex-col justify-center p-8 md:p-12 lg:p-16 z-10 bg-card">
+        <div className="w-full lg:w-[40%] flex flex-col justify-center p-8 md:p-12 lg:p-16 z-10" style={{ background: "#111111" }}>
           <span className="inline-block text-accent text-xs font-bold tracking-[0.2em] uppercase mb-4">
             Featured Gear
           </span>
