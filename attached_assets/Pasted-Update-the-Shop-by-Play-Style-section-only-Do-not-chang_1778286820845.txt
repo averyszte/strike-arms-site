@@ -1,0 +1,170 @@
+Update the “Shop by Play Style” section only. Do not change the header, hero, brand logo strip, Shop by Category, trust strip, footer, or any other homepage section.
+
+GOAL:
+Refine this section so it uses only 4 play-style tabs.
+
+==================================================
+1. REPLACE THE PLAY-STYLE TABS
+==================================================
+
+Use these exact 4 tabs only:
+
+1. Beginner Setup
+2. CQB
+3. MIL-SIM
+4. Sniper
+
+IMPORTANT:
+- Remove any extra tabs
+- Do not include Outdoor
+- Do not include Ghillie Suit
+- Use the exact spelling “MIL-SIM”
+- Keep the same premium tab/button styling
+- Make sure all 4 tabs fit cleanly and do not wrap awkwardly
+
+==================================================
+2. UPDATE THE CONTENT FOR EACH TAB
+==================================================
+
+Each tab should swap:
+- the main image
+- the image labels / hotspots
+- the featured products on the right
+- the supporting content so it matches that play style
+
+Keep the same overall section layout:
+- left side = large image with floating labels/hotspots
+- right side = “Featured in this setup” product cards
+- top/right = tab selector buttons
+
+==================================================
+3. TAB CONTENT DIRECTION
+==================================================
+
+BEGINNER SETUP
+Image direction:
+- entry-level player
+- approachable rifle setup
+- simple starter kit vibe
+
+Hotspots:
+- Starter Rifle
+- Eye Protection
+- BBs
+- Battery / Charger
+
+Featured products:
+- Entry-level rifle
+- Face / eye protection
+- BBs
+- Battery / charger
+
+CQB
+Image direction:
+- compact indoor-style setup
+- tighter rifle or SMG-style look
+- fast, close-quarters kit
+
+Hotspots:
+- Compact Rifle / SMG
+- Red Dot Sight
+- Mid-Cap Magazine
+- Tactical Light
+
+Featured products:
+- CQB rifle / SMG
+- Optic
+- Magazine
+- Light / attachment
+
+MIL-SIM
+Image direction:
+- more serious tactical loadout
+- full gear, vest, pouches, helmet, field-ready setup
+
+Hotspots:
+- Plate Carrier
+- Comms / Headset
+- Primary Rifle
+- Pouches / Load Bearing Gear
+
+Featured products:
+- Plate carrier
+- Primary rifle
+- Tactical pouches
+- Comms / protective gear
+
+SNIPER
+Image direction:
+- sniper-focused loadout
+- long rifle setup
+- woodland / precision feel
+
+Hotspots:
+- High Power Scope
+- Bolt Action Rifle
+- Heavy BBs
+- Bipod / Support Gear
+
+Featured products:
+- Sniper rifle
+- Scope
+- Heavy BBs
+- Sniper accessory / support gear
+
+==================================================
+4. PRODUCT CARD RULES
+==================================================
+
+Keep the “Featured in this setup” panel on the right.
+
+For each tab:
+- show 2–4 relevant product cards
+- each card should have:
+  - product name
+  - short description
+  - price
+  - CTA text: “ENQUIRE”
+- keep the premium dark card styling
+- keep the cards clean and consistent
+
+Use placeholder content if needed, but make it relevant to each play style.
+
+==================================================
+5. SECTION COPY
+==================================================
+
+Keep the section title:
+“Shop by Play Style”
+
+Use this supporting paragraph:
+“Curated setups to help you shop by play style, from starter loadouts to specialist kits.”
+
+==================================================
+6. DESIGN / LAYOUT RULES
+==================================================
+
+- Keep the overall layout structure the same
+- Keep the dark premium style
+- Keep the section visually clean and ecommerce-focused
+- Keep image hotspots readable
+- Ensure spacing stays balanced on desktop and mobile
+
+Mobile:
+- tabs should remain usable and scroll horizontally if needed
+- content should stack cleanly
+
+==================================================
+7. DO NOT CHANGE
+==================================================
+
+Do not change:
+- header/navigation
+- hero
+- logo marquee
+- Shop by Category
+- trust strip
+- footer
+- any other homepage section
+
+Only update the Shop by Play Style section.
