@@ -6,7 +6,7 @@ const loadouts = [
   {
     id: "beginner",
     name: "Beginner Setup",
-    image: "/images/loadout-beginner.png",
+    image: "/images/playstyles/beginner-setup.webp",
     hotspots: [
       { top: "38%", left: "48%", label: "Starter Rifle" },
       { top: "16%", left: "56%", label: "Eye Protection" },
@@ -34,7 +34,7 @@ const loadouts = [
   {
     id: "cqb",
     name: "CQB",
-    image: "/images/loadout-cqb.png",
+    image: "/images/playstyles/cqb.webp",
     hotspots: [
       { top: "42%", left: "52%", label: "Compact Rifle / SMG" },
       { top: "22%", left: "60%", label: "Red Dot Sight" },
@@ -62,7 +62,7 @@ const loadouts = [
   {
     id: "milsim",
     name: "MIL-SIM",
-    image: "/images/loadout-outdoor.png",
+    image: "/images/playstyles/mil-sim.webp",
     hotspots: [
       { top: "30%", left: "42%", label: "Primary Rifle" },
       { top: "14%", left: "55%", label: "Comms / Headset" },
@@ -90,7 +90,7 @@ const loadouts = [
   {
     id: "sniper",
     name: "Sniper",
-    image: "/images/loadout-outdoor.png",
+    image: "/images/playstyles/sniper.webp",
     hotspots: [
       { top: "44%", left: "62%", label: "Bolt Action Rifle" },
       { top: "18%", left: "38%", label: "High Power Scope" },
