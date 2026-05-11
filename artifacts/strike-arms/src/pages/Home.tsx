@@ -1,5 +1,5 @@
-import { UtilityBar } from "@/components/UtilityBar";
-import { SiteHeader } from "@/components/SiteHeader";
+import { Helmet } from "react-helmet-async";
+import { SiteLayout } from "@/components/SiteLayout";
 import { HeroSection } from "@/components/HeroSection";
 import { BrandMarquee } from "@/components/BrandMarquee";
 import { CategoryStrip } from "@/components/CategoryStrip";
@@ -12,35 +12,37 @@ import { ReviewsSection } from "@/components/ReviewsSection";
 import { AboutStatsSection } from "@/components/AboutStatsSection";
 import { FAQSection } from "@/components/FAQSection";
 import { FinalCTASection } from "@/components/FinalCTASection";
-import { SiteFooter } from "@/components/SiteFooter";
-import { MobileStickyBar } from "@/components/MobileStickyBar";
+
+const DESCRIPTION =
+  "Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.";
 
 export default function Home() {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
-      {/* Sticky header block — utility bar + main header stick together */}
-      <div className="sticky top-0 z-50">
-        <UtilityBar />
-        <SiteHeader />
-      </div>
-
-      <main className="flex-1">
-        <HeroSection />
-        <BrandMarquee />
-        <CategoryStrip />
-        <TrustStrip />
-        <ShopByLoadout />
-        <WhyBuySection />
-        <AnnotatedRifleSection />
-        <ExpertGuidanceSection />
-        <ReviewsSection />
-        <AboutStatsSection />
-        <FAQSection />
-        <FinalCTASection />
-      </main>
-
-      <SiteFooter />
-      <MobileStickyBar />
-    </div>
+    <>
+      <Helmet>
+        <title>Strike Arms Airsoft | Dublin's Home for Airsoft Essentials</title>
+        <meta name="description" content={DESCRIPTION} />
+        <link rel="canonical" href="https://strikearms.ie/" />
+        <meta property="og:title" content="Strike Arms Airsoft | Dublin's Home for Airsoft Essentials" />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:image" content="/opengraph.jpg" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://strikearms.ie/" />
+      </Helmet>
+      <SiteLayout>
+      <HeroSection />
+      <BrandMarquee />
+      <CategoryStrip />
+      <TrustStrip />
+      <ShopByLoadout />
+      <WhyBuySection />
+      <AnnotatedRifleSection />
+      <ExpertGuidanceSection />
+      <ReviewsSection />
+      <AboutStatsSection />
+      <FAQSection />
+      <FinalCTASection />
+    </SiteLayout>
+    </>
   );
 }
