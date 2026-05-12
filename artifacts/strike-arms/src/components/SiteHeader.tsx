@@ -364,12 +364,12 @@ export function SiteHeader() {
   return (
     <>
       <header className="relative bg-background border-b border-border/60">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[60px] grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[60px] grid grid-cols-[auto_1fr_auto] items-center">
 
           {/* LEFT ZONE — hamburger + logo */}
           <div className="flex items-center gap-3">
             <button
-              className="md:hidden text-foreground hover:text-accent transition-colors"
+              className="lg:hidden text-foreground hover:text-accent transition-colors"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -388,7 +388,7 @@ export function SiteHeader() {
 
           {/* CENTER ZONE — primary nav */}
           <nav
-            className="hidden md:flex items-center justify-center h-full"
+            className="hidden lg:flex items-center justify-center h-full"
             onMouseLeave={handleNavLeave}
           >
             {navItems.map((item) => (
@@ -419,7 +419,7 @@ export function SiteHeader() {
           {/* RIGHT ZONE — search + account + cart */}
           <div className="flex items-center justify-end gap-3 text-foreground">
             {/* Pill search — desktop only */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden lg:flex items-center">
               <div
                 className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
                   searchFocused
@@ -438,7 +438,7 @@ export function SiteHeader() {
               </div>
             </div>
             {/* Search icon — mobile only */}
-            <button className="md:hidden hover:text-accent transition-colors" aria-label="Search">
+            <button className="lg:hidden hover:text-accent transition-colors" aria-label="Search">
               <Search className="w-5 h-5" />
             </button>
             <Link href="/account" className="hover:text-accent transition-colors hidden sm:flex" aria-label="Account">
@@ -501,7 +501,7 @@ export function SiteHeader() {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-0 z-[60] bg-background md:hidden flex flex-col"
+            className="fixed inset-0 z-[60] bg-background lg:hidden flex flex-col"
           >
             {/* Drawer header */}
             <div className="h-14 flex items-center justify-between px-4 border-b border-border">

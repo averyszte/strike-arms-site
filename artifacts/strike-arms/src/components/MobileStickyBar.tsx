@@ -3,7 +3,7 @@ import { Phone, ShoppingBag } from "lucide-react";
 
 export function MobileStickyBar() {
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border pb-safe">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border pb-safe">
       <div className="flex items-center h-16 p-2 gap-2">
         <a
           href="tel:+353878736351"
