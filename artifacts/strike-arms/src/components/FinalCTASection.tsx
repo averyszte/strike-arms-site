@@ -20,7 +20,7 @@ export function FinalCTASection() {
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
           <Link
-            href="/shop"
+            href="/store"
             className="w-full sm:w-auto h-14 px-8 inline-flex items-center justify-center rounded-sm bg-accent text-accent-foreground font-bold text-base hover:bg-accent/90 transition-colors shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)]"
           >
             Shop Gear

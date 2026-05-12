@@ -29,9 +29,8 @@ export function SiteFooter() {
             <h4 className="font-bold text-foreground mb-2">Quick Links</h4>
             <nav className="flex flex-col gap-3">
               <Link href="/" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Home</Link>
-              <Link href="/shop" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Shop</Link>
-              <Link href="/about" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">About</Link>
-              <Link href="/repairs" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Repairs</Link>
+              <Link href="/store" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Shop</Link>
+              <Link href="/services/repairs" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Repairs</Link>
               <Link href="/airsoft-law" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Airsoft Law</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Contact</Link>
             </nav>
@@ -75,8 +74,8 @@ export function SiteFooter() {
             &copy; {new Date().getFullYear()} Strike Arms Airsoft. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <Link href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
+            <span className="text-xs text-muted-foreground/50">Terms of Service</span>
+            <span className="text-xs text-muted-foreground/50">Privacy Policy</span>
           </div>
         </div>
       </div>

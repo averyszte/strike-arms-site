@@ -13,7 +13,7 @@ export function MobileStickyBar() {
           Call Now
         </a>
         <Link
-          href="/shop"
+          href="/store"
           className="flex-1 flex items-center justify-center gap-2 h-full rounded bg-accent text-accent-foreground font-medium text-sm hover:bg-accent/90 transition-colors"
         >
           <ShoppingBag className="w-4 h-4" />

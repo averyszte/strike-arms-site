@@ -68,6 +68,9 @@
 
 /* Base — always-dark tactical theme */
 :root {
+  /* Sticky sidebar top offset = utility bar (~30px) + header (~60px) */
+  --header-height: 90px;
+
   /* #0D0D0D — near-black charcoal base */
   --background: 0 0% 5%;
   /* #F5F1EA — warm off-white */

@@ -66,7 +66,7 @@ export function WhyBuySection() {
           </div>
 
           <Link
-            href="/shop"
+            href="/store"
             className="mt-10 inline-flex items-center gap-2 h-12 px-7 rounded-sm bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors self-start"
           >
             See Our Collection
