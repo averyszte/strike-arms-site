@@ -55,7 +55,7 @@ export function ExpertGuidanceSection() {
               Call +353 87 273 6351
             </a>
             <Link
-              href="/location"
+              href="/contact"
               className="w-full sm:w-auto inline-flex h-12 items-center justify-center px-4 text-sm font-bold text-muted-foreground hover:text-accent transition-colors underline-offset-4 hover:underline"
             >
               Visit In Store
