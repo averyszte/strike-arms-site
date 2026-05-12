@@ -1,0 +1,23 @@
+---
+description: Project kickoff - rules and conventions to follow always
+alwaysApply: true
+---
+
+# Project kickoff
+
+Before writing or modifying any code in this project:
+
+1. Read `CLAUDE.md` at the project root
+2. Read every file in `/docs/` (architecture, api-plan, auth-roles, client-context, current-task, database-plan)
+3. Read every file in `/skills/` (coding-rules, ai-pairing-skill, plus the domain skills — cloudflare, conversion, dashboard, security, seo, supabase, ui-ux)
+
+On the FIRST message of a new chat, reply with a short confirmation (<100 words) containing:
+
+- The stack (1 line)
+- The layer rule (1 line)
+- 3 specific hard rules from coding-rules.md
+- The current task from docs/current-task.md, or "no current task set"
+
+Then wait for the actual instruction. Do NOT start writing code yet.
+
+On subsequent messages, follow the rules from those docs strictly. If anything the user asks conflicts with a rule, stop and flag the conflict instead of silently breaking the rule.
