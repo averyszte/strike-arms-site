@@ -1,4 +1,11 @@
-export type Category = 'rifles' | 'pistols' | 'consumables' | 'accessories' | 'gear';
+export type Category =
+  | 'rifles'
+  | 'pistols'
+  | 'consumables'
+  | 'accessories'
+  | 'gear'
+  | 'parts'
+  | 'more';
 
 export type Product = {
   id: string;

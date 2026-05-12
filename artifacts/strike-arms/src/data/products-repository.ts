@@ -89,6 +89,10 @@ const BRAND_NAMES: Record<string, string> = {
   'nuprol': 'Nuprol',
   'vorsk': 'Vorsk',
   'valken': 'Valken',
+  'zci': 'ZCI',
+  'shs': 'SHS',
+  'perun': 'Perun',
+  'acetech': 'Acetech',
 };
 
 export async function listBrands(

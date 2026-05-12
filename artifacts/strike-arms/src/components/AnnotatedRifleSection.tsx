@@ -75,7 +75,7 @@ export function AnnotatedRifleSection() {
           </div>
 
           <Link
-            href="/categories/rifles/ssp-18"
+            href="/store/rifles"
             className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-sm font-bold uppercase tracking-wider text-accent-foreground hover:bg-accent/90 transition-colors self-start"
           >
             Explore Featured Rifles

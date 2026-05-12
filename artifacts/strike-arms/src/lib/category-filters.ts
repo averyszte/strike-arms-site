@@ -4,12 +4,13 @@ const VALID_SORTS = ['featured', 'newest', 'price-asc', 'price-desc', 'name-asc'
 
 /**
  * Parse URL search string into ProductFilters.
- * `category` comes from the route slug, not the search string, so it is
- * passed in as a separate argument and merged into the result.
+ * `category` and `subcategory` come from the route path params (not the search
+ * string) so they are passed in separately and merged into the result.
  */
 export function parseFiltersFromSearch(
   search: string,
-  category: Category,
+  category?: Category,
+  subcategory?: string,
 ): ProductFilters {
   const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
 
@@ -20,7 +21,7 @@ export function parseFiltersFromSearch(
 
   return {
     category,
-    subcategory: params.get('subcategory') ?? undefined,
+    subcategory,
     brand: params.get('brand') ?? undefined,
     minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
     maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
@@ -36,12 +37,11 @@ export function parseFiltersFromSearch(
 
 /**
  * Convert ProductFilters back to URLSearchParams for writing to the URL.
- * `category` is encoded in the route path, not the search string.
+ * `category` and `subcategory` are encoded in the route path, not the search string.
  */
 export function filtersToSearchParams(filters: ProductFilters): URLSearchParams {
   const params = new URLSearchParams();
 
-  if (filters.subcategory) params.set('subcategory', filters.subcategory);
   if (filters.brand) params.set('brand', filters.brand);
   if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
@@ -53,10 +53,12 @@ export function filtersToSearchParams(filters: ProductFilters): URLSearchParams 
   return params;
 }
 
-/** Returns true if any non-default filter is active (used to show "Clear all"). */
+/**
+ * Returns true when any non-navigation filter is active (brand, price, stock, sale).
+ * Category and subcategory are URL-path navigation — not counted as "filters".
+ */
 export function hasActiveFilters(filters: ProductFilters): boolean {
   return !!(
-    filters.subcategory ||
     filters.brand ||
     filters.minPrice !== undefined ||
     filters.maxPrice !== undefined ||

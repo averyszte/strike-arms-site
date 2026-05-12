@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
-import Repairs from "@/pages/Repairs";
 import Brands from "@/pages/Brands";
 import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
@@ -14,7 +13,10 @@ import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
 import Cart from "@/pages/Cart";
 import AirsoftLaw from "@/pages/AirsoftLaw";
-import CategoryPage from "@/pages/CategoryPage";
+import ShopPage from "@/pages/ShopPage";
+import ServicesHub from "@/pages/services/ServicesHub";
+import RepairsServicePage from "@/pages/services/Repairs";
+import UpgradesServicePage from "@/pages/services/Upgrades";
 
 const queryClient = new QueryClient();
 
@@ -22,8 +24,9 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+
+      {/* Standalone pages */}
       <Route path="/contact" component={Contact} />
-      <Route path="/repairs" component={Repairs} />
       <Route path="/brands" component={Brands} />
       <Route path="/new" component={NewArrivals} />
       <Route path="/sale" component={Sale} />
@@ -31,7 +34,17 @@ function Router() {
       <Route path="/account" component={Account} />
       <Route path="/cart" component={Cart} />
       <Route path="/airsoft-law" component={AirsoftLaw} />
-      <Route path="/categories/:slug" component={CategoryPage} />
+
+      {/* Services hub — more-specific routes first */}
+      <Route path="/services/repairs" component={RepairsServicePage} />
+      <Route path="/services/upgrades" component={UpgradesServicePage} />
+      <Route path="/services" component={ServicesHub} />
+
+      {/* Store / catalog — more-specific routes first */}
+      <Route path="/store/:category/:subcategory" component={ShopPage} />
+      <Route path="/store/:category" component={ShopPage} />
+      <Route path="/store" component={ShopPage} />
+
       <Route component={NotFound} />
     </Switch>
   );

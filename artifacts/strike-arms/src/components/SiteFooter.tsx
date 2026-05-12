@@ -41,11 +41,11 @@ export function SiteFooter() {
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-foreground mb-2">Categories</h4>
             <nav className="flex flex-col gap-3">
-              <Link href="/categories/rifles" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Rifles</Link>
-              <Link href="/categories/pistols" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Pistols</Link>
-              <Link href="/categories/ammo-bbs" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Ammo & BBs</Link>
-              <Link href="/tactical-gear" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Tactical Gear</Link>
-              <Link href="/accessories" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Accessories</Link>
+              <Link href="/store/rifles" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Rifles</Link>
+              <Link href="/store/pistols" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Pistols</Link>
+              <Link href="/store/consumables" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Ammo & BBs</Link>
+              <Link href="/store/gear" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Tactical Gear</Link>
+              <Link href="/store/accessories" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Accessories</Link>
             </nav>
           </div>
 

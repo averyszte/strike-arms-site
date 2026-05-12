@@ -3,12 +3,12 @@ import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 
 const categories = [
-  { name: "Rifles",                  image: "/images/category-rifles.png",      href: "/categories/rifles" },
-  { name: "Pistols",                 image: "/images/category-pistols.png",     href: "/categories/pistols" },
-  { name: "Consumables",             image: "/images/category-bbs.png",         href: "/categories/consumables" },
-  { name: "Accessories",             image: "/images/category-accessories.png", href: "/categories/accessories" },
-  { name: "Gear",                    image: "/images/category-gear.png",        href: "/categories/gear" },
-  { name: "Upgrades & Repair Parts", image: "/images/category-repairs.png",     href: "/categories/upgrades-repair-parts" },
+  { name: "Rifles",              image: "/images/category-rifles.png",      href: "/store/rifles" },
+  { name: "Pistols",             image: "/images/category-pistols.png",     href: "/store/pistols" },
+  { name: "Consumables",         image: "/images/category-bbs.png",         href: "/store/consumables" },
+  { name: "Accessories",         image: "/images/category-accessories.png", href: "/store/accessories" },
+  { name: "Gear",                image: "/images/category-gear.png",        href: "/store/gear" },
+  { name: "Parts & Internals",   image: "/images/category-repairs.png",     href: "/store/parts" },
 ];
 
 export function CategoryStrip() {
@@ -17,7 +17,7 @@ export function CategoryStrip() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Shop by Category</h2>
-          <Link href="/shop" className="hidden md:flex items-center gap-2 text-sm font-semibold text-accent hover:underline">
+          <Link href="/store" className="hidden md:flex items-center gap-2 text-sm font-semibold text-accent hover:underline">
             View All <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -22,7 +22,7 @@ export function PromoBannerSection() {
               Purpose-built bundles for players just getting started. Quality AEG, eye protection, battery, and ammo — ready to field.
             </p>
             <Link
-              href="/categories/starter-kits"
+              href="/store"
               className="inline-flex items-center gap-2 group text-sm font-bold uppercase tracking-wider text-foreground hover:text-accent transition-colors"
             >
               Explore Starter Kits
