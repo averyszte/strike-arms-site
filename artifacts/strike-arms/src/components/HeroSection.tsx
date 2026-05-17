@@ -1,7 +1,17 @@
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 export function HeroSection() {
+  const [videoFailed, setVideoFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => setVideoFailed(true));
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -27,20 +37,31 @@ export function HeroSection() {
           and add: <source src="/videos/strike-arms-hero-desktop.mp4" type="video/mp4" />
       ─────────────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/images/strike-arms-hero-poster-desktop.webp"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        >
-          <source src="/videos/strike-arms-hero-desktop.webm" type="video/webm" />
-        </video>
-        {/* Overlays for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/40 to-background/75" />
-        <div className="absolute inset-0 bg-black/30" />
+        {videoFailed ? (
+          <img
+            src="/images/strike-arms-hero-poster-desktop.webp"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/images/strike-arms-hero-poster-desktop.webp"
+            disablePictureInPicture
+            disableRemotePlayback
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          >
+            <source src="/videos/strike-arms-hero-desktop.webm" type="video/webm" />
+          </video>
+        )}
+        {/* Overlays for text readability — pointer-events-none so they never block the video */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/40 to-background/75 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 md:px-6 flex justify-center">
