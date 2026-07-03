@@ -1,81 +1,16 @@
 /**
- * Products data access layer.
+ * Products data access layer — backed by Supabase.
  *
- * Currently backed by an in-memory mock array (mock-products.ts).
- * To migrate to Supabase: replace the body of each function with the
- * equivalent supabase.from('products').select()... call. The function
- * signatures and return types must NOT change — every consumer in the
- * app depends on them.
- *
- * Write functions (createProduct, updateProduct, deleteProduct) are
- * stubs intended for the future admin dashboard. The admin form should
- * be generated from the Product type — see types/product.ts.
+ * Function signatures and return types are stable.
+ * Components never import this file directly; they go through hooks.
+ * For the mock-data version see git history (pre-Supabase migration).
  */
 
+import { supabase } from '@/lib/supabase';
+import { rowToProduct } from '@/lib/product-mappers';
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
-import { MOCK_PRODUCTS } from './mock-products';
 
-// ─── Read operations ──────────────────────────────────────────────────────────
-
-export async function listProducts(filters: ProductFilters): Promise<ProductListResult> {
-  await new Promise((r) => setTimeout(r, 150));
-
-  let results = [...MOCK_PRODUCTS];
-
-  if (filters.category) {
-    results = results.filter((p) => p.category === filters.category);
-  }
-  if (filters.subcategory) {
-    results = results.filter((p) => p.subcategory === filters.subcategory);
-  }
-  if (filters.brand) {
-    results = results.filter((p) => p.brand === filters.brand);
-  }
-  if (filters.minPrice !== undefined) {
-    results = results.filter((p) => p.price >= filters.minPrice!);
-  }
-  if (filters.maxPrice !== undefined) {
-    results = results.filter((p) => p.price <= filters.maxPrice!);
-  }
-  if (filters.inStockOnly) {
-    results = results.filter((p) => p.inStock);
-  }
-  if (filters.onSaleOnly) {
-    results = results.filter((p) => p.salePrice !== undefined);
-  }
-
-  const total = results.length;
-  const sort = filters.sort ?? 'featured';
-
-  results.sort((a, b) => {
-    switch (sort) {
-      case 'featured':
-        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
-      case 'newest':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      case 'price-asc':
-        return (a.salePrice ?? a.price) - (b.salePrice ?? b.price);
-      case 'price-desc':
-        return (b.salePrice ?? b.price) - (a.salePrice ?? a.price);
-      case 'name-asc':
-        return a.name.localeCompare(b.name);
-    }
-  });
-
-  // "Load more" pagination: always fetch from index 0 up to page * pageSize.
-  // Incrementing page in the URL appends more items without a separate accumulation layer.
-  // When migrating to Supabase, use .range(0, page * pageSize - 1).
-  const page = filters.page ?? 1;
-  const pageSize = filters.pageSize ?? 24;
-  const items = results.slice(0, page * pageSize);
-
-  return { items, total, page, pageSize };
-}
-
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-  await new Promise((r) => setTimeout(r, 150));
-  return MOCK_PRODUCTS.find((p) => p.slug === slug) ?? null;
-}
+const PAGE_SIZE_DEFAULT = 24;
 
 const BRAND_NAMES: Record<string, string> = {
   'specna-arms': 'Specna Arms',
@@ -95,44 +30,136 @@ const BRAND_NAMES: Record<string, string> = {
   'acetech': 'Acetech',
 };
 
+// ─── Read operations ──────────────────────────────────────────────────────────
+
+export async function listProducts(filters: ProductFilters): Promise<ProductListResult> {
+  const page = filters.page ?? 1;
+  const pageSize = filters.pageSize ?? PAGE_SIZE_DEFAULT;
+
+  let query = supabase
+    .from('products')
+    .select('*', { count: 'exact' })
+    .eq('is_published', true)
+    .range(0, page * pageSize - 1);
+
+  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.subcategory) query = query.eq('subcategory', filters.subcategory);
+  if (filters.brand) query = query.eq('brand', filters.brand);
+  if (filters.minPrice !== undefined) query = query.gte('price_cents', filters.minPrice);
+  if (filters.maxPrice !== undefined) query = query.lte('price_cents', filters.maxPrice);
+  if (filters.inStockOnly) query = query.eq('in_stock', true);
+  if (filters.onSaleOnly) query = query.not('sale_price_cents', 'is', null);
+
+  const sort = filters.sort ?? 'featured';
+  switch (sort) {
+    case 'featured':
+      query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
+      break;
+    case 'newest':
+      query = query.order('created_at', { ascending: false });
+      break;
+    case 'price-asc':
+      query = query.order('price_cents', { ascending: true });
+      break;
+    case 'price-desc':
+      query = query.order('price_cents', { ascending: false });
+      break;
+    case 'name-asc':
+      query = query.order('name', { ascending: true });
+      break;
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  return { items: (data ?? []).map(rowToProduct), total: count ?? 0, page, pageSize };
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? rowToProduct(data) : null;
+}
+
 export async function listBrands(
   category?: Category,
 ): Promise<{ slug: string; name: string; count: number }[]> {
-  await new Promise((r) => setTimeout(r, 150));
+  let query = supabase
+    .from('products')
+    .select('brand')
+    .eq('is_published', true);
 
-  const source = category
-    ? MOCK_PRODUCTS.filter((p) => p.category === category)
-    : MOCK_PRODUCTS;
+  if (category) query = query.eq('category', category);
+
+  const { data, error } = await query;
+  if (error) throw error;
 
   const counts = new Map<string, number>();
-  for (const p of source) {
-    counts.set(p.brand, (counts.get(p.brand) ?? 0) + 1);
-  }
+  for (const row of data ?? []) counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
 
   return Array.from(counts.entries())
-    .map(([slug, count]) => ({
-      slug,
-      name: BRAND_NAMES[slug] ?? slug,
-      count,
-    }))
+    .map(([slug, count]) => ({ slug, name: BRAND_NAMES[slug] ?? slug, count }))
     .sort((a, b) => b.count - a.count);
 }
 
-// ─── Write stubs (future admin dashboard) ────────────────────────────────────
+// ─── Write operations (admin dashboard) ──────────────────────────────────────
 
-export async function createProduct(
-  _input: Omit<Product, 'id' | 'createdAt'>,
-): Promise<Product> {
-  throw new Error('Not implemented — admin dashboard not built yet');
+export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
+  const { data, error } = await supabase
+    .from('products')
+    .insert({
+      slug: input.slug,
+      name: input.name,
+      category: input.category,
+      subcategory: input.subcategory,
+      brand: input.brand,
+      price_cents: input.price,
+      sale_price_cents: input.salePrice ?? null,
+      images: input.images,
+      short_description: input.shortDescription,
+      is_new: input.isNew ?? false,
+      is_featured: input.isFeatured ?? false,
+      tags: input.tags ?? [],
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return rowToProduct(data);
 }
 
-export async function updateProduct(
-  _id: string,
-  _patch: Partial<Product>,
-): Promise<Product> {
-  throw new Error('Not implemented — admin dashboard not built yet');
+export async function updateProduct(id: string, patch: Partial<Product>): Promise<Product> {
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      ...(patch.slug !== undefined && { slug: patch.slug }),
+      ...(patch.name !== undefined && { name: patch.name }),
+      ...(patch.category !== undefined && { category: patch.category }),
+      ...(patch.subcategory !== undefined && { subcategory: patch.subcategory }),
+      ...(patch.brand !== undefined && { brand: patch.brand }),
+      ...(patch.price !== undefined && { price_cents: patch.price }),
+      ...('salePrice' in patch && { sale_price_cents: patch.salePrice ?? null }),
+      ...(patch.images !== undefined && { images: patch.images }),
+      ...(patch.shortDescription !== undefined && { short_description: patch.shortDescription }),
+      ...(patch.isNew !== undefined && { is_new: patch.isNew }),
+      ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
+      ...(patch.tags !== undefined && { tags: patch.tags }),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return rowToProduct(data);
 }
 
-export async function deleteProduct(_id: string): Promise<void> {
-  throw new Error('Not implemented — admin dashboard not built yet');
+export async function deleteProduct(id: string): Promise<void> {
+  const { error } = await supabase.from('products').delete().eq('id', id);
+  if (error) throw error;
 }
