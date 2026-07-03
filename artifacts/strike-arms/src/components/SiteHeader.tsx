@@ -223,17 +223,12 @@ const navItems: NavItem[] = [
     href: "/store/more",
     mega: [
       {
-        title: "Equipment & Tools",
+        title: "Equipment & Outdoor",
         links: [
           { label: "Chronographs", href: "/store/more/chronographs" },
           { label: "Targets", href: "/store/more/targets" },
           { label: "Tools", href: "/store/more/tools" },
           { label: "Maintenance Kits", href: "/store/more/maintenance-kits" },
-        ],
-      },
-      {
-        title: "Outdoor",
-        links: [
           { label: "Camping Gear", href: "/store/more/camping" },
           { label: "Outdoor Gear", href: "/store/more/outdoor" },
         ],
@@ -245,7 +240,15 @@ const navItems: NavItem[] = [
           { label: "Sale", href: "/sale" },
           { label: "Brands", href: "/brands" },
           { label: "Gift Cards", href: "/gift-cards" },
-          { label: "Contact / Store Info", href: "/contact" },
+        ],
+      },
+      {
+        title: "Info & Community",
+        links: [
+          { label: "Airsoft Law", href: "/airsoft-law" },
+          { label: "Where to Play", href: "/where-to-play" },
+          { label: "About Us", href: "/about" },
+          { label: "Contact", href: "/contact" },
         ],
       },
     ],
@@ -324,9 +327,11 @@ const mobileAccordionGroups: { title: string; links: { label: string; href: stri
       { label: "New Arrivals", href: "/new" },
       { label: "Sale", href: "/sale" },
       { label: "Brands", href: "/brands" },
-      { label: "Chronographs", href: "/store/more/chronographs" },
       { label: "Gift Cards", href: "/gift-cards" },
-      { label: "Contact / Store Info", href: "/contact" },
+      { label: "Airsoft Law", href: "/airsoft-law" },
+      { label: "Where to Play", href: "/where-to-play" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact", href: "/contact" },
     ],
   },
 ];

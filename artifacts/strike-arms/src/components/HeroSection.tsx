@@ -100,10 +100,10 @@ export function HeroSection() {
               Shop Gear
             </Link>
             <Link
-              href="/contact"
+              href="/services"
               className="inline-flex h-12 items-center justify-center rounded-sm border border-foreground bg-transparent px-8 text-sm font-medium text-foreground hover:bg-foreground hover:text-background transition-colors"
             >
-              Get Expert Advice
+              Need a Repair or Upgrade?
             </Link>
           </motion.div>
         </motion.div>
