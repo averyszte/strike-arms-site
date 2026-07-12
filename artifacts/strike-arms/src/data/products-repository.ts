@@ -32,6 +32,17 @@ const BRAND_NAMES: Record<string, string> = {
 
 // ─── Read operations ──────────────────────────────────────────────────────────
 
+export async function fetchAllForSearch(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_published', true)
+    .limit(500);
+
+  if (error) throw error;
+  return (data ?? []).map(rowToProduct);
+}
+
 export async function listProducts(filters: ProductFilters): Promise<ProductListResult> {
   const page = filters.page ?? 1;
   const pageSize = filters.pageSize ?? PAGE_SIZE_DEFAULT;
@@ -42,6 +53,7 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
     .eq('is_published', true)
     .range(0, page * pageSize - 1);
 
+  if (filters.q) query = query.ilike('name', `%${filters.q}%`);
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.subcategory) query = query.eq('subcategory', filters.subcategory);
   if (filters.brand) query = query.eq('brand', filters.brand);
@@ -73,6 +85,15 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (error) throw error;
 
   return { items: (data ?? []).map(rowToProduct), total: count ?? 0, page, pageSize };
+}
+
+export async function listAllProducts(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(rowToProduct);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -123,6 +144,9 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): P
       sale_price_cents: input.salePrice ?? null,
       images: input.images,
       short_description: input.shortDescription,
+      description: input.description ?? '',
+      is_published: input.isPublished ?? false,
+      stock_count: input.stockCount ?? 0,
       is_new: input.isNew ?? false,
       is_featured: input.isFeatured ?? false,
       tags: input.tags ?? [],
@@ -147,6 +171,9 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
       ...('salePrice' in patch && { sale_price_cents: patch.salePrice ?? null }),
       ...(patch.images !== undefined && { images: patch.images }),
       ...(patch.shortDescription !== undefined && { short_description: patch.shortDescription }),
+      ...(patch.description != null && { description: patch.description }),
+      ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
+      ...(patch.stockCount !== undefined && { stock_count: patch.stockCount }),
       ...(patch.isNew !== undefined && { is_new: patch.isNew }),
       ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
       ...(patch.tags !== undefined && { tags: patch.tags }),

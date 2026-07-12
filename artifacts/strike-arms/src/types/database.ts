@@ -64,6 +64,11 @@ type NotificationJobRow = {
   next_attempt_at: string; last_error: string | null; created_at: string;
 };
 
+type SubcategoryRow = {
+  id: string; category: string; slug: string; name: string;
+  sort_order: number; created_at: string;
+};
+
 // ─── Database shape ───────────────────────────────────────────────────────────
 // Matches the shape expected by @supabase/supabase-js v2 generics.
 // Each table needs a Relationships array; schema needs CompositeTypes.
@@ -144,6 +149,14 @@ export type Database = {
           attempt_count?: number; next_attempt_at?: string;
         };
         Update: Partial<Omit<NotificationJobRow, 'id'>>;
+        Relationships: [];
+      };
+      subcategories: {
+        Row: SubcategoryRow;
+        Insert: Omit<SubcategoryRow, 'id' | 'created_at'> & {
+          id?: string; sort_order?: number;
+        };
+        Update: Partial<Omit<SubcategoryRow, 'id' | 'created_at'>>;
         Relationships: [];
       };
     };

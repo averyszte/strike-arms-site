@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SearchDropdown } from "@/components/SearchDropdown";
+import { useCart } from "@/lib/cart-context";
 
 type MegaColumn = { title: string; links: { label: string; href: string }[] };
 type NavItem = { name: string; href: string; mega?: MegaColumn[] };
@@ -340,8 +342,9 @@ export function SiteHeader() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { itemCount, openCart } = useCart();
 
   const handleNavEnter = (name: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -425,36 +428,31 @@ export function SiteHeader() {
           <div className="flex items-center justify-end gap-3 text-foreground">
             {/* Pill search — desktop only */}
             <div className="hidden lg:flex items-center">
-              <div
-                className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
-                  searchFocused
-                    ? "bg-card border-accent/60 w-40"
-                    : "bg-card border-border/60 w-28 hover:border-border"
-                }`}
-              >
-                <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                />
-              </div>
+              <SearchDropdown />
             </div>
             {/* Search icon — mobile only */}
-            <button className="lg:hidden hover:text-accent transition-colors" aria-label="Search">
+            <button
+              className="lg:hidden hover:text-accent transition-colors"
+              aria-label="Search"
+              onClick={() => setMobileSearchOpen(o => !o)}
+            >
               <Search className="w-5 h-5" />
             </button>
             <Link href="/account" className="hover:text-accent transition-colors hidden sm:flex" aria-label="Account">
               <User className="w-5 h-5" />
             </Link>
-            <Link href="/cart" className="relative hover:text-accent transition-colors" aria-label="Cart">
+            <button
+              onClick={openCart}
+              className="relative hover:text-accent transition-colors"
+              aria-label="Cart"
+            >
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] leading-none">
-                0
-              </span>
-            </Link>
+              {itemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] leading-none">
+                  {itemCount > 9 ? '9+' : itemCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -497,6 +495,21 @@ export function SiteHeader() {
           )}
         </AnimatePresence>
       </header>
+
+      {/* Mobile search overlay */}
+      <AnimatePresence>
+        {mobileSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
+            className="lg:hidden fixed top-[60px] inset-x-0 z-50 bg-background border-b border-border px-4 py-3"
+          >
+            <SearchDropdown fullWidth onClose={() => setMobileSearchOpen(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile drawer */}
       <AnimatePresence>

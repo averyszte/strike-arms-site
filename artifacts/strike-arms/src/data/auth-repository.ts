@@ -58,6 +58,22 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
 }
 
+export async function updatePassword(password: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw new Error(error.message);
+}
+
+export async function verifyInviteToken(
+  tokenHash: string,
+): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type: 'invite',
+  });
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
 async function getEnrolledTotpFactorId(): Promise<string | null> {
   const { data, error } = await supabase.auth.mfa.listFactors();
   if (error) return null;

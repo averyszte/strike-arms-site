@@ -39,27 +39,39 @@ export function ResultsHeader({
       ? getSubcategory(activeCategorySlug, activeSubcategorySlug)
       : undefined;
 
+  const hasQuery = !!filters.q;
+
   // Deepest label for h1
-  const h1 = subcategoryDef?.label ?? categoryDef?.label ?? 'Shop';
+  const h1 = hasQuery
+    ? `Results for "${filters.q}"`
+    : subcategoryDef?.label ?? categoryDef?.label ?? 'Shop';
 
   // Build breadcrumb segments
   // /store → Home › Shop (Shop is the page)
   // /store/cat → Home › Shop › Category
   // /store/cat/sub → Home › Shop › Category › Subcategory
+  // /store?q=x → Home › Shop › "x"
   const breadcrumbSegments: { label: string; href?: string }[] = [
     { label: 'Home', href: '/' },
-    { label: 'Shop', href: activeCategorySlug ? '/store' : undefined },
+    { label: 'Shop', href: activeCategorySlug || hasQuery ? '/store' : undefined },
   ];
 
   if (categoryDef) {
     breadcrumbSegments.push({
       label: categoryDef.label,
-      href: subcategoryDef ? `/store/${activeCategorySlug}` : undefined,
+      href: subcategoryDef || hasQuery ? `/store/${activeCategorySlug}` : undefined,
     });
   }
 
   if (subcategoryDef) {
-    breadcrumbSegments.push({ label: subcategoryDef.label });
+    breadcrumbSegments.push({
+      label: subcategoryDef.label,
+      href: hasQuery ? `/store/${activeCategorySlug}/${activeSubcategorySlug}` : undefined,
+    });
+  }
+
+  if (hasQuery) {
+    breadcrumbSegments.push({ label: `"${filters.q}"` });
   }
 
   return (

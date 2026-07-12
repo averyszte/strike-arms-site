@@ -18,7 +18,10 @@ export type Product = {
   salePrice?: number;         // EUR in cents
   images: string[];           // relative paths for now, absolute URLs later
   shortDescription: string;
+  description?: string | null;
   inStock: boolean;
+  isPublished?: boolean;
+  stockCount?: number;
   isNew?: boolean;
   isFeatured?: boolean;
   tags?: string[];
@@ -26,6 +29,7 @@ export type Product = {
 };
 
 export type ProductFilters = {
+  q?: string;
   category?: Category;
   subcategory?: string;
   brand?: string;

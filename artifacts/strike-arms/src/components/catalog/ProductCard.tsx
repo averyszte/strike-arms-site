@@ -1,5 +1,6 @@
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
+import { formatBrand } from '@/lib/format-brand';
 import type { Product } from '@/types/product';
 
 function formatPrice(cents: number): string {
@@ -58,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Info */}
       <div className="p-3 space-y-1">
         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-          {brand.replace(/-/g, ' ')}
+          {formatBrand(brand)}
         </p>
         <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
           {name}

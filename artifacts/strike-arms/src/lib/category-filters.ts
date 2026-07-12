@@ -20,6 +20,7 @@ export function parseFiltersFromSearch(
   const maxPrice = params.get('maxPrice');
 
   return {
+    q: params.get('q') ?? undefined,
     category,
     subcategory,
     brand: params.get('brand') ?? undefined,
@@ -42,6 +43,7 @@ export function parseFiltersFromSearch(
 export function filtersToSearchParams(filters: ProductFilters): URLSearchParams {
   const params = new URLSearchParams();
 
+  if (filters.q) params.set('q', filters.q);
   if (filters.brand) params.set('brand', filters.brand);
   if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));

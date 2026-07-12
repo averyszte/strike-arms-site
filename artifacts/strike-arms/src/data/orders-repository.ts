@@ -85,6 +85,27 @@ export async function archiveOrder(id: string): Promise<void> {
   if (error) throw error;
 }
 
+export async function listAllOrdersWithItems(): Promise<Order[]> {
+  const [ordersResult, itemsResult] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('*')
+      .eq('is_archived', false)
+      .order('created_at', { ascending: false }),
+    supabase.from('order_items').select('*'),
+  ]);
+  if (ordersResult.error) throw ordersResult.error;
+  if (itemsResult.error) throw itemsResult.error;
+
+  const allItems = itemsResult.data ?? [];
+  return (ordersResult.data ?? []).map(row =>
+    rowToOrder(
+      row,
+      allItems.filter(item => item.order_id === row.id),
+    ),
+  );
+}
+
 export async function getOrderStatusLog(orderId: string): Promise<OrderStatusLogEntry[]> {
   const { data, error } = await supabase
     .from('order_status_log')
