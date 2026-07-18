@@ -211,13 +211,7 @@ export function ShopByLoadout() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Image + Hotspots */}
           <div
-            className="lg:col-span-7 relative aspect-video md:aspect-[16/7] rounded-sm overflow-hidden bg-background cursor-crosshair"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-              const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-              console.log(`Hotspot position: x: ${x}, y: ${y}`);
-            }}
+            className="lg:col-span-7 relative aspect-video md:aspect-[16/7] rounded-sm overflow-hidden bg-background"
           >
             <AnimatePresence mode="wait">
               <motion.div
