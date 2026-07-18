@@ -60,7 +60,7 @@ export function SiteFooter() {
               </p>
               <p>
                 <strong className="text-foreground font-semibold">Location:</strong>{" "}
-                Dublin, Ireland
+                Swords, Co. Dublin
               </p>
               <p>
                 <strong className="text-foreground font-semibold">Email:</strong>{" "}

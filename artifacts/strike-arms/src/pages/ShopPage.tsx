@@ -22,6 +22,7 @@ import {
   isValidCategorySlug,
   getCategory,
   getSubcategory,
+  getCategoryIntro,
 } from '@/lib/taxonomy';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { Category, ProductFilters } from '@/types/product';
@@ -90,6 +91,13 @@ export default function ShopPage() {
     rawSubcategory,
   );
 
+  // Intro copy: subcategory promo intro when present, otherwise the category intro.
+  const introText = rawSubcategory
+    ? subSeoPromo?.intro
+    : categorySlug
+      ? getCategoryIntro(categorySlug)
+      : undefined;
+
   return (
     <ShopPageInner
       categorySlug={categorySlug}
@@ -98,7 +106,7 @@ export default function ShopPage() {
       canonicalPath={canonicalPath}
       helmetTitle={helmetTitle}
       helmetDescription={helmetDescription}
-      subSeoIntro={subSeoPromo?.intro}
+      introText={introText}
       filters={filters}
       mobileFiltersOpen={mobileFiltersOpen}
       setMobileFiltersOpen={setMobileFiltersOpen}
@@ -115,7 +123,7 @@ interface InnerProps {
   canonicalPath: string;
   helmetTitle: string;
   helmetDescription: string;
-  subSeoIntro: string | undefined;
+  introText: string | undefined;
   filters: ProductFilters;
   mobileFiltersOpen: boolean;
   setMobileFiltersOpen: (v: boolean) => void;
@@ -129,7 +137,7 @@ function ShopPageInner({
   canonicalPath,
   helmetTitle,
   helmetDescription,
-  subSeoIntro,
+  introText,
   filters,
   mobileFiltersOpen,
   setMobileFiltersOpen,
@@ -188,8 +196,8 @@ function ShopPageInner({
       </Helmet>
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
-        {subSeoIntro && (
-          <p className="text-muted-foreground mb-6 max-w-2xl">{subSeoIntro}</p>
+        {introText && (
+          <p className="text-muted-foreground mb-6 max-w-2xl">{introText}</p>
         )}
 
         <ResultsHeader
