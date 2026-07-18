@@ -35,12 +35,42 @@ export const TAXONOMY: CategoryDef[] = [
     label: 'Airsoft Rifles',
     shortLabel: 'Rifles',
     subcategories: [
-      { slug: 'aeg-rifles', label: 'AEG Rifles' },
+      {
+        slug: 'aeg-rifles',
+        label: 'AEG Rifles',
+        seo: {
+          title: 'AEG Rifles Ireland | Electric Airsoft Rifles | Strike Arms',
+          description:
+            'Buy AEG electric airsoft rifles in Ireland, from beginner-friendly platforms to upgrade-ready builds by Specna Arms, G&G, Krytac and ICS. Ships nationwide.',
+          intro:
+            'AEG electric rifles are the most popular choice for skirmish airsoft: reliable, efficient to run and unaffected by cold weather. From beginner-friendly platforms to upgrade-ready builds, we stock Specna Arms, G&G, Krytac, ICS and more, and back every gun with in-house repairs and advice. Ships across Ireland.',
+        },
+      },
       { slug: 'smgs', label: 'SMGs' },
       { slug: 'lmgs', label: 'Support Guns / LMGs' },
       { slug: 'dmr', label: 'DMR Rifles' },
-      { slug: 'gbbr', label: 'Gas Rifles / GBBR' },
-      { slug: 'sniper', label: 'Sniper Rifles' },
+      {
+        slug: 'gbbr',
+        label: 'Gas Rifles / GBBR',
+        seo: {
+          title: 'Gas Airsoft Rifles (GBBR) Ireland | Strike Arms',
+          description:
+            'Gas blowback airsoft rifles (GBBR) in Ireland: realistic recoil and operation, with advice on running gas in the Irish climate and in-house support. Ships nationwide.',
+          intro:
+            'Gas blowback rifles deliver strong recoil and realistic operation that electric guns cannot match. The trade-off is that green gas loses power in the cold, so they need more care in the Irish climate and reward good maintenance. We stock GBBR platforms and can advise on gas, magazines and upkeep. Ships across Ireland.',
+        },
+      },
+      {
+        slug: 'sniper',
+        label: 'Sniper Rifles',
+        seo: {
+          title: 'Airsoft Sniper Rifles Ireland | Bolt-Action | Strike Arms',
+          description:
+            'Airsoft sniper rifles in Ireland: bolt-action platforms built for range and accuracy, with the parts and in-house tuning to get the most from them. Ships nationwide.',
+          intro:
+            'Airsoft sniper rifles reward patience and precision. These bolt-action platforms are built for range and a consistent single shot, and most benefit from tuning and heavier BBs to reach their potential. We stock capable base rifles and the parts to upgrade them, with in-house work available. It is rarely the best first gun. Ships across Ireland.',
+        },
+      },
       { slug: 'shotguns', label: 'Shotguns' },
       { slug: 'spring-rifles', label: 'Spring Rifles' },
       { slug: 'rifle-magazines', label: 'Rifle Magazines' },
@@ -52,7 +82,17 @@ export const TAXONOMY: CategoryDef[] = [
     label: 'Airsoft Pistols',
     shortLabel: 'Pistols',
     subcategories: [
-      { slug: 'gbb-pistols', label: 'Gas Blowback Pistols' },
+      {
+        slug: 'gbb-pistols',
+        label: 'Gas Blowback Pistols',
+        seo: {
+          title: 'Gas Blowback Pistols Ireland | GBB Airsoft | Strike Arms',
+          description:
+            'Gas blowback (GBB) airsoft pistols in Ireland from Tokyo Marui, ASG, WE and more. Realistic recoil, with advice on gas for the Irish climate. Ships nationwide.',
+          intro:
+            'A gas blowback pistol is the classic airsoft sidearm: realistic recoil, a moving slide and a reliable backup for CQB or sniper loadouts. We stock Tokyo Marui, ASG, WE and more, and can advise on green gas versus CO2 and how each performs in the cold. Ships across Ireland.',
+        },
+      },
       { slug: 'electric-pistols', label: 'Electric Pistols' },
       { slug: 'spring-pistols', label: 'Spring Pistols' },
       { slug: 'revolvers', label: 'Revolvers' },
@@ -67,14 +107,64 @@ export const TAXONOMY: CategoryDef[] = [
     label: 'Consumables',
     shortLabel: 'Consumables',
     subcategories: [
-      { slug: 'bbs', label: 'BBs' },
-      { slug: 'bio-bbs', label: 'Bio BBs' },
+      {
+        slug: 'bbs',
+        label: 'BBs',
+        seo: {
+          title: 'Airsoft BBs Ireland | 0.20g to 0.32g | Strike Arms',
+          description:
+            'Quality airsoft BBs in Ireland in every weight from 0.20g upward. The right BB improves accuracy and feeding. Advice on weight for your gun. Ships nationwide.',
+          intro:
+            'Good BBs are one of the cheapest ways to make any airsoft gun shoot better. Weight and quality affect accuracy, range and feeding, and a cheap, poorly-graded BB causes jams and wear. We stock quality BBs across every weight from 0.20g upward. Unsure which to use? See our BB weight guide. Ships across Ireland.',
+        },
+      },
+      {
+        slug: 'bio-bbs',
+        label: 'Bio BBs',
+        seo: {
+          title: 'Biodegradable Airsoft BBs Ireland | Bio BBs | Strike Arms',
+          description:
+            'Biodegradable airsoft BBs in Ireland, required by most outdoor sites. Quality bio BBs that feed cleanly, in a range of weights. Ships nationwide.',
+          intro:
+            'Most outdoor airsoft sites in Ireland require biodegradable BBs so spent rounds break down over time rather than persisting in the environment. Quality matters as much as with standard BBs: a well-graded bio BB feeds cleanly and flies true. We stock bio BBs in a range of weights. Ships across Ireland.',
+        },
+      },
       { slug: 'tracer-bbs', label: 'Tracer BBs' },
       { slug: 'speed-loaders', label: 'Speed Loaders' },
       { slug: 'grenades', label: 'Grenades' },
-      { slug: 'green-gas', label: 'Green Gas' },
-      { slug: 'co2', label: 'CO₂' },
-      { slug: 'batteries', label: 'Batteries' },
+      {
+        slug: 'green-gas',
+        label: 'Green Gas',
+        seo: {
+          title: 'Green Gas Ireland | Airsoft Gas | Strike Arms',
+          description:
+            'Green gas for airsoft in Ireland: the gun-friendly propellant for gas pistols and rifles, with advice on cold-weather performance from our Dublin shop.',
+          intro:
+            'Green gas is the most common airsoft propellant, pre-mixed with silicone to lubricate seals as it works. It is convenient and gun-friendly, though it loses power in the cold, which matters in the Irish climate. Ask us about green gas versus CO2 for your gun. Gas can have carriage restrictions, so check delivery options with us before ordering.',
+        },
+      },
+      {
+        slug: 'co2',
+        label: 'CO₂',
+        seo: {
+          title: 'Airsoft CO2 Ireland | CO2 Capsules | Strike Arms',
+          description:
+            'Airsoft CO2 capsules in Ireland: higher pressure than green gas and better in the cold, for guns and magazines designed for CO2. Expert advice from our Dublin shop.',
+          intro:
+            'CO2 runs at higher pressure than green gas, so it hits harder and copes far better in cold weather. The trade-off is that the higher pressure can stress seals, so only run CO2 in a gun or magazine designed for it. Ask us whether CO2 suits your setup. Gas can have carriage restrictions, so check delivery options with us before ordering.',
+        },
+      },
+      {
+        slug: 'batteries',
+        label: 'Batteries',
+        seo: {
+          title: 'Airsoft Batteries Ireland | LiPo & NiMH | Strike Arms',
+          description:
+            'Airsoft batteries in Ireland: LiPo and NiMH in the voltages, sizes and connectors your gun needs, plus chargers. Advice on safe charging. Ships nationwide.',
+          intro:
+            'The right battery has to fit your gun, match its connector and suit how you play. We stock LiPo and NiMH batteries across the common voltages and sizes, along with chargers. LiPo gives a snappier trigger; NiMH is more forgiving for beginners. See our battery guide, or ask us to match one to your gun. Ships across Ireland.',
+        },
+      },
       { slug: 'chargers', label: 'Chargers' },
       { slug: 'lubricants', label: 'Lubricants' },
       { slug: 'maintenance', label: 'Maintenance' },
@@ -117,7 +207,17 @@ export const TAXONOMY: CategoryDef[] = [
       { slug: 'ghillie', label: 'Ghillie Suits' },
       { slug: 'camo', label: 'Camo Accessories' },
       { slug: 'helmets', label: 'Helmets' },
-      { slug: 'eye-protection', label: 'Face & Eye Protection' },
+      {
+        slug: 'eye-protection',
+        label: 'Face & Eye Protection',
+        seo: {
+          title: 'Airsoft Eye & Face Protection Ireland | Strike Arms',
+          description:
+            'Airsoft eye and face protection in Ireland: goggles, mesh and full-face options that hold up in damp conditions. Mandatory at every site. Ships nationwide.',
+          intro:
+            'Eye protection is mandatory at every airsoft site and the one piece of kit you never compromise on. In the damp, cold conditions typical of Irish games, anti-fog and fan-equipped options earn their keep, and full-face or lower-face protection guards your teeth. We stock protection that holds up on the field. Ships across Ireland.',
+        },
+      },
       { slug: 'gloves', label: 'Gloves' },
       { slug: 'footwear', label: 'Footwear' },
       { slug: 'headwear', label: 'Headwear' },
