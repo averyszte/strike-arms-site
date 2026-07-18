@@ -24,9 +24,12 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ### Housekeeping
 - Local `main` in the primary worktree is behind `origin/main` — `git pull` there to sync when convenient.
 
+### Brand list — NOT yet confirmed (on hold)
+- The full/final list of brands Strike Arms stocks is **not yet clarified**. The Brands hub currently auto-derives from the product catalogue (mock data), showing 15: G&G, Specna Arms, Tokyo Marui, ASG, Krytac, ICS, WE, Vorsk, Nuprol, Valken, VFC, ZCI, SHS, Perun, Acetech. It self-corrects to the real catalogue — no hardcoded list — but confirm the complete list with Alan before building per-brand pages.
+- **Hold** per-brand `/brands/{slug}` pages until the list is confirmed.
+
 ### Still Alan-independent (could build next)
 - Subcategory intro copy (aeg-rifles, bbs, green-gas, batteries, gbb-pistols…) — needs the taxonomy `seo` promotion per subcategory.
-- Per-brand pages `/brands/{slug}` — base is buildable from public info, but genuinely better with Alan's brand takes (enrichment).
 
 ### Needs a decision (not Alan)
 - **Prerendering / SSR** for the SPA — introduces build tooling, so needs sign-off before adding (CLAUDE.md: don't add an unagreed stack).
