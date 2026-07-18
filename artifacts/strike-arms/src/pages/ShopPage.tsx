@@ -23,6 +23,7 @@ import {
   getCategory,
   getSubcategory,
   getCategoryIntro,
+  STORE_INTRO,
 } from '@/lib/taxonomy';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { Category, ProductFilters } from '@/types/product';
@@ -96,7 +97,7 @@ export default function ShopPage() {
     ? subSeoPromo?.intro
     : categorySlug
       ? getCategoryIntro(categorySlug)
-      : undefined;
+      : STORE_INTRO;
 
   return (
     <ShopPageInner

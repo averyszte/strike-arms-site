@@ -33,6 +33,7 @@ export type ProductFilters = {
   maxPrice?: number;
   inStockOnly?: boolean;
   onSaleOnly?: boolean;
+  isNewOnly?: boolean;
   sort?: 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'name-asc';
   page?: number;
   pageSize?: number;

@@ -44,6 +44,9 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (filters.onSaleOnly) {
     results = results.filter((p) => p.salePrice !== undefined);
   }
+  if (filters.isNewOnly) {
+    results = results.filter((p) => p.isNew);
+  }
 
   const total = results.length;
   const sort = filters.sort ?? 'featured';

@@ -202,3 +202,7 @@ export const CATEGORY_INTROS: Record<CategorySlug, string> = {
 export function getCategoryIntro(slug: string): string | undefined {
   return isValidCategorySlug(slug) ? CATEGORY_INTROS[slug] : undefined;
 }
+
+/** Intro copy for the /store root (all products) page. */
+export const STORE_INTRO =
+  'Browse the full Strike Arms range: airsoft rifles and pistols, BBs, gas and batteries, tactical gear, accessories and internals. We stock the brands players trust and back every purchase with in-house advice, repairs and upgrades from our shop in Swords, Co. Dublin. Ships across Ireland.';
