@@ -1,7 +1,6 @@
 import { UtilityBar } from "@/components/UtilityBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MobileStickyBar } from "@/components/MobileStickyBar";
 
 interface SiteLayoutProps {
   children: React.ReactNode;
@@ -21,7 +20,6 @@ export function SiteLayout({ children }: SiteLayoutProps) {
       </main>
 
       <SiteFooter />
-      <MobileStickyBar />
     </div>
   );
 }

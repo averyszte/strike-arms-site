@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Keep transactional/account pages out of the index.
+Disallow: /cart
+Disallow: /account
+
+Sitemap: https://strikearms.ie/sitemap.xml

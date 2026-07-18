@@ -13,6 +13,7 @@
  */
 
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
+import { BRAND_NAMES } from '@/lib/brands';
 import { MOCK_PRODUCTS } from './mock-products';
 
 // ─── Read operations ──────────────────────────────────────────────────────────
@@ -76,24 +77,6 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   await new Promise((r) => setTimeout(r, 150));
   return MOCK_PRODUCTS.find((p) => p.slug === slug) ?? null;
 }
-
-const BRAND_NAMES: Record<string, string> = {
-  'specna-arms': 'Specna Arms',
-  'gandg': 'G&G',
-  'ics': 'ICS',
-  'krytac': 'Krytac',
-  'tokyo-marui': 'Tokyo Marui',
-  'asg': 'ASG',
-  'we': 'WE',
-  'vfc': 'VFC',
-  'nuprol': 'Nuprol',
-  'vorsk': 'Vorsk',
-  'valken': 'Valken',
-  'zci': 'ZCI',
-  'shs': 'SHS',
-  'perun': 'Perun',
-  'acetech': 'Acetech',
-};
 
 export async function listBrands(
   category?: Category,

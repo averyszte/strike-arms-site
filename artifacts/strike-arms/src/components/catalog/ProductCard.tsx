@@ -1,10 +1,7 @@
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
+import { formatPrice } from '@/lib/format-price';
 import type { Product } from '@/types/product';
-
-function formatPrice(cents: number): string {
-  return `€${(cents / 100).toFixed(2)}`;
-}
 
 interface ProductCardProps {
   product: Product;

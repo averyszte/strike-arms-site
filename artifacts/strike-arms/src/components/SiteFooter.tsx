@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#080808] pt-16 pb-24 md:pb-8 border-t border-border/60">
+    <footer className="bg-[#080808] pt-16 pb-8 border-t border-border/60">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
           
@@ -30,8 +30,10 @@ export function SiteFooter() {
             <nav className="flex flex-col gap-3">
               <Link href="/" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Home</Link>
               <Link href="/store" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Shop</Link>
+              <Link href="/guides" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Guides</Link>
               <Link href="/services/repairs" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Repairs</Link>
               <Link href="/airsoft-law" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Airsoft Law</Link>
+              <Link href="/glossary" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Glossary</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Contact</Link>
             </nav>
           </div>

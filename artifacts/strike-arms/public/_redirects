@@ -1,0 +1,14 @@
+# Cloudflare Pages redirects.
+#
+# 301s from the OLD strikearms.ie PHP site -> new URLs (preserve link equity).
+# Activate at cutover. Targets marked (future) must exist before the old site is
+# taken down, or point them at a live parent until then.
+/Airsoft-and-the-Law.php    /airsoft-law              301
+/Where-to-Play.php          /where-to-play            301
+/Care-for-your-Rifle.php    /guides/maintenance       301
+/About-Airsoft.php          /guides/beginners-guide   301
+/guns-n-gear.php            /store                    301
+/Contact-us.php             /contact                  301
+
+# SPA fallback — every other path serves the app shell (must be LAST).
+/*                          /index.html               200
