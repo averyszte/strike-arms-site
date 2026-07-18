@@ -5,11 +5,11 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ## Open
 
 ### Footer / Contact NAP placeholders
-- Footer shows a likely-placeholder email **info@strikearms.ie** — confirm the real address (or remove).
-- Footer location reads generic **"Dublin, Ireland"** — the actual shop is **Swords, Co. Dublin** (Unit C3, Airside Enterprise Centre). Update to match.
-- Add a `LocalBusiness` JSON-LD block + full NAP (address, hours, map) to the **Contact** page (currently only on Home).
-- Get real **lat/long** for the shop so `geo` can be added to the LocalBusiness schema (intentionally omitted for now — not invented).
-- Confirm the NAP in `src/lib/site-config.ts` (sourced from the old site) is still current for the new shop — verify with Alan.
+- [ ] Footer shows a likely-placeholder email **info@strikearms.ie** — confirm the real address (or remove). Deliberately kept out of the Contact page and schema until confirmed.
+- [x] ~~Footer location "Dublin, Ireland"~~ → now **Swords, Co. Dublin**.
+- [x] ~~Add `LocalBusiness` + NAP to the Contact page~~ → Contact page built with full NAP, hours, directions and `SportingGoodsStore` JSON-LD.
+- [ ] Get real **lat/long** so `geo` can be added to the LocalBusiness schema (intentionally omitted — not invented).
+- [ ] Confirm the NAP in `src/lib/site-config.ts` (sourced from the old site) is still current for the new shop — verify with Alan.
 
 ### Content waiting on Alan's interview answers (source 1)
 - `/guides/first-airsoft-gun`, best-of listicles, and the recommendation-heavy half of the beginner's guide — hold until Alan answers `seo/alan-interview-questions.md`.
@@ -24,5 +24,15 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ### Housekeeping
 - Local `main` in the primary worktree is behind `origin/main` — `git pull` there to sync when convenient.
 
+### Still Alan-independent (could build next)
+- Subcategory intro copy (aeg-rifles, bbs, green-gas, batteries, gbb-pistols…) — needs the taxonomy `seo` promotion per subcategory.
+- Per-brand pages `/brands/{slug}` — base is buildable from public info, but genuinely better with Alan's brand takes (enrichment).
+
+### Needs a decision (not Alan)
+- **Prerendering / SSR** for the SPA — introduces build tooling, so needs sign-off before adding (CLAUDE.md: don't add an unagreed stack).
+- **Legal `/airsoft-law` cluster** — needs primary-source verification, not just Alan.
+
 ## Done
 - (2026-07-18) Pushed to GitHub + fast-forwarded `main`: SEO research docs, PDP + schema, glossary + 6 guides + hub, migration/crawl files, removed mobile CTA sticky bar, removed stray dev console.log.
+- (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
+- (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
