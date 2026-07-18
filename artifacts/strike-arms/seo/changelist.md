@@ -29,7 +29,7 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - **Hold** per-brand `/brands/{slug}` pages until the list is confirmed.
 
 ### Still Alan-independent (could build next)
-- Subcategory intro copy (aeg-rifles, bbs, green-gas, batteries, gbb-pistols…) — needs the taxonomy `seo` promotion per subcategory.
+- More subcategory intros (optional) — 10 top ones done; remaining subcategories (smgs, dmr, optics, barrels, gearboxes, mosfets, hop-up, plate-carriers…) can be promoted the same way as demand justifies.
 
 ### Needs a decision (not Alan)
 - **Prerendering / SSR** for the SPA — introduces build tooling, so needs sign-off before adding (CLAUDE.md: don't add an unagreed stack).
@@ -39,3 +39,4 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - (2026-07-18) Pushed to GitHub + fast-forwarded `main`: SEO research docs, PDP + schema, glossary + 6 guides + hub, migration/crawl files, removed mobile CTA sticky bar, removed stray dev console.log.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
 - (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
+- (2026-07-18) Promoted 10 subcategories to own canonical SEO pages (title + meta + intro): AEG rifles, GBBR, sniper, GBB pistols, BBs, bio BBs, green gas, CO2, batteries, eye protection; added to sitemap.
