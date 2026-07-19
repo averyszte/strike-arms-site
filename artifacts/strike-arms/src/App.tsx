@@ -11,6 +11,11 @@ import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
+import Login from "@/pages/auth/Login";
+import Signup from "@/pages/auth/Signup";
+import Privacy from "@/pages/Privacy";
+import { RequireAuth } from "@/components/RequireAuth";
+import { AuthProvider } from "@/lib/auth-context";
 import Cart from "@/pages/Cart";
 import AirsoftLaw from "@/pages/AirsoftLaw";
 import Glossary from "@/pages/Glossary";
@@ -40,7 +45,14 @@ function Router() {
       <Route path="/new" component={NewArrivals} />
       <Route path="/sale" component={Sale} />
       <Route path="/gift-cards" component={GiftCards} />
-      <Route path="/account" component={Account} />
+      <Route path="/account">
+        <RequireAuth>
+          <Account />
+        </RequireAuth>
+      </Route>
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
+      <Route path="/privacy" component={Privacy} />
       <Route path="/cart" component={Cart} />
       <Route path="/airsoft-law" component={AirsoftLaw} />
       <Route path="/glossary" component={Glossary} />
@@ -77,10 +89,12 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
+          <AuthProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

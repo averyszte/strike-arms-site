@@ -42,6 +42,7 @@ const STATIC_PATHS = [
   '/sale',
   '/gift-cards',
   '/contact',
+  '/privacy',
   '/airsoft-law',
   '/glossary',
   '/guides',
