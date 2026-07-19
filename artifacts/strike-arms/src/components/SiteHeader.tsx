@@ -219,6 +219,36 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    name: "Guides",
+    href: "/guides",
+    mega: [
+      {
+        title: "Buying Guides",
+        links: [
+          { label: "AEG vs GBB vs Spring", href: "/guides/aeg-vs-gbb-vs-spring" },
+          { label: "FPS & Joules Explained", href: "/guides/fps-and-joules-explained" },
+          { label: "BB Weight Guide", href: "/guides/airsoft-bb-weight-guide" },
+        ],
+      },
+      {
+        title: "Batteries, Gas & Care",
+        links: [
+          { label: "Battery Guide", href: "/guides/airsoft-battery-lipo-guide" },
+          { label: "Gas Types Explained", href: "/guides/airsoft-gas-types" },
+          { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
+        ],
+      },
+      {
+        title: "Reference",
+        links: [
+          { label: "All Guides", href: "/guides" },
+          { label: "Glossary", href: "/glossary" },
+          { label: "Airsoft & the Law", href: "/airsoft-law" },
+        ],
+      },
+    ],
+  },
+  {
     name: "More",
     href: "/store/more",
     mega: [
@@ -319,6 +349,19 @@ const mobileAccordionGroups: { title: string; links: { label: string; href: stri
     ],
   },
   {
+    title: "Guides",
+    links: [
+      { label: "AEG vs GBB vs Spring", href: "/guides/aeg-vs-gbb-vs-spring" },
+      { label: "FPS & Joules Explained", href: "/guides/fps-and-joules-explained" },
+      { label: "BB Weight Guide", href: "/guides/airsoft-bb-weight-guide" },
+      { label: "Battery Guide", href: "/guides/airsoft-battery-lipo-guide" },
+      { label: "Gas Types Explained", href: "/guides/airsoft-gas-types" },
+      { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
+      { label: "All Guides", href: "/guides" },
+      { label: "Glossary", href: "/glossary" },
+    ],
+  },
+  {
     title: "More",
     links: [
       { label: "New Arrivals", href: "/new" },
@@ -395,7 +438,7 @@ export function SiteHeader() {
               <button
                 key={item.name}
                 onMouseEnter={() => handleNavEnter(item.name)}
-                className={`relative h-full px-2.5 flex items-center gap-1 whitespace-nowrap text-[0.82rem] font-medium tracking-wide transition-colors ${
+                className={`relative h-full px-2 xl:px-2.5 flex items-center gap-0.5 xl:gap-1 whitespace-nowrap text-[0.82rem] font-medium tracking-wide transition-colors ${
                   activeMenu === item.name
                     ? "text-foreground"
                     : "text-foreground/70 hover:text-foreground"
