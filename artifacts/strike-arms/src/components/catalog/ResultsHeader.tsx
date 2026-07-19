@@ -39,8 +39,12 @@ export function ResultsHeader({
       ? getSubcategory(activeCategorySlug, activeSubcategorySlug)
       : undefined;
 
-  // Deepest label for h1
-  const h1 = subcategoryDef?.label ?? categoryDef?.label ?? 'Shop';
+  const isSearch = !activeCategorySlug && !!filters.q;
+
+  // Deepest label for h1 (a search query takes precedence)
+  const h1 = isSearch
+    ? `Search results for "${filters.q}"`
+    : subcategoryDef?.label ?? categoryDef?.label ?? 'Shop';
 
   // Build breadcrumb segments
   // /store → Home › Shop (Shop is the page)
@@ -48,8 +52,12 @@ export function ResultsHeader({
   // /store/cat/sub → Home › Shop › Category › Subcategory
   const breadcrumbSegments: { label: string; href?: string }[] = [
     { label: 'Home', href: '/' },
-    { label: 'Shop', href: activeCategorySlug ? '/store' : undefined },
+    { label: 'Shop', href: activeCategorySlug || isSearch ? '/store' : undefined },
   ];
+
+  if (isSearch) {
+    breadcrumbSegments.push({ label: 'Search' });
+  }
 
   if (categoryDef) {
     breadcrumbSegments.push({

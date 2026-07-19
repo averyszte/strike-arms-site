@@ -29,6 +29,7 @@ export type ProductFilters = {
   category?: Category;
   subcategory?: string;
   brand?: string;
+  q?: string;                 // free-text search query (store search results)
   minPrice?: number;
   maxPrice?: number;
   inStockOnly?: boolean;

@@ -99,15 +99,28 @@ export default function ShopPage() {
       ? getCategoryIntro(categorySlug)
       : STORE_INTRO;
 
+  // Search results (/store?q=…): relabel the title, hide the intro, and keep the
+  // filtered view out of the index (internal search results should not be indexed).
+  const isSearchResults = !categorySlug && !!filters.q;
+  const noindex = !!filters.q;
+  const pageTitle = isSearchResults
+    ? `Search: ${filters.q} | Strike Arms Airsoft Dublin`
+    : helmetTitle;
+  const pageDescription = isSearchResults
+    ? `Airsoft products matching "${filters.q}" at Strike Arms Airsoft Dublin.`
+    : helmetDescription;
+  const pageIntro = isSearchResults ? undefined : introText;
+
   return (
     <ShopPageInner
       categorySlug={categorySlug}
       rawSubcategory={rawSubcategory}
       h1={h1}
       canonicalPath={canonicalPath}
-      helmetTitle={helmetTitle}
-      helmetDescription={helmetDescription}
-      introText={introText}
+      helmetTitle={pageTitle}
+      helmetDescription={pageDescription}
+      introText={pageIntro}
+      noindex={noindex}
       filters={filters}
       mobileFiltersOpen={mobileFiltersOpen}
       setMobileFiltersOpen={setMobileFiltersOpen}
@@ -125,6 +138,7 @@ interface InnerProps {
   helmetTitle: string;
   helmetDescription: string;
   introText: string | undefined;
+  noindex: boolean;
   filters: ProductFilters;
   mobileFiltersOpen: boolean;
   setMobileFiltersOpen: (v: boolean) => void;
@@ -139,6 +153,7 @@ function ShopPageInner({
   helmetTitle,
   helmetDescription,
   introText,
+  noindex,
   filters,
   mobileFiltersOpen,
   setMobileFiltersOpen,
@@ -193,6 +208,7 @@ function ShopPageInner({
       <Helmet>
         <title>{helmetTitle}</title>
         <meta name="description" content={helmetDescription} />
+        {noindex && <meta name="robots" content="noindex,follow" />}
         <link rel="canonical" href={`https://strikearms.ie${canonicalPath}`} />
       </Helmet>
 

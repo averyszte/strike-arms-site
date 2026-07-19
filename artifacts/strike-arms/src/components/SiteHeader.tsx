@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SearchDropdown } from "@/components/SearchDropdown";
 
 type MegaColumn = { title: string; links: { label: string; href: string }[] };
 type NavItem = { name: string; href: string; mega?: MegaColumn[] };
@@ -378,7 +379,7 @@ export function SiteHeader() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleNavEnter = (name: string) => {
@@ -461,27 +462,16 @@ export function SiteHeader() {
 
           {/* RIGHT ZONE — search + account + cart */}
           <div className="flex items-center justify-end gap-3 text-foreground">
-            {/* Pill search — desktop only */}
+            {/* Search — desktop live dropdown */}
             <div className="hidden lg:flex items-center">
-              <div
-                className={`flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
-                  searchFocused
-                    ? "bg-card border-accent/60 w-40"
-                    : "bg-card border-border/60 w-28 hover:border-border"
-                }`}
-              >
-                <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                />
-              </div>
+              <SearchDropdown />
             </div>
             {/* Search icon — mobile only */}
-            <button className="lg:hidden hover:text-accent transition-colors" aria-label="Search">
+            <button
+              className="lg:hidden hover:text-accent transition-colors"
+              aria-label="Search"
+              onClick={() => setMobileSearchOpen((o) => !o)}
+            >
               <Search className="w-5 h-5" />
             </button>
             <Link href="/account" className="hover:text-accent transition-colors hidden sm:flex" aria-label="Account">
@@ -495,6 +485,21 @@ export function SiteHeader() {
             </Link>
           </div>
         </div>
+
+        {/* Mobile search bar */}
+        <AnimatePresence>
+          {mobileSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="lg:hidden fixed top-[60px] inset-x-0 z-50 bg-background border-b border-border px-4 py-3"
+            >
+              <SearchDropdown fullWidth onClose={() => setMobileSearchOpen(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Mega menu */}
         <AnimatePresence>

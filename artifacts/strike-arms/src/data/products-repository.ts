@@ -14,6 +14,7 @@
 
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
 import { BRAND_NAMES } from '@/lib/brands';
+import { matchProducts } from '@/lib/search-products';
 import { MOCK_PRODUCTS } from './mock-products';
 
 // ─── Read operations ──────────────────────────────────────────────────────────
@@ -47,6 +48,9 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (filters.isNewOnly) {
     results = results.filter((p) => p.isNew);
   }
+  if (filters.q) {
+    results = matchProducts(results, filters.q);
+  }
 
   const total = results.length;
   const sort = filters.sort ?? 'featured';
@@ -74,6 +78,12 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   const items = results.slice(0, page * pageSize);
 
   return { items, total, page, pageSize };
+}
+
+/** Return the full product pool for client-side live search (header dropdown). */
+export async function fetchAllForSearch(): Promise<Product[]> {
+  await new Promise((r) => setTimeout(r, 50));
+  return [...MOCK_PRODUCTS];
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
