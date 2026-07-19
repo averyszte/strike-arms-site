@@ -17,7 +17,7 @@ export const BUSINESS = {
   addressRegion: 'Co. Dublin',
   postalCode: 'K67 T9H9',
   addressCountry: 'IE',
-  telephone: '+353 87 27 36 351',
+  telephone: '+353 87 273 6351',
   openingHours: [
     {
       days: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

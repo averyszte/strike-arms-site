@@ -31,12 +31,16 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ### Still Alan-independent (could build next)
 - More subcategory intros (optional) — 10 top ones done; remaining subcategories (smgs, dmr, optics, barrels, gearboxes, mosfets, hop-up, plate-carriers…) can be promoted the same way as demand justifies.
 
+### Airsoft law — hub built, specifics still gated
+- [x] `/airsoft-law` hub built as an **orientation** page: question-framed topics, "not legal advice" disclaimer, links to official sources (An Garda Siochana, Irish Statute Book, Revenue), Article/FAQPage/Breadcrumb schema. States **no** specific Irish legal rule as fact.
+- [ ] Per-topic **spoke pages** and any specific answers (age, RIF/two-tone rules, FPS/joule thresholds, import specifics) — need Alan's shop practice + **primary-source citation / legal review** before publishing. Do not assert until then.
+
 ### Needs a decision (not Alan)
 - **Prerendering / SSR** for the SPA — introduces build tooling, so needs sign-off before adding (CLAUDE.md: don't add an unagreed stack).
-- **Legal `/airsoft-law` cluster** — needs primary-source verification, not just Alan.
 
 ## Done
 - (2026-07-18) Pushed to GitHub + fast-forwarded `main`: SEO research docs, PDP + schema, glossary + 6 guides + hub, migration/crawl files, removed mobile CTA sticky bar, removed stray dev console.log.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
 - (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
 - (2026-07-18) Promoted 10 subcategories to own canonical SEO pages (title + meta + intro): AEG rifles, GBBR, sniper, GBB pistols, BBs, bio BBs, green gas, CO2, batteries, eye protection; added to sitemap.
+- (2026-07-19) Built /airsoft-law hub (orientation + official-source links, no asserted law); normalised shop phone-number format in site-config.
