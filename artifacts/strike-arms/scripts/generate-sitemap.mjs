@@ -44,6 +44,7 @@ const STATIC_PATHS = [
   '/contact',
   '/privacy',
   '/airsoft-law',
+  '/where-to-play',
   '/glossary',
   '/guides',
   '/guides/beginners-guide',

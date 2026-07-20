@@ -18,6 +18,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { AuthProvider } from "@/lib/auth-context";
 import Cart from "@/pages/Cart";
 import AirsoftLaw from "@/pages/AirsoftLaw";
+import WhereToPlay from "@/pages/WhereToPlay";
 import Glossary from "@/pages/Glossary";
 import GuidesHub from "@/pages/GuidesHub";
 import BeginnersGuide from "@/pages/guides/BeginnersGuide";
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/cart" component={Cart} />
       <Route path="/airsoft-law" component={AirsoftLaw} />
+      <Route path="/where-to-play" component={WhereToPlay} />
       <Route path="/glossary" component={Glossary} />
 
       {/* Guides */}
