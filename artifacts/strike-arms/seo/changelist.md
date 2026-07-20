@@ -43,5 +43,6 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
 - (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
 - (2026-07-18) Promoted 10 subcategories to own canonical SEO pages (title + meta + intro): AEG rifles, GBBR, sniper, GBB pistols, BBs, bio BBs, green gas, CO2, batteries, eye protection; added to sitemap.
+- (2026-07-20) Built `/guides/first-airsoft-gun` (P1) — advice-shaped, not pick-shaped: platform choice, the GBB/sniper-first cases, what makes a gun good, buying used, what not to spend on yet. **Named model recommendations deliberately omitted** — add once Alan confirms the Draft(research) picks in §1.2/§2.1/§6.1.
 - (2026-07-20) Built `/guides/beginners-guide` (P1 pillar) from Alan's own §1/§4 answers — no named models, no FPS/age/legal specifics. Fixed the `/Care-for-your-Rifle.php` 301 target.
 - (2026-07-19) Built /airsoft-law hub (orientation + official-source links, no asserted law); normalised shop phone-number format in site-config.

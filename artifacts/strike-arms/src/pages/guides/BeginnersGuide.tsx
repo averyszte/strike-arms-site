@@ -96,7 +96,9 @@ export default function BeginnersGuide() {
         A common myth is that gas or a sniper rifle is automatically more powerful or more effective.
         In practice reliability, hop-up setup and consistency matter far more. Our{' '}
         <Link href="/guides/aeg-vs-gbb-vs-spring">AEG vs GBB vs spring guide</Link> goes into the
-        trade-offs in detail.
+        trade-offs in detail, and{' '}
+        <Link href="/guides/first-airsoft-gun">how to choose your first airsoft gun</Link> walks
+        through the decision itself, including buying used.
       </p>
 
       <h3>Why a sniper rifle is a poor first choice</h3>

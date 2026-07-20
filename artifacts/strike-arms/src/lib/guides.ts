@@ -22,6 +22,14 @@ export const GUIDES: GuideSummary[] = [
     group: 'Getting started',
   },
   {
+    title: 'How to Choose Your First Airsoft Gun',
+    navLabel: 'Choosing a First Gun',
+    path: '/guides/first-airsoft-gun',
+    summary:
+      'AEG vs gas vs spring, why not a sniper first, what actually makes a gun good, and buying used.',
+    group: 'Buying decisions',
+  },
+  {
     title: 'AEG vs GBB vs Spring: Which Airsoft Gun Should You Buy?',
     navLabel: 'AEG vs GBB vs Spring',
     path: '/guides/aeg-vs-gbb-vs-spring',
