@@ -11,9 +11,13 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - [ ] Get real **lat/long** so `geo` can be added to the LocalBusiness schema (intentionally omitted — not invented).
 - [ ] Confirm the NAP in `src/lib/site-config.ts` (sourced from the old site) is still current for the new shop — verify with Alan.
 
+### Content corrections found during the enrichment pass
+- [x] ~~Maintenance guide told readers to put silicone oil **on hop rubbers**~~ — Alan's §3.10 says the opposite (keep oil out of the inner barrel and away from the hop rubber; contaminating it is a common mistake). Corrected in body + FAQ.
+- [x] ~~BB weight guide asserted "most outdoor sites in Ireland require bio BBs"~~ — unverified claim about Irish venues. Reframed to Alan's §6.9 ("when the site or landowner specifies them"), consistent with the no-unverified-local-claims rule.
+
 ### Content waiting on Alan's interview answers (source 1)
 - Best-of listicles and any **named product picks** — hold until Alan confirms the "Draft (research)" answers in `seo/alan-interview-answers.md`. The beginner's guide is built from Alan's own answers only and deliberately names no models.
-- Enrichment pass: fold Alan's voice + specific picks into the already-published factual guides (batteries, gas, maintenance, AEG-vs-GBB, FPS/joules, BB weight).
+- [x] ~~Enrichment pass: fold Alan's voice into the 6 already-published factual guides~~ → done (2026-07-20). His *picks* (stocked BB/battery/bio brands, models) are still outstanding and remain absent from all six.
 
 ### Technical / pre-launch
 - **SPA rendering:** meta + JSON-LD are injected client-side. Consider prerendering or Cloudflare edge head-injection for bulletproof indexing and social scrapers.
@@ -43,6 +47,7 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
 - (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
 - (2026-07-18) Promoted 10 subcategories to own canonical SEO pages (title + meta + intro): AEG rifles, GBBR, sniper, GBB pistols, BBs, bio BBs, green gas, CO2, batteries, eye protection; added to sitemap.
+- (2026-07-20) Enrichment pass over the 6 existing guides — Alan's LiPo/charger/disposal drill and C-rating reality, CO2 damage specifics + GBB leak diagnosis, 0.25g default and bio-BB reframing, the FPS myth + upgrade order + tightbore reality, post-game drill/service interval/dead-AEG diagnostic order/gearbox warning signs, and the gas-vs-sniper myth. Two factual corrections logged above.
 - (2026-07-20) Built `/guides/loadout-cqb` + `/guides/loadout-woodland` from Alan's §7 answers; added a "Gear & loadouts" group to the guides registry. Omitted §7's Draft(research) answers (camo patterns, boot/eye-pro/gear brands) — add once Alan confirms.
 - (2026-07-20) Built `/guides/first-airsoft-gun` (P1) — advice-shaped, not pick-shaped: platform choice, the GBB/sniper-first cases, what makes a gun good, buying used, what not to spend on yet. **Named model recommendations deliberately omitted** — add once Alan confirms the Draft(research) picks in §1.2/§2.1/§6.1.
 - (2026-07-20) Built `/guides/beginners-guide` (P1 pillar) from Alan's own §1/§4 answers — no named models, no FPS/age/legal specifics. Fixed the `/Care-for-your-Rifle.php` 301 target.

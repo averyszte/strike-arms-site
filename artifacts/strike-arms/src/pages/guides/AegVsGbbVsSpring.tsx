@@ -19,6 +19,16 @@ const FAQ: FaqItem[] = [
     answer:
       'Spring guns are simple, cheap and need no battery or gas, which makes them fine as a very low-cost starter or a backup. The main exception is the spring bolt-action sniper rifle, which is a serious, upgradeable platform in its own right.',
   },
+  {
+    question: 'Is a gas gun more powerful than an AEG?',
+    answer:
+      'Not inherently — this is a common myth, along with the idea that a sniper rifle is automatically more effective. Reliability, hop-up setup and consistency matter far more to real-world performance than the drive type or an advertised power figure.',
+  },
+  {
+    question: 'Why is a gas blowback rifle a poor first primary?',
+    answer:
+      'Expensive magazines, lower capacity, temperature-sensitive gas, and more cleaning, lubrication and seal maintenance. It suits someone who knowingly prioritises recoil, handling and realism over simplicity and all-weather consistency — not someone who just wants to get playing.',
+  },
 ];
 
 export default function AegVsGbbVsSpring() {
@@ -28,7 +38,7 @@ export default function AegVsGbbVsSpring() {
       metaTitle="AEG vs GBB vs Spring — Which Airsoft Gun to Buy | Strike Arms"
       description="AEG, gas blowback and spring airsoft guns explained: how each works, their pros and cons, and which type suits a beginner in Ireland."
       path="/guides/aeg-vs-gbb-vs-spring"
-      updatedISO="2026-07-18"
+      updatedISO="2026-07-20"
       updatedLabel="July 2026"
       intro="Airsoft guns fall into three main drive types: electric (AEG), gas, and spring. Each works differently and suits a different job. Here is what separates them and how to pick the right one for how you want to play."
       cta={{ label: 'Shop airsoft rifles', href: '/store/rifles' }}
@@ -102,13 +112,30 @@ export default function AegVsGbbVsSpring() {
         </tbody>
       </table>
 
+      <h2>The myth worth killing early</h2>
+      <p>
+        A lot of new players arrive believing that <strong>gas, or a sniper rifle, is automatically
+        more powerful or more effective</strong>. Neither is true. Reliability,{' '}
+        <Link href="/glossary#hop-up">hop-up</Link> setup and consistency matter far more to how a
+        gun actually performs on a field than which drive type it uses or what its box claims.
+      </p>
+      <p>
+        The same goes for the fourth option people ask about: <Link href="/glossary#hpa">HPA</Link>{' '}
+        gives excellent consistency, but it means managing a tank, line, regulator, tuning and site
+        acceptance. It is somewhere to arrive, not somewhere to start.
+      </p>
+
       <h2>Which should you buy first?</h2>
       <p>
         If you are buying one gun to get into the sport, an AEG is the safe choice: dependable, easy
         to run, and unbothered by Irish weather. Add a <Link href="/store/pistols/gbb-pistols">gas
         pistol</Link> as a sidearm once you are playing regularly, and consider a spring sniper only
-        if long-range single shots are the way you want to play. Still unsure which model? Call in or
-        get in touch and we will match a gun to how and where you play.
+        if long-range single shots are the way you want to play.
+      </p>
+      <p>
+        For the full decision — including what makes a gun good, buying used, and what not to spend
+        on yet — see <Link href="/guides/first-airsoft-gun">how to choose your first airsoft
+        gun</Link>. Or call in and we will match a gun to how and where you play.
       </p>
     </ArticleLayout>
   );

@@ -19,6 +19,16 @@ const FAQ: FaqItem[] = [
     answer:
       'Joule creep is when a gun with high air volume produces more energy with a heavier BB than a chrono reading on a light BB suggests. It matters most on DMR and sniper setups, where a gun can pass on a light BB but exceed the limit on a heavy one.',
   },
+  {
+    question: 'Does higher FPS mean better range and accuracy?',
+    answer:
+      'No — this is the most common misconception in airsoft. Hop-up performance, air-seal consistency, BB quality, build quality and reliability all matter far more than an advertised FPS figure, particularly where site power limits apply.',
+  },
+  {
+    question: 'How should I approach raising my gun’s FPS?',
+    answer:
+      'Establish the site’s energy limit first and measure the gun consistently. Correct the air seal, hop-up and BB choice before touching power. Only change the spring when a measured adjustment is genuinely needed, then chrono again to the site’s method. Chasing FPS without improving consistency adds stress without usable range.',
+  },
 ];
 
 export default function FpsAndJoules() {
@@ -28,7 +38,7 @@ export default function FpsAndJoules() {
       metaTitle="Airsoft FPS and Joules Explained | Strike Arms"
       description="What FPS and joules mean in airsoft, why joules are the fairer measure of power, how to read a chrono, and what joule creep is."
       path="/guides/fps-and-joules-explained"
-      updatedISO="2026-07-18"
+      updatedISO="2026-07-20"
       updatedLabel="July 2026"
       intro="Airsoft power gets talked about in FPS, but sites often set limits in joules. Here is what each one actually measures, why the difference matters, and how it affects staying within a site's limit."
       cta={{ label: 'Shop chronographs', href: '/store/more/chronographs' }}
@@ -71,11 +81,41 @@ export default function FpsAndJoules() {
         the heavier BB you actually play with, so tune and test on the weight you intend to use.
       </p>
 
+      <h2>The FPS myth</h2>
+      <p>
+        The single most common belief we have to correct is that a{' '}
+        <strong>higher advertised FPS automatically means better range, accuracy or quality</strong>.
+        It does not. In practice{' '}
+        <Link href="/glossary#hop-up">hop-up</Link> performance, air-seal consistency, BB quality,
+        build quality and reliability matter far more — especially where power is limited anyway.
+      </p>
+      <p>
+        The same thinking shows up in barrels. A well-made 6.03–6.05mm tightbore is a sensible
+        general range, but <Link href="/glossary#tightbore-barrel">bore size alone does not create
+        accuracy</Link>. Straightness, finish, cleanliness, a stable air seal, the bucking and nub,
+        correct hop-up and good BBs all usually matter more than shaving another hundredth off the
+        bore.
+      </p>
+
+      <h2>If you do want more power, do it in this order</h2>
+      <ol>
+        <li>Establish the site's energy limit, and measure the gun consistently.</li>
+        <li>Correct the air seal.</li>
+        <li>Set the hop-up properly.</li>
+        <li>Settle on the <Link href="/guides/airsoft-bb-weight-guide">BB weight</Link> you will actually play with.</li>
+        <li>Only then change the spring — and only if a measured adjustment is genuinely needed.</li>
+        <li>Chrono again, to the site's stated method.</li>
+      </ol>
+      <p>
+        Chasing FPS without improving consistency adds stress to the gun without adding usable range.
+        Most guns that feel weak are not underpowered; they are inconsistent.
+      </p>
+
       <h2>Know your site's limit</h2>
       <p>
         Power limits differ from site to site and by gun role, and they can change. Always check the
-        current rules of the specific site you are playing, and let their marshals chrono your gun.
-        If you need a gun brought within a limit, our{' '}
+        current rules of the specific site you are playing, chrono to their stated method and BB
+        weight, and let their marshals check the gun. If you need a gun brought within a limit, our{' '}
         <Link href="/services/upgrades">in-house workshop</Link> can help.
       </p>
     </ArticleLayout>

@@ -17,7 +17,7 @@ const FAQ: FaqItem[] = [
   {
     question: 'Do I need bio BBs?',
     answer:
-      'Most outdoor sites in Ireland require biodegradable BBs so spent rounds do not persist in the environment. Check your site rules; indoor CQB sites often allow standard BBs. Either way, buy a quality, well-graded BB.',
+      'When the site or the landowner specifies them. Check your venue’s rules rather than assuming. A good bio BB should perform much like a good standard BB — what matters is consistent diameter, polish and roundness, plus storing them away from heat and moisture. Cheap bio BBs suffer the same feeding and consistency problems as any poor ammunition.',
   },
   {
     question: 'Why do cheap BBs cause jams?',
@@ -33,7 +33,7 @@ export default function BbWeightGuide() {
       metaTitle="Airsoft BB Weight Guide — Which Weight to Use | Strike Arms"
       description="How airsoft BB weight affects accuracy and range, which weight to use for CQB, skirmish and sniper setups, and why BB quality matters as much as weight."
       path="/guides/airsoft-bb-weight-guide"
-      updatedISO="2026-07-18"
+      updatedISO="2026-07-20"
       updatedLabel="July 2026"
       intro="BB weight quietly makes or breaks how your gun shoots. Pick the right weight for your setup and you get a flatter, steadier flight; get it wrong and you lose range, accuracy or feeding. Here is how to choose."
       cta={{ label: 'Shop BBs', href: '/store/consumables/bbs' }}
@@ -79,20 +79,34 @@ export default function BbWeightGuide() {
         and the range you play, so it is worth testing a couple of weights to see what groups best.
       </p>
 
-      <h2>Quality matters as much as weight</h2>
+      <h2>Getting it wrong in either direction</h2>
       <p>
-        A precise, well-graded BB feeds cleanly and flies true; a cheap one with seams and uneven
-        sizing causes jams, misfeeds and can wear the hop rubber and{' '}
-        <Link href="/store/parts/barrels">inner barrel</Link>. Buying a good BB is one of the
-        cheapest upgrades you can make.
+        Too light and the BB drifts, exaggerating any inconsistency already in the gun. Too heavy for
+        what the hop-up can lift and it drops early or feeds poorly. Neither problem is solved by
+        buying a more expensive BB in the same wrong weight — start at 0.25g on a stock AEG and move
+        from there based on what you actually see downrange.
       </p>
 
-      <h2>Bio BBs for outdoor play</h2>
+      <h2>Quality matters as much as weight</h2>
       <p>
-        Most outdoor sites in Ireland require{' '}
-        <Link href="/store/consumables/bio-bbs">biodegradable BBs</Link> so spent rounds break down
-        over time. Check your site's rules, and keep separate weights of bio BB for CQB and outdoor
-        games. Not sure what suits your gun? Ask us and we will point you to the right weight.
+        A precise, well-graded BB feeds cleanly and flies true. Cheap, seamed or poorly-polished BBs
+        misfeed, jam, and damage the hop-up — and can wear the hop rubber and{' '}
+        <Link href="/store/parts/barrels">inner barrel</Link>. It is worth being blunt about this:
+        a bag of cheap BBs is one of the few things that will actively cost you money by breaking
+        parts, and good BBs are one of the cheapest ways to make any gun shoot better.
+      </p>
+
+      <h2>Bio BBs</h2>
+      <p>
+        Use <Link href="/store/consumables/bio-bbs">biodegradable BBs</Link> when the site or the
+        landowner specifies them — check your venue's rules rather than assuming either way.
+      </p>
+      <p>
+        A good bio BB should perform much like a good standard BB. The things that matter are the
+        same: consistent diameter, polish and roundness. Store them away from heat and moisture,
+        because that is what degrades them. Cheap bio BBs suffer exactly the same feeding and
+        consistency problems as any poor ammunition. Not sure what suits your gun? Ask us and we will
+        point you to the right weight.
       </p>
     </ArticleLayout>
   );
