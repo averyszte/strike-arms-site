@@ -46,6 +46,7 @@ const STATIC_PATHS = [
   '/airsoft-law',
   '/glossary',
   '/guides',
+  '/guides/beginners-guide',
   '/guides/aeg-vs-gbb-vs-spring',
   '/guides/fps-and-joules-explained',
   '/guides/airsoft-bb-weight-guide',

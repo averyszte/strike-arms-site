@@ -14,6 +14,14 @@ export type GuideSummary = {
 
 export const GUIDES: GuideSummary[] = [
   {
+    title: 'Airsoft for Beginners: A Complete Starter Guide',
+    navLabel: "Beginner's Guide",
+    path: '/guides/beginners-guide',
+    summary:
+      'Budget, renting vs buying, choosing a first gun and the kit people forget — how to start airsoft well.',
+    group: 'Getting started',
+  },
+  {
     title: 'AEG vs GBB vs Spring: Which Airsoft Gun Should You Buy?',
     navLabel: 'AEG vs GBB vs Spring',
     path: '/guides/aeg-vs-gbb-vs-spring',

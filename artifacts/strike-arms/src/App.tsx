@@ -20,6 +20,7 @@ import Cart from "@/pages/Cart";
 import AirsoftLaw from "@/pages/AirsoftLaw";
 import Glossary from "@/pages/Glossary";
 import GuidesHub from "@/pages/GuidesHub";
+import BeginnersGuide from "@/pages/guides/BeginnersGuide";
 import AegVsGbbVsSpring from "@/pages/guides/AegVsGbbVsSpring";
 import FpsAndJoules from "@/pages/guides/FpsAndJoules";
 import BbWeightGuide from "@/pages/guides/BbWeightGuide";
@@ -59,6 +60,7 @@ function Router() {
 
       {/* Guides */}
       <Route path="/guides" component={GuidesHub} />
+      <Route path="/guides/beginners-guide" component={BeginnersGuide} />
       <Route path="/guides/aeg-vs-gbb-vs-spring" component={AegVsGbbVsSpring} />
       <Route path="/guides/fps-and-joules-explained" component={FpsAndJoules} />
       <Route path="/guides/airsoft-bb-weight-guide" component={BbWeightGuide} />
