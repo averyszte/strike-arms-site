@@ -53,6 +53,8 @@ const STATIC_PATHS = [
   '/guides/airsoft-bb-weight-guide',
   '/guides/airsoft-battery-lipo-guide',
   '/guides/airsoft-gas-types',
+  '/guides/loadout-cqb',
+  '/guides/loadout-woodland',
   '/guides/airsoft-maintenance',
   '/services',
   '/services/repairs',

@@ -2,7 +2,11 @@
  * Guides registry — single source of truth for the /guides hub, internal
  * links and the sitemap. Add an entry here when a new guide page ships.
  */
-export type GuideGroup = 'Getting started' | 'Buying decisions' | 'Care & maintenance';
+export type GuideGroup =
+  | 'Getting started'
+  | 'Buying decisions'
+  | 'Gear & loadouts'
+  | 'Care & maintenance';
 
 export type GuideSummary = {
   title: string;
@@ -65,6 +69,22 @@ export const GUIDES: GuideSummary[] = [
     group: 'Buying decisions',
   },
   {
+    title: 'CQB Airsoft Loadout: What to Carry Indoors',
+    navLabel: 'CQB Loadout',
+    path: '/guides/loadout-cqb',
+    summary:
+      'Compact rig choice, magazine placement, slings and dump pouches for close-quarters games.',
+    group: 'Gear & loadouts',
+  },
+  {
+    title: 'Woodland Airsoft Loadout: Kit for a Full Day Outdoors',
+    navLabel: 'Woodland Loadout',
+    path: '/guides/loadout-woodland',
+    summary:
+      'Rig choice, layering for Irish weather, hydration and carrying a full day of kit without fatigue.',
+    group: 'Gear & loadouts',
+  },
+  {
     title: 'How to Maintain Your Airsoft Gun',
     navLabel: 'Maintenance Guide',
     path: '/guides/airsoft-maintenance',
@@ -76,6 +96,7 @@ export const GUIDES: GuideSummary[] = [
 export const GUIDE_GROUP_ORDER: GuideGroup[] = [
   'Getting started',
   'Buying decisions',
+  'Gear & loadouts',
   'Care & maintenance',
 ];
 

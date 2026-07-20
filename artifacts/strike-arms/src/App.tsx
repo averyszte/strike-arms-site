@@ -27,6 +27,8 @@ import FpsAndJoules from "@/pages/guides/FpsAndJoules";
 import BbWeightGuide from "@/pages/guides/BbWeightGuide";
 import BatteryGuide from "@/pages/guides/BatteryGuide";
 import GasTypesGuide from "@/pages/guides/GasTypesGuide";
+import LoadoutCqb from "@/pages/guides/LoadoutCqb";
+import LoadoutWoodland from "@/pages/guides/LoadoutWoodland";
 import MaintenanceGuide from "@/pages/guides/MaintenanceGuide";
 import ShopPage from "@/pages/ShopPage";
 import ProductDetail from "@/pages/ProductDetail";
@@ -68,6 +70,8 @@ function Router() {
       <Route path="/guides/airsoft-bb-weight-guide" component={BbWeightGuide} />
       <Route path="/guides/airsoft-battery-lipo-guide" component={BatteryGuide} />
       <Route path="/guides/airsoft-gas-types" component={GasTypesGuide} />
+      <Route path="/guides/loadout-cqb" component={LoadoutCqb} />
+      <Route path="/guides/loadout-woodland" component={LoadoutWoodland} />
       <Route path="/guides/airsoft-maintenance" component={MaintenanceGuide} />
 
       {/* Services hub — more-specific routes first */}
