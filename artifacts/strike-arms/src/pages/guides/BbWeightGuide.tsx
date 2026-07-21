@@ -66,17 +66,24 @@ export default function BbWeightGuide() {
           </tr>
           <tr>
             <td>0.28g</td>
-            <td>Upgraded AEGs and outdoor play where stability matters.</td>
+            <td>Outdoor play where stability matters, if your hop can lift it and the site allows it.</td>
           </tr>
           <tr>
-            <td>0.30–0.32g+</td>
-            <td>DMRs and sniper rifles with the power to drive a heavy BB at range.</td>
+            <td>0.30g+</td>
+            <td>Heavier setups where the site's rules and your hop-up both genuinely support it.</td>
           </tr>
         </tbody>
       </table>
       <p>
-        These are starting points, not rules. The right weight depends on your gun's power, hop-up
-        and the range you play, so it is worth testing a couple of weights to see what groups best.
+        These are starting points, not rules. The right weight depends on your gun, your hop-up and
+        the range you play, so it is worth testing a couple of weights to see what groups best.
+      </p>
+      <p>
+        Two cautions. Some sites cap the BB weight you may use, so check before buying a heavy tin.
+        And be careful with weight charts written for other countries — they often assume power
+        tiers for DMRs and sniper rifles that may not exist where you play, which makes their
+        heavier recommendations meaningless here. Match the weight to your actual gun and your
+        actual site.
       </p>
 
       <h2>Getting it wrong in either direction</h2>

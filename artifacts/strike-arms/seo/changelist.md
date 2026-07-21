@@ -11,6 +11,12 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - [ ] Get real **lat/long** so `geo` can be added to the LocalBusiness schema (intentionally omitted — not invented).
 - [ ] Confirm the NAP in `src/lib/site-config.ts` (sourced from the old site) is still current for the new shop — verify with Alan.
 
+### Content corrections from the 21 July answer bank
+- [x] ~~FPS guide worked example computed **1.14 J** as an unremarkable figure~~ — if the 1 J threshold is right, that example described an illegal gun. Replaced with a weight-vs-energy explanation carrying no absolute number.
+- [x] ~~FPS guide implied tiered AEG/DMR/sniper site limits are the norm~~ — reframed as "varies by site, and don't carry figures over from another country", plus an explicit warning about imported guns set to overseas power.
+- [x] ~~BB weight table recommended 0.30–0.32g+ for "DMRs and sniper rifles with the power to drive a heavy BB"~~ — UK-tier framing. Reframed around what the site allows and what the hop can lift, with a caution about foreign weight charts and site BB-weight caps.
+- Neither correction asserts the Irish limit; they remove claims that would be wrong if it holds. Safe either way.
+
 ### Content corrections found during the enrichment pass
 - [x] ~~Maintenance guide told readers to put silicone oil **on hop rubbers**~~ — Alan's §3.10 says the opposite (keep oil out of the inner barrel and away from the hop rubber; contaminating it is a common mistake). Corrected in body + FAQ.
 - [x] ~~BB weight guide asserted "most outdoor sites in Ireland require bio BBs"~~ — unverified claim about Irish venues. Reframed to Alan's §6.9 ("when the site or landowner specifies them"), consistent with the no-unverified-local-claims rule.
@@ -28,12 +34,28 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ### Housekeeping
 - Local `main` in the primary worktree is behind `origin/main` — `git pull` there to sync when convenient.
 
-### Brand list — NOT yet confirmed (on hold)
-- The full/final list of brands Strike Arms stocks is **not yet clarified**. The Brands hub currently auto-derives from the product catalogue (mock data), showing 15: G&G, Specna Arms, Tokyo Marui, ASG, Krytac, ICS, WE, Vorsk, Nuprol, Valken, VFC, ZCI, SHS, Perun, Acetech. It self-corrects to the real catalogue — no hardcoded list — but confirm the complete list with Alan before building per-brand pages.
-- **Hold** per-brand `/brands/{slug}` pages until the list is confirmed.
+### Brand list — CORRECTED 2026-07-21, now a data problem not just a content one
+- The 21 July answer bank states Strike Arms' gun range is **ASG, CYMA and EVOLUTION**, and says explicitly that **Strike Arms does not sell G&G or Specna Arms**.
+- The Brands hub auto-derives from the **mock** catalogue and therefore currently advertises 15 brands, most of which the shop does not sell (G&G, Specna Arms, Tokyo Marui, Krytac, ICS, WE, Vorsk, Nuprol, Valken, VFC, ZCI, SHS, Perun, Acetech). It self-corrects once the catalogue is real — **but until then the live Brands hub is misleading.** Decide whether to seed the mock catalogue with the real range or gate the hub before launch.
+- [x] ~~Pass-1 first-gun picks (G&G CM16 / Specna EDGE)~~ → **void, wrong shop.** Corrected throughout the answers doc and the listicle drafts. No published guide named a model, so nothing live was affected.
+- **Hold** per-brand `/brands/{slug}` pages until the real range is confirmed against actual stock — the three brand names are known but the model lines are not.
+- EVOLUTION Airsoft is an **Italian** brand and is not E&L. Do not conflate them on any brand page.
 
 ### Still Alan-independent (could build next)
 - More subcategory intros (optional) — 10 top ones done; remaining subcategories (smgs, dmr, optics, barrels, gearboxes, mosfets, hop-up, plate-carriers…) can be promoted the same way as demand justifies.
+
+### Sourced-but-unpublished claims — need a decision (added 2026-07-21)
+
+The 21 July answer bank supplies primary-source citations for four things the site currently
+avoids stating. **None are published.** Each needs a call:
+
+- [ ] **The 1 J threshold** — Criminal Justice Act 2006 s.26 [1]. Would unlock genuinely useful content (the FPS guide, the law hub, chrono service copy) and is the single biggest differentiator over UK-written content. Gate: solicitor review. A citation is not a legal opinion, and this is the claim a customer would most reasonably rely on.
+- [ ] **Under-16 sale prohibition** — CJ(MP)A 2009 s.40 [2]. Also needs Alan to state the policy Strike Arms actually operates, which may be stricter (18+).
+- [ ] **Two-tone is a UK concept, not a general Irish requirement** [2][4][5]. Corrects a very common customer misconception, so it has real value — same legal gate.
+- [ ] **The four named venues** — Khaos, Fingal, Special Ops, Redhills [6][7][8][9], with age limits (10/11/12) and Redhills' semi-only + 0.9 J HPA + 0.28g cap. Gate is lower: confirm each site is operating and re-check its rules immediately before publish. Would let `/where-to-play` actually answer its own question.
+
+Interim position: `/airsoft-law` and `/where-to-play` both state nothing as fact and point people
+to official sources or the shop. Honest, but both pages get materially better once these clear.
 
 ### Airsoft law — hub built, specifics still gated
 - [x] `/airsoft-law` hub built as an **orientation** page: question-framed topics, "not legal advice" disclaimer, links to official sources (An Garda Siochana, Irish Statute Book, Revenue), Article/FAQPage/Breadcrumb schema. States **no** specific Irish legal rule as fact.
@@ -47,6 +69,7 @@ Running list of known changes to make. Newest context at top; tick off as done.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
 - (2026-07-18) Built out New Arrivals, Sale (isNew filter) and Brands hub from stubs; OG tags on Gift Cards.
 - (2026-07-18) Promoted 10 subcategories to own canonical SEO pages (title + meta + intro): AEG rifles, GBBR, sniper, GBB pistols, BBs, bio BBs, green gas, CO2, batteries, eye protection; added to sitemap.
+- (2026-07-21) Folded the 170-answer research bank into `seo/alan-interview-answers.md` as a reconciled master (pass 1 + pass 2, with a status key, source table and publication warning). Four corrections surfaced at the top of that doc: the ASG/CYMA/EVOLUTION range, the 1 J single-class limit, the under-16 sale age, and two-tone being a UK concept. Fixed two published pages that conflicted; corrected the listicle drafts, which were built on the wrong brands.
 - (2026-07-20) Built `/where-to-play` as an **orientation** page (site types, rent-first, what to confirm with the venue, what to bring) — deliberately names **no venues**, since the site list is unverified. Closes the last 301 target that would have 404'd at cutover.
 - (2026-07-20) Drafted all 5 best-of listicles in `seo/drafts/` — unrouted markdown, no live exposure. Includes the 8 questions Alan must answer to unblock them.
 - (2026-07-20) Enrichment pass over the 6 existing guides — Alan's LiPo/charger/disposal drill and C-rating reality, CO2 damage specifics + GBB leak diagnosis, 0.25g default and bio-BB reframing, the FPS myth + upgrade order + tightbore reality, post-game drill/service interval/dead-AEG diagnostic order/gearbox warning signs, and the gas-vs-sniper myth. Two factual corrections logged above.

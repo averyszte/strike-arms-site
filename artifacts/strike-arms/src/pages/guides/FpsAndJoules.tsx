@@ -12,7 +12,7 @@ const FAQ: FaqItem[] = [
   {
     question: 'What FPS limit do airsoft sites use?',
     answer:
-      'Limits vary by site and by gun role (AEG, DMR, sniper) and are usually posted as an FPS figure on a stated BB weight, or as a joule limit. Always check the current rules of the specific site you are playing and let them chrono your gun. Do not assume a figure from another country applies.',
+      'Limits are set by each site, usually as a joule limit or as an FPS figure on a stated BB weight. Whether a site gives different limits to different gun roles also varies — do not assume the tiered AEG/DMR/sniper structure used in some other countries applies where you are playing. Check the current rules of the specific site and let them chrono your gun.',
   },
   {
     question: 'What is joule creep?',
@@ -60,9 +60,14 @@ export default function FpsAndJoules() {
         many sites express their limits in joules rather than raw FPS.
       </p>
       <p>
-        The relationship is energy = ½ × mass × velocity². As a worked example, a gun shooting a
-        0.20g BB at 350 FPS (about 107 m/s) produces roughly 1.14 joules. Feed a heavier BB and the
-        FPS drops, but the energy stays in the same ballpark.
+        The relationship is energy = ½ × mass × velocity². The practical consequence is what
+        matters: put a heavier BB through the same gun and the FPS reading drops, but the energy
+        stays in much the same place. Two very different FPS numbers can describe one unchanged
+        gun.
+      </p>
+      <p>
+        This is why an FPS figure quoted without its BB weight tells you almost nothing, and why a
+        limit expressed in joules is the one worth paying attention to.
       </p>
 
       <h2>The chrono</h2>
@@ -113,9 +118,19 @@ export default function FpsAndJoules() {
 
       <h2>Know your site's limit</h2>
       <p>
-        Power limits differ from site to site and by gun role, and they can change. Always check the
-        current rules of the specific site you are playing, chrono to their stated method and BB
-        weight, and let their marshals check the gun. If you need a gun brought within a limit, our{' '}
+        Power limits are set by each site and they can change. Always check the current rules of the
+        specific site you are playing, chrono to their stated method and BB weight, and let their
+        marshals check the gun.
+      </p>
+      <p>
+        One trap worth naming: <strong>do not carry figures over from another country</strong>. The
+        tiered structure some places use — a higher allowance for a DMR or a bolt-action than for an
+        AEG — is not universal, and a gun set up to be legal at a site abroad can be over the limit,
+        or outright unusable, at one here. If you are importing a gun or buying from overseas, treat
+        its factory power setting as something to verify rather than trust.
+      </p>
+      <p>
+        If you need a gun brought within a limit, our{' '}
         <Link href="/services/upgrades">in-house workshop</Link> can help.
       </p>
     </ArticleLayout>

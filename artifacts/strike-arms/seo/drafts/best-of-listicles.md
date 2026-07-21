@@ -6,15 +6,40 @@
 > rather than five.
 >
 > **The blocker is the picks, not the prose.** Every recommendation below is a
-> `Draft (research)` answer from [alan-interview-answers.md](../alan-interview-answers.md) —
-> general-market knowledge, *not* Alan's picks and not Strike Arms' stock. Publishing
-> them as this shop's recommendations would misrepresent the expertise the rest of
-> the site is built on, and a wrong pick on a "best of" page is the kind of thing a
-> customer holds you to across the counter.
+> research answer from [alan-interview-answers.md](../alan-interview-answers.md) —
+> general-market knowledge, *not* Alan's picks. Publishing them as this shop's
+> recommendations would misrepresent the expertise the rest of the site is built on,
+> and a wrong pick on a "best of" page is the kind of thing a customer holds you to
+> across the counter.
 >
 > **To unblock:** Alan fills in the `[ALAN]` slots below. Then each draft converts to
 > a page in one pass (ArticleLayout → `src/pages/guides/` → `src/lib/guides.ts` →
 > `src/App.tsx` → `scripts/generate-sitemap.mjs`).
+
+---
+
+## CORRECTION (21 July 2026) — the brand assumption was wrong
+
+These drafts were first written against pass-1 research that built its picks around
+**G&G Combat Machine** and **Specna Arms EDGE**. The 21 July answer bank states that
+**Strike Arms does not sell either brand**. Its gun range is **ASG, CYMA and EVOLUTION**.
+
+So the old candidate picks are not merely unconfirmed — they are the wrong shop. Every
+`[ALAN]` slot below now points at the real range. The house three-tier answer to work
+from is:
+
+| Tier | Platform | Note |
+|---|---|---|
+| Beginner | **CYMA** standard AEG | Workhorse; common parts, broad tech familiarity |
+| Mid | **EVOLUTION** M4 / Ghost-type | More modern feature set, familiar M4 components |
+| Premium compact | **ASG CZ Scorpion EVO** | Strong platform, but **dedicated parts** — flag that to buyers |
+
+G&G and Specna may still appear as *neutral comparison* brands where a reader is weighing
+an alternative. They must never be the centre of a Strike Arms recommendation.
+
+**Also corrected:** any power framing in these drafts must assume Ireland's single limit
+applies to every class — there is no higher DMR or bolt-action tier to write around. See
+the answers doc for the citation and the publication gate.
 
 ---
 
@@ -24,16 +49,16 @@ Everything else is written. These are the gaps:
 
 | # | Question | Feeds |
 |---|---|---|
-| 1 | The specific first AEG you hand a beginner now, and its price bracket. | all five |
-| 2 | Your three "buy this, it just works" picks, any category. | beginner, budget |
-| 3 | Best sub-€200 AEG you actually stock. | budget |
-| 4 | Best first gas pistol, and your green-gas-vs-CO2 call on it. | pistol |
-| 5 | Which bolt-action platform is worth starting on, and what it needs spending on it. | sniper |
-| 6 | Two or three rifles above ~€350 worth the money, and why. | rifles |
+| 1 | Which **CYMA** model you hand a beginner now, and its price bracket. | all five |
+| 2 | Your three "buy this, it just works" picks across the CYMA / EVOLUTION / ASG range. | beginner, budget |
+| 3 | Best sub-€200 AEG you actually stock and can replenish. | budget |
+| 4 | Best first gas pistol — is the ASG CZ P-09 the house answer, and green gas or CO2 on it? | pistol |
+| 5 | Which bolt-action platform Strike Arms will build and warranty, and what it needs spending on it. | sniper |
+| 6 | Where the EVOLUTION and ASG tiers genuinely earn their price over a CYMA. | rifles |
 | 7 | Anything you actively steer people *away* from, and why. | all five |
-| 8 | Current prices/stock for anything named. | all five |
+| 8 | Current prices/stock for anything named, and confirmation each is Irish-compliant. | all five |
 
-Interview questions this maps to: §1.2, §2.1, §2.12, §2.16, §2.20, §6.1.
+Interview questions this maps to: §1.2, §2.1, §2.5, §2.15, §2.20, §6.1, §6.15.
 
 ---
 
@@ -157,9 +182,12 @@ reader who genuinely wants one.
 2. **What you are actually buying.** An off-the-shelf bolt-action is usually a
    platform, not a finished gun. `[ALAN: §2.15 — which base platforms are worth
    starting from, and what an honest "and then you spend X on it" figure looks like.]`
-3. **Site rules first.** Minimum engagement distances and power limits by role vary by
-   venue and are the thing that decides whether a build is usable at all — confirm with
-   the site before spending. No figures asserted here.
+3. **Site rules first.** Minimum engagement distances and the site's power limit decide
+   whether a build is usable at all — confirm with the venue before spending. Do **not**
+   write this page around a higher sniper power allowance: the answer bank is explicit
+   that Ireland applies one limit to every class, so a bolt-action here is built for
+   consistency and hop performance, not extra power. No figures asserted until the legal
+   gate clears.
 4. **The picks.** `[ALAN]`
 5. **Heavier BBs.** Link to the BB weight guide rather than restating.
 
@@ -190,6 +218,7 @@ not compete with the beginner listicle.
 ## Conversion checklist (per page, once Alan has signed off)
 
 - [ ] Every `[ALAN]` slot filled with his words, no research placeholders left
+- [ ] Every named product is in the **real** ASG / CYMA / EVOLUTION range, not the mock catalogue
 - [ ] Every named product exists in the catalogue and links to its PDP
 - [ ] Price brackets only in prose; no exact prices outside the PDP
 - [ ] No `aggregateRating`; no invented FPS/legal/age specifics
