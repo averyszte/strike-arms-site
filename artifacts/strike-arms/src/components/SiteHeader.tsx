@@ -3,9 +3,17 @@ import { Link } from "wouter";
 import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchDropdown } from "@/components/SearchDropdown";
+import { SERVICES } from "@/lib/services";
+import { BUSINESS } from "@/lib/site-config";
 
 type MegaColumn = { title: string; links: { label: string; href: string }[] };
 type NavItem = { name: string; href: string; mega?: MegaColumn[] };
+
+const SERVICE_LINKS = SERVICES.map((service) => ({
+  label: service.navLabel,
+  href: service.path,
+}));
+const SHOP_TEL = `tel:${BUSINESS.telephone.replace(/\s/g, "")}`;
 
 const navItems: NavItem[] = [
   {
@@ -187,13 +195,7 @@ const navItems: NavItem[] = [
     mega: [
       {
         title: "Services",
-        links: [
-          { label: "Repair Services", href: "/services/repairs" },
-          { label: "Upgrade Services", href: "/services/upgrades" },
-          { label: "Custom Builds", href: "/services" },
-          { label: "Book a Repair", href: "/services" },
-          { label: "Call the Shop", href: "tel:+353872736351" },
-        ],
+        links: [...SERVICE_LINKS, { label: "Call the Shop", href: SHOP_TEL }],
       },
       {
         title: "Internal Parts",
@@ -341,12 +343,10 @@ const mobileAccordionGroups: { title: string; links: { label: string; href: stri
   {
     title: "Upgrades & Repairs",
     links: [
-      { label: "Repair Services", href: "/services/repairs" },
-      { label: "Upgrade Services", href: "/services/upgrades" },
+      ...SERVICE_LINKS,
       { label: "AEG Internal Parts", href: "/store/parts/aeg-parts" },
       { label: "Hop-Up Units & Buckings", href: "/store/parts/hop-up" },
-      { label: "Book a Repair", href: "/services" },
-      { label: "Call: +353 87 273 6351", href: "tel:+353872736351" },
+      { label: `Call: ${BUSINESS.telephone}`, href: SHOP_TEL },
     ],
   },
   {

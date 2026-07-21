@@ -60,6 +60,11 @@ const STATIC_PATHS = [
   '/services',
   '/services/repairs',
   '/services/upgrades',
+  '/services/hop-up-tuning',
+  '/services/gearbox-rebuilds',
+  '/services/custom-builds',
+  '/services/chrono-service',
+  '/about',
 ];
 
 function readProductSlugs() {

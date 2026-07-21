@@ -44,6 +44,14 @@ Running list of known changes to make. Newest context at top; tick off as done.
 ### Still Alan-independent (could build next)
 - More subcategory intros (optional) — 10 top ones done; remaining subcategories (smgs, dmr, optics, barrels, gearboxes, mosfets, hop-up, plate-carriers…) can be promoted the same way as demand justifies.
 
+### Services cluster — built 2026-07-21
+- [x] ~~`/services/repairs` and `/services/upgrades` were **"Coming soon." stubs**~~ — and the header (desktop + mobile), footer, Contact page and **five guides** all linked into them. Every guide drove conversion traffic to an empty page. Both now full pages.
+- [x] Built `/services/hop-up-tuning`, `/services/gearbox-rebuilds`, `/services/custom-builds`, `/services/chrono-service` from Alan's own technical answers.
+- [x] Added `ServiceLayout` + `buildServiceSchema` + a `src/lib/services.ts` registry; the hub, both header nav blocks and the sitemap now derive from it instead of hardcoding. Fixed the hub's hardcoded phone/canonical, and the "Custom Builds" nav link that pointed at `/services` because no page existed.
+- [x] `/about` built lean from Alan's answered material only — no story, no years, no invented milestones. **Five questions to finish it: [drafts/about-page-questions.md](drafts/about-page-questions.md).**
+- **No prices or turnaround anywhere.** Every service page carries the same "how we quote" block: diagnose first, quote before work, nothing done without approval. Alan drops real ranges in later without restructuring.
+- Deliberately not built: `/services/diagnostics` (duplicates the repairs diagnostic spine), `/services/wiring-mosfet` (thin — folded into upgrades), `/pre-loved` (needs actual used stock to be more than an essay).
+
 ### Sourced-but-unpublished claims — need a decision (added 2026-07-21)
 
 The 21 July answer bank supplies primary-source citations for four things the site currently

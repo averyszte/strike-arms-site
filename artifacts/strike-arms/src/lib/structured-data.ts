@@ -134,6 +134,24 @@ export function buildArticleSchema(opts: {
   };
 }
 
+export function buildServiceSchema(opts: {
+  name: string;
+  description: string;
+  path: string;
+  serviceType: string;
+}): JsonLdObject {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: opts.name,
+    description: opts.description,
+    serviceType: opts.serviceType,
+    url: toAbsoluteUrl(opts.path),
+    provider: { '@id': `${SITE_URL}/#store` },
+    areaServed: { '@type': 'Country', name: 'Ireland' },
+  };
+}
+
 export function buildFaqSchema(items: FaqItem[]): JsonLdObject {
   return {
     '@context': 'https://schema.org',

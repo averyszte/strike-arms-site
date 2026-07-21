@@ -36,6 +36,11 @@ import ProductDetail from "@/pages/ProductDetail";
 import ServicesHub from "@/pages/services/ServicesHub";
 import RepairsServicePage from "@/pages/services/Repairs";
 import UpgradesServicePage from "@/pages/services/Upgrades";
+import HopUpTuningPage from "@/pages/services/HopUpTuning";
+import GearboxRebuildsPage from "@/pages/services/GearboxRebuilds";
+import CustomBuildsPage from "@/pages/services/CustomBuilds";
+import ChronoServicePage from "@/pages/services/ChronoService";
+import About from "@/pages/About";
 
 const queryClient = new QueryClient();
 
@@ -79,7 +84,12 @@ function Router() {
       {/* Services hub — more-specific routes first */}
       <Route path="/services/repairs" component={RepairsServicePage} />
       <Route path="/services/upgrades" component={UpgradesServicePage} />
+      <Route path="/services/hop-up-tuning" component={HopUpTuningPage} />
+      <Route path="/services/gearbox-rebuilds" component={GearboxRebuildsPage} />
+      <Route path="/services/custom-builds" component={CustomBuildsPage} />
+      <Route path="/services/chrono-service" component={ChronoServicePage} />
       <Route path="/services" component={ServicesHub} />
+      <Route path="/about" component={About} />
 
       {/* Product detail pages */}
       <Route path="/products/:slug" component={ProductDetail} />

@@ -31,8 +31,10 @@ export function SiteFooter() {
               <Link href="/" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Home</Link>
               <Link href="/store" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Shop</Link>
               <Link href="/guides" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Guides</Link>
-              <Link href="/services/repairs" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Repairs</Link>
+              <Link href="/services" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Repairs &amp; Upgrades</Link>
+              <Link href="/where-to-play" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Where to Play</Link>
               <Link href="/airsoft-law" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Airsoft Law</Link>
+              <Link href="/about" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">About</Link>
               <Link href="/glossary" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Glossary</Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Contact</Link>
             </nav>
