@@ -33,6 +33,13 @@ import LoadoutWoodland from "@/pages/guides/LoadoutWoodland";
 import MaintenanceGuide from "@/pages/guides/MaintenanceGuide";
 import ShopPage from "@/pages/ShopPage";
 import ProductDetail from "@/pages/ProductDetail";
+import { lazy, Suspense } from "react";
+import { AdminAuthProvider } from "@/lib/admin-auth-context";
+
+// Admin is lazy-loaded so the dashboard never weighs down the public bundle.
+const AdminLoginPage = lazy(() => import("@/pages/admin/LoginPage"));
+const AcceptInvitePage = lazy(() => import("@/pages/admin/AcceptInvitePage"));
+const AdminRoot = lazy(() => import("@/pages/admin/AdminRoot"));
 import ServicesHub from "@/pages/services/ServicesHub";
 import RepairsServicePage from "@/pages/services/Repairs";
 import UpgradesServicePage from "@/pages/services/Upgrades";
@@ -91,6 +98,28 @@ function Router() {
       <Route path="/services" component={ServicesHub} />
       <Route path="/about" component={About} />
 
+      {/* Admin — login and invite-accept are public, the rest is behind AuthGuard */}
+      <Route path="/admin/login">
+        <Suspense fallback={null}>
+          <AdminLoginPage />
+        </Suspense>
+      </Route>
+      <Route path="/auth/confirm">
+        <Suspense fallback={null}>
+          <AcceptInvitePage />
+        </Suspense>
+      </Route>
+      <Route path="/admin">
+        <Suspense fallback={null}>
+          <AdminRoot />
+        </Suspense>
+      </Route>
+      <Route path="/admin/:rest*">
+        <Suspense fallback={null}>
+          <AdminRoot />
+        </Suspense>
+      </Route>
+
       {/* Product detail pages */}
       <Route path="/products/:slug" component={ProductDetail} />
 
@@ -110,10 +139,12 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
+            <AdminAuthProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+            </AdminAuthProvider>
           </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>

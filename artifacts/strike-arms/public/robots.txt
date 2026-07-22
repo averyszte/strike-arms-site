@@ -5,4 +5,8 @@ Allow: /
 Disallow: /cart
 Disallow: /account
 
+# Admin dashboard — never index.
+Disallow: /admin
+Disallow: /auth/
+
 Sitemap: https://strikearms.ie/sitemap.xml

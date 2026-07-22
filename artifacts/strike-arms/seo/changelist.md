@@ -72,6 +72,19 @@ to official sources or the shop. Honest, but both pages get materially better on
 ### Needs a decision (not Alan)
 - **Prerendering / SSR** for the SPA — introduces build tooling, so needs sign-off before adding (CLAUDE.md: don't add an unagreed stack).
 
+### Admin + Supabase — ported from the stranded branch 2026-07-22
+- [x] Recovered ~50 files from `claude/wonderful-cartwright-90d699` (never merged, forked
+  2026-05-16): Supabase migrations/config/seed, `/admin` dashboard (products, orders,
+  inquiries, categories, TOTP login, staff invites), repositories and hooks.
+- Admin auth namespaced (`admin-auth-*`) so customer accounts keep working; admin product
+  CRUD isolated in `admin-products-repository.ts` — storefront stays on mock data until
+  the catalogue decision.
+- [ ] **No real Supabase project yet** — `.env` is placeholders; admin login cannot work
+  until the project is created and migrations are run.
+- [ ] Seed.sql carries the wrong-brand mock catalogue — warning header added, do not
+  seed production with it.
+- The full build list now lives in [docs/build-backlog.md](../../../docs/build-backlog.md).
+
 ## Done
 - (2026-07-18) Pushed to GitHub + fast-forwarded `main`: SEO research docs, PDP + schema, glossary + 6 guides + hub, migration/crawl files, removed mobile CTA sticky bar, removed stray dev console.log.
 - (2026-07-18) Contact page (NAP + LocalBusiness schema), footer location fix, category + /store intro copy.
