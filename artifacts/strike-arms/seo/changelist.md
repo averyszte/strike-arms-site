@@ -79,8 +79,13 @@ to official sources or the shop. Honest, but both pages get materially better on
 - Admin auth namespaced (`admin-auth-*`) so customer accounts keep working; admin product
   CRUD isolated in `admin-products-repository.ts` — storefront stays on mock data until
   the catalogue decision.
-- [ ] **No real Supabase project yet** — `.env` is placeholders; admin login cannot work
-  until the project is created and migrations are run.
+- [x] ~~No real Supabase project yet~~ — wrong: the project ("Strike Arms Airsoft",
+  ref `cxnhkgndvzgyqhiwsvrr`, eu-west-1) already existed from the old session, with
+  migrations run and (wrong-brand) seed applied. Real credentials recovered from the
+  old worktree's gitignored `.env.local`; committed `.env` stays placeholders.
+- **Free-tier auto-pause:** the project pauses after ~7 days idle (DNS record removed →
+  "Failed to fetch" in the browser). Manual dashboard restore brings it back with all
+  data intact. Before launch: Pro plan or a keep-alive ping **[decision]**.
 - [ ] Seed.sql carries the wrong-brand mock catalogue — warning header added, do not
   seed production with it.
 - The full build list now lives in [docs/build-backlog.md](../../../docs/build-backlog.md).

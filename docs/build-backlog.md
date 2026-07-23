@@ -30,8 +30,12 @@ typed client, and Supabase auth.
   accounts (local adapter) untouched. Customer→Supabase swap is still a future task.
 - [ ] **Seed data still has wrong brands** — warning header added; replace with the real
   ASG/CYMA/EVOLUTION catalogue before seeding production **[alan]**
-- [ ] **Supabase project** — no real project exists; `.env` holds placeholders. Create
-  project, run migrations, set env in Cloudflare Pages
+- [x] ~~Supabase project~~ — already existed ("Strike Arms Airsoft", ref
+  `cxnhkgndvzgyqhiwsvrr`, eu-west-1, created 2026-07-02) with migrations run and seed
+  applied. Credentials recovered from the old worktree's gitignored `.env.local`.
+  Still to do: set env vars in Cloudflare Pages at deploy time.
+- [ ] **Free-tier auto-pause** — project pauses after ~7 days idle and needs a manual
+  dashboard restore. Before launch: Pro plan or keep-alive ping **[decision]**
 - [ ] Re-check the schema against needs discovered since (service job tracker, gift
   cards, shipping — schema is click-and-collect only, no shipping states **[decision]**)
 - [ ] Wire the branch's ContactForm → inquiries table once Supabase is live (deferred:
