@@ -18,7 +18,7 @@ import { buildBreadcrumbSchema, buildLocalBusinessSchema } from '@/lib/structure
 
 const TITLE = 'About Strike Arms | Airsoft Shop in Swords, Co. Dublin';
 const DESCRIPTION =
-  'Strike Arms is a walk-in airsoft shop and repair workshop in Swords, Co. Dublin. What we do differently from ordering online, and why in-person advice catches what a product page cannot.';
+  'Strike Arms is a walk-in airsoft shop and repair workshop in Swords, Co. Dublin — the only walk-in airsoft store in north Dublin, and 17 years in the sport. Honest advice across the counter, and why in-person catches what a product page cannot.';
 
 type Pillar = { icon: typeof MapPin; heading: string; body: string };
 
@@ -80,6 +80,16 @@ export default function About() {
           serving players across Ireland. The short version of what we are for: most of the airsoft
           advice available to an Irish player is written for somewhere else, and most of the cheapest
           options turn out to cost the most.
+        </p>
+
+        <h2 className="mt-12 text-2xl font-bold text-foreground">Seventeen years in the sport</h2>
+        <p className="mt-3 text-muted-foreground leading-relaxed">
+          Strike Arms has been part of Irish airsoft for 17 years — the oldest airsoft shop in
+          Dublin, and the only one in the north of the county you can actually walk into. That
+          length of time is the whole point: we have watched brands come and go, seen which guns
+          hold up over years of games and which fall apart, and fixed enough of both to know the
+          difference. It is knowledge you cannot get from a spec sheet, and it is why people make
+          the trip to Swords rather than clicking &lsquo;buy&rsquo; on a website.
         </p>
 
         <div className="mt-10 space-y-8">
