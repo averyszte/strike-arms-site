@@ -1,28 +1,28 @@
 import { supabase } from '@/lib/supabase';
-import { formatSubcategoryName } from '@/lib/format-subcategory';
 import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';
 
 export async function listSubcategories(category?: Category): Promise<Subcategory[]> {
-  let query = supabase.from('products').select('category, subcategory');
+  // Reads the admin-managed subcategories table (the source of truth) so that
+  // each row carries its real UUID — update/delete key off that id. Deriving
+  // the list from distinct products instead would produce synthetic ids the
+  // write path cannot match, and would hide subcategories that have no products yet.
+  let query = supabase
+    .from('subcategories')
+    .select('id, category, slug, name, sort_order')
+    .order('category', { ascending: true })
+    .order('sort_order', { ascending: true });
   if (category) query = query.eq('category', category);
   const { data, error } = await query;
   if (error) throw error;
 
-  const map = new Map<string, Subcategory>();
-  for (const row of data ?? []) {
-    const key = `${row.category}:${row.subcategory}`;
-    if (!map.has(key)) {
-      map.set(key, {
-        id: key,
-        category: row.category as Category,
-        slug: row.subcategory,
-        name: formatSubcategoryName(row.subcategory),
-        sortOrder: 0,
-      });
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => a.slug.localeCompare(b.slug));
+  return (data ?? []).map(row => ({
+    id: row.id,
+    category: row.category as Category,
+    slug: row.slug,
+    name: row.name,
+    sortOrder: row.sort_order,
+  }));
 }
 
 export async function createSubcategory(
