@@ -80,7 +80,8 @@ The storefront UI exists; the backend exists only on the stranded branch (§0).
 
 ## 2. Admin (exists on the stranded branch — see §0; port, then fill gaps)
 
-Per `docs/auth-roles.md`: Admin, Staff/Technician, Customer roles.
+Per `docs/auth-roles.md`: **Admin and Customer only in v1.** Staff/Technician was dropped —
+Alan confirmed (23 July) the repair tech needs no login. Admin auth is a single flat admin.
 
 - [ ] **Admin shell** — **(on branch)** AdminRoot + Login + invite/password flows exist;
   port, keep out of sitemap/robots
@@ -94,8 +95,10 @@ Per `docs/auth-roles.md`: Admin, Staff/Technician, Customer roles.
 - [ ] **Inquiries** — **(on branch)** InquiriesPage + repository exist; could become the
   intake for the service job tracker
 - [ ] **Service job tracker** — the services cluster promises "diagnose first, quote before
-  work": admin needs a job pipeline (booked → diagnosed → quoted → approved → done),
-  Staff/Technician view for assigned jobs, job notes/photos per auth-roles.md
+  work": admin needs a job pipeline (booked → diagnosed → quoted → approved → done) and
+  job notes/photos. Note: no separate Staff/Technician view in v1 (tech has no login) — the
+  admin manages jobs. Reintroduce the technician role only if the bench later needs its own
+  restricted login (design preserved in auth-roles.md "Deferred")
 - [ ] **Customer list** — read-only view, order history per customer
 - [ ] **Gift card admin** — issue/void codes, balance lookup (only if gift cards ship)
 - [ ] **Content flags** — nice-to-have: toggle a product's "featured" state, homepage picks.
@@ -169,6 +172,6 @@ email provider · analytics choice · gift cards in v1 or not · paid keyword-da
    sitemap, PDPs
 3. Auth reconciliation: Supabase auth + roles replaces the local adapter
 4. Checkout: Stripe Checkout + webhook + orders (the site starts earning)
-5. Admin gaps: service job tracker, staff/technician view
+5. Admin gaps: service job tracker (admin-managed; no technician login in v1)
 6. Policies/T&C + shipping + emails (launch requirements)
 7. Prerendering decision + Cloudflare Pages wiring + cutover
