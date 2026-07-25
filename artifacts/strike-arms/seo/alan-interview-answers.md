@@ -19,7 +19,77 @@ Two answer passes are folded together here:
 
 ---
 
+## UPDATE — Alan meeting, 23 July 2026 (primary source — overrides Pass 2 below)
+
+Alan's own answers, taken live. Per the answer key these are **Alan** status and override
+everything under them — including the Pass 2 "READ THIS FIRST" corrections. Where they
+directly reverse Pass 2 it is called out.
+
+**1. Gun range — NOT a settled answer.** In the meeting Alan rattled off some brand names as
+a rough, off-the-cuff note — among them Tokyo Marui, D-Boys, G&G, Specna Arms — but this was
+**not a complete or definitive stock list**. Crucially, **some brands he carries only as
+pre-loved (used), some as new**, and that split was not pinned down per brand. So:
+- **Do NOT treat this as the concrete brand range.** It is a lead, not an answer.
+- It does, however, cast serious doubt on Pass 2's confident "ASG / CYMA / EVOLUTION, does
+  not sell G&G or Specna" claim — G&G and Specna clearly came up. Pass 2's brand range is
+  **no longer trusted**, but nothing replaces it yet.
+- **Still needed from Alan: a proper list** — which brands, new vs pre-loved per brand, and
+  the always-stockable models. **Nothing about the catalogue gets reseeded until then.**
+
+**2. Delivery.** Delivers **gear/parts/BBs only — never guns**. Guns are **collect-in-store
+only**. This means a **mixed fulfilment model**: the schema today is click-and-collect only
+(no shipping states), so a shipping path is needed for the gear side. Design decision, not
+just data.
+
+**3. Age policy.** **18+ for card purchases**; any age if **accompanied by a parent**;
+**prefers 18** overall. This is Strike Arms' own shop policy — safe to state as policy
+(still not a statement of the law). Gives us the age-gate wording.
+
+**4. Repairs.** No fixed price list given. Turnaround **varies and can be long**. He referred
+to a list of common jobs — **get that list.** Keep the existing "diagnose first, quote before
+work" framing; no published prices/turnaround yet.
+
+**5. Warranty.** **No warranty on used guns.** **28 days on electrical appliances** (new
+electric guns — confirm exact scope). Will attempt major repairs ("gun broken in half, fixed").
+
+**6. Email / address.** **Not answered** — still open. See domain note below.
+
+**7. The story.** **17 years in airsoft. Oldest airsoft shop in Dublin. Only walk-in store in
+north Dublin.** Unblocks `/about` and the LocalBusiness positioning. "Oldest / only" are
+superlative claims — attribute to Alan / phrase as his standing, and sanity-check before
+publishing as bald fact.
+
+**8. Beginner sites.** **Not answered** — still open.
+
+**If-there's-time answers:**
+- **Best seller** is a **new gun** (not used); still need the actual models per tier
+  (beginner / CQB / mil-sim / sniper).
+- **Gift cards: yes** — vouchers, positioned for **birthdays and Christmas**. Amounts and
+  digital-vs-physical not specified.
+- **Repair technician does NOT need an admin login** → the Staff/Technician role can be
+  **dropped from the v1 admin** scope.
+
+**Incoming stock (content angle):** WW2 collectibles coming in; a "Scarface" M16 replica.
+
+**LAUNCH BLOCKER — domain not secured.** Alan **has not paid for the strikearms.ie domain.**
+This gates the entire 301 migration / cutover plan. Need: does he currently own it, has it
+lapsed, and who's the registrar? Nothing goes live until this is resolved.
+
+### Still needed from Alan after this meeting
+Specific stockable models per brand · the repairs job list · exact warranty scope on new
+electricals · per-tier best-seller models · real email + shop address · beginner site names ·
+gift-card amounts/format · **domain status**.
+
+---
+
 ## READ THIS FIRST — corrections that invalidate earlier work
+
+> **Note (23 July):** Correction #1 below (ASG/CYMA/EVOLUTION) is **no longer trusted** — the
+> 23 July meeting turned up other brands (G&G, Specna, Tokyo Marui, D-Boys) in a rough verbal
+> note, so Pass 2's confident brand range is in doubt. But that note is **not** a replacement
+> answer either; the real range is still open pending a proper list from Alan. Treat the brand
+> range as UNKNOWN for now. Correction #3 (age) now has Alan's shop policy attached (18+ for
+> cards). The legal-citation reasoning in #2 and #4 still stands.
 
 Pass 2 corrects four things the site and its drafts were built on. These are not minor.
 
