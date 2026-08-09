@@ -1,31 +1,18 @@
 import { useState } from "react";
-
-const brands: { name: string; src: string; h: number; w: number }[] = [
-  { name: "G&G Armament",  src: "/images/brands/gandg.png",       h: 36, w: 36  },
-  { name: "Tokyo Marui",   src: "/images/brands/tokyo-marui.png", h: 28, w: 120 },
-  { name: "ICS",           src: "/images/brands/ics.svg",         h: 32, w: 100 },
-  { name: "Krytac",        src: "/images/brands/krytac.webp",     h: 28, w: 120 },
-  { name: "Nuprol",        src: "/images/brands/nuprol.svg",      h: 30, w: 130 },
-  { name: "ASG",           src: "/images/brands/asg.svg",         h: 32, w: 110 },
-  { name: "WE Tech",       src: "/images/brands/we.png",          h: 24, w: 110 },
-  { name: "Vorsk",         src: "/images/brands/vorsk.svg",       h: 28, w: 100 },
-  { name: "Valken",        src: "/images/brands/valken.svg",      h: 28, w: 115 },
-  { name: "Specna Arms",   src: "/images/brands/specna-arms.svg", h: 26, w: 150 },
-];
+import { BRAND_LOGOS, BRAND_LOGO_HEIGHT } from "@/lib/brand-logos";
 
 function BrandGroup() {
   return (
     <div className="flex items-center gap-10 shrink-0 pr-10" aria-hidden>
-      {brands.map((brand, i) => (
+      {BRAND_LOGOS.map((brand, i) => (
         <span key={i} className="flex items-center gap-10 shrink-0">
           <img
             src={brand.src}
             alt={brand.name}
             draggable={false}
-            className="object-contain opacity-40 hover:opacity-70 transition-opacity duration-300"
+            className="w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300"
             style={{
-              height: brand.h,
-              width: brand.w,
+              height: BRAND_LOGO_HEIGHT,
               filter: "brightness(0) invert(1)",
             }}
           />
