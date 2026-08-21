@@ -2,15 +2,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-type Hotspot = { label: string; x: number; y: number };
+export type Hotspot = { label: string; x: number; y: number };
 
-const loadouts: {
+export type Loadout = {
   id: string;
   name: string;
   image: string;
   hotspots: Hotspot[];
   products: { name: string; desc: string; price: string }[];
-}[] = [
+};
+
+export const loadouts: Loadout[] = [
   {
     id: "beginner",
     name: "Beginner Setup",
@@ -126,7 +128,7 @@ const loadouts: {
   },
 ];
 
-function HotspotPin({ spot, index }: { spot: Hotspot; index: number }) {
+export function HotspotPin({ spot, index }: { spot: Hotspot; index: number }) {
   // Flip label left if dot is near the right edge (x > 62)
   // Flip label right if dot is near the left edge (x < 18)
   // Flip label below if dot is near the top edge (y < 12)

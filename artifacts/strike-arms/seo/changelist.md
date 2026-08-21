@@ -4,6 +4,12 @@ Running list of known changes to make. Newest context at top; tick off as done.
 
 ## Open
 
+### Homepage demo (Direction D) — brand-logo assets
+Found 2026-08-12 while polishing `/demo-combined`. Carousel data lives in `src/lib/brand-logos.ts`; logos in `public/images/brands/`.
+- [ ] **`cyma.webp` is a dirty logo** — a ghosted Cybergun wordmark + reticle bleeds through behind the CYMA badge (bad export). Needs a clean CYMA logo to replace it. Display name "CYMA" is correct.
+- [ ] **`arctus-tactical.webp` filename is misspelled** (should be `arcturus.webp`). Display name already corrected `Arcturus Tactical`→`Arcturus` (its wordmark reads just ARCTURUS). Rename the file + update the `src` path when convenient.
+- Note: `kjw.webp` wordmark reads "KJWORKS"; kept the display name as "KJW" (valid short form) — change only if Alan/Phil prefers "KJ Works".
+
 ### Footer / Contact NAP placeholders
 - [ ] Footer shows a likely-placeholder email **info@strikearms.ie** — confirm the real address (or remove). Deliberately kept out of the Contact page and schema until confirmed.
 - [x] ~~Footer location "Dublin, Ireland"~~ → now **Swords, Co. Dublin**.

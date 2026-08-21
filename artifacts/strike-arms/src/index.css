@@ -160,6 +160,87 @@
   --sidebar-ring: 25 70% 52%;
 }
 
+/* Combined-demo preview theme — the brighter "Drop" orange (#ff5a1f) with
+   near-black text on accent surfaces. Scoped to a wrapper so the live homepage's
+   muted accent stays untouched; to promote this, change --accent in :root/.dark. */
+.theme-drop {
+  --accent: 16 100% 56%;
+  --accent-foreground: 0 0% 4%;
+  --primary: 16 100% 56%;
+  --primary-foreground: 0 0% 4%;
+  --ring: 16 100% 56%;
+  --chart-1: 16 100% 56%;
+  --sidebar-primary: 16 100% 56%;
+  --sidebar-ring: 16 100% 56%;
+}
+
+/* Combined-demo preview — hide the small brand-name ticker in the top utility
+   bar (its own marquee). Scoped so the live homepage keeps it. */
+.theme-drop .w-\[340px\] {
+  display: none;
+}
+
+/* Sharp/tactical look for the combined-demo preview — square every rounded
+   surface (buttons, tiles, inputs), including the reused live components, but
+   leave true circles alone. Scoped so live pages keep their rounded corners. */
+.theme-drop [class*="rounded"]:not([class*="rounded-full"]) {
+  border-radius: 0;
+}
+
+/* Bigger hero CTAs for the combined-demo preview — the reused live HeroSection
+   ships h-12/text-sm buttons; bump them to h-14/text-base with wider padding to
+   match the demo's heavier button scale. Scoped to the hero section so the live
+   homepage's hero buttons stay their original size. */
+.theme-drop section[class*="h-[90vh]"] a[class*="inline-flex"] {
+  height: 3.5rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+/* Arrow on the hero's primary CTA ("Shop Gear") for the combined-demo preview.
+   The shared HeroSection ships no icon, so inject the lucide arrow-right shape as
+   a masked pseudo-element (currentColor fill) to match the other demo buttons —
+   a real icon shape, not an emoji glyph. Scoped to the demo's accent CTA. */
+.theme-drop section[class*="h-[90vh]"] a[class*="bg-accent"]::after {
+  content: "";
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.5rem;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s ease;
+}
+
+.theme-drop section[class*="h-[90vh]"] a[class*="bg-accent"]:hover::after {
+  transform: translateX(0.25rem);
+}
+
+/* Drop-style hero display type for the combined-demo preview — heavier, tighter,
+   uppercase headline with a wider-tracked eyebrow, matching the rest of the demo
+   while keeping the layout centered. Scoped so the live hero keeps its softer,
+   sentence-case look. */
+.theme-drop section[class*="h-[90vh]"] h1 {
+  font-weight: 900;
+  letter-spacing: 0.3em;
+}
+
+.theme-drop section[class*="h-[90vh]"] h2 {
+  text-transform: uppercase;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 1024px) {
+  .theme-drop section[class*="h-[90vh]"] h2 {
+    font-size: 5rem;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -168,6 +249,31 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+/* Combined-demo preview — the brand strip (moved under the trust strip) scrolls
+   the opposite way to the trust strip. Reverses the shared marquee's direction,
+   scoped to the wrapper so the live homepage's brand strip is unaffected. */
+.theme-drop .brands-reverse .animate-marquee {
+  animation-direction: reverse;
+}
+
+/* Combined-demo brand strip — taller band and bigger logos so the marks are
+   actually legible, and no vertical separators between them. Scoped to the demo
+   wrapper so the live homepage's brand strip keeps its original size/dividers.
+   The height override needs !important because BrandMarquee sizes each logo with
+   an inline style (BRAND_LOGO_HEIGHT). */
+.theme-drop .brands-reverse > div {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.theme-drop .brands-reverse img {
+  height: 48px !important;
+}
+
+.theme-drop .brands-reverse .w-px {
+  display: none;
 }
 
 @keyframes marquee {
