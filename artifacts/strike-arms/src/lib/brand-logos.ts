@@ -35,7 +35,7 @@ export const BRAND_LOGOS: BrandLogo[] = [
   { name: "5.11 Tactical", src: "/images/brands/5-11.webp" },
   { name: "A&K", src: "/images/brands/a-k.webp" },
   { name: "Action Army", src: "/images/brands/action-army.webp" },
-  { name: "Arcturus Tactical", src: "/images/brands/arctus-tactical.webp" },
+  { name: "Arcturus", src: "/images/brands/arctus-tactical.webp" },
   { name: "Ares", src: "/images/brands/ares.webp" },
   { name: "Army Armament", src: "/images/brands/army-armement.webp" },
   { name: "Cybergun", src: "/images/brands/cybergun.webp" },

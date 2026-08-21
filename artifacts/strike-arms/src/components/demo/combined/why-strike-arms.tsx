@@ -26,7 +26,7 @@ export function WhyStrikeArms() {
             alt="Inside the Strike Arms store"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ filter: "brightness(0.46) contrast(1.1) saturate(0.78)" }}
+            style={{ filter: "brightness(0.58) contrast(1.1) saturate(0.78)" }}
           />
           {/* Vignette — fades the edges to black so a light photo reads on dark */}
           <div

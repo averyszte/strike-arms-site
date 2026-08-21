@@ -56,8 +56,12 @@ on new electricals, per-tier best-seller models, beginner site names, gift-card 
 
 - **Free-tier auto-pause** recurs every ~7 idle days. If admin login dies with "Failed to fetch",
   that's it: restore from the Supabase dashboard. Before launch: Pro plan or a keep-alive ping.
-- Real Supabase credentials are in **gitignored** `artifacts/strike-arms/.env.local`; the
-  committed `.env` holds placeholders only. `supabase/.temp/` (CLI link) is also local-only.
+- Real Supabase credentials live in `artifacts/strike-arms/.env.local`; the committed `.env`
+  holds placeholders only. **`.env.local` is NOT committed, so a freshly-created git worktree
+  won't have it** — copy it in from a sibling worktree or the admin app boots against the
+  placeholder host and every login fails with a network error ("Invalid login credentials"
+  only appears once the real creds are loaded). `.gitignore` now covers `**/.env.local`
+  (it previously had no `.env*` rule at all). `supabase/.temp/` (CLI link) is also local-only.
 - `supabase db push` is blocked by the permission classifier — the **user** must run it
   (`echo y | npx supabase db push`, from the worktree). Non-interactive run needs `echo y |`.
 - **No emojis anywhere** — lucide-react icons only. Irish/British English.

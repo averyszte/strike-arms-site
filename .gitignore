@@ -11,6 +11,12 @@ out-tsc
 # dependencies
 node_modules
 
+# local env — real secrets, never commit (the placeholder .env stays tracked)
+.env.local
+.env.*.local
+*/.env.local
+**/.env.local
+
 # IDEs and editors
 /.idea
 .project
