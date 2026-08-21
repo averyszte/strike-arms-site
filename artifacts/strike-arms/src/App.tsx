@@ -5,11 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import HomeDemo from "@/pages/HomeDemo";
-import DemoEditorial from "@/pages/DemoEditorial";
-import DemoWorkshop from "@/pages/DemoWorkshop";
-import DemoCurated from "@/pages/DemoCurated";
-import DemoCombined from "@/pages/DemoCombined";
 import Contact from "@/pages/Contact";
 import Brands from "@/pages/Brands";
 import NewArrivals from "@/pages/NewArrivals";
@@ -60,13 +55,6 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-
-      {/* Internal preview — homepage redesign sandbox (noindex, not linked in nav) */}
-      <Route path="/demo" component={HomeDemo} />
-      <Route path="/demo-editorial" component={DemoEditorial} />
-      <Route path="/demo-workshop" component={DemoWorkshop} />
-      <Route path="/demo-curated" component={DemoCurated} />
-      <Route path="/demo-combined" component={DemoCombined} />
 
       {/* Standalone pages */}
       <Route path="/contact" component={Contact} />
