@@ -13,17 +13,34 @@ type AdminAuthContextValue = {
 
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 
+// TEMP DEV-ONLY LOGIN BYPASS — remove before any deploy.
+// Lets the dashboard render without hitting Supabase auth (the shared DB has a
+// broken auth.identities row for the admin, returning a 500 on login). Guarded
+// by import.meta.env.DEV so it can never take effect in a production build.
+const DEV_BYPASS_ADMIN = import.meta.env.DEV && true;
+
+const FAKE_ADMIN_USER = {
+  id: 'dev-bypass-admin',
+  email: 'dev-bypass@local',
+  role: 'authenticated',
+  aud: 'authenticated',
+  app_metadata: {},
+  user_metadata: {},
+  created_at: new Date(0).toISOString(),
+} as unknown as User;
+
 async function checkIsAdmin(userId: string): Promise<boolean> {
   const { data } = await supabase.from('admins').select('id').eq('id', userId).maybeSingle();
   return !!data;
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(DEV_BYPASS_ADMIN ? FAKE_ADMIN_USER : null);
+  const [isAdmin, setIsAdmin] = useState(DEV_BYPASS_ADMIN);
+  const [isLoading, setIsLoading] = useState(!DEV_BYPASS_ADMIN);
 
   useEffect(() => {
+    if (DEV_BYPASS_ADMIN) return;
     let mounted = true;
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
