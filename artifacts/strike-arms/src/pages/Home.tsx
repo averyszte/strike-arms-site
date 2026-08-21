@@ -9,20 +9,25 @@ import {
 import { toAbsoluteUrl } from "@/lib/site-config";
 import { HeroSection } from "@/components/HeroSection";
 import { BrandMarquee } from "@/components/BrandMarquee";
-import { CategoryStrip } from "@/components/CategoryStrip";
-import { TrustStrip } from "@/components/TrustStrip";
-import { ShopByLoadout } from "@/components/ShopByLoadout";
-import { WhyBuySection } from "@/components/WhyBuySection";
-import { AnnotatedRifleSection } from "@/components/AnnotatedRifleSection";
-import { ExpertGuidanceSection } from "@/components/ExpertGuidanceSection";
-import { ReviewsSection } from "@/components/ReviewsSection";
-import { AboutStatsSection } from "@/components/AboutStatsSection";
 import { FAQSection } from "@/components/FAQSection";
-import { FinalCTASection } from "@/components/FinalCTASection";
+import { TrustMarquee } from "@/components/demo/combined/trust-marquee";
+import { CategoryGrid } from "@/components/demo/combined/category-grid";
+import { LoadoutShowcase } from "@/components/demo/combined/loadout-showcase";
+import { Lineup } from "@/components/demo/combined/lineup";
+import { WhyStrikeArms } from "@/components/demo/combined/why-strike-arms";
+import { ReviewsFeature } from "@/components/demo/combined/reviews-feature";
+import { FinalCta } from "@/components/demo/combined/final-cta";
 
 const DESCRIPTION =
   "Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.";
 
+/**
+ * Homepage — the "Combined" (Direction D) design promoted from /demo-combined.
+ * The live site's substance with the Drop demo's creativity at ~60%, on the
+ * site's real design tokens. The brighter accent, squared corners, and hero
+ * type overrides are applied through the scoped `.theme-drop` wrapper so only
+ * this page adopts them; every other route keeps the original look.
+ */
 export default function Home() {
   return (
     <>
@@ -43,20 +48,22 @@ export default function Home() {
           buildLocalBusinessSchema(),
         ]}
       />
-      <SiteLayout>
-      <HeroSection />
-      <BrandMarquee />
-      <CategoryStrip />
-      <TrustStrip />
-      <ShopByLoadout />
-      <WhyBuySection />
-      <AnnotatedRifleSection />
-      <ExpertGuidanceSection />
-      <ReviewsSection />
-      <AboutStatsSection />
-      <FAQSection />
-      <FinalCTASection />
-    </SiteLayout>
+      <SiteLayout className="theme-drop">
+        <HeroSection />
+        <TrustMarquee />
+        {/* Brand strip sits under the trust strip and scrolls the opposite way —
+            the wrapper flips the shared marquee's direction (scoped CSS). */}
+        <div className="brands-reverse">
+          <BrandMarquee />
+        </div>
+        <CategoryGrid />
+        <LoadoutShowcase />
+        <WhyStrikeArms />
+        <Lineup />
+        <ReviewsFeature />
+        <FAQSection />
+        <FinalCta />
+      </SiteLayout>
     </>
   );
 }
