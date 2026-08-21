@@ -1,5 +1,42 @@
 # Current Task
 
+## SESSION HANDOFF — 2026-08-21 (homepage promotion + demo cleanup)
+
+**Branch:** `claude/homepage-direction-d-polish-87d57c` (local dev; carries a dev-only login bypass).
+**Production `main`** is at `75358c2` and is the source Cloudflare Pages builds from.
+
+### What shipped to production this session
+- **Direction D ("Combined") is now the live homepage.** `src/pages/Home.tsx` renders the Combined
+  layout with real indexable SEO (title/description/canonical/OG + JsonLd). It pulls sections from
+  `src/components/demo/combined/*` and wraps them in the scoped `.theme-drop` CSS (in `index.css`,
+  unlayered) so only `/` adopts the brighter accent / squared corners; every other route is untouched.
+- **All demo preview routes removed** from `src/App.tsx` and **`src/pages/DemoCombined.tsx` deleted.**
+  `/demo`, `/demo-editorial`, `/demo-workshop`, `/demo-curated`, `/demo-combined` now 404.
+- **The four other demo page files are KEPT but unrouted (hidden), by the user's choice** —
+  `HomeDemo.tsx`, `DemoEditorial.tsx`, `DemoWorkshop.tsx`, `DemoCurated.tsx` and their
+  `components/demo/{manual,drop,local,...}` folders stay on disk, unreachable. Do not delete them.
+  `components/demo/combined/` is NOT demo dead-code — it backs the live homepage (rename to a
+  non-`demo/` path someday is cosmetic-only, left undone).
+
+### Deploy pattern used (keeps the dev bypass off main)
+Commit on the polish branch → `git checkout -B <tmp> origin/main` → `git cherry-pick <sha>` →
+`git push origin <tmp>:main` → `git checkout` back to the polish branch → delete `<tmp>`. The
+cherry-pick excludes the bypass commit so it never reaches production. `git push` is now allowed
+(user added `Bash(git push:*)` to `~/.claude/settings.json`).
+
+### DEFERRED — admin login 500 (real fix still pending)
+Admin login (`/admin/login`) returns HTTP 500 "Database error querying schema" — a **DB-side GoTrue
+fault, user-specific**: the existing admin user 500s, a non-existent email returns a clean 400.
+Attempted fix (re-inserting the `auth.identities` email row for user id
+`a45de809-2cff-4890-9f6b-5cb6a8742d4b`) did **not** resolve it. No service-role key available, so no
+Admin API access — needs Supabase Auth-log inspection / more SQL. **Stopgap in place:**
+`src/lib/admin-auth-context.tsx` has a `DEV_BYPASS_ADMIN = import.meta.env.DEV && true` bypass
+(FAKE_ADMIN_USER) so the dashboard renders locally. It is guarded by `import.meta.env.DEV` and, more
+importantly, **lives only on the polish branch — it must NEVER reach `main`.** Remove it once the
+real 500 is fixed.
+
+---
+
 Last updated: 2026-08-08 (end of the Supabase-restore / Alan-meeting session).
 
 ## Where the project is right now
