@@ -13,9 +13,11 @@ type AdminAuthContextValue = {
 
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 
-async function checkIsAdmin(userId: string): Promise<boolean> {
-  const { data } = await supabase.from('admins').select('id').eq('id', userId).maybeSingle();
-  return !!data;
+// The admins table is RLS-closed to the browser by design, so a direct select
+// always returns nothing. is_admin() is security definer and reads auth.uid().
+async function checkIsAdmin(): Promise<boolean> {
+  const { data } = await supabase.rpc('is_admin');
+  return data === true;
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
@@ -29,7 +31,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!mounted) return;
       if (session?.user) {
-        const admin = await checkIsAdmin(session.user.id);
+        const admin = await checkIsAdmin();
         if (!mounted) return;
         setUser(session.user);
         setIsAdmin(admin);
@@ -45,7 +47,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (!mounted) return;
       if (session?.user) {
-        const admin = await checkIsAdmin(session.user.id);
+        const admin = await checkIsAdmin();
         if (!mounted) return;
         setUser(session.user);
         setIsAdmin(admin);
@@ -69,7 +71,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       data: { user: u },
     } = await supabase.auth.getUser();
     if (!u) throw new Error('Authentication failed');
-    const admin = await checkIsAdmin(u.id);
+    const admin = await checkIsAdmin();
     if (!admin) {
       await supabase.auth.signOut();
       throw new Error('Access denied — this account is not an admin');
