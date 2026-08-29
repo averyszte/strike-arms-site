@@ -216,6 +216,7 @@ export function ProductsTable() {
 
       <ProductFormSheet open={adding} onClose={() => setAdding(false)} />
       <ProductFormSheet
+        key={editing?.id ?? 'none'}
         open={!!editing}
         onClose={() => setEditing(null)}
         product={editing ?? undefined}

@@ -18,13 +18,8 @@ import {
   filtersToSearchParams,
   hasActiveFilters,
 } from '@/lib/category-filters';
-import {
-  isValidCategorySlug,
-  getCategory,
-  getSubcategory,
-  getCategoryIntro,
-  STORE_INTRO,
-} from '@/lib/taxonomy';
+import { isValidCategorySlug, getSubcategory } from '@/lib/taxonomy';
+import { deriveShopPageMeta } from '@/lib/shop-page-meta';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { Category, ProductFilters } from '@/types/product';
 import NotFound from '@/pages/not-found';
@@ -47,43 +42,6 @@ export default function ShopPage() {
   }
 
   const categorySlug = rawCategory as CategorySlug | undefined;
-  const categoryDef = categorySlug ? getCategory(categorySlug) : undefined;
-  const subcategoryDef = categorySlug && rawSubcategory
-    ? getSubcategory(categorySlug, rawSubcategory)
-    : undefined;
-
-  // ── Derived labels ───────────────────────────────────────────────────────────
-  const h1 = subcategoryDef?.label ?? categoryDef?.label ?? 'Shop';
-
-  // Canonical and title follow the SEO promotion logic:
-  // if subcategory.seo exists → canonical = self, use subcategory metadata
-  // otherwise → canonical = parent (category or /store)
-  const subSeoPromo = subcategoryDef?.seo;
-  let canonicalPath: string;
-  let helmetTitle: string;
-  let helmetDescription: string;
-
-  if (categorySlug && rawSubcategory) {
-    if (subSeoPromo) {
-      canonicalPath = `/store/${categorySlug}/${rawSubcategory}`;
-      helmetTitle = subSeoPromo.title ?? `${subcategoryDef!.label} | Strike Arms Airsoft Dublin`;
-      helmetDescription = subSeoPromo.description;
-    } else {
-      canonicalPath = `/store/${categorySlug}`;
-      helmetTitle = categoryDef
-        ? `${categoryDef.label} | Strike Arms Airsoft Dublin`
-        : 'Shop | Strike Arms Airsoft Dublin';
-      helmetDescription = `Shop ${(categoryDef?.label ?? 'all products').toLowerCase()} at Strike Arms Airsoft Dublin.`;
-    }
-  } else if (categorySlug) {
-    canonicalPath = `/store/${categorySlug}`;
-    helmetTitle = `${categoryDef!.label} | Strike Arms Airsoft Dublin`;
-    helmetDescription = `Shop ${categoryDef!.label.toLowerCase()} at Strike Arms Airsoft Dublin.`;
-  } else {
-    canonicalPath = '/store';
-    helmetTitle = 'Shop | Strike Arms Airsoft Dublin';
-    helmetDescription = 'Browse the full range of airsoft guns, gear, and accessories at Strike Arms Dublin.';
-  }
 
   // ── Filters ──────────────────────────────────────────────────────────────────
   const filters = parseFiltersFromSearch(
@@ -92,35 +50,17 @@ export default function ShopPage() {
     rawSubcategory,
   );
 
-  // Intro copy: subcategory promo intro when present, otherwise the category intro.
-  const introText = rawSubcategory
-    ? subSeoPromo?.intro
-    : categorySlug
-      ? getCategoryIntro(categorySlug)
-      : STORE_INTRO;
-
-  // Search results (/store?q=…): relabel the title, hide the intro, and keep the
-  // filtered view out of the index (internal search results should not be indexed).
-  const isSearchResults = !categorySlug && !!filters.q;
-  const noindex = !!filters.q;
-  const pageTitle = isSearchResults
-    ? `Search: ${filters.q} | Strike Arms Airsoft Dublin`
-    : helmetTitle;
-  const pageDescription = isSearchResults
-    ? `Airsoft products matching "${filters.q}" at Strike Arms Airsoft Dublin.`
-    : helmetDescription;
-  const pageIntro = isSearchResults ? undefined : introText;
+  const meta = deriveShopPageMeta(categorySlug, rawSubcategory, filters.q);
 
   return (
     <ShopPageInner
       categorySlug={categorySlug}
       rawSubcategory={rawSubcategory}
-      h1={h1}
-      canonicalPath={canonicalPath}
-      helmetTitle={pageTitle}
-      helmetDescription={pageDescription}
-      introText={pageIntro}
-      noindex={noindex}
+      canonicalPath={meta.canonicalPath}
+      helmetTitle={meta.title}
+      helmetDescription={meta.description}
+      introText={meta.intro}
+      noindex={meta.noindex}
       filters={filters}
       mobileFiltersOpen={mobileFiltersOpen}
       setMobileFiltersOpen={setMobileFiltersOpen}
@@ -133,7 +73,6 @@ export default function ShopPage() {
 interface InnerProps {
   categorySlug: CategorySlug | undefined;
   rawSubcategory: string | undefined;
-  h1: string;
   canonicalPath: string;
   helmetTitle: string;
   helmetDescription: string;
@@ -148,7 +87,6 @@ interface InnerProps {
 function ShopPageInner({
   categorySlug,
   rawSubcategory,
-  h1,
   canonicalPath,
   helmetTitle,
   helmetDescription,

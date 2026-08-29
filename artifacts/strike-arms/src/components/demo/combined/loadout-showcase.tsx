@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { loadouts, HotspotPin } from "@/components/ShopByLoadout";
+import { HotspotPin } from "@/components/ShopByLoadout";
+import { loadouts } from "@/lib/loadouts";
 
 /**
  * Combined homepage — demo-styled variant of the live ShopByLoadout. Same

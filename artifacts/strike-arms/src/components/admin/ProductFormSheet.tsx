@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -8,8 +7,9 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ProductFormFields, productFormSchema } from '@/components/admin/ProductFormFields';
-import type { ProductFormValues } from '@/components/admin/ProductFormFields';
+import { ProductFormFields } from '@/components/admin/ProductFormFields';
+import { productFormSchema } from '@/lib/product-form-schema';
+import type { ProductFormValues } from '@/lib/product-form-schema';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/use-admin-products';
 import { useToast } from '@/hooks/use-toast';
 import type { Product, Category } from '@/types/product';
@@ -95,12 +95,10 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
+    // ProductsTable keys this sheet on the product id, so switching rows
+    // remounts it and these defaults are re-read. No reset effect needed.
     defaultValues: product ? toFormValues(product) : DEFAULT_VALUES,
   });
-
-  useEffect(() => {
-    form.reset(product ? toFormValues(product) : DEFAULT_VALUES);
-  }, [product, form.reset]);
 
   async function onSubmit(values: ProductFormValues) {
     try {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -35,17 +35,12 @@ export function SubcategoryFormSheet({ open, onClose, category, subcategory }: P
   const create = useCreateSubcategory();
   const update = useUpdateSubcategory();
 
-  const [name, setName] = useState('');
-  const [slug, setSlug] = useState('');
-  const [slugTouched, setSlugTouched] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setName(subcategory?.name ?? '');
-      setSlug(subcategory?.slug ?? '');
-      setSlugTouched(!!subcategory);
-    }
-  }, [open, subcategory]);
+  // Seeded straight from the props. CategoriesPage gives this sheet a key,
+  // so switching which subcategory is being edited remounts it instead of
+  // writing over the fields from an effect.
+  const [name, setName] = useState(subcategory?.name ?? '');
+  const [slug, setSlug] = useState(subcategory?.slug ?? '');
+  const [slugTouched, setSlugTouched] = useState(!!subcategory);
 
   function handleNameChange(val: string) {
     setName(val);

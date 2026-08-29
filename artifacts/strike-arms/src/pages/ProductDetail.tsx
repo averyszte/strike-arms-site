@@ -24,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
 import { getBrandName } from '@/lib/brands';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
-import { SITE_URL, BUSINESS, toAbsoluteUrl } from '@/lib/site-config';
+import { SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
 import {
   buildProductSchema,
   buildBreadcrumbSchema,

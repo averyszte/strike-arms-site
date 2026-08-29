@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Order } from '@/types/order';
@@ -9,7 +10,10 @@ interface Props {
 }
 
 export function OperationalAlertsCard({ orders }: Props) {
-  const now = Date.now();
+  // Read once on mount rather than on every render: the clock is not a
+  // prop, and a render that returns a different answer each time is the
+  // kind of impurity concurrent React is allowed to punish.
+  const [now] = useState(() => Date.now());
 
   const failed = orders.filter(o => o.paymentStatus === 'failed');
   const stalePending = orders.filter(

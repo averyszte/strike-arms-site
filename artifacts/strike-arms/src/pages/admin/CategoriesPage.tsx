@@ -180,6 +180,7 @@ export default function CategoriesPage() {
 
       {sheetCategory && (
         <SubcategoryFormSheet
+          key={editing?.id ?? 'new'}
           open={!!sheetCategory}
           onClose={() => { setSheetCategory(null); setEditing(null); }}
           category={sheetCategory}
