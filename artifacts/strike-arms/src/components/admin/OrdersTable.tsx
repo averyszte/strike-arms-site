@@ -1,3 +1,4 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { OrdersTableRow } from '@/components/admin/OrdersTableRow';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
@@ -10,6 +11,11 @@ import type { FulfillmentStatus, Order } from '@/types/order';
 type OrdersTableProps = {
   orders: Order[];
   showArchived: boolean;
+  areAllSelected: boolean;
+  areSomeSelected: boolean;
+  isSelected: (orderId: string) => boolean;
+  onToggleSelect: (orderId: string) => void;
+  onToggleAll: () => void;
   onSelect: (orderId: string) => void;
   onStatusChange: (orderId: string, status: FulfillmentStatus) => void;
   onToggleArchive: (order: Order) => void;
@@ -18,6 +24,11 @@ type OrdersTableProps = {
 export function OrdersTable({
   orders,
   showArchived,
+  areAllSelected,
+  areSomeSelected,
+  isSelected,
+  onToggleSelect,
+  onToggleAll,
   onSelect,
   onStatusChange,
   onToggleArchive,
@@ -28,6 +39,14 @@ export function OrdersTable({
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/50">
             <tr>
+              <th className="w-10 px-4 py-3 text-left">
+                <Checkbox
+                  checked={areAllSelected ? true : areSomeSelected ? 'indeterminate' : false}
+                  disabled={orders.length === 0}
+                  onCheckedChange={onToggleAll}
+                  aria-label="Select every order on this page"
+                />
+              </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Order #</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Customer</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
@@ -44,6 +63,8 @@ export function OrdersTable({
               <OrdersTableRow
                 key={order.id}
                 order={order}
+                isSelected={isSelected(order.id)}
+                onToggleSelect={onToggleSelect}
                 onSelect={onSelect}
                 onStatusChange={onStatusChange}
                 onToggleArchive={onToggleArchive}
@@ -51,7 +72,7 @@ export function OrdersTable({
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
                   {showArchived ? 'Nothing archived' : 'No orders found'}
                 </td>
               </tr>

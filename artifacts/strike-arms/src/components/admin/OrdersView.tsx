@@ -1,15 +1,21 @@
-import { useState } from 'react';
-import { Archive, Columns3, Plus, Table2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { CounterOrderSheet } from '@/components/admin/CounterOrderSheet';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
 import { OrdersBoard } from '@/components/admin/OrdersBoard';
+import { OrdersBulkBar } from '@/components/admin/OrdersBulkBar';
 import { OrdersTable } from '@/components/admin/OrdersTable';
-import { useOrders, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
-import { useOrdersView, type OrdersViewMode } from '@/hooks/use-orders-view';
+import { OrdersToolbar } from '@/components/admin/OrdersToolbar';
+import {
+  useBulkFulfillmentStatus,
+  useBulkSetArchived,
+  useOrders,
+  useSetOrderArchived,
+  useUpdateFulfillmentStatus,
+} from '@/hooks/use-orders';
+import { useOrderSelection } from '@/hooks/use-order-selection';
+import { useOrdersExport } from '@/hooks/use-orders-export';
+import { useOrdersView } from '@/hooks/use-orders-view';
 import { useToast } from '@/hooks/use-toast';
 import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
 
@@ -18,21 +24,14 @@ import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
  *
  * The two views share one set of filters and one selected order on purpose —
  * switching view should not lose your place or quietly change what you are
- * looking at.
+ * looking at. Ticking rows for a bulk action is the table's job only; the
+ * board is for moving one order at a time.
  */
-
-const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'paid', label: 'Paid' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'failed', label: 'Failed' },
-  { value: 'refunded', label: 'Refunded' },
-];
 
 /**
  * A board split across pages would be a lie about how much work is waiting, so
- * it asks for far more rows than the table's page. Alan's open orders will not
- * approach this; if they ever do, the count below the board says so.
+ * it asks for far more rows than the table page. Alan will not approach this;
+ * if he ever does, the count below the board says so.
  */
 const BOARD_PAGE_SIZE = 200;
 
@@ -44,24 +43,41 @@ export function OrdersView() {
 
   const { view, setView, isTableForced } = useOrdersView();
 
+  const filters = useMemo(
+    () => ({
+      paymentStatus: paymentFilter === 'all' ? undefined : paymentFilter,
+      isArchived: showArchived,
+    }),
+    [paymentFilter, showArchived],
+  );
+
   const { data, isLoading } = useOrders({
-    paymentStatus: paymentFilter === 'all' ? undefined : paymentFilter,
-    isArchived: showArchived,
+    ...filters,
     pageSize: view === 'board' ? BOARD_PAGE_SIZE : undefined,
   });
 
+  const orders = useMemo(() => data?.items ?? [], [data]);
+  const total = data?.total ?? 0;
+
   const updateStatus = useUpdateFulfillmentStatus();
   const setArchived = useSetOrderArchived();
+  const bulkArchive = useBulkSetArchived();
+  const bulkStatus = useBulkFulfillmentStatus();
+  const selection = useOrderSelection(orders);
+  const { exportOrders, isExporting } = useOrdersExport();
   const { toast } = useToast();
 
-  const orders = data?.items ?? [];
-  const total = data?.total ?? 0;
+  const selectedCount = selection.selectedIds.length;
+
+  function failed(description: string) {
+    toast({ title: 'Error', description, variant: 'destructive' });
+  }
 
   async function handleStatusChange(orderId: string, status: FulfillmentStatus) {
     try {
       await updateStatus.mutateAsync({ orderId, status });
     } catch {
-      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+      failed('Failed to update status');
     }
   }
 
@@ -76,82 +92,59 @@ export function OrdersView() {
           : 'It is back in the working list.',
       });
     } catch {
+      failed(isArchived ? 'Failed to archive order' : 'Failed to restore order');
+    }
+  }
+
+  async function handleBulkArchive() {
+    const orderIds = selection.selectedIds;
+    try {
+      await bulkArchive.mutateAsync({ orderIds, isArchived: !showArchived });
+      selection.clear();
       toast({
-        title: 'Error',
-        description: isArchived ? 'Failed to archive order' : 'Failed to restore order',
-        variant: 'destructive',
+        title: showArchived ? 'Orders restored' : 'Orders archived',
+        description: `${orderIds.length} updated. Archived orders still count towards revenue.`,
       });
+    } catch {
+      failed('Failed to update the selected orders');
+    }
+  }
+
+  async function handleBulkStatus(status: FulfillmentStatus) {
+    const orderIds = selection.selectedIds;
+    try {
+      await bulkStatus.mutateAsync({ orderIds, status });
+      selection.clear();
+      toast({ title: 'Orders updated', description: `${orderIds.length} changed.` });
+    } catch {
+      failed('Failed to update the selected orders');
+    }
+  }
+
+  async function handleExport() {
+    try {
+      const count = await exportOrders(filters, selection.selectedIds);
+      toast({ title: 'Export ready', description: `${count} orders written to a CSV file.` });
+    } catch {
+      failed('Failed to build the export');
     }
   }
 
   return (
     <>
-      <div className="mb-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-foreground">Orders</h2>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {!isTableForced && (
-              <ToggleGroup
-                type="single"
-                size="sm"
-                value={view}
-                aria-label="Order view"
-                onValueChange={(value) => {
-                  // Radix clears the value when the active item is clicked
-                  // again; there is always a view, so an empty value is ignored.
-                  if (value) setView(value as OrdersViewMode);
-                }}
-              >
-                <ToggleGroupItem value="table" className="h-8 px-3 text-xs">
-                  <Table2 className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                  Table
-                </ToggleGroupItem>
-                <ToggleGroupItem value="board" className="h-8 px-3 text-xs">
-                  <Columns3 className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                  Board
-                </ToggleGroupItem>
-              </ToggleGroup>
-            )}
-
-            <Button
-              type="button"
-              size="sm"
-              variant={showArchived ? 'default' : 'outline'}
-              aria-pressed={showArchived}
-              onClick={() => setShowArchived((current) => !current)}
-            >
-              <Archive className="mr-1.5 h-4 w-4" aria-hidden="true" />
-              Archived
-            </Button>
-
-            <Button size="sm" onClick={() => setIsCounterSaleOpen(true)}>
-              <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
-              New counter sale
-            </Button>
-          </div>
-        </div>
-
-        <Tabs
-          value={paymentFilter}
-          onValueChange={(value) => setPaymentFilter(value as PaymentStatus | 'all')}
-        >
-          <TabsList>
-            {PAYMENT_TABS.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        {showArchived && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Archived orders are out of the way, not undone — they still count towards revenue on
-            the dashboard.
-          </p>
-        )}
-      </div>
+      <OrdersToolbar
+        view={view}
+        isTableForced={isTableForced}
+        showArchived={showArchived}
+        paymentFilter={paymentFilter}
+        selectedCount={selectedCount}
+        isExporting={isExporting}
+        onViewChange={setView}
+        onToggleArchived={() => setShowArchived((current) => !current)}
+        onPaymentFilterChange={setPaymentFilter}
+        onNewCounterSale={() => setIsCounterSaleOpen(true)}
+        onExport={() => void handleExport()}
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-16">
@@ -172,13 +165,30 @@ export function OrdersView() {
           )}
         </>
       ) : (
-        <OrdersTable
-          orders={orders}
-          showArchived={showArchived}
-          onSelect={setSelectedOrderId}
-          onStatusChange={(orderId, status) => void handleStatusChange(orderId, status)}
-          onToggleArchive={(order) => void handleToggleArchive(order)}
-        />
+        <>
+          {selectedCount > 0 && (
+            <OrdersBulkBar
+              selectedCount={selectedCount}
+              isArchivedView={showArchived}
+              isPending={bulkArchive.isPending || bulkStatus.isPending}
+              onClear={selection.clear}
+              onStatusChange={(status) => void handleBulkStatus(status)}
+              onToggleArchive={() => void handleBulkArchive()}
+            />
+          )}
+          <OrdersTable
+            orders={orders}
+            showArchived={showArchived}
+            areAllSelected={selection.areAllSelected}
+            areSomeSelected={selection.areSomeSelected}
+            isSelected={selection.isSelected}
+            onToggleSelect={selection.toggle}
+            onToggleAll={selection.toggleAll}
+            onSelect={setSelectedOrderId}
+            onStatusChange={(orderId, status) => void handleStatusChange(orderId, status)}
+            onToggleArchive={(order) => void handleToggleArchive(order)}
+          />
+        </>
       )}
 
       <OrderDetailSheet orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />

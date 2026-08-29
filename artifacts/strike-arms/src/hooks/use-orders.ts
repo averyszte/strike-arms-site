@@ -5,6 +5,8 @@ import {
   getOrder,
   listAllOrdersWithItems,
   setOrderArchived,
+  setOrdersArchived,
+  updateOrdersFulfillment,
 } from '@/data/orders-repository';
 import type { FulfillmentStatus, OrderListFilters } from '@/types/order';
 
@@ -54,6 +56,36 @@ export function useSetOrderArchived() {
   return useMutation({
     mutationFn: ({ orderId, isArchived }: { orderId: string; isArchived: boolean }) =>
       setOrderArchived(orderId, isArchived),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'order'] });
+    },
+  });
+}
+
+/**
+ * Archives or restores a whole selection.
+ *
+ * Separate from useSetOrderArchived rather than a loop over it so the table
+ * refreshes once at the end instead of flickering through twenty refetches.
+ */
+export function useBulkSetArchived() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ orderIds, isArchived }: { orderIds: string[]; isArchived: boolean }) =>
+      setOrdersArchived(orderIds, isArchived),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'order'] });
+    },
+  });
+}
+
+export function useBulkFulfillmentStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ orderIds, status }: { orderIds: string[]; status: FulfillmentStatus }) =>
+      updateOrdersFulfillment(orderIds, status),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
       qc.invalidateQueries({ queryKey: ['admin', 'order'] });

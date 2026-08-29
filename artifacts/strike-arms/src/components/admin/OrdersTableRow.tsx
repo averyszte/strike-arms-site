@@ -3,6 +3,7 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -23,6 +24,8 @@ import type { FulfillmentStatus, Order } from '@/types/order';
 
 type OrdersTableRowProps = {
   order: Order;
+  isSelected: boolean;
+  onToggleSelect: (orderId: string) => void;
   onSelect: (orderId: string) => void;
   onStatusChange: (orderId: string, status: FulfillmentStatus) => void;
   onToggleArchive: (order: Order) => void;
@@ -30,6 +33,8 @@ type OrdersTableRowProps = {
 
 export function OrdersTableRow({
   order,
+  isSelected,
+  onToggleSelect,
   onSelect,
   onStatusChange,
   onToggleArchive,
@@ -39,6 +44,14 @@ export function OrdersTableRow({
       className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-muted/30"
       onClick={() => onSelect(order.id)}
     >
+      <td className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelect(order.id)}
+          aria-label={`Select order ${formatOrderNumber(order.orderNumber)}`}
+        />
+      </td>
+
       <td className="px-4 py-3">
         <p className="font-mono font-medium text-foreground">
           {formatOrderNumber(order.orderNumber)}

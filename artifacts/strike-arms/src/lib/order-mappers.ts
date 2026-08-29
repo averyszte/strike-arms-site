@@ -6,8 +6,8 @@ import type {
   ShippingAddress,
 } from '@/types/order';
 
-type OrderRow = Database['public']['Tables']['orders']['Row'];
-type OrderItemRow = Database['public']['Tables']['order_items']['Row'];
+export type OrderRow = Database['public']['Tables']['orders']['Row'];
+export type OrderItemRow = Database['public']['Tables']['order_items']['Row'];
 type OrderStatusLogRow = Database['public']['Tables']['order_status_log']['Row'];
 
 /**

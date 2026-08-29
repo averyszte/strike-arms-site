@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { chunkArray } from '@/lib/chunk-array';
 import { rowToOrder, rowToOrderStatusLog } from '@/lib/order-mappers';
 import type {
   Order,
@@ -9,18 +10,19 @@ import type {
   CounterOrderResult,
 } from '@/types/order';
 
-export async function listOrders(
-  filters: OrderListFilters = {},
-): Promise<{ items: Order[]; total: number }> {
-  const page = filters.page ?? 1;
-  const pageSize = filters.pageSize ?? 25;
-
+/**
+ * The filtered orders query, without a range.
+ *
+ * The list and the export share it so that "export" always means "everything
+ * matching what I am looking at". Two copies of these conditions would drift,
+ * and the day they drifted the export would quietly be of something else.
+ */
+export function buildOrdersQuery(filters: OrderListFilters) {
   let query = supabase
     .from('orders')
     .select('*', { count: 'exact' })
     .eq('is_archived', filters.isArchived ?? false)
-    .order('created_at', { ascending: false })
-    .range((page - 1) * pageSize, page * pageSize - 1);
+    .order('created_at', { ascending: false });
 
   if (filters.paymentStatus) query = query.eq('payment_status', filters.paymentStatus);
   if (filters.fulfillmentStatus) query = query.eq('fulfillment_status', filters.fulfillmentStatus);
@@ -32,7 +34,19 @@ export async function listOrders(
     );
   }
 
-  const { data, error, count } = await query;
+  return query;
+}
+
+export async function listOrders(
+  filters: OrderListFilters = {},
+): Promise<{ items: Order[]; total: number }> {
+  const page = filters.page ?? 1;
+  const pageSize = filters.pageSize ?? 25;
+
+  const { data, error, count } = await buildOrdersQuery(filters).range(
+    (page - 1) * pageSize,
+    page * pageSize - 1,
+  );
   if (error) throw error;
 
   return { items: (data ?? []).map((r) => rowToOrder(r)), total: count ?? 0 };
@@ -162,4 +176,37 @@ export async function createCounterOrder(
 
   if (error) throw error;
   return { orderId: data.order_id, orderNumber: data.order_number };
+}
+
+/** How many ids fit in an `in.()` before the URL gets unreasonable. */
+export const ID_CHUNK = 100;
+
+/**
+ * Archives or restores many orders at once.
+ *
+ * Chunked for URL length, not for safety: each chunk is its own statement, so
+ * a failure part way through leaves the earlier chunks archived. That is the
+ * right trade for an action whose whole point is that it is reversible.
+ */
+export async function setOrdersArchived(ids: string[], isArchived: boolean): Promise<void> {
+  for (const batch of chunkArray(ids, ID_CHUNK)) {
+    const { error } = await supabase
+      .from('orders')
+      .update({ is_archived: isArchived })
+      .in('id', batch);
+    if (error) throw error;
+  }
+}
+
+export async function updateOrdersFulfillment(
+  ids: string[],
+  status: FulfillmentStatus,
+): Promise<void> {
+  for (const batch of chunkArray(ids, ID_CHUNK)) {
+    const { error } = await supabase
+      .from('orders')
+      .update({ fulfillment_status: status })
+      .in('id', batch);
+    if (error) throw error;
+  }
 }
