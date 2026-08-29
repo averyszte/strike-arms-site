@@ -85,6 +85,17 @@ type SubcategoryRow = {
   sort_order: number; created_at: string;
 };
 
+// Single row, id always 1. The rates the cart and the checkout function both
+// read, so neither can quote a number the other does not have.
+type StoreSettingsRow = {
+  id: number;
+  shipping_flat_cents: number;
+  free_shipping_threshold_cents: number;
+  vat_rate_basis_points: number;
+  updated_at: string;
+  updated_by: string | null;
+};
+
 // ─── Database shape ───────────────────────────────────────────────────────────
 // Matches the shape expected by @supabase/supabase-js v2 generics.
 // Each table needs a Relationships array; schema needs CompositeTypes.
@@ -176,6 +187,14 @@ export type Database = {
           id?: string; sort_order?: number;
         };
         Update: Partial<Omit<SubcategoryRow, 'id' | 'created_at'>>;
+        Relationships: [];
+      };
+      store_settings: {
+        Row: StoreSettingsRow;
+        // No insert or delete is granted to any browser role: the row is
+        // seeded by migration 010 and must never be absent.
+        Insert: never;
+        Update: Partial<Omit<StoreSettingsRow, 'id' | 'updated_at'>>;
         Relationships: [];
       };
     };

@@ -20,15 +20,31 @@ export type CartLine = {
   isShippable: boolean;
 };
 
-export type CartTotals = {
+/**
+ * What the basket can work out on its own, without knowing any rates. The
+ * header badge and the fulfilment choice need only this, so neither has to
+ * wait on a network read.
+ */
+export type CartBasics = {
   itemsSubtotalCents: number;
   deliverableSubtotalCents: number;
-  shippingCents: number;
-  totalCents: number;
-  vatCents: number;
   itemCount: number;
   hasPickupItems: boolean;
   hasShippableItems: boolean;
+};
+
+/**
+ * What the basket cannot work out until the store's rates have been read.
+ * Modelled separately, and handed around as `CartPricing | null`, so that
+ * "we do not know the delivery charge yet" is a state the UI has to handle
+ * rather than a wrong number it can accidentally render.
+ */
+export type CartPricing = {
+  shippingCents: number;
+  totalCents: number;
+  vatCents: number;
+  /** Carried so the summary can show the free-delivery shortfall nudge. */
+  freeShippingThresholdCents: number;
 };
 
 export type CartLineFulfillment = ItemFulfillmentMethod;

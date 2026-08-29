@@ -1,15 +1,13 @@
-import {
-  calculateShippingCents,
-  vatIncludedCents,
-} from '@/lib/shipping';
-import type { CartLine, CartTotals } from '@/types/cart';
+import { calculateShippingCents, vatIncludedCents } from '@/lib/shipping';
+import type { CartBasics, CartLine, CartPricing } from '@/types/cart';
+import type { StoreRates } from '@/types/store-settings';
 
 /**
  * What the cart shows. These numbers are a preview: the checkout function
  * recalculates all of them from the database before charging anything, using
- * the same rules from shipping.ts.
+ * the same arithmetic and the same store_settings row.
  */
-export function calculateCartTotals(lines: CartLine[], wantsDelivery: boolean): CartTotals {
+export function calculateCartBasics(lines: CartLine[], wantsDelivery: boolean): CartBasics {
   const itemsSubtotalCents = lines.reduce(
     (sum, line) => sum + line.unitPriceCents * line.quantity,
     0,
@@ -23,25 +21,34 @@ export function calculateCartTotals(lines: CartLine[], wantsDelivery: boolean): 
         .reduce((sum, line) => sum + line.unitPriceCents * line.quantity, 0)
     : 0;
 
-  const hasShippableItems = lines.some((line) => line.isShippable);
-  const hasPickupItems = lines.some((line) => !line.isShippable);
-  const isDelivering = wantsDelivery && hasShippableItems;
-
-  const shippingCents = isDelivering
-    ? calculateShippingCents(deliverableSubtotalCents)
-    : 0;
-
-  const totalCents = itemsSubtotalCents + shippingCents;
-
   return {
     itemsSubtotalCents,
     deliverableSubtotalCents,
+    itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
+    hasPickupItems: lines.some((line) => !line.isShippable),
+    hasShippableItems: lines.some((line) => line.isShippable),
+  };
+}
+
+/** The money that cannot be known until the store's rates have been read. */
+export function calculateCartPricing(
+  basics: CartBasics,
+  wantsDelivery: boolean,
+  rates: StoreRates,
+): CartPricing {
+  const isDelivering = wantsDelivery && basics.hasShippableItems;
+
+  const shippingCents = isDelivering
+    ? calculateShippingCents(basics.deliverableSubtotalCents, rates)
+    : 0;
+
+  const totalCents = basics.itemsSubtotalCents + shippingCents;
+
+  return {
     shippingCents,
     totalCents,
-    vatCents: vatIncludedCents(totalCents),
-    itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
-    hasPickupItems,
-    hasShippableItems,
+    vatCents: vatIncludedCents(totalCents, rates),
+    freeShippingThresholdCents: rates.freeShippingThresholdCents,
   };
 }
 

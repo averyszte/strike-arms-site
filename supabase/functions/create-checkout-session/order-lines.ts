@@ -2,6 +2,7 @@ import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import {
   calculateShippingCents,
   deriveFulfillmentMethod,
+  fetchStoreRates,
   type FulfillmentMethod,
   vatIncludedCents,
 } from "../_shared/shipping.ts";
@@ -64,6 +65,10 @@ export async function priceBasket(
 ): Promise<PricedBasket> {
   const ids = [...new Set(lines.map((line) => line.productId))];
 
+  // The same row the browser priced the cart from, re-read here. This is the
+  // only copy of these numbers that decides what Stripe charges.
+  const rates = await fetchStoreRates(admin);
+
   const { data, error } = await admin
     .from("products")
     .select(PRODUCT_COLUMNS)
@@ -114,7 +119,7 @@ export async function priceBasket(
   const hasPickupItems = priced.some((line) => line.fulfillmentMethod === "pickup");
 
   const shippingCents = hasDeliveryItems
-    ? calculateShippingCents(deliverableSubtotalCents)
+    ? calculateShippingCents(deliverableSubtotalCents, rates)
     : 0;
 
   const totalCents = itemsSubtotalCents + shippingCents;
@@ -124,7 +129,7 @@ export async function priceBasket(
     itemsSubtotalCents,
     shippingCents,
     totalCents,
-    vatCents: vatIncludedCents(totalCents),
+    vatCents: vatIncludedCents(totalCents, rates),
     fulfillmentMethod: deriveFulfillmentMethod(hasPickupItems, hasDeliveryItems),
   };
 }

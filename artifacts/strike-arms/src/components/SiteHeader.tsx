@@ -382,7 +382,7 @@ export function SiteHeader() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { totals } = useCart();
+  const { basics } = useCart();
 
   const handleNavEnter = (name: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -483,13 +483,13 @@ export function SiteHeader() {
               href="/cart"
               className="relative hover:text-accent transition-colors"
               aria-label={
-                totals.itemCount === 1 ? "Cart, 1 item" : `Cart, ${totals.itemCount} items`
+                basics.itemCount === 1 ? "Cart, 1 item" : `Cart, ${basics.itemCount} items`
               }
             >
               <ShoppingCart className="w-5 h-5" />
-              {totals.itemCount > 0 && (
+              {basics.itemCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold min-w-[14px] h-[14px] px-[3px] flex items-center justify-center rounded-full text-[9px] leading-none">
-                  {totals.itemCount > 99 ? "99+" : totals.itemCount}
+                  {basics.itemCount > 99 ? "99+" : basics.itemCount}
                 </span>
               )}
             </Link>
@@ -636,7 +636,7 @@ export function SiteHeader() {
               </Link>
               <Link href="/cart" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(false)}>
                 <ShoppingCart className="w-4 h-4" />
-                Cart{totals.itemCount > 0 ? ` (${totals.itemCount})` : ""}
+                Cart{basics.itemCount > 0 ? ` (${basics.itemCount})` : ""}
               </Link>
             </div>
           </motion.div>

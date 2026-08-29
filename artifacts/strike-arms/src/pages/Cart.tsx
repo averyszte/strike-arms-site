@@ -7,6 +7,7 @@ import { CheckoutForm } from '@/components/cart/CheckoutForm';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { FulfillmentChoice } from '@/components/cart/FulfillmentChoice';
 import { useCart } from '@/hooks/use-cart';
+import { useCartPricing } from '@/hooks/use-cart-pricing';
 import { useCheckout } from '@/hooks/use-checkout';
 import { SITE_URL } from '@/lib/site-config';
 
@@ -15,7 +16,8 @@ const DESCRIPTION =
   'Review your cart, choose collection in Swords or delivery across Ireland, and check out securely.';
 
 export default function Cart() {
-  const { lines, totals, wantsDelivery, setWantsDelivery, setQuantity, removeLine } = useCart();
+  const { lines, basics, wantsDelivery, setWantsDelivery, setQuantity, removeLine } = useCart();
+  const pricing = useCartPricing();
   const { startCheckout, isSubmitting, error } = useCheckout();
 
   return (
@@ -52,20 +54,20 @@ export default function Cart() {
               <div className="mt-8">
                 <FulfillmentChoice
                   wantsDelivery={wantsDelivery}
-                  hasShippableItems={totals.hasShippableItems}
-                  hasPickupItems={totals.hasPickupItems}
+                  hasShippableItems={basics.hasShippableItems}
+                  hasPickupItems={basics.hasPickupItems}
                   onChange={setWantsDelivery}
                 />
               </div>
             </div>
 
             <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-              <CartSummary totals={totals} wantsDelivery={wantsDelivery} />
+              <CartSummary basics={basics} pricing={pricing} wantsDelivery={wantsDelivery} />
 
               <div className="rounded-lg border border-border bg-card p-5">
                 <h2 className="mb-4 text-lg font-semibold text-foreground">Checkout</h2>
                 <CheckoutForm
-                  wantsDelivery={wantsDelivery && totals.hasShippableItems}
+                  wantsDelivery={wantsDelivery && basics.hasShippableItems}
                   isSubmitting={isSubmitting}
                   submitError={error}
                   onSubmit={(details) => startCheckout(lines, details)}

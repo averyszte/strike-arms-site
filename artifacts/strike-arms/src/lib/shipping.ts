@@ -1,32 +1,19 @@
 /**
- * Shipping and VAT rules for the Strike Arms store.
+ * Shipping and VAT arithmetic for the Strike Arms store.
  *
  * ┌──────────────────────────────────────────────────────────────────────────┐
  * │ DUPLICATED in supabase/functions/_shared/shipping.ts.                    │
  * │ Deno cannot import from the Vite src/ tree, so this file exists twice.   │
- * │ CHANGE BOTH COPIES IN THE SAME COMMIT. If they drift, the price quoted   │
- * │ in the cart stops matching the amount charged by Stripe, which is a      │
- * │ billing bug the customer sees before we do.                             │
+ * │                                                                          │
+ * │ It no longer holds any rates. Both copies read the numbers from the      │
+ * │ store_settings row (migration 010), so the two sides can no longer       │
+ * │ disagree about what to charge — only about how to divide, which is a     │
+ * │ typecheck away from being caught rather than a billing bug the customer  │
+ * │ finds first.                                                             │
  * └──────────────────────────────────────────────────────────────────────────┘
  */
 
-/**
- * PLACEHOLDER RATES — not yet confirmed by Alan.
- * The checkout cannot function without a number, so these are deliberate,
- * visible defaults rather than a guess buried in a component. Confirm the
- * courier rate and the free-delivery threshold before the store goes live,
- * and update both copies of this file.
- */
-export const SHIPPING_FLAT_CENTS = 650;
-export const FREE_SHIPPING_THRESHOLD_CENTS = 7500;
-
-/**
- * Irish standard-rate VAT, in basis points. Displayed prices are VAT
- * inclusive, which is what Irish consumers expect and what the store shows,
- * so this rate extracts the VAT already contained in a gross amount rather
- * than adding to it. Confirm the applicable rate with the client's accountant.
- */
-export const VAT_RATE_BASIS_POINTS = 2300;
+import type { StoreRates } from '@/types/store-settings';
 
 export type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
 
@@ -35,10 +22,13 @@ export type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
  * only — a rifle sitting in the same basket is collected in store and must
  * not push the order over the free-delivery threshold.
  */
-export function calculateShippingCents(deliverableSubtotalCents: number): number {
+export function calculateShippingCents(
+  deliverableSubtotalCents: number,
+  rates: StoreRates,
+): number {
   if (deliverableSubtotalCents <= 0) return 0;
-  if (deliverableSubtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS) return 0;
-  return SHIPPING_FLAT_CENTS;
+  if (deliverableSubtotalCents >= rates.freeShippingThresholdCents) return 0;
+  return rates.shippingFlatCents;
 }
 
 /**
@@ -55,8 +45,12 @@ export function deriveFulfillmentMethod(
   return 'pickup';
 }
 
-/** The VAT already contained in a VAT-inclusive gross amount, in cents. */
-export function vatIncludedCents(grossCents: number): number {
-  const rate = VAT_RATE_BASIS_POINTS;
+/**
+ * The VAT already contained in a VAT-inclusive gross amount, in cents.
+ * Displayed prices are gross, which is what Irish consumers expect, so this
+ * extracts rather than adds.
+ */
+export function vatIncludedCents(grossCents: number, rates: StoreRates): number {
+  const rate = rates.vatRateBasisPoints;
   return Math.round((grossCents * rate) / (10_000 + rate));
 }

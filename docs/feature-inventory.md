@@ -95,7 +95,8 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 | C5.3 | Dispatch / ready-to-collect notification | MISSING | |
 | C5.4 | Alert on exhausted retries | MISSING **[no ref]** | The florist has none, and cannot confirm their worker is even scheduled. An outbox nobody watches is a queue of silent failures. |
 | C6 | **Shipping rates** | PARTIAL **[alan]** | €6.50 flat / free over €75 are placeholders I invented. Zones (IE only? NI? EU?) undecided. |
-| C6.1 | Move rates out of duplicated code | **MISSING — act before launch** | `shipping.ts` exists twice (`src/lib/` and `supabase/functions/_shared/`) with only a comment holding them in sync. **The florist shipped this exact pattern and it drifted in production** — two Dublin zones overcharged, eight missing server-side, so Stripe charged a different amount than the customer was quoted. Their own verdict: put the fees in a table read by both sides. |
+| C6.1 | Move rates out of duplicated code | DONE | 2026-08-29, migration 010. `store_settings` is a single row read by both the cart and the checkout function. Both `shipping.ts` copies still exist (Deno cannot import from the Vite tree) but now contain **no numbers**, only arithmetic — so the two sides can no longer disagree about what to charge. Neither side has a hardcoded fallback: the server throws, the cart shows "calculated at checkout". Rates are still Alan's placeholders, but changing them is now a database edit rather than a deploy. |
+| C6.2 | Admin UI for the rates | MISSING | The row is admin-updatable via RLS but there is no screen. Until there is, changing the delivery rate means a SQL edit. Small, and it's what makes C6 an Alan-answerable question rather than a developer task. |
 | C7 | **VAT** | PARTIAL **[alan] [no ref]** | 23% extracted from VAT-inclusive prices. Unconfirmed by accountant. No invoice/receipt document. The florist has no tax handling of any kind — no reference. |
 | C8 | **Refunds** | PARTIAL | Webhook records them; deliberately does not restock. No admin-initiated refund. |
 | C9 | **Discount codes / promotions** | MISSING **[decision]** | |
@@ -200,8 +201,7 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 1. ~~A1.1 products → Supabase~~ — done
 2. Test checkout end to end — three basket shapes, Stripe test mode. **Flip 2–3 products
    to `is_shippable` first (A1.3)** or only the all-pickup shape is reachable.
-3. **C6.1 shipping rates into a table** — small, and it removes a bug the florist actually
-   shipped to real customers. Do it before rates go live rather than after.
+3. ~~C6.1 shipping rates into a table~~ — **done 2026-08-29 (migration 010, needs pushing).**
 4. G6 ESLint with the layer rule as `no-restricted-imports` — cheap now, forces a
    refactor later
 5. A7 + E4 image upload and storage (the catalogue is unusable without it), with A7.1

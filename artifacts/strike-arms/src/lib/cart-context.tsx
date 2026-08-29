@@ -7,9 +7,9 @@ import {
   type ReactNode,
 } from 'react';
 
-import { calculateCartTotals } from '@/lib/cart-totals';
+import { calculateCartBasics } from '@/lib/cart-totals';
 import { loadCart, saveCart } from '@/lib/cart-storage';
-import type { CartLine, CartTotals } from '@/types/cart';
+import type { CartBasics, CartLine } from '@/types/cart';
 
 /**
  * The basket, held in the browser and persisted to localStorage.
@@ -23,7 +23,7 @@ const MAX_QUANTITY_PER_LINE = 20;
 
 export interface CartContextValue {
   lines: CartLine[];
-  totals: CartTotals;
+  basics: CartBasics;
   wantsDelivery: boolean;
   setWantsDelivery: (wants: boolean) => void;
   addLine: (line: Omit<CartLine, 'quantity'>, quantity?: number) => void;
@@ -80,15 +80,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => setLines([]), []);
 
-  const totals = useMemo(
-    () => calculateCartTotals(lines, wantsDelivery),
+  const basics = useMemo(
+    () => calculateCartBasics(lines, wantsDelivery),
     [lines, wantsDelivery],
   );
 
   const value = useMemo(
     () => ({
       lines,
-      totals,
+      basics,
       wantsDelivery,
       setWantsDelivery,
       addLine,
@@ -96,7 +96,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeLine,
       clearCart,
     }),
-    [lines, totals, wantsDelivery, addLine, setQuantity, removeLine, clearCart],
+    [lines, basics, wantsDelivery, addLine, setQuantity, removeLine, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
