@@ -41,7 +41,8 @@ a real customer touches them.
 |---|---|---|---|
 | A1 | **Product catalogue** | DONE | Storefront and admin now read the same `products` table. Migration 009 required. |
 | A1.1 | Swap repository to Supabase | DONE | 2026-08-29. Storefront pins `is_published = true`; write stubs deleted (admin has its own repository). |
-| A1.2 | Real catalogue data | MISSING **[alan]** | Brand range unknown. Plumbing can ship without it. |
+| A1.2 | Real catalogue data | PARTIAL **[alan]** | **56 products are seeded and published** (verified against the live project 2026-08-29) — but they are the mock catalogue: invented names, invented prices, uniform `stock_count = 10`. Enough to exercise the shop; **must be replaced or unpublished before launch**, or Alan's site goes live advertising products he doesn't stock at prices he didn't set. Real brand range still unknown. |
+| A1.3 | Nothing is postable | **BLOCKER for testing** **[alan]** | All 56 rows have `is_shippable = false` (the migration 007 default). The catalogue is collection-only, so the delivery and mixed basket shapes **cannot be tested at all** until at least one product is flipped. Flip 2–3 in the admin to unblock C3 testing; the real list is Alan's call. |
 | A2 | **Shop / category pages** | DONE | Now SQL-backed. Empty until products are added in the admin. |
 | A2.1 | Filtering (category, subcategory, brand, price) | DONE | Server-side. Price filters compare list price, as the filter control does. |
 | A2.2 | Sorting | DONE | Price sorts use the generated `effective_price_cents`; every sort has an `id` tiebreaker so load-more cannot duplicate or skip. |
@@ -136,7 +137,7 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 
 | # | Feature | Status | Notes |
 |---|---|---|---|
-| E1 | **Supabase schema** | DONE | 10 tables, 15 functions, RLS throughout. Migrations 001–008 applied; 009 written and **not yet pushed**. |
+| E1 | **Supabase schema** | DONE | 10 tables, 15 functions, RLS throughout. **Migrations 001–009 all applied and verified against the live project 2026-08-29** — `effective_price_cents` confirmed present and resolving correctly. |
 | E1.1 | GRANT audit | MISSING **[florist]** | Postgres checks GRANTs *before* RLS. Three separate silent-401 production outages on the florist traced to a missing GRANT with a perfectly correct policy — including a public contact form that 401'd on every submission while showing a success message. Worth one pass over our tables. |
 | E1.2 | Never author policies in the dashboard | — | Permissive policies combine with OR, so one loose policy added in the UI defeats every tight one on the table. They needed a migration purely to reconcile the drift. |
 | E2 | **Edge Functions** | PARTIAL | Two deployed. Secrets set. Needs: email sender, and anything for D8. |
@@ -159,7 +160,7 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 | F6 | **Glossary, Privacy** | DONE | |
 | F7 | **T&C / Returns / Shipping policy** | **MISSING [alan] [legal]** | Legally required for EU e-commerce (14-day withdrawal right). Cannot launch a shop without these. |
 | F8 | **Best-of listicles** (5 drafted) | MISSING **[alan]** | Written, unrouted. |
-| F9 | **Sitemap** | **BROKEN** | `generate-sitemap.mjs` still parses `mock-products.ts`, which is now dead to the app. The sitemap advertises 56 products that do not exist. Must read Supabase before launch. |
+| F9 | **Sitemap** | PARTIAL | Correction (verified 2026-08-29): the sitemap is **currently accurate** — all 56 slugs in `mock-products.ts` match the 56 published rows in Supabase exactly, because the database was seeded from that same file. The fault is subtler than "broken": it is a snapshot of a hardcoded file that happens to agree with the database today, and will diverge **silently** the first time Alan adds, renames or unpublishes anything. Must read Supabase before launch. |
 | F10 | **SPA rendering for SEO** | OPEN **[decision] [florist]** | Meta and JSON-LD are client-injected. **The florist's evidence points one way: edge meta injection only, no prerendering.** They prerender and would not do it again — eight commits to stop it breaking the site, an unresolved React #418, and data-driven pages re-render from scratch on the client anyway, so it is a crawler snapshot rather than a performance win. Their Cloudflare `_middleware.js` half is cheap, works, and catches a 404 on a product URL to re-serve the shell with a 200 so newly published products still render. |
 | F11 | **301 migration from old PHP site** | PARTIAL **[alan]** | Redirects ready. Blocked on domain ownership. |
 
@@ -195,11 +196,10 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 
 ## Suggested build order
 
-0. **Push migration 009** (`npx supabase db push`) — price sorting errors until it lands,
-   and G8 says an unapplied migration is the single most expensive kind of bug on this
-   stack.
+0. ~~Push migration 009~~ — **done and verified 2026-08-29.**
 1. ~~A1.1 products → Supabase~~ — done
-2. Test checkout end to end — three basket shapes, Stripe test mode
+2. Test checkout end to end — three basket shapes, Stripe test mode. **Flip 2–3 products
+   to `is_shippable` first (A1.3)** or only the all-pickup shape is reachable.
 3. **C6.1 shipping rates into a table** — small, and it removes a bug the florist actually
    shipped to real customers. Do it before rates go live rather than after.
 4. G6 ESLint with the layer rule as `no-restricted-imports` — cheap now, forces a
