@@ -116,7 +116,11 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 | D5 | **Order management** | PARTIAL **[florist]** | Table, detail sheet, status transitions, mixed-fulfilment display all built. Never seen a real order. |
 | D5.1 | Admin-initiated refund | MISSING | |
 | D5.2 | Packing slip / invoice print | MISSING | |
-| D5.3 | **Manual order entry** | MISSING **[florist]** | The biggest thing the florist added that we never planned. A shop takes orders by phone and over the counter; an admin showing only web orders shows Alan a fraction of his business and makes every revenue figure wrong. Needs a product picker with search — a `select` of the whole catalogue is unusable with a customer on the phone. |
+| D5.3 | **Manual order entry** | MISSING **[florist]** | **Confirmed needed** (Phil, 2026-08-29): counter sales definitely happen, and a counter sale may still need delivering. So it takes the same fulfilment split as a web order, not a simpler "sold, done" record. Needs a product picker with search — a `select` of the whole catalogue is unusable with a customer at the counter. See D5.3a–d for the schema gaps. |
+| D5.3a | Make `customer_email` nullable | MISSING | It is `not null` today, which blocks a cash walk-in who gives no email. A synthetic placeholder is the wrong fix — it pollutes D7 and breaks order lookup by email. Nullable, plus a constraint requiring it when `fulfillment_method <> 'pickup'`, since a delivery needs contactable details. |
+| D5.3b | `channel` column on `orders` | MISSING | `web` / `counter` / `phone`. Without it, "what did the website make" vs "what did the shop make" is unanswerable and D2's figures silently blend the two. Same class of error as the florist's archived-orders-excluded-from-revenue bug. |
+| D5.3c | `payment_method` column | MISSING | cash / card terminal / bank transfer, for reconciling against the till at close of day. Stripe is only one of several ways Alan gets paid. |
+| D5.3d | Admin-callable path to `confirm_order_paid` | MISSING | The function itself needs **no change** — both Stripe arguments accept null, and it already draws the order number from the same sequence, decrements stock, writes the inventory adjustment and clears reservations, so counter and web orders share one numbering sequence. But it is granted to `service_role` only and an admin in the browser is `authenticated`. Needs an Edge Function or an `is_admin_aal2()`-guarded wrapper. |
 | D5.4 | Archive / restore | MISSING **[florist]** | Never hard delete an order. Second-order lesson from theirs: **archived orders must still count towards revenue.** Archiving is workflow tidy-up, not a financial event; excluding them made all-time revenue shrink whenever the owner tidied up. |
 | D5.5 | Kanban board view | MISSING **[florist]** | A table is for querying, a board is for working a shift. They kept both behind a persisted toggle, forced the table below 768px, and needed separate boards for delivery vs collection. |
 | D5.6 | Bulk actions + CSV export | MISSING **[no ref]** | Missing from theirs too, and named as a gap. |
@@ -235,7 +239,10 @@ effective-price column. We are not off-course on commerce.
 **Alan:** brand/model list · delivery rates + zones + free-delivery threshold · which
 products are postable · age policy · service prices/turnaround/warranty · shop address +
 email + lat/long · venue re-verification · about-page questions · listicle questions ·
-domain ownership.
+domain ownership · **does he take orders over the phone as well as at the counter?** ·
+**does he want counter sales recorded in the system at all, or only ones he's delivering?**
+(the second changes how much D5.3 has to do — a full till replacement is a much bigger
+build than "record the ones that need posting").
 
 **Accountant:** VAT rate and treatment · invoice/receipt requirements.
 
