@@ -53,3 +53,6 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Supabase CLI link state — per-machine, never committed
+supabase/.temp/
