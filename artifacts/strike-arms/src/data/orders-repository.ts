@@ -5,6 +5,8 @@ import type {
   OrderStatusLogEntry,
   OrderListFilters,
   FulfillmentStatus,
+  CounterOrderInput,
+  CounterOrderResult,
 } from '@/types/order';
 
 export async function listOrders(
@@ -115,4 +117,39 @@ export async function getOrderStatusLog(orderId: string): Promise<OrderStatusLog
 
   if (error) throw error;
   return (data ?? []).map(rowToOrderStatusLog);
+}
+
+/**
+ * Rings up a sale made in the shop or over the phone.
+ *
+ * There is no insert here, and deliberately no INSERT policy on orders for it
+ * to use: an admin session writing rows straight through PostgREST could set
+ * its own prices, totals and VAT. The function prices every line from the
+ * catalogue, takes the stock, and assigns the order number in one transaction.
+ */
+export async function createCounterOrder(
+  input: CounterOrderInput,
+): Promise<CounterOrderResult> {
+  const { data, error } = await supabase.rpc('create_counter_order', {
+    p_lines: input.lines.map((line) => ({
+      product_id: line.productId,
+      quantity: line.quantity,
+      fulfillment_method: line.fulfillmentMethod,
+    })),
+    p_customer_name: input.customerName,
+    p_customer_email: input.customerEmail,
+    p_customer_phone: input.customerPhone,
+    p_payment_method: input.paymentMethod,
+    p_channel: input.channel,
+    p_notes: input.notes,
+    p_age_verified: input.ageVerified,
+    p_shipping_line1: input.shippingLine1,
+    p_shipping_line2: input.shippingLine2,
+    p_shipping_city: input.shippingCity,
+    p_shipping_county: input.shippingCounty,
+    p_shipping_eircode: input.shippingEircode,
+  });
+
+  if (error) throw error;
+  return { orderId: data.order_id, orderNumber: data.order_number };
 }

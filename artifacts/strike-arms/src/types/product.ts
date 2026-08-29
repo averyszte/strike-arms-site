@@ -25,6 +25,10 @@ export type Product = {
   isShippable: boolean;
   isPublished?: boolean;
   stockCount?: number;
+  // Held by checkouts in flight. What is actually sellable is
+  // stockCount - reservedCount: someone mid-payment has already been promised
+  // the difference.
+  reservedCount?: number;
   isNew?: boolean;
   isFeatured?: boolean;
   tags?: string[];

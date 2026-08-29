@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { Plus } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -9,10 +10,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useOrders, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
+import { CounterOrderSheet } from '@/components/admin/CounterOrderSheet';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
 import { useToast } from '@/hooks/use-toast';
-import { FULFILLMENT_OPTIONS, formatOrderNumber } from '@/lib/order-display';
+import {
+  FULFILLMENT_OPTIONS,
+  ORDER_CHANNEL_LABELS,
+  formatOrderNumber,
+} from '@/lib/order-display';
 import type { FulfillmentStatus, PaymentStatus } from '@/types/order';
 
 const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
@@ -30,6 +37,7 @@ function fmtEuros(cents: number) {
 export function OrdersTable() {
   const [paymentFilter, setPaymentFilter] = useState<PaymentStatus | 'all'>('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [isCounterSaleOpen, setIsCounterSaleOpen] = useState(false);
 
   const { data, isLoading } = useOrders({
     paymentStatus: paymentFilter === 'all' ? undefined : paymentFilter,
@@ -49,7 +57,13 @@ export function OrdersTable() {
   return (
     <>
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-foreground mb-3">Orders</h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-foreground">Orders</h2>
+          <Button size="sm" onClick={() => setIsCounterSaleOpen(true)}>
+            <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+            New counter sale
+          </Button>
+        </div>
         <Tabs value={paymentFilter} onValueChange={v => setPaymentFilter(v as PaymentStatus | 'all')}>
           <TabsList>
             {PAYMENT_TABS.map(t => (
@@ -90,10 +104,18 @@ export function OrdersTable() {
                       <p className="font-mono font-medium text-foreground">
                         {formatOrderNumber(order.orderNumber)}
                       </p>
+                      {order.channel !== 'web' && (
+                        <p className="text-xs text-muted-foreground">
+                          {ORDER_CHANNEL_LABELS[order.channel]}
+                        </p>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-foreground">{order.customerName}</p>
-                      <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                      {/* A cash walk-in may have given neither. */}
+                      <p className="text-xs text-muted-foreground">
+                        {order.customerEmail ?? order.customerPhone ?? 'No contact details'}
+                      </p>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
                       {format(new Date(order.createdAt), 'dd MMM yyyy')}
@@ -144,6 +166,11 @@ export function OrdersTable() {
       )}
 
       <OrderDetailSheet orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
+
+      <CounterOrderSheet
+        open={isCounterSaleOpen}
+        onClose={() => setIsCounterSaleOpen(false)}
+      />
     </>
   );
 }

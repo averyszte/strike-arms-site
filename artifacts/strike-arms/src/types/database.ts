@@ -1,110 +1,28 @@
-// Hand-written DB types — mirrors 001_schema.sql exactly.
+// Hand-written DB types — the schema shape @supabase/supabase-js is generic
+// over. The row types it indexes live in database-rows.ts.
+//
 // Regenerate with: supabase gen types typescript --local > src/types/database.ts
 
-export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+import type {
+  CheckoutReservationRow,
+  InquiryRow,
+  InquiryStatus,
+  InventoryAdjustmentRow,
+  Json,
+  NotificationJobRow,
+  NotificationStatus,
+  OrderChannel,
+  OrderItemRow,
+  OrderRow,
+  OrderStatusLogRow,
+  OrphanedImageRow,
+  PaymentMethod,
+  ProductRow,
+  StoreSettingsRow,
+  SubcategoryRow,
+} from '@/types/database-rows';
 
-type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'partially_refunded' | 'failed' | 'expired';
-type FulfillmentStatus =
-  | 'pending' | 'ready_for_pickup' | 'collected'
-  | 'packed' | 'shipped' | 'delivered' | 'cancelled';
-type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
-type ItemFulfillmentMethod = 'pickup' | 'delivery';
-type InquiryStatus = 'new' | 'replied' | 'archived';
-type NotificationStatus = 'pending' | 'sent' | 'failed';
-
-// ─── Row types ────────────────────────────────────────────────────────────────
-
-type ProductRow = {
-  id: string; slug: string; name: string; category: string; subcategory: string; brand: string;
-  price_cents: number; sale_price_cents: number | null;
-  // Generated: coalesce(sale_price_cents, price_cents). Read-only — the shop
-  // sorts on it because PostgREST cannot order by an expression.
-  effective_price_cents: number;
-  images: string[]; short_description: string; description: string;
-  is_new: boolean; is_featured: boolean; is_published: boolean;
-  stock_count: number; reserved_count: number; low_stock_threshold: number;
-  in_stock: boolean; tags: string[];
-  is_shippable: boolean; ship_weight_g: number;
-  created_at: string; updated_at: string;
-};
-
-type OrderRow = {
-  // Null until payment succeeds — numbers are assigned by confirm_order_paid so
-  // that abandoned checkouts do not burn them.
-  id: string; order_number: string | null;
-  stripe_session_id: string | null; stripe_payment_intent: string | null;
-  checkout_attempt_id: string | null;
-  customer_name: string; customer_email: string; customer_phone: string | null;
-  payment_status: PaymentStatus; fulfillment_status: FulfillmentStatus;
-  fulfillment_method: FulfillmentMethod;
-  total_cents: number; vat_cents: number; refund_cents: number; shipping_cents: number;
-  shipping_name: string | null; shipping_line1: string | null; shipping_line2: string | null;
-  shipping_city: string | null; shipping_county: string | null; shipping_eircode: string | null;
-  age_verified: boolean; notes: string | null; is_archived: boolean;
-  paid_at: string | null; refunded_at: string | null;
-  created_at: string; updated_at: string;
-};
-
-type OrderItemRow = {
-  id: string; order_id: string; product_id: string | null;
-  product_slug: string; product_name: string; product_image: string | null; brand: string;
-  unit_price_cents: number; quantity: number; subtotal_cents: number;
-  fulfillment_method: ItemFulfillmentMethod;
-};
-
-type OrderStatusLogRow = {
-  id: string; order_id: string; field: 'payment_status' | 'fulfillment_status';
-  from_status: string | null; to_status: string;
-  changed_by: string | null; note: string | null; created_at: string;
-};
-
-type InventoryAdjustmentRow = {
-  id: string; product_id: string; adjustment: number;
-  reason: string; adjusted_by: string | null; created_at: string;
-};
-
-type CheckoutReservationRow = {
-  id: string; product_id: string; quantity: number; order_id: string | null;
-  session_key: string; expires_at: string; created_at: string;
-};
-
-type InquiryRow = {
-  id: string; name: string; email: string; phone: string | null;
-  subject: string | null; message: string; status: InquiryStatus;
-  consent: boolean; source_page: string | null; created_at: string;
-};
-
-type NotificationJobRow = {
-  id: string; type: string; payload: Json;
-  status: NotificationStatus; attempt_count: number;
-  next_attempt_at: string; last_error: string | null; created_at: string;
-};
-
-type SubcategoryRow = {
-  id: string; category: string; slug: string; name: string;
-  sort_order: number; created_at: string;
-};
-
-// Bucket paths no longer referenced by any product, filed by a trigger on
-// products and drained by the sweep-orphan-images Edge Function. No browser
-// role holds a grant on it — it is here so the shape stays documented.
-type OrphanedImageRow = {
-  path: string;
-  orphaned_at: string;
-  attempt_count: number;
-  last_error: string | null;
-};
-
-// Single row, id always 1. The rates the cart and the checkout function both
-// read, so neither can quote a number the other does not have.
-type StoreSettingsRow = {
-  id: number;
-  shipping_flat_cents: number;
-  free_shipping_threshold_cents: number;
-  vat_rate_basis_points: number;
-  updated_at: string;
-  updated_by: string | null;
-};
+export type { Json } from '@/types/database-rows';
 
 // ─── Database shape ───────────────────────────────────────────────────────────
 // Matches the shape expected by @supabase/supabase-js v2 generics.
@@ -281,7 +199,30 @@ export type Database = {
       };
       release_expired_reservations: {
         Args: Record<PropertyKey, never>;
-        Returns: undefined;
+        // The number of holds released, so a cron run reads as more than
+        // "it ran" in cron.job_run_details.
+        Returns: number;
+      };
+      // Counter and phone sales (migration 013). The only route to creating an
+      // order from the browser: there are deliberately no INSERT policies on
+      // orders or order_items, so nothing the client sends can decide money.
+      create_counter_order: {
+        Args: {
+          p_lines: Json;
+          p_customer_name: string;
+          p_customer_email?: string | null;
+          p_customer_phone?: string | null;
+          p_payment_method?: PaymentMethod;
+          p_channel?: OrderChannel;
+          p_notes?: string | null;
+          p_age_verified?: boolean;
+          p_shipping_line1?: string | null;
+          p_shipping_line2?: string | null;
+          p_shipping_city?: string | null;
+          p_shipping_county?: string | null;
+          p_shipping_eircode?: string | null;
+        };
+        Returns: { order_id: string; order_number: string | null };
       };
       bump_orphan_attempts: {
         Args: { p_paths: string[]; p_error: string };

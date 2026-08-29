@@ -1,4 +1,9 @@
-import type { FulfillmentMethod, FulfillmentStatus } from '@/types/order';
+import type {
+  FulfillmentMethod,
+  FulfillmentStatus,
+  OrderChannel,
+  PaymentMethod,
+} from '@/types/order';
 
 /**
  * Shared labels for rendering orders in the admin.
@@ -23,6 +28,32 @@ export const FULFILLMENT_METHOD_LABELS: Record<FulfillmentMethod, string> = {
   delivery: 'Delivery',
   mixed: 'Collection + delivery',
 };
+
+export const ORDER_CHANNEL_LABELS: Record<OrderChannel, string> = {
+  web: 'Website',
+  counter: 'Counter',
+  phone: 'Phone',
+};
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  stripe: 'Card (online)',
+  cash: 'Cash',
+  card_terminal: 'Card terminal',
+  bank_transfer: 'Bank transfer',
+};
+
+/**
+ * What a sale rung up by hand can be. Stripe is absent because there is no
+ * Stripe session behind a counter sale, and web is absent because a sale
+ * entered by an admin did not come through the website.
+ */
+export const COUNTER_PAYMENT_METHODS: PaymentMethod[] = [
+  'cash',
+  'card_terminal',
+  'bank_transfer',
+];
+
+export const COUNTER_CHANNELS: OrderChannel[] = ['counter', 'phone'];
 
 /**
  * Order numbers are assigned when payment succeeds, so a pending order has

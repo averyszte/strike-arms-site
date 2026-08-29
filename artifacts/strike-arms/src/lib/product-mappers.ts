@@ -20,6 +20,7 @@ export function rowToProduct(row: ProductRow): Product {
     isShippable: row.is_shippable,
     isPublished: row.is_published,
     stockCount: row.stock_count,
+    reservedCount: row.reserved_count,
     isNew: row.is_new,
     isFeatured: row.is_featured,
     tags: row.tags,

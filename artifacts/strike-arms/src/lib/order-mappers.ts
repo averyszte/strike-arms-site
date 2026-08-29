@@ -37,6 +37,8 @@ export function rowToOrder(row: OrderRow, items?: OrderItemRow[]): Order {
     customerName: row.customer_name,
     customerEmail: row.customer_email,
     customerPhone: row.customer_phone,
+    channel: row.channel,
+    paymentMethod: row.payment_method,
     paymentStatus: row.payment_status,
     fulfillmentStatus: row.fulfillment_status,
     fulfillmentMethod: row.fulfillment_method,

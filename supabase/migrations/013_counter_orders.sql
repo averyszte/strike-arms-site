@@ -138,13 +138,18 @@ begin
     payment_status, fulfillment_method, fulfillment_status,
     total_cents, vat_cents, shipping_cents,
     channel, payment_method, notes, age_verified, order_number,
-    shipping_line1, shipping_line2, shipping_city, shipping_county, shipping_eircode
+    shipping_name, shipping_line1, shipping_line2, shipping_city, shipping_county,
+    shipping_eircode
   )
   values (
     p_customer_name, p_customer_email, p_customer_phone,
     'pending', 'pickup', 'pending',
     0, 0, 0,
     p_channel, p_payment_method, p_notes, p_age_verified, null,
+    -- The counter form asks for one name, so it is both the customer and the
+    -- addressee. Left null on a collection so the admin's address block stays
+    -- absent rather than becoming a record of empty strings.
+    case when p_shipping_line1 is not null then p_customer_name end,
     p_shipping_line1, p_shipping_line2, p_shipping_city, p_shipping_county,
     p_shipping_eircode
   )

@@ -11,7 +11,12 @@ import { format } from 'date-fns';
 import { useOrder, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { useToast } from '@/hooks/use-toast';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
-import { FULFILLMENT_OPTIONS, formatOrderNumber } from '@/lib/order-display';
+import {
+  FULFILLMENT_OPTIONS,
+  ORDER_CHANNEL_LABELS,
+  PAYMENT_METHOD_LABELS,
+  formatOrderNumber,
+} from '@/lib/order-display';
 import type { FulfillmentStatus } from '@/types/order';
 
 function fmtEuros(cents: number) {
@@ -62,10 +67,17 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                 Customer
               </h3>
               <p className="text-sm font-medium text-foreground">{order.customerName}</p>
-              <p className="text-sm text-muted-foreground">{order.customerEmail}</p>
+              {/* Null on a counter sale where nobody gave one. Saying so beats
+                  an empty line that reads as a rendering fault. */}
+              <p className="text-sm text-muted-foreground">
+                {order.customerEmail ?? 'No email given'}
+              </p>
               {order.customerPhone && (
                 <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
               )}
+              <p className="mt-1 text-xs text-muted-foreground">
+                {ORDER_CHANNEL_LABELS[order.channel]} · {PAYMENT_METHOD_LABELS[order.paymentMethod]}
+              </p>
             </section>
 
             <OrderDeliveryDetails order={order} />
