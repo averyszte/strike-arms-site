@@ -1,7 +1,13 @@
 /**
- * Mock product catalogue — static in-memory data.
- * DO NOT import this file anywhere except products-repository.ts.
- * All reads go through the repository API.
+ * Mock product catalogue — DEAD to the application.
+ *
+ * The storefront now reads from Supabase; nothing in src/ imports this file.
+ * It survives only because scripts/generate-sitemap.mjs still parses it for
+ * product URLs.
+ *
+ * That means the generated sitemap currently advertises products that do not
+ * exist in the database. Point the sitemap generator at Supabase and delete
+ * this file before the site goes live, or launch day ships a sitemap of 404s.
  */
 
 import type { Product } from '@/types/product';

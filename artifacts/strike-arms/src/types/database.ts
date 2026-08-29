@@ -17,6 +17,9 @@ type NotificationStatus = 'pending' | 'sent' | 'failed';
 type ProductRow = {
   id: string; slug: string; name: string; category: string; subcategory: string; brand: string;
   price_cents: number; sale_price_cents: number | null;
+  // Generated: coalesce(sale_price_cents, price_cents). Read-only — the shop
+  // sorts on it because PostgREST cannot order by an expression.
+  effective_price_cents: number;
   images: string[]; short_description: string; description: string;
   is_new: boolean; is_featured: boolean; is_published: boolean;
   stock_count: number; reserved_count: number; low_stock_threshold: number;
@@ -93,7 +96,7 @@ export type Database = {
         Row: ProductRow;
         Insert: Omit<
           ProductRow,
-          'id' | 'in_stock' | 'created_at' | 'updated_at' |
+          'id' | 'in_stock' | 'effective_price_cents' | 'created_at' | 'updated_at' |
           'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
           'is_shippable' | 'ship_weight_g'
         > & {
@@ -102,7 +105,7 @@ export type Database = {
           stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
           is_shippable?: boolean; ship_weight_g?: number;
         };
-        Update: Partial<Omit<ProductRow, 'in_stock'>>;
+        Update: Partial<Omit<ProductRow, 'in_stock' | 'effective_price_cents'>>;
         Relationships: [];
       };
       orders: {
