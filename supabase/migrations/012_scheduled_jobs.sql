@@ -206,9 +206,21 @@ grant execute on function public.release_expired_reservations() to service_role;
 
 create extension if not exists pg_cron;
 
--- Idempotent by hand: cron.unschedule() raises if the job is absent, which
--- would make re-running this migration fail.
-delete from cron.job where jobname = 'release-expired-reservations';
+-- Re-running this migration must not fail, so any previous copy of the job is
+-- removed first. It has to go through cron.unschedule() rather than a delete
+-- on cron.job: pg_cron is installed by Supabase and its tables are owned by
+-- supabase_admin, so the migration role gets "permission denied for table job".
+--
+-- unschedule() raises when the job is absent, hence the handler. It swallows a
+-- permissions failure too, but that cannot hide anything: cron.schedule() runs
+-- immediately below and would fail just as loudly.
+do $cron$
+begin
+  perform cron.unschedule('release-expired-reservations');
+exception
+  when others then null;  -- not scheduled yet
+end
+$cron$;
 
 -- Every five minutes. Reservations are held for the length of a Stripe
 -- session, so five minutes of extra hold on an abandoned cart is not worth a
@@ -260,7 +272,13 @@ begin
       'select vault.create_secret(''<the key>'', ''service_role_key'');';
   end if;
 
-  delete from cron.job where jobname = 'sweep-orphan-images';
+  -- Same reason as above: cron.job belongs to supabase_admin, so the job is
+  -- removed through the extension's own API, not with a delete.
+  begin
+    perform cron.unschedule('sweep-orphan-images');
+  exception
+    when others then null;  -- not scheduled yet
+  end;
 
   perform cron.schedule(
     'sweep-orphan-images',
