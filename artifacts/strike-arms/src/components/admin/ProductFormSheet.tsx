@@ -11,6 +11,7 @@ import { ProductFormFields } from '@/components/admin/ProductFormFields';
 import { productFormSchema } from '@/lib/product-form-schema';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/use-admin-products';
+import { useProductImageUpload } from '@/hooks/use-product-image-upload';
 import { useToast } from '@/hooks/use-toast';
 import type { Product, Category } from '@/types/product';
 
@@ -31,7 +32,7 @@ function toFormValues(product: Product): ProductFormValues {
     isShippable: product.isShippable,
     stockCount: product.stockCount ?? 0,
     tags: (product.tags ?? []).join(', '),
-    imageUrl: product.images[0] ?? '',
+    images: product.images,
   };
 }
 
@@ -51,7 +52,7 @@ const DEFAULT_VALUES: ProductFormValues = {
   isShippable: false,
   stockCount: 0,
   tags: '',
-  imageUrl: '',
+  images: [],
 };
 
 function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'createdAt'> {
@@ -77,7 +78,7 @@ function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'create
       .split(',')
       .map(t => t.trim())
       .filter(Boolean),
-    images: values.imageUrl ? [values.imageUrl] : [],
+    images: values.images,
   };
 }
 
@@ -91,7 +92,19 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   const { toast } = useToast();
   const create = useCreateProduct();
   const update = useUpdateProduct();
+  const upload = useProductImageUpload();
   const isEdit = !!product;
+
+  /**
+   * Anything uploaded during this session but never saved onto the product is
+   * a file no trigger can ever see, so it goes now. Closing the sheet without
+   * saving is the common path — an admin opens "Add product", picks four
+   * photos, then changes their mind.
+   */
+  function handleClose() {
+    upload.discardAll();
+    onClose();
+  }
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -108,6 +121,9 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
       } else {
         await create.mutateAsync(input);
       }
+      // The product row owns the images now; the trigger in migration 011 is
+      // what cleans them up from here on.
+      upload.commit();
       toast({ title: isEdit ? 'Product updated' : 'Product created' });
       onClose();
     } catch (err: unknown) {
@@ -119,19 +135,21 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
     }
   }
 
-  const isPending = create.isPending || update.isPending;
+  // Saving mid-upload would write the product without the photo still in
+  // flight, so the button waits for the bucket as well as the table.
+  const isPending = create.isPending || update.isPending || upload.isUploading;
 
   return (
-    <Sheet open={open} onOpenChange={o => { if (!o) onClose(); }}>
+    <Sheet open={open} onOpenChange={o => { if (!o) handleClose(); }}>
       <SheetContent className="w-full sm:max-w-[520px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{isEdit ? 'Edit Product' : 'Add Product'}</SheetTitle>
         </SheetHeader>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
-            <ProductFormFields />
+            <ProductFormFields upload={upload} />
             <div className="flex gap-2 pt-2 border-t border-border sticky bottom-0 bg-background pb-2">
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+              <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
                 Cancel
               </Button>
               <Button type="submit" disabled={isPending} className="flex-1">

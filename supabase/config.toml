@@ -22,8 +22,12 @@ additional_redirect_urls = ["https://cxnhkgndvzgyqhiwsvrr.supabase.co"]
 jwt_expiry = 3600
 enable_signup = false
 
+# Product images live in the product-images bucket created by migration 011.
+# The per-file cap here is the local API's ceiling; the bucket sets its own
+# 5 MiB limit, which is the one that applies in production.
 [storage]
-enabled = false
+enabled = true
+file_size_limit = "10MiB"
 
 # Edge Functions.
 #
@@ -37,3 +41,9 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+# The orphan-image sweeper is the exception: it is maintenance, not a public
+# endpoint, so the gateway checks the JWT and the function then requires the
+# service role on top. Nothing a browser holds gets past either check.
+[functions.sweep-orphan-images]
+verify_jwt = true

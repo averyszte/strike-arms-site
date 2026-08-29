@@ -27,7 +27,10 @@ export const productFormSchema = z.object({
   isShippable: z.boolean(),
   stockCount: z.coerce.number().int().min(0, 'Must be 0 or more'),
   tags: z.string(),
-  imageUrl: z.string().url('Enter a valid URL').or(z.literal('')),
+  // Public URLs, in display order — the first is the card image. Written by
+  // ProductImagesField after upload rather than typed, so there is no format
+  // to validate beyond "the uploader produced it".
+  images: z.array(z.string().url()),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

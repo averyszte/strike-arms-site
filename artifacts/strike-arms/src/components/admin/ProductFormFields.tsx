@@ -11,7 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ProductImagesField } from '@/components/admin/ProductImagesField';
 import { useSubcategories } from '@/hooks/use-categories';
+import type { ProductImageUpload } from '@/hooks/use-product-image-upload';
 import type { Category } from '@/types/product';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 
@@ -36,7 +38,12 @@ function FieldError({ message }: { message?: string }) {
   return <p className="text-xs text-destructive">{message}</p>;
 }
 
-export function ProductFormFields() {
+interface Props {
+  /** Owned by ProductFormSheet, which also has to discard on cancel. */
+  upload: ProductImageUpload;
+}
+
+export function ProductFormFields({ upload }: Props) {
   const {
     register,
     control,
@@ -144,18 +151,13 @@ export function ProductFormFields() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <Label htmlFor="stockCount">Stock Count</Label>
-          <Input id="stockCount" type="number" min={0} {...register('stockCount')} />
-          <FieldError message={errors.stockCount?.message} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input id="imageUrl" {...register('imageUrl')} placeholder="https://..." />
-          <FieldError message={errors.imageUrl?.message} />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="stockCount">Stock Count</Label>
+        <Input id="stockCount" type="number" min={0} {...register('stockCount')} />
+        <FieldError message={errors.stockCount?.message} />
       </div>
+
+      <ProductImagesField upload={upload} />
 
       <div className="space-y-1">
         <Label htmlFor="shortDescription">Short Description *</Label>

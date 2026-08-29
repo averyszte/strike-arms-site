@@ -80,6 +80,12 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
   return rowToProduct(data);
 }
 
+/**
+ * The images are not deleted here. Migration 011 puts a trigger on the table
+ * that files every path into orphaned_images, which the sweeper drains — so
+ * cleanup happens whether the row goes through this function, a cascade, or
+ * someone in the SQL editor.
+ */
 export async function deleteProduct(id: string): Promise<void> {
   const { error } = await supabase.from('products').delete().eq('id', id);
   if (error) throw error;

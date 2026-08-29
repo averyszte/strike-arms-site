@@ -85,6 +85,16 @@ type SubcategoryRow = {
   sort_order: number; created_at: string;
 };
 
+// Bucket paths no longer referenced by any product, filed by a trigger on
+// products and drained by the sweep-orphan-images Edge Function. No browser
+// role holds a grant on it — it is here so the shape stays documented.
+type OrphanedImageRow = {
+  path: string;
+  orphaned_at: string;
+  attempt_count: number;
+  last_error: string | null;
+};
+
 // Single row, id always 1. The rates the cart and the checkout function both
 // read, so neither can quote a number the other does not have.
 type StoreSettingsRow = {
@@ -197,6 +207,12 @@ export type Database = {
         Update: Partial<Omit<StoreSettingsRow, 'id' | 'updated_at'>>;
         Relationships: [];
       };
+      orphaned_images: {
+        Row: OrphanedImageRow;
+        Insert: Pick<OrphanedImageRow, 'path'> & Partial<OrphanedImageRow>;
+        Update: Partial<OrphanedImageRow>;
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -266,6 +282,14 @@ export type Database = {
       release_expired_reservations: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
+      };
+      bump_orphan_attempts: {
+        Args: { p_paths: string[]; p_error: string };
+        Returns: undefined;
+      };
+      storage_path_from_public_url: {
+        Args: { p_url: string };
+        Returns: string | null;
       };
     };
     Enums: { [_ in never]: never };
