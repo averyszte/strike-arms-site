@@ -54,8 +54,8 @@ a real customer touches them.
 | A4 | **Site search** | PARTIAL **[no ref]** | The florist has no search at all — category then filters only. Header dropdown works: pool capped at 500 published products, fetched only once a query is 2+ characters. Store `?q=` does ilike on name/brand/blurb (not tags). No dedicated search page or route. Needs a server-side search RPC before the catalogue passes the cap. |
 | A5 | **Brands hub** `/brands` | PARTIAL **[alan]** | Hub renders; per-brand pages `/brands/:slug` don't exist. |
 | A6 | **New arrivals / Sale** | DONE | Real `is_new` / `sale_price_cents` queries. |
-| A7 | **Product images** | DONE 2026-08-29 **[needs push]** | Migration 011 creates the `product-images` bucket (public read, AAL2 writes, 5 MiB and MIME limits enforced server-side). `lib/compress-image.ts` resizes to 1600px and encodes JPEG unless the source is PNG; WebP is deliberately not produced because Safari's canvas encoder is unreliable. `data/storage-repository.ts` uploads to a UUID path with `upsert: false` and a 1-year cache, which is only safe because a path is never reused. Multi-image with reordering and a main-image pick; `ProductDetail` already had the gallery. |
-| A7.1 | Orphaned-image cleanup | DONE 2026-08-29 **[needs push]** | Built with A7 rather than after it. A trigger on `products` files every dropped image path into `orphaned_images`, so cleanup does not depend on the browser still being open — it fires for SQL deletes and cascades too. The `sweep-orphan-images` Edge Function drains the queue through the Storage API (deleting a `storage.objects` row does not remove the object). A second trigger de-queues a path that comes back. Scheduling is one call to `schedule_image_sweep()` (migration 012) — deliberately not scheduled by the migration itself, because the job posts to an Edge Function and so needs the service-role key, which is not in this repo. Store it in Vault as `service_role_key`, call the function once, done. Unscheduled it costs storage, not correctness. |
+| A7 | **Product images** | DONE 2026-08-29 **[applied]** | Migration 011 creates the `product-images` bucket (public read, AAL2 writes, 5 MiB and MIME limits enforced server-side). `lib/compress-image.ts` resizes to 1600px and encodes JPEG unless the source is PNG; WebP is deliberately not produced because Safari's canvas encoder is unreliable. `data/storage-repository.ts` uploads to a UUID path with `upsert: false` and a 1-year cache, which is only safe because a path is never reused. Multi-image with reordering and a main-image pick; `ProductDetail` already had the gallery. |
+| A7.1 | Orphaned-image cleanup | DONE 2026-08-29 **[applied]** | Built with A7 rather than after it. A trigger on `products` files every dropped image path into `orphaned_images`, so cleanup does not depend on the browser still being open — it fires for SQL deletes and cascades too. The `sweep-orphan-images` Edge Function drains the queue through the Storage API (deleting a `storage.objects` row does not remove the object). A second trigger de-queues a path that comes back. Scheduling is one call to `schedule_image_sweep()` (migration 012) — deliberately not scheduled by the migration itself, because the job posts to an Edge Function and so needs the service-role key, which is not in this repo. Store it in Vault as `service_role_key`, call the function once, done. Unscheduled it costs storage, not correctness. |
 
 ## B. Customer accounts
 
@@ -143,8 +143,8 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 | E1.2 | Never author policies in the dashboard | — | Permissive policies combine with OR, so one loose policy added in the UI defeats every tight one on the table. They needed a migration purely to reconcile the drift. |
 | E2 | **Edge Functions** | PARTIAL | Two deployed. Secrets set. Needs: email sender, and anything for D8. |
 | E3 | **Transactional email** | MISSING **[decision] [florist]** | Confirmed by their build: Resend, with `EMAIL_FROM` as a secret so the sender address never needs a code deploy. Playbook says Resend. Needs a verified domain, `_shared/resend.ts`, and Supabase Auth custom SMTP (default is 2/hour, team addresses only). Optionally the Auth send-email hook so auth mail goes through Resend templates too. |
-| E4 | **File storage** | DONE 2026-08-29 **[needs push]** | `product-images` bucket, migration 011. `[storage]` is now enabled in `config.toml`. D8 service photos will want their own bucket rather than a folder in this one — different audience, different policies. |
-| E5 | **Scheduled jobs** | DONE 2026-08-29 **[needs push]** | Migration 012. `pg_cron` runs `release_expired_reservations()` every 5 minutes. Switching it on first required fixing a dormant overselling bug: `confirm_order_paid` decremented `reserved_count` from `order_items` while every release path decremented it from `checkout_reservations` rows, so a cron release followed by a late webhook double-counted the same hold. Both now key off reservation rows. The sweeper also reads the owning order under `for update skip locked` and leaves anything not `pending` alone — skip rather than wait, because the two functions take the order and reservation locks in opposite orders and waiting would deadlock. |
+| E4 | **File storage** | DONE 2026-08-29 **[applied]** | `product-images` bucket, migration 011. `[storage]` is now enabled in `config.toml`. D8 service photos will want their own bucket rather than a folder in this one — different audience, different policies. |
+| E5 | **Scheduled jobs** | DONE 2026-08-29 **[applied]** | Migration 012. `pg_cron` runs `release_expired_reservations()` every 5 minutes. Switching it on first required fixing a dormant overselling bug: `confirm_order_paid` decremented `reserved_count` from `order_items` while every release path decremented it from `checkout_reservations` rows, so a cron release followed by a late webhook double-counted the same hold. Both now key off reservation rows. The sweeper also reads the owning order under `for update skip locked` and leaves anything not `pending` alone — skip rather than wait, because the two functions take the order and reservation locks in opposite orders and waiting would deadlock. |
 | E6 | **Free-tier auto-pause** | OPEN **[decision]** | Project pauses after ~7 idle days. Pro plan or keep-alive ping before launch. |
 | E7 | **Backups** | MISSING | |
 
@@ -203,11 +203,11 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 1. ~~A1.1 products → Supabase~~ — done
 2. Test checkout end to end — three basket shapes, Stripe test mode. **Flip 2–3 products
    to `is_shippable` first (A1.3)** or only the all-pickup shape is reachable.
-3. ~~C6.1 shipping rates into a table~~ — **done 2026-08-29 (migration 010, needs pushing).**
+3. ~~C6.1 shipping rates into a table~~ — **done 2026-08-29 (migration 010, applied).**
 4. ~~G6 ESLint with the layer rule as `no-restricted-imports`~~ — **done 2026-08-29.**
    `pnpm run lint` is real now and passes with zero warnings.
 5. ~~A7 + E4 image upload and storage, with A7.1 cleanup designed in~~ — **done 2026-08-29
-   (migration 011, needs pushing).**
+   (migration 011, applied).**
 6. E3 custom SMTP + Resend, then C5 order emails (+ C5.4 failure alert)
 7. B1.1 customer auth → Supabase, then B3 order history — **no reference implementation,
    budget accordingly**
@@ -216,7 +216,9 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 9. D6 wire the contact form; D7 customer list
 10. F7 policy pages **[alan] [legal]**
 11. D8 service job tracker
-12. ~~E5 scheduled reservation release~~ — **done 2026-08-29 (migration 012, needs pushing).**
+12. ~~E5 scheduled reservation release~~ — **done 2026-08-29 (migration 012, applied).**
+    Verified live with anon-key probes: `orphaned_images` 401, `release_expired_reservations` and `schedule_image_sweep` both `42501 permission denied`,
+    `product-images` public read serving `NoSuchKey` rather than `NoSuchBucket`. The cron job's existence was not checked — it needs a service-role query.
     Pulled forward from position 12: it also carries the correctness fix that stops the shop
     overselling once any cron is running.
 13. C11 bot protection
