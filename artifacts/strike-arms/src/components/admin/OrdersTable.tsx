@@ -12,14 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { useOrders, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
 import { useToast } from '@/hooks/use-toast';
+import { FULFILLMENT_OPTIONS, formatOrderNumber } from '@/lib/order-display';
 import type { FulfillmentStatus, PaymentStatus } from '@/types/order';
-
-const FULFILLMENT_OPTIONS: { value: FulfillmentStatus; label: string }[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'ready_for_pickup', label: 'Ready for Pickup' },
-  { value: 'collected', label: 'Collected' },
-  { value: 'cancelled', label: 'Cancelled' },
-];
 
 const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -93,7 +87,9 @@ export function OrdersTable() {
                     onClick={() => setSelectedOrderId(order.id)}
                   >
                     <td className="px-4 py-3">
-                      <p className="font-mono font-medium text-foreground">{order.orderNumber}</p>
+                      <p className="font-mono font-medium text-foreground">
+                        {formatOrderNumber(order.orderNumber)}
+                      </p>
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-foreground">{order.customerName}</p>

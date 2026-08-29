@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Wrench, Truck, MapPin } from 'lucide-react';
+import { ShoppingCart, Wrench, Truck, MapPin, Store } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
@@ -17,6 +17,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { useCart } from '@/hooks/use-cart';
 import { useProduct } from '@/hooks/useProduct';
 import { useProducts } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
@@ -152,12 +153,26 @@ function ProductGallery({ product }: { product: Product }) {
 
 function ProductInfo({ product }: { product: Product }) {
   const { toast } = useToast();
+  const { addLine } = useCart();
   const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
+  const unitPriceCents = hasDiscount ? product.salePrice! : product.price;
 
-  const handleReserve = () => {
+  const handleAddToCart = () => {
+    addLine({
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      brand: product.brand,
+      image: product.images[0] ?? null,
+      unitPriceCents,
+      isShippable: product.isShippable,
+    });
+
     toast({
-      title: 'Online checkout is coming soon',
-      description: `To reserve the ${product.name}, call the shop on ${BUSINESS.telephone}.`,
+      title: 'Added to your cart',
+      description: product.isShippable
+        ? `${product.name} is in your cart.`
+        : `${product.name} is collect-in-store only. It will be held for you at the shop.`,
     });
   };
 
@@ -186,7 +201,12 @@ function ProductInfo({ product }: { product: Product }) {
 
       <p className="mt-4 text-muted-foreground leading-relaxed">{product.shortDescription}</p>
 
-      <Button className="mt-6 w-full sm:w-auto" size="lg" onClick={handleReserve} disabled={!product.inStock}>
+      <Button
+        className="mt-6 w-full sm:w-auto"
+        size="lg"
+        onClick={handleAddToCart}
+        disabled={!product.inStock}
+      >
         <ShoppingCart className="mr-2 h-4 w-4" />
         {product.inStock ? 'Add to cart' : 'Out of stock'}
       </Button>
@@ -196,7 +216,16 @@ function ProductInfo({ product }: { product: Product }) {
           <MapPin className="h-4 w-4 shrink-0" /> Walk-in shop in Swords, Co. Dublin
         </li>
         <li className="flex items-center gap-2">
-          <Truck className="h-4 w-4 shrink-0" /> Ships across Ireland (Republic + NI)
+          {product.isShippable ? (
+            <>
+              <Truck className="h-4 w-4 shrink-0" /> Delivery across Ireland, or collect in store
+            </>
+          ) : (
+            <>
+              <Store className="h-4 w-4 shrink-0" /> Collect in store only &mdash; we do not post
+              this item
+            </>
+          )}
         </li>
         <li className="flex items-center gap-2">
           <Wrench className="h-4 w-4 shrink-0" /> In-house repairs &amp; upgrades

@@ -41,6 +41,7 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): P
       stock_count: input.stockCount ?? 0,
       is_new: input.isNew ?? false,
       is_featured: input.isFeatured ?? false,
+      is_shippable: input.isShippable,
       tags: input.tags ?? [],
     })
     .select()
@@ -68,6 +69,7 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
       ...(patch.stockCount !== undefined && { stock_count: patch.stockCount }),
       ...(patch.isNew !== undefined && { is_new: patch.isNew }),
       ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
+      ...(patch.isShippable !== undefined && { is_shippable: patch.isShippable }),
       ...(patch.tags !== undefined && { tags: patch.tags }),
     })
     .eq('id', id)

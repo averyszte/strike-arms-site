@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchDropdown } from "@/components/SearchDropdown";
+import { useCart } from "@/hooks/use-cart";
 import { SERVICES } from "@/lib/services";
 import { BUSINESS } from "@/lib/site-config";
 
@@ -381,6 +382,7 @@ export function SiteHeader() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { totals } = useCart();
 
   const handleNavEnter = (name: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -477,11 +479,19 @@ export function SiteHeader() {
             <Link href="/account" className="hover:text-accent transition-colors hidden sm:flex" aria-label="Account">
               <User className="w-5 h-5" />
             </Link>
-            <Link href="/cart" className="relative hover:text-accent transition-colors" aria-label="Cart">
+            <Link
+              href="/cart"
+              className="relative hover:text-accent transition-colors"
+              aria-label={
+                totals.itemCount === 1 ? "Cart, 1 item" : `Cart, ${totals.itemCount} items`
+              }
+            >
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] leading-none">
-                0
-              </span>
+              {totals.itemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold min-w-[14px] h-[14px] px-[3px] flex items-center justify-center rounded-full text-[9px] leading-none">
+                  {totals.itemCount > 99 ? "99+" : totals.itemCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>
@@ -626,7 +636,7 @@ export function SiteHeader() {
               </Link>
               <Link href="/cart" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(false)}>
                 <ShoppingCart className="w-4 h-4" />
-                Cart
+                Cart{totals.itemCount > 0 ? ` (${totals.itemCount})` : ""}
               </Link>
             </div>
           </motion.div>

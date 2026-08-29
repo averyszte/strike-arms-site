@@ -10,14 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { useOrder, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { useToast } from '@/hooks/use-toast';
+import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
+import { FULFILLMENT_OPTIONS, formatOrderNumber } from '@/lib/order-display';
 import type { FulfillmentStatus } from '@/types/order';
-
-const FULFILLMENT_OPTIONS: { value: FulfillmentStatus; label: string }[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'ready_for_pickup', label: 'Ready for Pickup' },
-  { value: 'collected', label: 'Collected' },
-  { value: 'cancelled', label: 'Cancelled' },
-];
 
 function fmtEuros(cents: number) {
   return `€${(cents / 100).toFixed(2)}`;
@@ -46,7 +41,9 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
     <Sheet open={!!orderId} onOpenChange={open => { if (!open) onClose(); }}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader className="mb-5">
-          <SheetTitle>{order ? `Order ${order.orderNumber}` : 'Order Details'}</SheetTitle>
+          <SheetTitle>
+            {order ? `Order ${formatOrderNumber(order.orderNumber)}` : 'Order Details'}
+          </SheetTitle>
           <SheetDescription>
             {order ? format(new Date(order.createdAt), 'dd MMM yyyy, HH:mm') : ''}
           </SheetDescription>
@@ -70,6 +67,8 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                 <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
               )}
             </section>
+
+            <OrderDeliveryDetails order={order} />
 
             <section className="flex items-center gap-5 flex-wrap">
               <div>
@@ -117,6 +116,8 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                         <p className="text-sm text-foreground truncate">{item.productName}</p>
                         <p className="text-xs text-muted-foreground">
                           {fmtEuros(item.unitPriceCents)} × {item.quantity}
+                          {' · '}
+                          {item.fulfillmentMethod === 'delivery' ? 'Post' : 'Collect'}
                         </p>
                       </div>
                       <p className="text-sm font-medium tabular-nums">
@@ -129,6 +130,12 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
             )}
 
             <section className="border-t border-border pt-4 space-y-1.5">
+              {order.shippingCents > 0 && (
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Delivery</span>
+                  <span>{fmtEuros(order.shippingCents)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>VAT</span>
                 <span>{fmtEuros(order.vatCents)}</span>

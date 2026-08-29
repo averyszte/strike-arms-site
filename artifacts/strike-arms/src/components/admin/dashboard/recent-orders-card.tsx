@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { formatOrderNumber } from '@/lib/order-display';
 import type { Order } from '@/types/order';
 
 function formatEuros(cents: number) {
@@ -35,7 +36,7 @@ export function RecentOrdersCard({ orders }: Props) {
               <div key={order.id} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground font-mono">
-                    {order.orderNumber}
+                    {formatOrderNumber(order.orderNumber)}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
                     {order.customerName} · {format(new Date(order.createdAt), 'dd MMM')}

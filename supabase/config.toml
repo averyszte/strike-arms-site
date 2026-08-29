@@ -24,3 +24,16 @@ enable_signup = false
 
 [storage]
 enabled = false
+
+# Edge Functions.
+#
+# verify_jwt = false means the Supabase gateway will not demand a Supabase JWT
+# before the function runs. Both of these are called by parties that do not
+# have one: an anonymous shopper, and Stripe's servers. Each function does its
+# own authentication instead — the checkout endpoint by validating the request
+# and pricing from the database, the webhook by verifying the Stripe signature.
+[functions.create-checkout-session]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false

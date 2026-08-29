@@ -20,6 +20,9 @@ export type Product = {
   shortDescription: string;
   description?: string | null;
   inStock: boolean;
+  // Guns are collect-in-store only. False is the safe default: an item is
+  // never posted unless someone has explicitly said it may be.
+  isShippable: boolean;
   isPublished?: boolean;
   stockCount?: number;
   isNew?: boolean;

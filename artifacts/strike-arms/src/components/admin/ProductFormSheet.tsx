@@ -28,6 +28,7 @@ function toFormValues(product: Product): ProductFormValues {
     isPublished: product.isPublished ?? false,
     isNew: product.isNew ?? false,
     isFeatured: product.isFeatured ?? false,
+    isShippable: product.isShippable,
     stockCount: product.stockCount ?? 0,
     tags: (product.tags ?? []).join(', '),
     imageUrl: product.images[0] ?? '',
@@ -47,6 +48,7 @@ const DEFAULT_VALUES: ProductFormValues = {
   isPublished: false,
   isNew: false,
   isFeatured: false,
+  isShippable: false,
   stockCount: 0,
   tags: '',
   imageUrl: '',
@@ -68,6 +70,7 @@ function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'create
     isPublished: values.isPublished,
     isNew: values.isNew,
     isFeatured: values.isFeatured,
+    isShippable: values.isShippable,
     stockCount: values.stockCount,
     inStock: values.stockCount > 0,
     tags: values.tags

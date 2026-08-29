@@ -16,7 +16,9 @@ import Signup from "@/pages/auth/Signup";
 import Privacy from "@/pages/Privacy";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AuthProvider } from "@/lib/auth-context";
+import { CartProvider } from "@/lib/cart-context";
 import Cart from "@/pages/Cart";
+import CheckoutSuccess from "@/pages/CheckoutSuccess";
 import AirsoftLaw from "@/pages/AirsoftLaw";
 import WhereToPlay from "@/pages/WhereToPlay";
 import Glossary from "@/pages/Glossary";
@@ -71,6 +73,7 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/cart" component={Cart} />
+      <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/airsoft-law" component={AirsoftLaw} />
       <Route path="/where-to-play" component={WhereToPlay} />
       <Route path="/glossary" component={Glossary} />
@@ -140,10 +143,12 @@ function App() {
         <TooltipProvider>
           <AuthProvider>
             <AdminAuthProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
-              <Toaster />
+              <CartProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+              </CartProvider>
             </AdminAuthProvider>
           </AuthProvider>
         </TooltipProvider>

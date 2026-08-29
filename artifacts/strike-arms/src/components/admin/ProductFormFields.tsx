@@ -36,6 +36,7 @@ export const productFormSchema = z.object({
   isPublished: z.boolean(),
   isNew: z.boolean(),
   isFeatured: z.boolean(),
+  isShippable: z.boolean(),
   stockCount: z.coerce.number().int().min(0, 'Must be 0 or more'),
   tags: z.string(),
   imageUrl: z.string().url('Enter a valid URL').or(z.literal('')),
@@ -47,10 +48,16 @@ const CATEGORIES = [
   'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'parts', 'more',
 ] as const;
 
-const BOOLEAN_FIELDS: [keyof ProductFormValues & ('isPublished' | 'isNew' | 'isFeatured'), string][] = [
+type BooleanFieldName = keyof ProductFormValues &
+  ('isPublished' | 'isNew' | 'isFeatured' | 'isShippable');
+
+const BOOLEAN_FIELDS: [BooleanFieldName, string][] = [
   ['isPublished', 'Published'],
   ['isNew', 'New'],
   ['isFeatured', 'Featured'],
+  // Off by default. Guns are collect-in-store only, so an item is never
+  // posted unless someone has explicitly ticked this.
+  ['isShippable', 'Can be posted'],
 ];
 
 function FieldError({ message }: { message?: string }) {

@@ -17,6 +17,7 @@ export function rowToProduct(row: ProductRow): Product {
     shortDescription: row.short_description,
     description: row.description,
     inStock: row.in_stock,
+    isShippable: row.is_shippable,
     isPublished: row.is_published,
     stockCount: row.stock_count,
     isNew: row.is_new,

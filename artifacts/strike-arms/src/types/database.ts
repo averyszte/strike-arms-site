@@ -4,7 +4,11 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
 type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'partially_refunded' | 'failed' | 'expired';
-type FulfillmentStatus = 'pending' | 'ready_for_pickup' | 'collected' | 'cancelled';
+type FulfillmentStatus =
+  | 'pending' | 'ready_for_pickup' | 'collected'
+  | 'packed' | 'shipped' | 'delivered' | 'cancelled';
+type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
+type ItemFulfillmentMethod = 'pickup' | 'delivery';
 type InquiryStatus = 'new' | 'replied' | 'archived';
 type NotificationStatus = 'pending' | 'sent' | 'failed';
 
@@ -17,16 +21,24 @@ type ProductRow = {
   is_new: boolean; is_featured: boolean; is_published: boolean;
   stock_count: number; reserved_count: number; low_stock_threshold: number;
   in_stock: boolean; tags: string[];
+  is_shippable: boolean; ship_weight_g: number;
   created_at: string; updated_at: string;
 };
 
 type OrderRow = {
-  id: string; order_number: string;
+  // Null until payment succeeds — numbers are assigned by confirm_order_paid so
+  // that abandoned checkouts do not burn them.
+  id: string; order_number: string | null;
   stripe_session_id: string | null; stripe_payment_intent: string | null;
+  checkout_attempt_id: string | null;
   customer_name: string; customer_email: string; customer_phone: string | null;
   payment_status: PaymentStatus; fulfillment_status: FulfillmentStatus;
-  total_cents: number; vat_cents: number; refund_cents: number;
+  fulfillment_method: FulfillmentMethod;
+  total_cents: number; vat_cents: number; refund_cents: number; shipping_cents: number;
+  shipping_name: string | null; shipping_line1: string | null; shipping_line2: string | null;
+  shipping_city: string | null; shipping_county: string | null; shipping_eircode: string | null;
   age_verified: boolean; notes: string | null; is_archived: boolean;
+  paid_at: string | null; refunded_at: string | null;
   created_at: string; updated_at: string;
 };
 
@@ -34,6 +46,7 @@ type OrderItemRow = {
   id: string; order_id: string; product_id: string | null;
   product_slug: string; product_name: string; product_image: string | null; brand: string;
   unit_price_cents: number; quantity: number; subtotal_cents: number;
+  fulfillment_method: ItemFulfillmentMethod;
 };
 
 type OrderStatusLogRow = {
@@ -48,7 +61,7 @@ type InventoryAdjustmentRow = {
 };
 
 type CheckoutReservationRow = {
-  id: string; product_id: string; quantity: number;
+  id: string; product_id: string; quantity: number; order_id: string | null;
   session_key: string; expires_at: string; created_at: string;
 };
 
@@ -81,11 +94,13 @@ export type Database = {
         Insert: Omit<
           ProductRow,
           'id' | 'in_stock' | 'created_at' | 'updated_at' |
-          'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold'
+          'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
+          'is_shippable' | 'ship_weight_g'
         > & {
           id?: string; created_at?: string; updated_at?: string;
           description?: string; is_published?: boolean;
           stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
+          is_shippable?: boolean; ship_weight_g?: number;
         };
         Update: Partial<Omit<ProductRow, 'in_stock'>>;
         Relationships: [];
@@ -93,7 +108,8 @@ export type Database = {
       orders: {
         Row: OrderRow;
         Insert: Omit<OrderRow, 'id' | 'order_number' | 'created_at' | 'updated_at'> & {
-          id?: string; order_number?: string; created_at?: string; updated_at?: string;
+          id?: string; order_number?: string | null;
+          created_at?: string; updated_at?: string;
         };
         Update: Partial<Omit<OrderRow, 'id' | 'order_number'>>;
         Relationships: [];
@@ -137,9 +153,9 @@ export type Database = {
         Relationships: [];
       };
       stripe_event_log: {
-        Row: { id: string; processed_at: string };
-        Insert: { id: string; processed_at?: string };
-        Update: { processed_at?: string };
+        Row: { id: string; type: string; processed_at: string };
+        Insert: { id: string; type?: string; processed_at?: string };
+        Update: { type?: string; processed_at?: string };
         Relationships: [];
       };
       notification_jobs: {
@@ -181,6 +197,53 @@ export type Database = {
           p_expires_at: string;
         };
         Returns: boolean;
+      };
+      // Checkout and webhook functions. These are granted to service_role only
+      // and are called from the Edge Functions, never from the browser, but
+      // they belong in the schema type so the shape stays documented here.
+      claim_stripe_event: {
+        Args: { p_event_id: string; p_type: string };
+        Returns: boolean;
+      };
+      release_stripe_event: {
+        Args: { p_event_id: string };
+        Returns: undefined;
+      };
+      reserve_order_stock: {
+        Args: { p_order_id: string; p_lines: Json; p_expires_at: string };
+        Returns: string | null;
+      };
+      release_order_reservations: {
+        Args: { p_order_id: string };
+        Returns: undefined;
+      };
+      clear_stale_checkout_attempt: {
+        Args: { p_attempt_id: string };
+        Returns: number;
+      };
+      confirm_order_paid: {
+        Args: {
+          p_order_id: string;
+          p_payment_intent_id: string | null;
+          p_session_id?: string | null;
+        };
+        Returns: string | null;
+      };
+      expire_order: {
+        Args: { p_order_id: string };
+        Returns: boolean;
+      };
+      record_refund: {
+        Args: {
+          p_payment_intent_id: string;
+          p_refund_cents: number;
+          p_fully_refunded: boolean;
+        };
+        Returns: boolean;
+      };
+      release_expired_reservations: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
       };
     };
     Enums: { [_ in never]: never };

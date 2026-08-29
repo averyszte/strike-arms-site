@@ -5,6 +5,9 @@ const STAGES: { key: FulfillmentStatus; label: string; color: string }[] = [
   { key: 'pending', label: 'Pending', color: 'text-yellow-500' },
   { key: 'ready_for_pickup', label: 'Ready for pickup', color: 'text-blue-500' },
   { key: 'collected', label: 'Collected', color: 'text-green-600' },
+  { key: 'packed', label: 'Packed', color: 'text-blue-500' },
+  { key: 'shipped', label: 'Shipped', color: 'text-blue-500' },
+  { key: 'delivered', label: 'Delivered', color: 'text-green-600' },
   { key: 'cancelled', label: 'Cancelled', color: 'text-muted-foreground' },
 ];
 
