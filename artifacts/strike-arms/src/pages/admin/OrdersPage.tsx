@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { OrdersTable } from '@/components/admin/OrdersTable';
+import { OrdersView } from '@/components/admin/OrdersView';
 
 export default function OrdersPage() {
   return (
@@ -7,7 +7,7 @@ export default function OrdersPage() {
       <Helmet>
         <title>Orders | Strike Arms Admin</title>
       </Helmet>
-      <OrdersTable />
+      <OrdersView />
     </>
   );
 }
