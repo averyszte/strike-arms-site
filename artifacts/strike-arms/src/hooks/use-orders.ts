@@ -4,6 +4,7 @@ import {
   updateOrderFulfillment,
   getOrder,
   listAllOrdersWithItems,
+  setOrderArchived,
 } from '@/data/orders-repository';
 import type { FulfillmentStatus, OrderListFilters } from '@/types/order';
 
@@ -34,6 +35,25 @@ export function useUpdateFulfillmentStatus() {
   return useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: FulfillmentStatus }) =>
       updateOrderFulfillment(orderId, status),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'order'] });
+    },
+  });
+}
+
+/**
+ * Archives an order or brings it back.
+ *
+ * Invalidates the whole orders key rather than one view: the row has to leave
+ * the list it is in and appear in the other one, and the dashboard counts it
+ * either way.
+ */
+export function useSetOrderArchived() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ orderId, isArchived }: { orderId: string; isArchived: boolean }) =>
+      setOrderArchived(orderId, isArchived),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
       qc.invalidateQueries({ queryKey: ['admin', 'order'] });

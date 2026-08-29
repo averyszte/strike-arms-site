@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Euro, Clock, TrendingUp, Package } from 'lucide-react';
 import { StatCard } from '@/components/admin/dashboard/stat-card';
@@ -8,7 +9,7 @@ import { RecentOrdersCard } from '@/components/admin/dashboard/recent-orders-car
 import { OperationalAlertsCard } from '@/components/admin/dashboard/operational-alerts-card';
 import { useAllOrdersWithItems } from '@/hooks/use-orders';
 import { useAdminProducts } from '@/hooks/use-admin-products';
-import { computeDashboardMetrics } from '@/lib/admin-dashboard-metrics';
+import { computeDashboardMetrics, workQueue } from '@/lib/admin-dashboard-metrics';
 
 function fmtEuros(cents: number) {
   return new Intl.NumberFormat('en-IE', {
@@ -23,6 +24,9 @@ export default function DashboardPage() {
   const { data: products = [] } = useAdminProducts();
 
   const metrics = computeDashboardMetrics(orders);
+  // Money and volume read every order; the queues and alerts read only what is
+  // still open. Archiving an order must never make revenue go down.
+  const active = useMemo(() => workQueue(orders), [orders]);
   const publishedCount = products.filter(p => p.isPublished).length;
 
   if (isLoading) {
@@ -70,15 +74,15 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RevenueTrackerCard orders={orders} />
-          <DeliveryStatusCard orders={orders} />
+          <DeliveryStatusCard orders={active} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <TopProductsCard orders={orders} />
-          <RecentOrdersCard orders={orders} />
+          <RecentOrdersCard orders={active} />
         </div>
 
-        <OperationalAlertsCard orders={orders} />
+        <OperationalAlertsCard orders={active} />
       </div>
     </>
   );

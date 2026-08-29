@@ -25,6 +25,17 @@ export type RevenueRow = { label: string; revenue: number };
 
 export type ProductSalesRow = { name: string; quantity: number; revenue: number };
 
+/**
+ * The orders still being worked.
+ *
+ * Archiving is the admin saying they are finished with an order, so it leaves
+ * the queues and the alerts. It never leaves the money: every revenue figure
+ * below counts archived orders, because tidying up is not a refund.
+ */
+export function workQueue(orders: Order[]): Order[] {
+  return orders.filter(o => !o.isArchived);
+}
+
 export function computeDashboardMetrics(orders: Order[]): DashboardMetrics {
   const now = new Date();
   const monthStart = startOfMonth(now);
@@ -36,7 +47,9 @@ export function computeDashboardMetrics(orders: Order[]): DashboardMetrics {
     revenueThisMonth: paid
       .filter(o => isAfter(new Date(o.createdAt), monthStart))
       .reduce((s, o) => s + o.totalCents - o.refundCents, 0),
-    pendingPickups: orders.filter(
+    // A queue, so archived orders drop out of it. The revenue and volume
+    // figures either side of this deliberately do not.
+    pendingPickups: workQueue(orders).filter(
       o => o.fulfillmentStatus === 'pending' && o.paymentStatus === 'paid',
     ).length,
     ordersToday: orders.filter(o => isAfter(new Date(o.createdAt), dayStart)).length,

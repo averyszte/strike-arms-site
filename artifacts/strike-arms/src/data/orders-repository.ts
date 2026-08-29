@@ -82,18 +82,28 @@ export async function addOrderNote(id: string, note: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function archiveOrder(id: string): Promise<void> {
-  const { error } = await supabase.from('orders').update({ is_archived: true }).eq('id', id);
+/**
+ * Moves an order out of the working list, or brings it back.
+ *
+ * There is no delete anywhere in this file on purpose. An order is the record
+ * of money changing hands; archiving is the admin saying they are finished
+ * with it, which is a different thing from it never having happened.
+ */
+export async function setOrderArchived(id: string, isArchived: boolean): Promise<void> {
+  const { error } = await supabase.from('orders').update({ is_archived: isArchived }).eq('id', id);
   if (error) throw error;
 }
 
+/**
+ * Every order, archived ones included, for the dashboard.
+ *
+ * The exclusion this used to carry was the florist's bug: archiving is
+ * workflow tidy-up, not a refund, so all-time revenue shrank every time the
+ * owner tidied up. Callers that want only live work filter with workQueue().
+ */
 export async function listAllOrdersWithItems(): Promise<Order[]> {
   const [ordersResult, itemsResult] = await Promise.all([
-    supabase
-      .from('orders')
-      .select('*')
-      .eq('is_archived', false)
-      .order('created_at', { ascending: false }),
+    supabase.from('orders').select('*').order('created_at', { ascending: false }),
     supabase.from('order_items').select('*'),
   ]);
   if (ordersResult.error) throw ordersResult.error;

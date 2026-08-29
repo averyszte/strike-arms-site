@@ -1,26 +1,13 @@
 import { useState } from 'react';
-import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Archive, Plus } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useOrders, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
+import { useOrders, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { CounterOrderSheet } from '@/components/admin/CounterOrderSheet';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
+import { OrdersTableRow } from '@/components/admin/OrdersTableRow';
 import { useToast } from '@/hooks/use-toast';
-import {
-  FULFILLMENT_OPTIONS,
-  ORDER_CHANNEL_LABELS,
-  formatOrderNumber,
-} from '@/lib/order-display';
-import type { FulfillmentStatus, PaymentStatus } from '@/types/order';
+import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
 
 const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -30,19 +17,18 @@ const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
   { value: 'refunded', label: 'Refunded' },
 ];
 
-function fmtEuros(cents: number) {
-  return `€${(cents / 100).toFixed(2)}`;
-}
-
 export function OrdersTable() {
   const [paymentFilter, setPaymentFilter] = useState<PaymentStatus | 'all'>('all');
+  const [showArchived, setShowArchived] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isCounterSaleOpen, setIsCounterSaleOpen] = useState(false);
 
   const { data, isLoading } = useOrders({
     paymentStatus: paymentFilter === 'all' ? undefined : paymentFilter,
+    isArchived: showArchived,
   });
   const updateStatus = useUpdateFulfillmentStatus();
+  const setArchived = useSetOrderArchived();
   const { toast } = useToast();
   const orders = data?.items ?? [];
 
@@ -54,16 +40,48 @@ export function OrdersTable() {
     }
   }
 
+  async function handleToggleArchive(order: Order) {
+    const isArchived = !order.isArchived;
+    try {
+      await setArchived.mutateAsync({ orderId: order.id, isArchived });
+      toast({
+        title: isArchived ? 'Order archived' : 'Order restored',
+        description: isArchived
+          ? 'It still counts towards revenue.'
+          : 'It is back in the working list.',
+      });
+    } catch {
+      toast({
+        title: 'Error',
+        description: isArchived ? 'Failed to archive order' : 'Failed to restore order',
+        variant: 'destructive',
+      });
+    }
+  }
+
   return (
     <>
       <div className="mb-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-foreground">Orders</h2>
-          <Button size="sm" onClick={() => setIsCounterSaleOpen(true)}>
-            <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
-            New counter sale
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={showArchived ? 'default' : 'outline'}
+              aria-pressed={showArchived}
+              onClick={() => setShowArchived((current) => !current)}
+            >
+              <Archive className="mr-1.5 h-4 w-4" aria-hidden="true" />
+              Archived
+            </Button>
+            <Button size="sm" onClick={() => setIsCounterSaleOpen(true)}>
+              <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+              New counter sale
+            </Button>
+          </div>
         </div>
+
         <Tabs value={paymentFilter} onValueChange={v => setPaymentFilter(v as PaymentStatus | 'all')}>
           <TabsList>
             {PAYMENT_TABS.map(t => (
@@ -73,6 +91,13 @@ export function OrdersTable() {
             ))}
           </TabsList>
         </Tabs>
+
+        {showArchived && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Archived orders are out of the way, not undone — they still count towards revenue on
+            the dashboard.
+          </p>
+        )}
       </div>
 
       {isLoading ? (
@@ -91,71 +116,25 @@ export function OrdersTable() {
                   <th className="px-4 py-3 text-right font-medium text-muted-foreground">Total</th>
                   <th className="px-4 py-3 text-center font-medium text-muted-foreground">Payment</th>
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Fulfillment</th>
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                    <span className="sr-only">Archive</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map(order => (
-                  <tr
+                  <OrdersTableRow
                     key={order.id}
-                    className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
-                    onClick={() => setSelectedOrderId(order.id)}
-                  >
-                    <td className="px-4 py-3">
-                      <p className="font-mono font-medium text-foreground">
-                        {formatOrderNumber(order.orderNumber)}
-                      </p>
-                      {order.channel !== 'web' && (
-                        <p className="text-xs text-muted-foreground">
-                          {ORDER_CHANNEL_LABELS[order.channel]}
-                        </p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-foreground">{order.customerName}</p>
-                      {/* A cash walk-in may have given neither. */}
-                      <p className="text-xs text-muted-foreground">
-                        {order.customerEmail ?? order.customerPhone ?? 'No contact details'}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {format(new Date(order.createdAt), 'dd MMM yyyy')}
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      {fmtEuros(order.totalCents)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge
-                        variant={order.paymentStatus === 'paid' ? 'default' : 'outline'}
-                        className="text-[10px] capitalize"
-                      >
-                        {order.paymentStatus.replace(/_/g, ' ')}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                      <Select
-                        value={order.fulfillmentStatus}
-                        onValueChange={v =>
-                          void handleStatusChange(order.id, v as FulfillmentStatus)
-                        }
-                      >
-                        <SelectTrigger className="h-7 text-xs w-44">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FULFILLMENT_OPTIONS.map(s => (
-                            <SelectItem key={s.value} value={s.value} className="text-xs">
-                              {s.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </td>
-                  </tr>
+                    order={order}
+                    onSelect={setSelectedOrderId}
+                    onStatusChange={(orderId, status) => void handleStatusChange(orderId, status)}
+                    onToggleArchive={(target) => void handleToggleArchive(target)}
+                  />
                 ))}
                 {orders.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
-                      No orders found
+                    <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                      {showArchived ? 'Nothing archived' : 'No orders found'}
                     </td>
                   </tr>
                 )}
