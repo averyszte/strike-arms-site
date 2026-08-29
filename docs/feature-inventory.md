@@ -55,7 +55,7 @@ a real customer touches them.
 | A5 | **Brands hub** `/brands` | PARTIAL **[alan]** | Hub renders; per-brand pages `/brands/:slug` don't exist. |
 | A6 | **New arrivals / Sale** | DONE | Real `is_new` / `sale_price_cents` queries. |
 | A7 | **Product images** | DONE 2026-08-29 **[needs push]** | Migration 011 creates the `product-images` bucket (public read, AAL2 writes, 5 MiB and MIME limits enforced server-side). `lib/compress-image.ts` resizes to 1600px and encodes JPEG unless the source is PNG; WebP is deliberately not produced because Safari's canvas encoder is unreliable. `data/storage-repository.ts` uploads to a UUID path with `upsert: false` and a 1-year cache, which is only safe because a path is never reused. Multi-image with reordering and a main-image pick; `ProductDetail` already had the gallery. |
-| A7.1 | Orphaned-image cleanup | DONE 2026-08-29 **[needs push]** | Built with A7 rather than after it. A trigger on `products` files every dropped image path into `orphaned_images`, so cleanup does not depend on the browser still being open — it fires for SQL deletes and cascades too. The `sweep-orphan-images` Edge Function drains the queue through the Storage API (deleting a `storage.objects` row does not remove the object). A second trigger de-queues a path that comes back. **Not yet scheduled** — it needs the same cron as E5, so the two should be wired together. Until then, run it by hand after a bulk delete. |
+| A7.1 | Orphaned-image cleanup | DONE 2026-08-29 **[needs push]** | Built with A7 rather than after it. A trigger on `products` files every dropped image path into `orphaned_images`, so cleanup does not depend on the browser still being open — it fires for SQL deletes and cascades too. The `sweep-orphan-images` Edge Function drains the queue through the Storage API (deleting a `storage.objects` row does not remove the object). A second trigger de-queues a path that comes back. Scheduling is one call to `schedule_image_sweep()` (migration 012) — deliberately not scheduled by the migration itself, because the job posts to an Edge Function and so needs the service-role key, which is not in this repo. Store it in Vault as `service_role_key`, call the function once, done. Unscheduled it costs storage, not correctness. |
 
 ## B. Customer accounts
 
@@ -144,7 +144,7 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 | E2 | **Edge Functions** | PARTIAL | Two deployed. Secrets set. Needs: email sender, and anything for D8. |
 | E3 | **Transactional email** | MISSING **[decision] [florist]** | Confirmed by their build: Resend, with `EMAIL_FROM` as a secret so the sender address never needs a code deploy. Playbook says Resend. Needs a verified domain, `_shared/resend.ts`, and Supabase Auth custom SMTP (default is 2/hour, team addresses only). Optionally the Auth send-email hook so auth mail goes through Resend templates too. |
 | E4 | **File storage** | DONE 2026-08-29 **[needs push]** | `product-images` bucket, migration 011. `[storage]` is now enabled in `config.toml`. D8 service photos will want their own bucket rather than a folder in this one — different audience, different policies. |
-| E5 | **Scheduled jobs** | MISSING | `release_expired_reservations()` exists but nothing calls it on a schedule. Expired holds never release. |
+| E5 | **Scheduled jobs** | DONE 2026-08-29 **[needs push]** | Migration 012. `pg_cron` runs `release_expired_reservations()` every 5 minutes. Switching it on first required fixing a dormant overselling bug: `confirm_order_paid` decremented `reserved_count` from `order_items` while every release path decremented it from `checkout_reservations` rows, so a cron release followed by a late webhook double-counted the same hold. Both now key off reservation rows. The sweeper also reads the owning order under `for update skip locked` and leaves anything not `pending` alone — skip rather than wait, because the two functions take the order and reservation locks in opposite orders and waiting would deadlock. |
 | E6 | **Free-tier auto-pause** | OPEN **[decision]** | Project pauses after ~7 idle days. Pro plan or keep-alive ping before launch. |
 | E7 | **Backups** | MISSING | |
 
@@ -216,7 +216,9 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 9. D6 wire the contact form; D7 customer list
 10. F7 policy pages **[alan] [legal]**
 11. D8 service job tracker
-12. E5 scheduled reservation release
+12. ~~E5 scheduled reservation release~~ — **done 2026-08-29 (migration 012, needs pushing).**
+    Pulled forward from position 12: it also carries the correctness fix that stops the shop
+    overselling once any cron is running.
 13. C11 bot protection
 14. G1 + G1.1 + G1.2 Cloudflare Pages, headers and redirects; G2 domain; F11 cutover
 
