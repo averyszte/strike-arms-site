@@ -133,7 +133,17 @@ $fn$;
 -- whose order is busy is simply left for the next run five minutes later.
 -- ═══════════════════════════════════════════════════════════════
 
-create or replace function release_expired_reservations()
+-- Dropped rather than replaced: 003 declared this "returns void" and Postgres
+-- refuses to change a return type in place (42P13). It now returns the number
+-- of holds released, which is the only way the cron run shows up as anything
+-- other than "it ran" in cron.job_run_details.
+--
+-- Dropping discards the ACL that 008's grants block set, so the grant is
+-- reinstated below. A security definer function left executable by public is
+-- how a browser gets to release other people's stock holds.
+drop function if exists public.release_expired_reservations();
+
+create function release_expired_reservations()
 returns int
 language plpgsql
 security definer
@@ -182,6 +192,10 @@ begin
   return v_release;
 end;
 $fn$;
+
+revoke all on function public.release_expired_reservations()
+  from public, anon, authenticated;
+grant execute on function public.release_expired_reservations() to service_role;
 
 -- ═══════════════════════════════════════════════════════════════
 -- THE SCHEDULE
