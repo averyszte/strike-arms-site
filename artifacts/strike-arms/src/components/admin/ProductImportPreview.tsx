@@ -20,15 +20,7 @@ type ProductImportPreviewProps = {
   plan: ImportPlan;
 };
 
-function Count({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: number;
-  label: string;
-}) {
+function Count({ icon, value, label }: { icon: React.ReactNode; value: number; label: string }) {
   return (
     <div className="flex items-center gap-2 rounded-md border border-border px-3 py-2">
       {icon}
@@ -99,7 +91,8 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
           <ul className="space-y-1 text-sm">
             {plan.creates.slice(0, SHOWN).map((create) => (
               <li key={create.slug} className="text-foreground">
-                {create.name} <span className="font-mono text-xs text-muted-foreground">{create.slug}</span>
+                {create.name}{' '}
+                <span className="font-mono text-xs text-muted-foreground">{create.slug}</span>
               </li>
             ))}
           </ul>

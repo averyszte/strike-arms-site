@@ -150,8 +150,8 @@ export function ProductImportDialog({ open, products, onClose }: Props) {
                   ))}
                 </ul>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Everything else was written. Fixing those rows and uploading the same file again is
-                  safe.
+                  Everything else was written. Fixing those rows and uploading the same file again
+                  is safe.
                 </p>
               </div>
             )}
