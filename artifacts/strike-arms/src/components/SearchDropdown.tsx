@@ -4,8 +4,7 @@ import { Search, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { useSearchProducts } from '@/hooks/use-search-products';
-import { formatPrice } from '@/lib/format-price';
-import { getCategory } from '@/lib/taxonomy';
+import { SearchResultRow } from '@/components/SearchResultRow';
 import type { Product } from '@/types/product';
 
 interface Props {
@@ -22,7 +21,7 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
 
-  const { results } = useSearchProducts(query);
+  const { results, isError, isPending } = useSearchProducts(query);
   const showPanel = open && query.length >= 2;
 
   useEffect(() => {
@@ -153,43 +152,46 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
             role="listbox"
             aria-label="Search suggestions"
           >
-            {results.length > 0 ? (
+            {isError ? (
+              // Checked before results, because placeholderData keeps the last
+              // term's matches on screen while a new term is in flight. Showing
+              // those under a different query is a wrong answer, not a stale
+              // one.
+              <div className="px-4 py-6 text-center space-y-1">
+                <p className="text-sm text-foreground">Search is not working right now</p>
+                <p className="text-xs text-muted-foreground">
+                  That is a fault at our end, not an empty shelf.
+                </p>
+                <button
+                  className="text-xs text-accent hover:underline"
+                  onMouseDown={() => {
+                    navigate('/store');
+                    closeAndClear();
+                  }}
+                >
+                  Browse the full range
+                </button>
+              </div>
+            ) : isPending ? (
+              // Only true when there is nothing to show at all -- once a
+              // search has returned once, placeholderData keeps those results
+              // on screen while the next term is fetched. Without this branch
+              // the first search of a session reads "No results" for as long
+              // as the request takes, which is a wrong answer, not a slow one.
+              <div className="px-4 py-6 text-center">
+                <p className="text-sm text-muted-foreground">Searching…</p>
+              </div>
+            ) : results.length > 0 ? (
               <>
                 <ul>
                   {results.map((p, i) => (
-                    <li key={p.id} role="option" aria-selected={i === activeIdx}>
-                      <button
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors border-b border-border/40 last:border-b-0 ${
-                          i === activeIdx ? 'bg-accent/10' : 'hover:bg-muted/50'
-                        }`}
-                        onMouseDown={() => goToProduct(p)}
-                        onMouseEnter={() => setActiveIdx(i)}
-                      >
-                        <div className="w-9 h-9 bg-muted rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
-                          {p.images[0] ? (
-                            <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {getCategory(p.category)?.shortLabel ?? p.category}
-                          </p>
-                        </div>
-                        <div className="shrink-0 text-right">
-                          {p.salePrice ? (
-                            <>
-                              <p className="text-sm font-semibold text-accent">{formatPrice(p.salePrice)}</p>
-                              <p className="text-[11px] line-through text-muted-foreground">{formatPrice(p.price)}</p>
-                            </>
-                          ) : (
-                            <p className="text-sm font-semibold">{formatPrice(p.price)}</p>
-                          )}
-                        </div>
-                      </button>
-                    </li>
+                    <SearchResultRow
+                      key={p.id}
+                      product={p}
+                      isActive={i === activeIdx}
+                      onSelect={() => goToProduct(p)}
+                      onHover={() => setActiveIdx(i)}
+                    />
                   ))}
                 </ul>
                 <button
