@@ -56,3 +56,7 @@ Thumbs.db
 
 # Supabase CLI link state — per-machine, never committed
 supabase/.temp/
+
+# Claude Code — per-machine permission state. launch.json is shared and tracked.
+.claude/settings.local.json
+.claude/worktrees/

@@ -5,27 +5,28 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { verifySupabaseConfig } from "./src/lib/verify-supabase-config";
 
+// PORT and BASE_PATH were required because Replit injected both. Nothing
+// injects them now, and this file is evaluated for every command -- so a
+// missing PORT threw before `vite build` had done anything, which is a
+// confusing way for a deploy to fail over a variable a build does not use.
+//
+// Both now have defaults. A value that IS supplied is still validated: falling
+// back to 5173 because someone typed PORT=0 would start a server on the wrong
+// port and say nothing.
+
+const DEFAULT_PORT = 5173;
+
 const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
+const port = rawPort ? Number(rawPort) : DEFAULT_PORT;
 
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+// Served from the domain root. Cloudflare Pages does not set this, and a base
+// of "" rather than "/" produces asset URLs relative to the current path, which
+// works on / and 404s on every nested route.
+const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig(async ({ mode }) => {
   // Fail the build rather than shipping a bundle whose Supabase credentials are
