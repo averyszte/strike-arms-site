@@ -82,7 +82,7 @@ export default function DashboardPage() {
           <RecentOrdersCard orders={active} />
         </div>
 
-        <OperationalAlertsCard orders={active} />
+        <OperationalAlertsCard orders={active} products={products} />
       </div>
     </>
   );

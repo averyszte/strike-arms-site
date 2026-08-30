@@ -1,10 +1,18 @@
 import { Archive, Columns3, Download, Plus, Table2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { FULFILLMENT_OPTIONS } from '@/lib/order-display';
+import type { FulfillmentFilter, PaymentFilter } from '@/hooks/use-orders-filters';
 import type { OrdersViewMode } from '@/hooks/use-orders-view';
-import type { PaymentStatus } from '@/types/order';
 
 /**
  * The controls above the orders list.
@@ -13,7 +21,7 @@ import type { PaymentStatus } from '@/types/order';
  * approaching the file limit and the toolbar is the part that holds no state.
  */
 
-const PAYMENT_TABS: { value: PaymentStatus | 'all'; label: string }[] = [
+const PAYMENT_TABS: { value: PaymentFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'paid', label: 'Paid' },
   { value: 'pending', label: 'Pending' },
@@ -25,12 +33,14 @@ type OrdersToolbarProps = {
   view: OrdersViewMode;
   isTableForced: boolean;
   showArchived: boolean;
-  paymentFilter: PaymentStatus | 'all';
+  paymentFilter: PaymentFilter;
+  fulfillmentFilter: FulfillmentFilter;
   selectedCount: number;
   isExporting: boolean;
   onViewChange: (view: OrdersViewMode) => void;
   onToggleArchived: () => void;
-  onPaymentFilterChange: (value: PaymentStatus | 'all') => void;
+  onPaymentFilterChange: (value: PaymentFilter) => void;
+  onFulfillmentFilterChange: (value: FulfillmentFilter) => void;
   onNewCounterSale: () => void;
   onExport: () => void;
 };
@@ -40,11 +50,13 @@ export function OrdersToolbar({
   isTableForced,
   showArchived,
   paymentFilter,
+  fulfillmentFilter,
   selectedCount,
   isExporting,
   onViewChange,
   onToggleArchived,
   onPaymentFilterChange,
+  onFulfillmentFilterChange,
   onNewCounterSale,
   onExport,
 }: OrdersToolbarProps) {
@@ -108,18 +120,41 @@ export function OrdersToolbar({
         </div>
       </div>
 
-      <Tabs
-        value={paymentFilter}
-        onValueChange={(value) => onPaymentFilterChange(value as PaymentStatus | 'all')}
-      >
-        <TabsList>
-          {PAYMENT_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <div className="flex flex-wrap items-center gap-2">
+        <Tabs
+          value={paymentFilter}
+          onValueChange={(value) => onPaymentFilterChange(value as PaymentFilter)}
+        >
+          <TabsList>
+            {PAYMENT_TABS.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        {/* Addressable, so a dashboard alert can land on exactly the orders it
+            is complaining about. */}
+        <Select
+          value={fulfillmentFilter}
+          onValueChange={(value) => onFulfillmentFilterChange(value as FulfillmentFilter)}
+        >
+          <SelectTrigger className="h-9 w-48 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" className="text-xs">
+              Any fulfilment
+            </SelectItem>
+            {FULFILLMENT_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value} className="text-xs">
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {showArchived && (
         <p className="mt-3 text-xs text-muted-foreground">

@@ -14,10 +14,11 @@ import {
   useUpdateFulfillmentStatus,
 } from '@/hooks/use-orders';
 import { useOrderSelection } from '@/hooks/use-order-selection';
+import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useOrdersView } from '@/hooks/use-orders-view';
 import { useToast } from '@/hooks/use-toast';
-import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
+import type { FulfillmentStatus, Order } from '@/types/order';
 
 /**
  * The orders screen: filters, the table or the board, and the sheets both open.
@@ -36,20 +37,19 @@ import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
 const BOARD_PAGE_SIZE = 200;
 
 export function OrdersView() {
-  const [paymentFilter, setPaymentFilter] = useState<PaymentStatus | 'all'>('all');
-  const [showArchived, setShowArchived] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isCounterSaleOpen, setIsCounterSaleOpen] = useState(false);
 
   const { view, setView, isTableForced } = useOrdersView();
-
-  const filters = useMemo(
-    () => ({
-      paymentStatus: paymentFilter === 'all' ? undefined : paymentFilter,
-      isArchived: showArchived,
-    }),
-    [paymentFilter, showArchived],
-  );
+  const {
+    payment,
+    fulfillment,
+    showArchived,
+    filters,
+    setPayment,
+    setFulfillment,
+    toggleArchived,
+  } = useOrdersFilters();
 
   const { data, isLoading } = useOrders({
     ...filters,
@@ -136,12 +136,14 @@ export function OrdersView() {
         view={view}
         isTableForced={isTableForced}
         showArchived={showArchived}
-        paymentFilter={paymentFilter}
+        paymentFilter={payment}
+        fulfillmentFilter={fulfillment}
         selectedCount={selectedCount}
         isExporting={isExporting}
         onViewChange={setView}
-        onToggleArchived={() => setShowArchived((current) => !current)}
-        onPaymentFilterChange={setPaymentFilter}
+        onToggleArchived={toggleArchived}
+        onPaymentFilterChange={setPayment}
+        onFulfillmentFilterChange={setFulfillment}
         onNewCounterSale={() => setIsCounterSaleOpen(true)}
         onExport={() => void handleExport()}
       />

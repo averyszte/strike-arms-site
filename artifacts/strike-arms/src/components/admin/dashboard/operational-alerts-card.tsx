@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import { AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Order } from '@/types/order';
+import { Link } from 'wouter';
+import { AlertTriangle, CheckCircle2, ChevronRight, OctagonAlert } from 'lucide-react';
 
-const HOURS_24_MS = 24 * 60 * 60 * 1000;
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { buildOperationalAlerts } from '@/lib/admin-alerts';
+import type { Order } from '@/types/order';
+import type { Product } from '@/types/product';
+
+/**
+ * The one thing on this dashboard that reports a problem without anyone going
+ * looking for it — so every row is a link to the screen where it gets fixed.
+ */
 
 interface Props {
   orders: Order[];
+  products: Product[];
 }
 
-export function OperationalAlertsCard({ orders }: Props) {
-  // Read once on mount rather than on every render: the clock is not a
-  // prop, and a render that returns a different answer each time is the
-  // kind of impurity concurrent React is allowed to punish.
+export function OperationalAlertsCard({ orders, products }: Props) {
+  // Read once on mount rather than on every render: the clock is not a prop,
+  // and a render that returns a different answer each time is the kind of
+  // impurity concurrent React is allowed to punish.
   const [now] = useState(() => Date.now());
 
-  const failed = orders.filter(o => o.paymentStatus === 'failed');
-  const stalePending = orders.filter(
-    o =>
-      o.paymentStatus === 'paid' &&
-      o.fulfillmentStatus === 'pending' &&
-      now - new Date(o.createdAt).getTime() > HOURS_24_MS,
-  );
-
-  const allClear = failed.length === 0 && stalePending.length === 0;
+  const alerts = buildOperationalAlerts(orders, products, now);
 
   return (
     <Card>
@@ -31,32 +31,48 @@ export function OperationalAlertsCard({ orders }: Props) {
         <CardTitle className="text-sm font-medium">Operational Alerts</CardTitle>
       </CardHeader>
       <CardContent>
-        {allClear ? (
+        {alerts.length === 0 ? (
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <p className="text-sm">All clear — no issues detected</p>
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            <p className="text-sm">All clear — nothing waiting on you</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {failed.length > 0 && (
-              <div className="flex items-start gap-2 text-destructive">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <p className="text-sm">
-                  {failed.length} failed payment{failed.length > 1 ? 's' : ''} —{' '}
-                  <span className="font-medium">review in Orders</span>
-                </p>
-              </div>
-            )}
-            {stalePending.length > 0 && (
-              <div className="flex items-start gap-2 text-yellow-600 dark:text-yellow-500">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <p className="text-sm">
-                  {stalePending.length} paid order{stalePending.length > 1 ? 's' : ''} pending
-                  &gt;24 h — <span className="font-medium">check fulfillment</span>
-                </p>
-              </div>
-            )}
-          </div>
+          <ul className="divide-y divide-border">
+            {alerts.map((alert) => {
+              const isCritical = alert.severity === 'critical';
+              const Icon = isCritical ? OctagonAlert : AlertTriangle;
+
+              return (
+                <li key={alert.id}>
+                  <Link
+                    href={alert.href}
+                    className="-mx-2 flex items-start gap-2 rounded-md px-2 py-2.5 transition-colors hover:bg-muted/50"
+                  >
+                    <Icon
+                      className={`mt-0.5 h-4 w-4 shrink-0 ${
+                        isCritical ? 'text-destructive' : 'text-yellow-600 dark:text-yellow-500'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className={`block text-sm ${
+                          isCritical ? 'font-medium text-destructive' : 'text-foreground'
+                        }`}
+                      >
+                        {alert.title}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">{alert.action}</span>
+                    </span>
+                    <ChevronRight
+                      className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </CardContent>
     </Card>
