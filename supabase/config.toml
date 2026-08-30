@@ -42,6 +42,12 @@ verify_jwt = false
 [functions.stripe-webhook]
 verify_jwt = false
 
+# The refund endpoint is called by an admin in a browser, so the gateway
+# checks the JWT and the function then requires is_admin_aal2() on top -- a
+# valid customer session gets past the gateway and no further.
+[functions.refund-order]
+verify_jwt = true
+
 # The orphan-image sweeper is the exception: it is maintenance, not a public
 # endpoint, so the gateway checks the JWT and the function then requires the
 # service role on top. Nothing a browser holds gets past either check.

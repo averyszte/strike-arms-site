@@ -14,6 +14,7 @@ import { useOrder, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hoo
 import { useToast } from '@/hooks/use-toast';
 import { ContactLinks } from '@/components/admin/contact-links';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
+import { OrderRefundSection } from '@/components/admin/OrderRefundSection';
 import { PrintActions } from '@/components/admin/print/print-actions';
 import {
   FULFILLMENT_OPTIONS,
@@ -196,6 +197,8 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                 <p className="text-sm text-muted-foreground">{order.notes}</p>
               </section>
             )}
+
+            <OrderRefundSection order={order} />
 
             <section className="border-t border-border pt-4">
               <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
