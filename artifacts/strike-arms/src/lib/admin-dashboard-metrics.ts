@@ -57,6 +57,26 @@ export function computeDashboardMetrics(orders: Order[]): DashboardMetrics {
   };
 }
 
+/** How far back each fixed period reaches. 'all' has no lower bound. */
+const PERIOD_DAYS: Record<Exclude<PeriodKey, 'all'>, number> = {
+  '7d': 7,
+  '30d': 30,
+  '90d': 90,
+};
+
+/**
+ * The first day the period covers, or null for 'all'.
+ *
+ * Exported so the channel split beneath the revenue chart windows on exactly
+ * the same dates the chart does. Two nearly-identical date calculations sitting
+ * beside each other would eventually disagree, and a split that does not add up
+ * to the total above it reads as a bug in the money.
+ */
+export function periodStart(period: PeriodKey, now: Date = new Date()): Date | null {
+  if (period === 'all') return null;
+  return startOfDay(subDays(now, PERIOD_DAYS[period] - 1));
+}
+
 export function buildRevenueRows(orders: Order[], period: PeriodKey): RevenueRow[] {
   const paid = orders.filter(o => o.paymentStatus === 'paid');
   const now = new Date();
@@ -71,21 +91,21 @@ export function buildRevenueRows(orders: Order[], period: PeriodKey): RevenueRow
   }
 
   if (period === '7d') {
-    return eachDayOfInterval({ start: subDays(now, 6), end: now }).map(day => ({
+    return eachDayOfInterval({ start: subDays(now, PERIOD_DAYS['7d'] - 1), end: now }).map(day => ({
       label: format(day, 'EEE'),
       revenue: sumBucket(startOfDay(day), endOfDay(day)),
     }));
   }
 
   if (period === '30d') {
-    return eachDayOfInterval({ start: subDays(now, 29), end: now }).map(day => ({
+    return eachDayOfInterval({ start: subDays(now, PERIOD_DAYS['30d'] - 1), end: now }).map(day => ({
       label: format(day, 'MMM d'),
       revenue: sumBucket(startOfDay(day), endOfDay(day)),
     }));
   }
 
   if (period === '90d') {
-    const days = eachDayOfInterval({ start: subDays(now, 89), end: now });
+    const days = eachDayOfInterval({ start: subDays(now, PERIOD_DAYS['90d'] - 1), end: now });
     const chunks: Date[][] = [];
     for (let i = 0; i < days.length; i += 7) chunks.push(days.slice(i, i + 7));
     return chunks.map(chunk => ({

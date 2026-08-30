@@ -9,8 +9,10 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { buildRevenueRows } from '@/lib/admin-dashboard-metrics';
+import { ChannelSplit } from '@/components/admin/dashboard/channel-split';
+import { buildRevenueRows, periodStart } from '@/lib/admin-dashboard-metrics';
 import type { PeriodKey } from '@/lib/admin-dashboard-metrics';
+import { buildChannelRevenue } from '@/lib/revenue-by-channel';
 import type { Order } from '@/types/order';
 
 const PERIODS: { key: PeriodKey; label: string }[] = [
@@ -27,6 +29,7 @@ interface Props {
 export function RevenueTrackerCard({ orders }: Props) {
   const [period, setPeriod] = useState<PeriodKey>('30d');
   const rows = buildRevenueRows(orders, period);
+  const channels = buildChannelRevenue(orders, periodStart(period));
 
   return (
     <Card>
@@ -89,6 +92,7 @@ export function RevenueTrackerCard({ orders }: Props) {
             </LineChart>
           </ResponsiveContainer>
         )}
+        <ChannelSplit rows={channels} />
       </CardContent>
     </Card>
   );
