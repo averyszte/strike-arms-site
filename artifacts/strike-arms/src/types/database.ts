@@ -145,6 +145,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      // Deployment metadata (migration 016). Admin-only; the Settings screen
+      // compares the result against the migrations in the repo.
+      applied_migrations: {
+        Args: Record<PropertyKey, never>;
+        Returns: { version: string }[];
+      };
       // Storefront search (migration 015). Ranked in the database so the
       // dropdown does not have to hold the catalogue to sort it.
       search_products: {

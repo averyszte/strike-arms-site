@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle2, ChevronRight, OctagonAlert } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useMigrationAlertInput } from '@/hooks/use-migration-status';
 import { buildOperationalAlerts } from '@/lib/admin-alerts';
 import type { Order } from '@/types/order';
 import type { Product } from '@/types/product';
@@ -24,7 +25,12 @@ export function OperationalAlertsCard({ orders, products, newInquiryCount }: Pro
   // impurity concurrent React is allowed to punish.
   const [now] = useState(() => Date.now());
 
-  const alerts = buildOperationalAlerts({ orders, products, newInquiryCount, now });
+  // Asked for here rather than passed in: whether the database has the
+  // migrations this build needs is deployment state, and the dashboard page
+  // is about the shop.
+  const migrations = useMigrationAlertInput();
+
+  const alerts = buildOperationalAlerts({ orders, products, newInquiryCount, now, migrations });
 
   return (
     <Card>

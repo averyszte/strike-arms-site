@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { MigrationStatusPanel } from '@/components/admin/MigrationStatusPanel';
 import { StoreRatesForm } from '@/components/admin/StoreRatesForm';
 import { useStoreRates } from '@/hooks/use-store-rates';
 
@@ -32,6 +33,10 @@ export default function SettingsPage() {
       )}
 
       {rates && <StoreRatesForm rates={rates} />}
+
+      <div className="mt-8">
+        <MigrationStatusPanel />
+      </div>
     </>
   );
 }

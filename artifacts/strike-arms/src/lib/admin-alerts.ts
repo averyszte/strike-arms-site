@@ -1,3 +1,5 @@
+import { migrationAlerts, type MigrationAlertInput } from '@/lib/migration-alerts';
+import type { AlertSeverity, OperationalAlert } from '@/types/admin-alert';
 import type { Order } from '@/types/order';
 import type { Product } from '@/types/product';
 
@@ -12,19 +14,6 @@ import type { Product } from '@/types/product';
  * Every threshold below is a guess at what "too long" means in a shop. They
  * are named so they can be argued with once Alan has run on this for a month.
  */
-
-export type AlertSeverity = 'critical' | 'warning';
-
-export type OperationalAlert = {
-  id: string;
-  severity: AlertSeverity;
-  count: number;
-  /** What is wrong. */
-  title: string;
-  /** What to do about it, and where the link goes. */
-  action: string;
-  href: string;
-};
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -72,8 +61,7 @@ function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
   // Money taken, order cancelled, nothing given back. There is no refund UI
   // yet (D5.1), so this needs a person in the Stripe dashboard or the till.
   const owedRefund = orders.filter(
-    (o) =>
-      o.paymentStatus === 'paid' && o.fulfillmentStatus === 'cancelled' && o.refundCents === 0,
+    (o) => o.paymentStatus === 'paid' && o.fulfillmentStatus === 'cancelled' && o.refundCents === 0,
   );
   if (owedRefund.length > 0) {
     alerts.push({
@@ -201,6 +189,12 @@ type AlertInput = {
   products: Product[];
   newInquiryCount: number;
   now: number;
+  /**
+   * Undefined while the migration check is loading. Left out entirely by
+   * anything that has no reason to ask -- it is deployment state, not shop
+   * state, and the rest of this file works without it.
+   */
+  migrations?: MigrationAlertInput;
 };
 
 export function buildOperationalAlerts({
@@ -208,8 +202,10 @@ export function buildOperationalAlerts({
   products,
   newInquiryCount,
   now,
+  migrations,
 }: AlertInput): OperationalAlert[] {
   return [
+    ...migrationAlerts(migrations),
     ...orderAlerts(orders, now),
     ...stockAlerts(products),
     ...inquiryAlerts(newInquiryCount),
