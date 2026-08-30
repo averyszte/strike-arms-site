@@ -9,6 +9,7 @@ import {
   MessageSquare,
   LogOut,
   KeyRound,
+  SlidersHorizontal,
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
@@ -129,6 +130,14 @@ export function AdminSidebar({ onNavigate }: Props) {
           </div>
           <p className="text-xs text-muted-foreground truncate flex-1">{email}</p>
         </div>
+        <Link
+          href="/admin/settings"
+          onClick={onNavigate}
+          className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5 shrink-0" />
+          Settings
+        </Link>
         <Link
           href="/admin/change-password"
           onClick={onNavigate}

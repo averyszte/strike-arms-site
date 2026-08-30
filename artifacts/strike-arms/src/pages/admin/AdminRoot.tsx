@@ -8,6 +8,7 @@ import InquiriesPage from '@/pages/admin/InquiriesPage';
 import CategoriesPage from '@/pages/admin/CategoriesPage';
 import ChangePasswordPage from '@/pages/admin/ChangePasswordPage';
 import OrderPrintPage from '@/pages/admin/OrderPrintPage';
+import SettingsPage from '@/pages/admin/SettingsPage';
 
 export default function AdminRoot() {
   return (
@@ -24,6 +25,7 @@ export default function AdminRoot() {
               <Route path="/admin/orders" component={OrdersPage} />
               <Route path="/admin/inquiries" component={InquiriesPage} />
               <Route path="/admin/categories" component={CategoriesPage} />
+              <Route path="/admin/settings" component={SettingsPage} />
               <Route path="/admin/change-password" component={ChangePasswordPage} />
               <Route path="/admin" component={DashboardPage} />
             </Switch>

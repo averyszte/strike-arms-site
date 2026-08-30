@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { fetchStoreRates } from '@/data/settings-repository';
+import { fetchStoreRates, updateStoreRates } from '@/data/settings-repository';
+import type { StoreRates } from '@/types/store-settings';
 
 /**
  * Delivery and VAT rates, read from the database.
@@ -16,5 +17,19 @@ export function useStoreRates() {
     queryFn: fetchStoreRates,
     staleTime: 10 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
+  });
+}
+
+/**
+ * Saving a rate has to reach the cart immediately, so the hard cache above is
+ * replaced with the row that came back rather than merely invalidated -- an
+ * admin who saves and then looks at the shop should not see the old price for
+ * the next ten minutes.
+ */
+export function useUpdateStoreRates() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (rates: StoreRates) => updateStoreRates(rates),
+    onSuccess: (saved) => qc.setQueryData(['store-rates'], saved),
   });
 }
