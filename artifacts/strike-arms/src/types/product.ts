@@ -71,3 +71,13 @@ export type ProductBulkPatch = {
   isFeatured?: boolean;
   isNew?: boolean;
 };
+
+/**
+ * A partial product for an update.
+ *
+ * salePrice widens to null because clearing a sale is a real edit: undefined
+ * means "the caller said nothing about it", null means "take the sale off".
+ * Product itself keeps the narrower optional number, because a product either
+ * has a sale price or has none.
+ */
+export type ProductPatch = Partial<Omit<Product, 'salePrice'>> & { salePrice?: number | null };

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { listOrdersForExport } from '@/data/orders-export-repository';
+import { useCsvDownload } from '@/hooks/use-csv-download';
 import { buildOrdersCsv, ordersCsvFilename } from '@/lib/orders-csv';
 import type { OrderListFilters } from '@/types/order';
 
@@ -14,6 +15,7 @@ import type { OrderListFilters } from '@/types/order';
  */
 export function useOrdersExport() {
   const [isExporting, setIsExporting] = useState(false);
+  const download = useCsvDownload();
 
   const exportOrders = useCallback(
     async (filters: OrderListFilters, onlyIds?: string[]) => {
@@ -23,27 +25,14 @@ export function useOrdersExport() {
         const wanted = onlyIds?.length ? new Set(onlyIds) : null;
         const orders = wanted ? all.filter((order) => wanted.has(order.id)) : all;
 
-        downloadCsv(buildOrdersCsv(orders), ordersCsvFilename(new Date()));
+        download(buildOrdersCsv(orders), ordersCsvFilename(new Date()));
         return orders.length;
       } finally {
         setIsExporting(false);
       }
     },
-    [],
+    [download],
   );
 
   return { exportOrders, isExporting };
-}
-
-function downloadCsv(csv: string, filename: string) {
-  // text/csv rather than octet-stream so a phone can preview it, and the BOM
-  // in the body is what actually tells Excel the encoding.
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
 }

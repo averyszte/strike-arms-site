@@ -12,7 +12,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { rowToProduct } from '@/lib/product-mappers';
-import type { Product, ProductBulkPatch } from '@/types/product';
+import type { Product, ProductBulkPatch, ProductPatch } from '@/types/product';
 
 export async function listAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase
@@ -51,7 +51,7 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): P
   return rowToProduct(data);
 }
 
-export async function updateProduct(id: string, patch: Partial<Product>): Promise<Product> {
+export async function updateProduct(id: string, patch: ProductPatch): Promise<Product> {
   const { data, error } = await supabase
     .from('products')
     .update({

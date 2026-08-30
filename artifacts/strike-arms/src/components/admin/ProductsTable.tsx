@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Download, Plus, Upload } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Accordion } from '@/components/ui/accordion';
@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
+import { ProductImportDialog } from '@/components/admin/ProductImportDialog';
 import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
 import { ProductsTableGroup } from '@/components/admin/ProductsTableGroup';
 import { StockAdjustDialog } from '@/components/admin/StockAdjustDialog';
@@ -23,9 +24,11 @@ import {
   useBulkUpdateProducts,
   useDeleteProduct,
 } from '@/hooks/use-admin-products';
+import { useCsvDownload } from '@/hooks/use-csv-download';
 import { useRowSelection } from '@/hooks/use-row-selection';
 import { useToast } from '@/hooks/use-toast';
 import { flattenGroups, groupProductsByCategory } from '@/lib/group-products';
+import { buildProductsCsv, productsCsvFilename } from '@/lib/products-csv';
 import type { Product, ProductBulkPatch } from '@/types/product';
 
 export function ProductsTable() {
@@ -33,12 +36,14 @@ export function ProductsTable() {
   const deleteProduct = useDeleteProduct();
   const bulkUpdate = useBulkUpdateProducts();
   const bulkDelete = useBulkDeleteProducts();
+  const download = useCsvDownload();
   const { toast } = useToast();
 
   const [editing, setEditing] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<Product | null>(null);
   const [adjusting, setAdjusting] = useState<Product | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const groups = useMemo(() => groupProductsByCategory(products ?? []), [products]);
   const visible = useMemo(() => flattenGroups(groups), [groups]);
@@ -102,10 +107,27 @@ export function ProductsTable() {
         <h2 className="text-lg font-semibold text-foreground">
           Products ({products?.length ?? 0})
         </h2>
-        <Button size="sm" onClick={() => setAdding(true)}>
-          <Plus className="mr-1.5 h-4 w-4" />
-          Add Product
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!products || products.length === 0}
+            onClick={() =>
+              download(buildProductsCsv(products ?? []), productsCsvFilename(new Date()))
+            }
+          >
+            <Download className="mr-1.5 h-4 w-4" />
+            Export CSV
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setImporting(true)}>
+            <Upload className="mr-1.5 h-4 w-4" />
+            Import CSV
+          </Button>
+          <Button size="sm" onClick={() => setAdding(true)}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       {selection.selectedIds.length > 0 && (
@@ -148,6 +170,12 @@ export function ProductsTable() {
         open={!!editing}
         onClose={() => setEditing(null)}
         product={editing ?? undefined}
+      />
+
+      <ProductImportDialog
+        open={importing}
+        products={products ?? []}
+        onClose={() => setImporting(false)}
       />
 
       <StockAdjustDialog

@@ -7,7 +7,7 @@ import {
   bulkUpdateProducts,
   bulkDeleteProducts,
 } from '@/data/admin-products-repository';
-import type { Product, ProductBulkPatch } from '@/types/product';
+import type { Product, ProductBulkPatch, ProductPatch } from '@/types/product';
 
 export function useAdminProducts() {
   return useQuery({
@@ -31,7 +31,7 @@ export function useCreateProduct() {
 export function useUpdateProduct() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<Product> }) =>
+    mutationFn: ({ id, patch }: { id: string; patch: ProductPatch }) =>
       updateProduct(id, patch),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'products'] });
