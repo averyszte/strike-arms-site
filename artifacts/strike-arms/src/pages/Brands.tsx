@@ -29,7 +29,7 @@ export default function Brands() {
   const schema = [buildBreadcrumbSchema(crumbs)];
   if (brands && brands.length > 0) {
     schema.push(
-      buildItemListSchema(brands.map((b) => ({ name: b.name, path: `/store?brand=${b.slug}` }))),
+      buildItemListSchema(brands.map((b) => ({ name: b.name, path: `/brands/${b.slug}` }))),
     );
   }
 
@@ -79,7 +79,7 @@ export default function Brands() {
             {(brands ?? []).map((brand) => (
               <Link
                 key={brand.slug}
-                href={`/store?brand=${brand.slug}`}
+                href={`/brands/${brand.slug}`}
                 className="flex flex-col items-center justify-center rounded-sm border border-border bg-card p-5 text-center transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="font-semibold text-foreground">{brand.name}</span>

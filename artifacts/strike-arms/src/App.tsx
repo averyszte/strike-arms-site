@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
 import Brands from "@/pages/Brands";
+import BrandPage from "@/pages/BrandPage";
 import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
 import GiftCards from "@/pages/GiftCards";
@@ -61,6 +62,7 @@ function Router() {
       {/* Standalone pages */}
       <Route path="/contact" component={Contact} />
       <Route path="/brands" component={Brands} />
+      <Route path="/brands/:slug" component={BrandPage} />
       <Route path="/new" component={NewArrivals} />
       <Route path="/sale" component={Sale} />
       <Route path="/gift-cards" component={GiftCards} />

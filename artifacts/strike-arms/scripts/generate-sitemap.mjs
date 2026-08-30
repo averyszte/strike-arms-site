@@ -67,6 +67,22 @@ const STATIC_PATHS = [
   '/about',
 ];
 
+/**
+ * Brand slugs come from the same map the site labels brands with. A brand
+ * listed there with nothing published 404s on /brands/:slug, so this over-lists
+ * in exactly the way readProductSlugs() does -- both want the DB query this
+ * generator gets when it moves to Supabase.
+ */
+function readBrandSlugs() {
+  const file = resolve(ROOT, 'src/lib/brands.ts');
+  const source = readFileSync(file, 'utf8');
+  const slugs = [];
+  const re = /^ {2}'([a-z0-9-]+)':/gm;
+  let match;
+  while ((match = re.exec(source)) !== null) slugs.push(match[1]);
+  return slugs;
+}
+
 function readProductSlugs() {
   const file = resolve(ROOT, 'src/data/mock-products.ts');
   const source = readFileSync(file, 'utf8');
@@ -83,7 +99,8 @@ function urlEntry(path) {
 
 function build() {
   const productPaths = readProductSlugs().map((slug) => `/products/${slug}`);
-  const all = [...STATIC_PATHS, ...productPaths];
+  const brandPaths = readBrandSlugs().map((slug) => `/brands/${slug}`);
+  const all = [...STATIC_PATHS, ...brandPaths, ...productPaths];
   const body = all.map(urlEntry).join('\n');
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
   const out = resolve(ROOT, 'public/sitemap.xml');

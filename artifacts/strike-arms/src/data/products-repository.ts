@@ -180,3 +180,32 @@ export async function listBrands(
     .map(([slug, count]) => ({ slug, name: BRAND_NAMES[slug] ?? slug, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+/**
+ * Which shelves one brand appears on, and how many products on each.
+ *
+ * Counted server-side across the whole brand rather than derived from the page
+ * of products already on screen: a brand with more products than fit on one
+ * page would otherwise show a category list that quietly omits the rest.
+ */
+export async function listBrandCategories(
+  brand: string,
+): Promise<{ category: Category; count: number }[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('category')
+    .eq('is_published', true)
+    .eq('brand', brand);
+
+  if (error) throw error;
+
+  const counts = new Map<Category, number>();
+  for (const row of data ?? []) {
+    const category = row.category as Category;
+    counts.set(category, (counts.get(category) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries())
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count);
+}
