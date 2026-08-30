@@ -31,15 +31,27 @@ function rowToAdjustment(row: InventoryAdjustmentRow): InventoryAdjustment {
   };
 }
 
+/**
+ * `adjusted_by` is passed from the client because `adjust_stock` is SECURITY
+ * DEFINER with the parameter defaulting to null, so leaving it off records
+ * every adjustment against nobody. Sending the signed-in admin's id is the
+ * honest value available without a migration; hardening the function to take
+ * `auth.uid()` itself is the proper fix and needs a database change.
+ */
 export async function adjustStock(
   productId: string,
   adjustment: number,
   reason: string,
+  adjustedBy: string | null = null,
 ): Promise<void> {
+  // The argument is omitted rather than sent as null when there is no signed-in
+  // id, so the function falls back to its own default instead of being handed
+  // one explicitly.
   const { error } = await supabase.rpc('adjust_stock', {
     p_product_id: productId,
     p_adjustment: adjustment,
     p_reason: reason,
+    ...(adjustedBy ? { p_adjusted_by: adjustedBy } : {}),
   });
   if (error) throw error;
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Edit2, Trash2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Accordion,
   AccordionContent,
@@ -19,10 +18,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
+import { ProductsTableRow } from '@/components/admin/ProductsTableRow';
+import { StockAdjustDialog } from '@/components/admin/StockAdjustDialog';
 import { useAdminProducts, useDeleteProduct } from '@/hooks/use-admin-products';
 import { useToast } from '@/hooks/use-toast';
-import { formatBrand } from '@/lib/format-brand';
-import { formatSubcategoryName } from '@/lib/format-subcategory';
 import type { Product, Category } from '@/types/product';
 
 const CATEGORY_ORDER: Category[] = [
@@ -39,10 +38,6 @@ const CATEGORY_LABELS: Record<Category, string> = {
   more: 'More',
 };
 
-function formatPrice(cents: number) {
-  return `€${(cents / 100).toFixed(2)}`;
-}
-
 export function ProductsTable() {
   const { data: products, isLoading } = useAdminProducts();
   const deleteProduct = useDeleteProduct();
@@ -50,6 +45,7 @@ export function ProductsTable() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<Product | null>(null);
+  const [adjusting, setAdjusting] = useState<Product | null>(null);
 
   async function handleDelete() {
     if (!deleting) return;
@@ -138,71 +134,13 @@ export function ProductsTable() {
                       </thead>
                       <tbody>
                         {items.map(product => (
-                          <tr
+                          <ProductsTableRow
                             key={product.id}
-                            className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
-                          >
-                            <td className="px-4 py-3">
-                              <p className="font-medium text-foreground line-clamp-1">{product.name}</p>
-                              <p className="text-xs text-muted-foreground font-mono">{product.slug}</p>
-                            </td>
-                            <td className="px-4 py-3 text-muted-foreground">
-                              {formatBrand(product.brand)}
-                            </td>
-                            <td className="px-4 py-3 text-muted-foreground text-xs">
-                              {formatSubcategoryName(product.subcategory)}
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              {product.salePrice != null ? (
-                                <div>
-                                  <span className="text-accent font-semibold">
-                                    {formatPrice(product.salePrice)}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground line-through ml-1">
-                                    {formatPrice(product.price)}
-                                  </span>
-                                </div>
-                              ) : (
-                                <span>{formatPrice(product.price)}</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <span className={product.inStock ? 'text-green-600' : 'text-destructive'}>
-                                {product.stockCount ?? 0}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {product.isPublished ? (
-                                <Badge className="text-[10px] bg-green-600 text-white hover:bg-green-600">
-                                  Live
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-[10px]">
-                                  Draft
-                                </Badge>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-end gap-1">
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7"
-                                  onClick={() => setEditing(product)}
-                                >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7 hover:text-destructive"
-                                  onClick={() => setDeleting(product)}
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
+                            product={product}
+                            onEdit={setEditing}
+                            onAdjustStock={setAdjusting}
+                            onDelete={setDeleting}
+                          />
                         ))}
                       </tbody>
                     </table>
@@ -220,6 +158,12 @@ export function ProductsTable() {
         open={!!editing}
         onClose={() => setEditing(null)}
         product={editing ?? undefined}
+      />
+
+      <StockAdjustDialog
+        key={adjusting?.id ?? 'none'}
+        product={adjusting}
+        onClose={() => setAdjusting(null)}
       />
 
       <AlertDialog open={!!deleting} onOpenChange={o => { if (!o) setDeleting(null); }}>
