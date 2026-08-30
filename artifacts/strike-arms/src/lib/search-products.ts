@@ -1,6 +1,14 @@
 import type { Product } from '@/types/product';
 
-/** Score-and-rank products for a text query. Used by the header search dropdown. */
+/**
+ * Score-and-rank products for a text query, in memory.
+ *
+ * This is the admin counter-sale picker, which already holds the product list
+ * it is searching -- there is nothing to fetch and no reason to ask the
+ * database. The storefront search used to share it and no longer does: it
+ * ranks in the database now (migration 015), because the storefront cannot
+ * assume the catalogue fits in a variable.
+ */
 export function searchProducts(products: Product[], query: string, maxResults = 6): Product[] {
   const q = query.toLowerCase().trim();
   if (q.length < 2) return [];
@@ -26,21 +34,4 @@ export function searchProducts(products: Product[], query: string, maxResults = 
     .sort((a, b) => b.score - a.score)
     .slice(0, maxResults)
     .map((s) => s.product);
-}
-
-/** Full (unlimited) text match, used by the store search-results page. */
-export function matchProducts(products: Product[], query: string): Product[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return products;
-  return products.filter((p) => {
-    const haystack = [
-      p.name,
-      p.brand,
-      (p.tags ?? []).join(' '),
-      p.shortDescription,
-    ]
-      .join(' ')
-      .toLowerCase();
-    return haystack.includes(q);
-  });
 }

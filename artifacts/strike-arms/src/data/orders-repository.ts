@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { chunkArray } from '@/lib/chunk-array';
+import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ID_CHUNK, listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';
 import { rowToOrder, rowToOrderStatusLog, type OrderRow } from '@/lib/order-mappers';
 import type {
@@ -27,11 +28,16 @@ export function buildOrdersQuery(filters: OrderListFilters) {
 
   if (filters.paymentStatus) query = query.eq('payment_status', filters.paymentStatus);
   if (filters.fulfillmentStatus) query = query.eq('fulfillment_status', filters.fulfillmentStatus);
-  if (filters.search) {
+  // Escaped, not interpolated raw. PostgREST reads `.or()` as a
+  // comma-separated list, so a customer called "Smith, John" typed into the
+  // box does not fail -- it silently becomes two more filter clauses and the
+  // admin gets an answer to a question nobody asked.
+  const search = filters.search ? escapeSearchTerm(filters.search) : '';
+  if (search) {
     query = query.or(
-      `customer_name.ilike.%${filters.search}%,` +
-      `customer_email.ilike.%${filters.search}%,` +
-      `order_number.ilike.%${filters.search}%`,
+      `customer_name.ilike.%${search}%,` +
+      `customer_email.ilike.%${search}%,` +
+      `order_number.ilike.%${search}%`,
     );
   }
 

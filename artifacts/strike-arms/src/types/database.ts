@@ -35,7 +35,7 @@ export type Database = {
         Row: ProductRow;
         Insert: Omit<
           ProductRow,
-          'id' | 'in_stock' | 'effective_price_cents' | 'created_at' | 'updated_at' |
+          'id' | 'in_stock' | 'effective_price_cents' | 'search_text' | 'created_at' | 'updated_at' |
           'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
           'is_shippable' | 'ship_weight_g'
         > & {
@@ -44,7 +44,7 @@ export type Database = {
           stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
           is_shippable?: boolean; ship_weight_g?: number;
         };
-        Update: Partial<Omit<ProductRow, 'in_stock' | 'effective_price_cents'>>;
+        Update: Partial<Omit<ProductRow, 'in_stock' | 'effective_price_cents' | 'search_text'>>;
         Relationships: [];
       };
       orders: {
@@ -144,6 +144,12 @@ export type Database = {
           p_adjusted_by?: string;
         };
         Returns: undefined;
+      };
+      // Storefront search (migration 015). Ranked in the database so the
+      // dropdown does not have to hold the catalogue to sort it.
+      search_products: {
+        Args: { p_query: string; p_limit?: number };
+        Returns: ProductRow[];
       };
       reserve_stock: {
         Args: {

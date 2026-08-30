@@ -17,8 +17,8 @@ import { BRAND_NAMES } from '@/lib/brands';
 import type { CrossSellTarget } from '@/lib/cross-sell';
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
 
-/** Ceiling on the header search-dropdown pool. See fetchAllForSearch. */
-const SEARCH_POOL_LIMIT = 500;
+/** Rows the header dropdown asks for. It has room to show six. */
+const SEARCH_RESULT_LIMIT = 6;
 
 type ProductQuery = ReturnType<typeof buildBaseQuery>;
 
@@ -75,14 +75,11 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
 
   if (filters.q) {
     const term = escapeSearchTerm(filters.q);
-    if (term) {
-      // Tags are excluded: matching inside a text[] needs a different operator
-      // and the array is not indexed for it. Name, brand and blurb cover the
-      // cases the store search page is actually used for.
-      query = query.or(
-        `name.ilike.%${term}%,brand.ilike.%${term}%,short_description.ilike.%${term}%`,
-      );
-    }
+    // One filter against the generated search_text column (migration 015),
+    // which is name, brand, blurb and tags in one string. It used to be a
+    // three-column `.or()` that could not reach tags -- so the header dropdown
+    // could offer a product that "View all results" then failed to list.
+    if (term) query = query.ilike('search_text', `%${term}%`);
   }
 
   query = applySort(query, filters.sort ?? 'featured');
@@ -101,18 +98,28 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
 }
 
 /**
- * Pool for the header's live search dropdown, which scores and ranks in the
- * browser. Capped, because this is a whole-catalogue download: past the cap
- * the dropdown silently stops seeing the tail of the catalogue, and search
- * needs to move to a server-side query before the catalogue gets that big.
+ * Ranked results for the header search dropdown.
+ *
+ * This used to download the published catalogue -- capped at 500 rows -- and
+ * score it in the browser. That is fine at 56 products and breaks quietly at
+ * 501: the dropdown stops being able to see the tail of the catalogue and
+ * nothing says so. The ranking now happens in the database, over all of it.
+ *
+ * Two characters is checked here as well as in the function. The point is not
+ * belt and braces -- it is that a one-character query would otherwise cost a
+ * round trip to be told nothing.
  */
-export async function fetchAllForSearch(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_published', true)
-    .order('name', { ascending: true })
-    .limit(SEARCH_POOL_LIMIT);
+export async function searchCatalogue(
+  query: string,
+  limit = SEARCH_RESULT_LIMIT,
+): Promise<Product[]> {
+  const term = escapeSearchTerm(query);
+  if (term.length < 2) return [];
+
+  const { data, error } = await supabase.rpc('search_products', {
+    p_query: term,
+    p_limit: limit,
+  });
 
   if (error) throw error;
   return (data ?? []).map(rowToProduct);

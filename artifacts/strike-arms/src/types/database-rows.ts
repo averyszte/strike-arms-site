@@ -29,6 +29,9 @@ export type ProductRow = {
   is_new: boolean; is_featured: boolean; is_published: boolean;
   stock_count: number; reserved_count: number; low_stock_threshold: number;
   in_stock: boolean; tags: string[];
+  // Generated: name, brand, short description and tags, lowercased and
+  // joined. Read-only -- the storefront search filters on it (migration 015).
+  search_text: string;
   is_shippable: boolean; ship_weight_g: number;
   created_at: string; updated_at: string;
 };

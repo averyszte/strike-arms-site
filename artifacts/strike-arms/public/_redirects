@@ -10,6 +10,13 @@
 /guns-n-gear.php            /store                    301
 /Contact-us.php             /contact                  301
 
+# /search is not a page. Search results are /store?q=, which is the same
+# grid with the same filters and sorting -- a second URL for it would be a
+# duplicate of a page that is already noindexed. This is here because
+# people type it. Pages carries the query string over when the target has
+# none of its own, so /search?q=m4 lands on /store?q=m4.
+/search                     /store                    301
+
 # SPA fallback -- every other path serves the app shell. Must be LAST: rules
 # here are matched before static files, so anything below this line is dead and
 # anything above it must not shadow a real asset.

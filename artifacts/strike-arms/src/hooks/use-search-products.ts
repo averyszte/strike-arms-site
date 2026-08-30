@@ -1,8 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchAllForSearch } from '@/data/products-repository';
-import { searchProducts } from '@/lib/search-products';
+import { searchCatalogue } from '@/data/products-repository';
+import type { Product } from '@/types/product';
+
+/** Stable empty array, so a query with no data does not remount the results. */
+const NO_RESULTS: Product[] = [];
 
 /** Debounced live product search for the header dropdown. */
 export function useSearchProducts(query: string, debounceMs = 250) {
@@ -13,24 +16,22 @@ export function useSearchProducts(query: string, debounceMs = 250) {
     return () => clearTimeout(id);
   }, [query, debounceMs]);
 
-  // Gated on a real query: the pool is the whole published catalogue, and
-  // before this was a database call it cost nothing to fetch on every page
-  // load. searchProducts ignores anything shorter than two characters, so
-  // this fetches exactly when a result could be produced.
-  const isSearching = debouncedQuery.trim().length >= 2;
+  const term = debouncedQuery.trim();
 
-  const { data: allProducts = [] } = useQuery({
-    queryKey: ['products-search-pool'],
-    queryFn: fetchAllForSearch,
-    enabled: isSearching,
+  const { data } = useQuery({
+    // Lowercased, so "M4" and "m4" are one cache entry rather than two
+    // identical round trips -- the search itself is case-insensitive.
+    queryKey: ['product-search', term.toLowerCase()],
+    queryFn: () => searchCatalogue(term),
+    // Below two characters every result is noise, and asking costs a round
+    // trip to be told so.
+    enabled: term.length >= 2,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    // Hold the last term's results while the next are in flight. Without this
+    // the panel empties on every keystroke and reads as "no results".
+    placeholderData: (previous) => previous,
   });
 
-  const results = useMemo(
-    () => searchProducts(allProducts, debouncedQuery),
-    [allProducts, debouncedQuery],
-  );
-
-  return { results, query: debouncedQuery };
+  return { results: data ?? NO_RESULTS, query: debouncedQuery };
 }
