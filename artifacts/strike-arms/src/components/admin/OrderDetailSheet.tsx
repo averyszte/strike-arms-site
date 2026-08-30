@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import { useOrder, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { useToast } from '@/hooks/use-toast';
+import { ContactLinks } from '@/components/admin/contact-links';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
 import {
   FULFILLMENT_OPTIONS,
@@ -91,12 +92,12 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
               <p className="text-sm font-medium text-foreground">{order.customerName}</p>
               {/* Null on a counter sale where nobody gave one. Saying so beats
                   an empty line that reads as a rendering fault. */}
-              <p className="text-sm text-muted-foreground">
-                {order.customerEmail ?? 'No email given'}
-              </p>
-              {order.customerPhone && (
-                <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
-              )}
+              <ContactLinks
+                email={order.customerEmail}
+                phone={order.customerPhone}
+                subject={`Strike Arms order ${formatOrderNumber(order.orderNumber)}`}
+                emptyEmailLabel="No email given"
+              />
               <p className="mt-1 text-xs text-muted-foreground">
                 {ORDER_CHANNEL_LABELS[order.channel]} · {PAYMENT_METHOD_LABELS[order.paymentMethod]}
               </p>

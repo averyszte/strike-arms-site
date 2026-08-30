@@ -7,6 +7,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
+
+import { ContactLinks } from '@/components/admin/contact-links';
 import { useUpdateInquiryStatus } from '@/hooks/use-inquiries';
 import { useToast } from '@/hooks/use-toast';
 import type { Inquiry, InquiryStatus } from '@/types/inquiry';
@@ -52,8 +54,12 @@ export function InquiryDetailSheet({ inquiry, onClose }: Props) {
                 From
               </h3>
               <p className="text-sm font-medium text-foreground">{inquiry.name}</p>
-              <p className="text-sm text-muted-foreground">{inquiry.email}</p>
-              {inquiry.phone && <p className="text-sm text-muted-foreground">{inquiry.phone}</p>}
+              <ContactLinks
+                email={inquiry.email}
+                phone={inquiry.phone}
+                subject={`Re: ${inquiry.subject ?? 'your enquiry'}`}
+                emptyEmailLabel="No email given"
+              />
             </section>
 
             <section>
