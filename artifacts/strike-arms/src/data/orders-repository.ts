@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { chunkArray } from '@/lib/chunk-array';
-import { rowToOrder, rowToOrderStatusLog } from '@/lib/order-mappers';
+import { ID_CHUNK, listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';
+import { rowToOrder, rowToOrderStatusLog, type OrderRow } from '@/lib/order-mappers';
 import type {
   Order,
   OrderStatusLogEntry,
@@ -114,22 +115,23 @@ export async function setOrderArchived(id: string, isArchived: boolean): Promise
  * The exclusion this used to carry was the florist's bug: archiving is
  * workflow tidy-up, not a refund, so all-time revenue shrank every time the
  * owner tidied up. Callers that want only live work filter with workQueue().
+ *
+ * It pages for the same reason the export does. Both halves of this used to
+ * ask for everything in one request, so past the server's row cap the
+ * dashboard would have reported less revenue than the shop had actually taken
+ * and looked entirely healthy doing it.
  */
 export async function listAllOrdersWithItems(): Promise<Order[]> {
-  const [ordersResult, itemsResult] = await Promise.all([
-    supabase.from('orders').select('*').order('created_at', { ascending: false }),
-    supabase.from('order_items').select('*'),
-  ]);
-  if (ordersResult.error) throw ordersResult.error;
-  if (itemsResult.error) throw itemsResult.error;
-
-  const allItems = itemsResult.data ?? [];
-  return (ordersResult.data ?? []).map(row =>
-    rowToOrder(
-      row,
-      allItems.filter(item => item.order_id === row.id),
-    ),
+  const rows = await pageAll<OrderRow>((from, to) =>
+    supabase
+      .from('orders')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to),
   );
+
+  const itemsById = await listOrderItemsFor(rows.map((row) => row.id));
+  return rows.map((row) => rowToOrder(row, itemsById.get(row.id) ?? []));
 }
 
 export async function getOrderStatusLog(orderId: string): Promise<OrderStatusLogEntry[]> {
@@ -177,9 +179,6 @@ export async function createCounterOrder(
   if (error) throw error;
   return { orderId: data.order_id, orderNumber: data.order_number };
 }
-
-/** How many ids fit in an `in.()` before the URL gets unreasonable. */
-export const ID_CHUNK = 100;
 
 /**
  * Archives or restores many orders at once.
