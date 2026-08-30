@@ -1,12 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Accordion } from '@/components/ui/accordion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,34 +14,35 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
-import { ProductsTableRow } from '@/components/admin/ProductsTableRow';
+import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
+import { ProductsTableGroup } from '@/components/admin/ProductsTableGroup';
 import { StockAdjustDialog } from '@/components/admin/StockAdjustDialog';
-import { useAdminProducts, useDeleteProduct } from '@/hooks/use-admin-products';
+import {
+  useAdminProducts,
+  useBulkDeleteProducts,
+  useBulkUpdateProducts,
+  useDeleteProduct,
+} from '@/hooks/use-admin-products';
+import { useRowSelection } from '@/hooks/use-row-selection';
 import { useToast } from '@/hooks/use-toast';
-import type { Product, Category } from '@/types/product';
-
-const CATEGORY_ORDER: Category[] = [
-  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'parts', 'more',
-];
-
-const CATEGORY_LABELS: Record<Category, string> = {
-  rifles: 'Rifles',
-  pistols: 'Pistols',
-  consumables: 'Consumables',
-  accessories: 'Accessories',
-  gear: 'Gear',
-  parts: 'Parts',
-  more: 'More',
-};
+import { flattenGroups, groupProductsByCategory } from '@/lib/group-products';
+import type { Product, ProductBulkPatch } from '@/types/product';
 
 export function ProductsTable() {
   const { data: products, isLoading } = useAdminProducts();
   const deleteProduct = useDeleteProduct();
+  const bulkUpdate = useBulkUpdateProducts();
+  const bulkDelete = useBulkDeleteProducts();
   const { toast } = useToast();
+
   const [editing, setEditing] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<Product | null>(null);
   const [adjusting, setAdjusting] = useState<Product | null>(null);
+
+  const groups = useMemo(() => groupProductsByCategory(products ?? []), [products]);
+  const visible = useMemo(() => flattenGroups(groups), [groups]);
+  const selection = useRowSelection(visible);
 
   async function handleDelete() {
     if (!deleting) return;
@@ -59,96 +56,89 @@ export function ProductsTable() {
     }
   }
 
-  const grouped = new Map<Category, Product[]>();
-  for (const p of products ?? []) {
-    const bucket = grouped.get(p.category) ?? [];
-    bucket.push(p);
-    grouped.set(p.category, bucket);
+  async function handleBulkPatch(patch: ProductBulkPatch) {
+    const count = selection.selectedIds.length;
+    try {
+      await bulkUpdate.mutateAsync({ ids: selection.selectedIds, patch });
+      selection.clear();
+      toast({ title: `${count} product${count === 1 ? '' : 's'} updated` });
+    } catch (error) {
+      toast({
+        title: 'Nothing was changed',
+        description: error instanceof Error ? error.message : 'The update failed.',
+        variant: 'destructive',
+      });
+    }
   }
-  grouped.forEach(bucket =>
-    bucket.sort(
-      (a, b) =>
-        a.subcategory.localeCompare(b.subcategory) || a.name.localeCompare(b.name),
-    ),
-  );
 
-  const presentCategories = CATEGORY_ORDER.filter(c => grouped.has(c));
+  async function handleBulkDelete() {
+    const count = selection.selectedIds.length;
+    try {
+      await bulkDelete.mutateAsync(selection.selectedIds);
+      selection.clear();
+      toast({ title: `${count} product${count === 1 ? '' : 's'} deleted` });
+    } catch (error) {
+      toast({
+        title: 'Nothing was deleted',
+        description: error instanceof Error ? error.message : 'The delete failed.',
+        variant: 'destructive',
+      });
+    }
+  }
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-accent" />
+        <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-accent" />
       </div>
     );
   }
 
+  const isPending = bulkUpdate.isPending || bulkDelete.isPending;
+
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">
           Products ({products?.length ?? 0})
         </h2>
         <Button size="sm" onClick={() => setAdding(true)}>
-          <Plus className="w-4 h-4 mr-1.5" />
+          <Plus className="mr-1.5 h-4 w-4" />
           Add Product
         </Button>
       </div>
 
-      {presentCategories.length === 0 ? (
-        <div className="border border-border rounded-md px-4 py-12 text-center text-muted-foreground">
-          No products yet. Click "Add Product" to create one.
+      {selection.selectedIds.length > 0 && (
+        <ProductsBulkBar
+          selected={selection.selectedRows}
+          isPending={isPending}
+          onClear={selection.clear}
+          onPatch={(patch) => void handleBulkPatch(patch)}
+          onDelete={() => void handleBulkDelete()}
+        />
+      )}
+
+      {groups.length === 0 ? (
+        <div className="rounded-md border border-border px-4 py-12 text-center text-muted-foreground">
+          No products yet. Click &ldquo;Add Product&rdquo; to create one.
         </div>
       ) : (
         <Accordion type="multiple" defaultValue={[]} className="space-y-2">
-          {presentCategories.map(category => {
-            const items = grouped.get(category)!;
-            return (
-              <AccordionItem
-                key={category}
-                value={category}
-                className="border border-border rounded-md overflow-hidden"
-              >
-                <AccordionTrigger className="px-4 py-3 hover:bg-muted/30 hover:no-underline">
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-sm text-foreground">
-                      {CATEGORY_LABELS[category]}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {items.length} product{items.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="p-0">
-                  <div className="overflow-x-auto border-t border-border">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/50 border-b border-border">
-                        <tr>
-                          <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Name</th>
-                          <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Brand</th>
-                          <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Subcategory</th>
-                          <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Price</th>
-                          <th className="px-4 py-2.5 text-center font-medium text-muted-foreground">Stock</th>
-                          <th className="px-4 py-2.5 text-center font-medium text-muted-foreground">Status</th>
-                          <th className="px-4 py-2.5" />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map(product => (
-                          <ProductsTableRow
-                            key={product.id}
-                            product={product}
-                            onEdit={setEditing}
-                            onAdjustStock={setAdjusting}
-                            onDelete={setDeleting}
-                          />
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            );
-          })}
+          {groups.map((group) => (
+            <ProductsTableGroup
+              key={group.category}
+              category={group.category}
+              label={group.label}
+              products={group.products}
+              selectionState={selection.groupState(group.products.map((p) => p.id))}
+              isSelected={selection.isSelected}
+              onToggleSelect={selection.toggle}
+              onToggleGroup={selection.toggleMany}
+              onEdit={setEditing}
+              onAdjustStock={setAdjusting}
+              onDelete={setDeleting}
+            />
+          ))}
         </Accordion>
       )}
 
@@ -166,7 +156,12 @@ export function ProductsTable() {
         onClose={() => setAdjusting(null)}
       />
 
-      <AlertDialog open={!!deleting} onOpenChange={o => { if (!o) setDeleting(null); }}>
+      <AlertDialog
+        open={!!deleting}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete product?</AlertDialogTitle>

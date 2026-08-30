@@ -12,7 +12,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { rowToProduct } from '@/lib/product-mappers';
-import type { Product } from '@/types/product';
+import type { Product, ProductBulkPatch } from '@/types/product';
 
 export async function listAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase
@@ -89,4 +89,48 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
 export async function deleteProduct(id: string): Promise<void> {
   const { error } = await supabase.from('products').delete().eq('id', id);
   if (error) throw error;
+}
+
+// ─── Bulk operations ──────────────────────────────────────────────────────────
+
+/**
+ * How many ids go into one `in (...)` filter.
+ *
+ * PostgREST puts the filter in the query string, so a few hundred UUIDs is a
+ * URL long enough for a proxy to reject — and the failure looks like the
+ * database refusing the write rather than the request never arriving.
+ */
+const ID_CHUNK = 100;
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
+
+/** Applies the same patch to many products. See ProductBulkPatch for why it is narrow. */
+export async function bulkUpdateProducts(ids: string[], patch: ProductBulkPatch): Promise<void> {
+  if (ids.length === 0) return;
+  const row = {
+    ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
+    ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
+    ...(patch.isNew !== undefined && { is_new: patch.isNew }),
+  };
+  if (Object.keys(row).length === 0) return;
+
+  for (const batch of chunk(ids, ID_CHUNK)) {
+    const { error } = await supabase.from('products').update(row).in('id', batch);
+    if (error) throw error;
+  }
+}
+
+/**
+ * Images are not deleted here either — see deleteProduct. The trigger from
+ * migration 011 files them for the sweeper however the row goes away.
+ */
+export async function bulkDeleteProducts(ids: string[]): Promise<void> {
+  for (const batch of chunk(ids, ID_CHUNK)) {
+    const { error } = await supabase.from('products').delete().in('id', batch);
+    if (error) throw error;
+  }
 }

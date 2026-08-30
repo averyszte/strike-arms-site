@@ -13,7 +13,7 @@ import {
   useSetOrderArchived,
   useUpdateFulfillmentStatus,
 } from '@/hooks/use-orders';
-import { useOrderSelection } from '@/hooks/use-order-selection';
+import { useRowSelection } from '@/hooks/use-row-selection';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useOrdersView } from '@/hooks/use-orders-view';
@@ -63,7 +63,7 @@ export function OrdersView() {
   const setArchived = useSetOrderArchived();
   const bulkArchive = useBulkSetArchived();
   const bulkStatus = useBulkFulfillmentStatus();
-  const selection = useOrderSelection(orders);
+  const selection = useRowSelection(orders);
   const { exportOrders, isExporting } = useOrdersExport();
   const { toast } = useToast();
 

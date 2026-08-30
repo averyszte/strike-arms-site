@@ -56,3 +56,18 @@ export type ProductListResult = {
   page: number;
   pageSize: number;
 };
+
+/**
+ * The fields a bulk action may change.
+ *
+ * Deliberately narrow: the flags a shopkeeper flips across a range at once.
+ * Prices and names are not here because a bulk edit of them is a CSV import
+ * with a preview, not a button. Stock is not here because writing stock_count
+ * straight would step around adjust_stock and leave the inventory ledger
+ * claiming a number the shelf does not have.
+ */
+export type ProductBulkPatch = {
+  isPublished?: boolean;
+  isFeatured?: boolean;
+  isNew?: boolean;
+};

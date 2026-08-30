@@ -1,6 +1,7 @@
 import { Boxes, Edit2, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { formatBrand } from '@/lib/format-brand';
 import { formatPrice } from '@/lib/format-price';
 import { formatSubcategoryName } from '@/lib/format-subcategory';
@@ -8,14 +9,33 @@ import type { Product } from '@/types/product';
 
 interface Props {
   product: Product;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
   onEdit: (product: Product) => void;
   onAdjustStock: (product: Product) => void;
   onDelete: (product: Product) => void;
 }
 
-export function ProductsTableRow({ product, onEdit, onAdjustStock, onDelete }: Props) {
+export function ProductsTableRow({
+  product,
+  isSelected,
+  onToggleSelect,
+  onEdit,
+  onAdjustStock,
+  onDelete,
+}: Props) {
   return (
-    <tr className="border-b border-border last:border-0 transition-colors hover:bg-muted/30">
+    <tr
+      className="border-b border-border last:border-0 transition-colors hover:bg-muted/30"
+      data-state={isSelected ? 'selected' : undefined}
+    >
+      <td className="w-10 px-4 py-3">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelect(product.id)}
+          aria-label={`Select ${product.name}`}
+        />
+      </td>
       <td className="px-4 py-3">
         <p className="line-clamp-1 font-medium text-foreground">{product.name}</p>
         <p className="font-mono text-xs text-muted-foreground">{product.slug}</p>

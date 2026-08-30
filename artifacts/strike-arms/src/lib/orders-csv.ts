@@ -4,28 +4,15 @@ import {
   ORDER_CHANNEL_LABELS,
   PAYMENT_METHOD_LABELS,
 } from '@/lib/order-display';
+import { buildCsv, csvFilename, money } from '@/lib/csv-write';
 
 /**
  * Turns orders into a CSV an accountant can open without swearing.
  *
- * Four things this gets right that a naive join on commas does not:
- *
- * 1. Formula injection. A cell beginning =, +, - or @ is executed as a formula
- *    by Excel, LibreOffice and Sheets. Customer names, addresses and notes are
- *    typed by strangers at checkout, so every field is neutralised. Quoting is
- *    not enough — the quotes are stripped before the cell is parsed.
- * 2. A byte order mark. Without it Excel reads the file as the local codepage
- *    and every fada in an Irish name turns to mojibake.
- * 3. CRLF line endings, which is what RFC 4180 says and what Excel expects.
- * 4. Money as a bare decimal. A euro sign or a thousands separator makes the
- *    column text, and a column of text does not sum.
+ * The escaping, the byte order mark and the money formatting live in
+ * csv-write.ts — shared with the product export, so the two files cannot
+ * disagree about what is safe to hand a spreadsheet.
  */
-
-const BOM = '\uFEFF';
-const ROW_SEPARATOR = '\r\n';
-
-/** Leading characters a spreadsheet treats as the start of a formula. */
-const FORMULA_START = /^[=+\-@\t\r]/;
 
 const COLUMNS = [
   'Order number',
@@ -52,11 +39,6 @@ const COLUMNS = [
   'Notes',
 ];
 
-/** An amount a spreadsheet will add up: cents to a plain two-decimal number. */
-function money(cents: number): string {
-  return (cents / 100).toFixed(2);
-}
-
 function address(shipping: ShippingAddress | null): string {
   if (!shipping) return '';
   return [shipping.line1, shipping.line2, shipping.city, shipping.county]
@@ -72,11 +54,6 @@ function itemsSummary(order: Order): string {
 function itemCount(order: Order): string {
   if (!order.items?.length) return '';
   return String(order.items.reduce((sum, item) => sum + item.quantity, 0));
-}
-
-function escapeCell(value: string): string {
-  const safe = FORMULA_START.test(value) ? `'${value}` : value;
-  return `"${safe.replace(/"/g, '""')}"`;
 }
 
 function orderRow(order: Order): string[] {
@@ -107,11 +84,9 @@ function orderRow(order: Order): string[] {
 }
 
 export function buildOrdersCsv(orders: Order[]): string {
-  const rows = [COLUMNS, ...orders.map(orderRow)];
-  return BOM + rows.map((row) => row.map(escapeCell).join(',')).join(ROW_SEPARATOR) + ROW_SEPARATOR;
+  return buildCsv(COLUMNS, orders.map(orderRow));
 }
 
-/** e.g. "strike-arms-orders-2026-08-29.csv". */
 export function ordersCsvFilename(today: Date): string {
-  return `strike-arms-orders-${today.toISOString().slice(0, 10)}.csv`;
+  return csvFilename('orders', today);
 }
