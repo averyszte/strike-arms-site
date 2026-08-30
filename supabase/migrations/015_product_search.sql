@@ -28,6 +28,49 @@
 create extension if not exists pg_trgm;
 
 -- ═══════════════════════════════════════════════════════════════
+-- Joining the tags
+--
+-- A generated column has to be immutable, and array_to_string is only STABLE.
+-- That is not because joining an array is unpredictable -- it is because the
+-- function takes anyarray, and for some element types the output function
+-- genuinely does depend on the session: timestamptz reads TimeZone, so
+-- array_to_string(timestamptz[], ...) really can return two different strings
+-- for the same input. Postgres has one marking per function, not per element
+-- type, so it has to take the weakest case.
+--
+-- Narrowed to text[] that reason is gone -- textout is immutable -- so this is
+-- a deterministic function of its arguments and is marked as one.
+--
+-- Do not change the body. What it returns is stored on disk in
+-- products.search_text and is NOT recomputed by a create-or-replace, so a
+-- changed body silently leaves every existing row holding the old string.
+-- Changing it means a new migration that rebuilds the column too.
+-- ═══════════════════════════════════════════════════════════════
+
+create or replace function public.text_array_to_string(
+  p_values    text[],
+  p_separator text
+)
+returns text
+language sql
+immutable
+parallel safe
+strict
+set search_path = pg_catalog
+as $fn$
+  select array_to_string(p_values, p_separator);
+$fn$;
+
+revoke all on function public.text_array_to_string(text[], text) from public;
+-- A stored generated column is evaluated by whoever writes the row, so the
+-- roles that insert or update a product need EXECUTE or the write fails. Reads
+-- do not evaluate it -- the value is already on disk -- so anon is not here.
+grant execute on function public.text_array_to_string(text[], text) to authenticated, service_role;
+
+comment on function public.text_array_to_string(text[], text) is
+  'Immutable array_to_string for text[]. Backs the products.search_text generated column -- see 015. Do not change the body without rebuilding that column.';
+
+-- ═══════════════════════════════════════════════════════════════
 -- The searchable text
 --
 -- Lowercased here rather than at query time so the index is over the same
@@ -43,7 +86,7 @@ alter table products
       coalesce(name, '') || ' ' ||
       coalesce(brand, '') || ' ' ||
       coalesce(short_description, '') || ' ' ||
-      array_to_string(tags, ' ')
+      coalesce(public.text_array_to_string(tags, ' '), '')
     )
   ) stored;
 
