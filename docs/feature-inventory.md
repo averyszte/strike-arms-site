@@ -50,7 +50,7 @@ a real customer touches them.
 | A3 | **Product detail page** | DONE | Real data. Unpublished products 404 for everyone, admins included — no draft preview. |
 | A3.1 | Per-product fulfilment messaging | DONE | Built today — "Collect in store only" vs "Delivery across Ireland". |
 | A3.2 | Stock states (in/low/out/pre-order) | PARTIAL **[no ref]** | UI exists; needs real stock and agreed thresholds. The florist has a single hand-set `in_stock` boolean — no decrement, no reservation, no check at checkout. We are ahead of them here. |
-| A3.3 | Related / cross-sell products | MISSING | |
+| A3.3 | Related / cross-sell products | DONE 2026-08-30 | Two rows: "Goes well with" above "You might also like". Add-on targets come from a taxonomy map in `lib/cross-sell.ts`, every entry checked against `TAXONOMY` by fixture, and a product never suggests its own shelf. Similar products widen from the shelf to the category, so a thin subcategory no longer renders an empty row. Availability outranks a price match. One cached query per shelf, taken round-robin, so a cheap well-stocked shelf cannot swallow the row. |
 | A4 | **Site search** | PARTIAL **[no ref]** | The florist has no search at all — category then filters only. Header dropdown works: pool capped at 500 published products, fetched only once a query is 2+ characters. Store `?q=` does ilike on name/brand/blurb (not tags). No dedicated search page or route. Needs a server-side search RPC before the catalogue passes the cap. |
 | A5 | **Brands hub** `/brands` | PARTIAL **[alan]** | Hub renders; per-brand pages `/brands/:slug` don't exist. |
 | A6 | **New arrivals / Sale** | DONE | Real `is_new` / `sale_price_cents` queries. |

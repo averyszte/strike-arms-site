@@ -5,7 +5,7 @@ import { ShoppingCart, Wrench, Truck, MapPin, Store } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
-import { ProductCard } from '@/components/catalog/ProductCard';
+import { ProductRecommendations } from '@/components/catalog/ProductRecommendations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/breadcrumb';
 import { useCart } from '@/hooks/use-cart';
 import { useProduct } from '@/hooks/useProduct';
-import { useProducts } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
 import { getBrandName } from '@/lib/brands';
@@ -86,7 +85,7 @@ function ProductDetailView({ product }: { product: Product }) {
           <ProductGallery product={product} />
           <ProductInfo product={product} />
         </div>
-        <RelatedProducts product={product} />
+        <ProductRecommendations product={product} />
       </div>
     </SiteLayout>
   );
@@ -186,7 +185,9 @@ function ProductInfo({ product }: { product: Product }) {
       <div className="mt-3 flex items-center gap-3">
         {hasDiscount ? (
           <>
-            <span className="text-2xl font-bold text-accent">{formatPrice(product.salePrice!)}</span>
+            <span className="text-2xl font-bold text-accent">
+              {formatPrice(product.salePrice!)}
+            </span>
             <span className="text-base text-muted-foreground line-through">
               {formatPrice(product.price)}
             </span>
@@ -194,7 +195,10 @@ function ProductInfo({ product }: { product: Product }) {
         ) : (
           <span className="text-2xl font-bold text-foreground">{formatPrice(product.price)}</span>
         )}
-        <Badge variant={product.inStock ? 'secondary' : 'outline'} className="uppercase tracking-wide">
+        <Badge
+          variant={product.inStock ? 'secondary' : 'outline'}
+          className="uppercase tracking-wide"
+        >
           {product.inStock ? 'In stock' : 'Out of stock'}
         </Badge>
       </div>
@@ -232,27 +236,6 @@ function ProductInfo({ product }: { product: Product }) {
         </li>
       </ul>
     </div>
-  );
-}
-
-function RelatedProducts({ product }: { product: Product }) {
-  const { data } = useProducts({
-    category: product.category,
-    subcategory: product.subcategory,
-    pageSize: 5,
-  });
-  const related = (data?.items ?? []).filter((p) => p.id !== product.id).slice(0, 4);
-  if (related.length === 0) return null;
-
-  return (
-    <section className="mt-14">
-      <h2 className="text-xl font-bold text-foreground">Related products</h2>
-      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {related.map((item) => (
-          <ProductCard key={item.id} product={item} />
-        ))}
-      </div>
-    </section>
   );
 }
 

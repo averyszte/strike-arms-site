@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase';
 import { rowToProduct } from '@/lib/product-mappers';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { BRAND_NAMES } from '@/lib/brands';
+import type { CrossSellTarget } from '@/lib/cross-sell';
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
 
 /** Ceiling on the header search-dropdown pool. See fetchAllForSearch. */
@@ -22,10 +23,7 @@ const SEARCH_POOL_LIMIT = 500;
 type ProductQuery = ReturnType<typeof buildBaseQuery>;
 
 function buildBaseQuery() {
-  return supabase
-    .from('products')
-    .select('*', { count: 'exact' })
-    .eq('is_published', true);
+  return supabase.from('products').select('*', { count: 'exact' }).eq('is_published', true);
 }
 
 /**
@@ -115,6 +113,34 @@ export async function fetchAllForSearch(): Promise<Product[]> {
     .eq('is_published', true)
     .order('name', { ascending: true })
     .limit(SEARCH_POOL_LIMIT);
+
+  if (error) throw error;
+  return (data ?? []).map(rowToProduct);
+}
+
+/**
+ * The top few products on one named shelf -- the add-ons offered beside the
+ * product being viewed.
+ *
+ * One shelf per call rather than all of them at once. A single pooled query
+ * ordered by price would happily come back as twenty-four packets of BBs and
+ * nothing else, leaving a rifle with no battery to suggest. Asking per shelf
+ * also means the answer is cached per shelf, so it is shared by every product
+ * that offers it rather than being refetched for each one.
+ *
+ * The category and subcategory come from the cross-sell map, never from a URL.
+ */
+export async function listByTarget(target: CrossSellTarget, limit: number): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_published', true)
+    .eq('category', target.category)
+    .eq('subcategory', target.subcategory)
+    .order('in_stock', { ascending: false })
+    .order('effective_price_cents', { ascending: true })
+    .order('id', { ascending: true })
+    .limit(limit);
 
   if (error) throw error;
   return (data ?? []).map(rowToProduct);
