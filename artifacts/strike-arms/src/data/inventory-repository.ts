@@ -32,11 +32,14 @@ function rowToAdjustment(row: InventoryAdjustmentRow): InventoryAdjustment {
 }
 
 /**
- * `adjusted_by` is passed from the client because `adjust_stock` is SECURITY
- * DEFINER with the parameter defaulting to null, so leaving it off records
- * every adjustment against nobody. Sending the signed-in admin's id is the
- * honest value available without a migration; hardening the function to take
- * `auth.uid()` itself is the proper fix and needs a database change.
+ * `adjusted_by` is now decided by the database, not by this call. Migration
+ * 014 has `adjust_stock` attribute the row to `auth.uid()` and ignore the
+ * argument, because an audit trail that records whoever the caller said they
+ * were is not an audit trail.
+ *
+ * The argument is still sent so this file works against a database with or
+ * without 014 applied. Drop the parameter, and this pass-through with it,
+ * once 014 is confirmed pushed.
  */
 export async function adjustStock(
   productId: string,
