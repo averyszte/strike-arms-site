@@ -170,19 +170,48 @@ function stockAlerts(products: Product[]): OperationalAlert[] {
   return alerts;
 }
 
+/**
+ * Nothing emails Alan when a contact form is filled in (E3 is deferred), so
+ * without this the enquiries screen is a room nobody has a reason to walk into.
+ */
+function inquiryAlerts(newInquiryCount: number): OperationalAlert[] {
+  if (newInquiryCount <= 0) return [];
+
+  return [
+    {
+      id: 'new-inquiries',
+      severity: 'warning',
+      count: newInquiryCount,
+      title: `${newInquiryCount} unanswered ${plural(newInquiryCount, 'enquiry', 'enquiries')}`,
+      action: 'Read and reply',
+      href: '/admin/inquiries',
+    },
+  ];
+}
+
 const SEVERITY_ORDER: Record<AlertSeverity, number> = { critical: 0, warning: 1 };
 
-/**
- * `orders` should already be the working queue — an archived order is one the
- * admin has said they are finished with, and finishing with something is a
- * perfectly good way of resolving it.
- */
-export function buildOperationalAlerts(
-  orders: Order[],
-  products: Product[],
-  now: number,
-): OperationalAlert[] {
-  return [...orderAlerts(orders, now), ...stockAlerts(products)].sort(
-    (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.count - a.count,
-  );
+type AlertInput = {
+  /**
+   * Already the working queue — an archived order is one the admin has said
+   * they are finished with, and finishing with something is a perfectly good
+   * way of resolving it.
+   */
+  orders: Order[];
+  products: Product[];
+  newInquiryCount: number;
+  now: number;
+};
+
+export function buildOperationalAlerts({
+  orders,
+  products,
+  newInquiryCount,
+  now,
+}: AlertInput): OperationalAlert[] {
+  return [
+    ...orderAlerts(orders, now),
+    ...stockAlerts(products),
+    ...inquiryAlerts(newInquiryCount),
+  ].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.count - a.count);
 }

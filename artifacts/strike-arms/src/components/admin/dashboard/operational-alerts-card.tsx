@@ -15,15 +15,16 @@ import type { Product } from '@/types/product';
 interface Props {
   orders: Order[];
   products: Product[];
+  newInquiryCount: number;
 }
 
-export function OperationalAlertsCard({ orders, products }: Props) {
+export function OperationalAlertsCard({ orders, products, newInquiryCount }: Props) {
   // Read once on mount rather than on every render: the clock is not a prop,
   // and a render that returns a different answer each time is the kind of
   // impurity concurrent React is allowed to punish.
   const [now] = useState(() => Date.now());
 
-  const alerts = buildOperationalAlerts(orders, products, now);
+  const alerts = buildOperationalAlerts({ orders, products, newInquiryCount, now });
 
   return (
     <Card>

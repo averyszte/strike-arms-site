@@ -19,23 +19,26 @@ function rowToInquiry(row: InquiryRow): Inquiry {
   };
 }
 
-export async function createInquiry(input: CreateInquiryInput): Promise<Inquiry> {
-  const { data, error } = await supabase
-    .from('inquiries')
-    .insert({
-      name: input.name,
-      email: input.email,
-      phone: input.phone ?? null,
-      subject: input.subject ?? null,
-      message: input.message,
-      consent: input.consent,
-      source_page: input.sourcePage ?? null,
-    })
-    .select()
-    .single();
+/**
+ * Files a contact-form message.
+ *
+ * Returns nothing on purpose. Anon is granted insert and nothing else, and
+ * reading the row back would run the select policy, which only an admin
+ * passes — so asking for the inserted row would fail for every real visitor
+ * while working perfectly for whoever was logged in to test it.
+ */
+export async function createInquiry(input: CreateInquiryInput): Promise<void> {
+  const { error } = await supabase.from('inquiries').insert({
+    name: input.name,
+    email: input.email,
+    phone: input.phone ?? null,
+    subject: input.subject ?? null,
+    message: input.message,
+    consent: input.consent,
+    source_page: input.sourcePage ?? null,
+  });
 
   if (error) throw error;
-  return rowToInquiry(data);
 }
 
 export async function listInquiries(status?: InquiryStatus): Promise<Inquiry[]> {

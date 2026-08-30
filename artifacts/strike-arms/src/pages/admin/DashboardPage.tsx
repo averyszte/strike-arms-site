@@ -9,6 +9,7 @@ import { RecentOrdersCard } from '@/components/admin/dashboard/recent-orders-car
 import { OperationalAlertsCard } from '@/components/admin/dashboard/operational-alerts-card';
 import { useAllOrdersWithItems } from '@/hooks/use-orders';
 import { useAdminProducts } from '@/hooks/use-admin-products';
+import { useInquiries } from '@/hooks/use-inquiries';
 import { computeDashboardMetrics, workQueue } from '@/lib/admin-dashboard-metrics';
 
 function fmtEuros(cents: number) {
@@ -22,6 +23,7 @@ function fmtEuros(cents: number) {
 export default function DashboardPage() {
   const { data: orders = [], isLoading } = useAllOrdersWithItems();
   const { data: products = [] } = useAdminProducts();
+  const { data: newInquiries = [] } = useInquiries('new');
 
   const metrics = computeDashboardMetrics(orders);
   // Money and volume read every order; the queues and alerts read only what is
@@ -82,7 +84,11 @@ export default function DashboardPage() {
           <RecentOrdersCard orders={active} />
         </div>
 
-        <OperationalAlertsCard orders={active} products={products} />
+        <OperationalAlertsCard
+          orders={active}
+          products={products}
+          newInquiryCount={newInquiries.length}
+        />
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { MapPin, Phone, Clock, Wrench, ExternalLink } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
+import { ContactForm } from '@/components/contact/contact-form';
 import { JsonLd } from '@/components/JsonLd';
 import {
   Breadcrumb,
@@ -126,6 +127,18 @@ export default function Contact() {
             </Link>
           </InfoCard>
         </div>
+
+        <section className="mt-12 max-w-2xl">
+          <h2 className="text-2xl font-bold text-foreground">Send us a message</h2>
+          <p className="mt-2 text-muted-foreground leading-relaxed">
+            Looking for something we do not have listed, or want a repair quoted before you
+            travel? Tell us what you need and we will come back to you. For anything urgent,
+            the phone is quicker.
+          </p>
+          <div className="mt-6">
+            <ContactForm />
+          </div>
+        </section>
       </div>
     </SiteLayout>
   );
