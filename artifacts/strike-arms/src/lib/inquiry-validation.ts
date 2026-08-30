@@ -8,6 +8,18 @@
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Deliberately loose. The only email address this can prove is real is one
+ * that has already been replied to, so all this rules out is the typo -- a
+ * missing @, a missing dot, a stray space.
+ *
+ * Exported because the service quote form asks the same question, and two
+ * copies of an email regex drift apart the moment one of them is edited.
+ */
+export function isValidEmail(value: string): boolean {
+  return EMAIL_PATTERN.test(value.trim());
+}
+
 /** Long enough to be a question, short enough not to be a novel or a payload. */
 const MESSAGE_MIN = 10;
 const MESSAGE_MAX = 2000;
@@ -42,7 +54,7 @@ export function validateInquiry(form: InquiryForm): InquiryFieldErrors {
     errors.name = 'Please give us your name.';
   }
 
-  if (!EMAIL_PATTERN.test(form.email.trim())) {
+  if (!isValidEmail(form.email)) {
     errors.email = 'Please give a valid email address, so we can reply.';
   }
 
@@ -68,6 +80,9 @@ const MIN_HUMAN_FILL_MS = 3000;
 /**
  * Whether this submission looks like a script rather than a customer.
  *
+ * Takes anything carrying a honeypot field, so the contact form and the service
+ * quote form share one answer rather than two that can disagree.
+ *
  * Both signals are client-side and a targeted bot walks straight through them.
  * They are here for the drive-by spam that finds any public form and fills it
  * forever, which is the difference between an enquiries screen Alan reads and
@@ -76,6 +91,6 @@ const MIN_HUMAN_FILL_MS = 3000;
  * A caught submission is answered with the same thank-you as a real one: a bot
  * told it failed simply tries again differently.
  */
-export function looksAutomated(form: InquiryForm, elapsedMs: number): boolean {
+export function looksAutomated(form: { website: string }, elapsedMs: number): boolean {
   return form.website.trim() !== '' || elapsedMs < MIN_HUMAN_FILL_MS;
 }

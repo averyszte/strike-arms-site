@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { ArrowRight, Phone } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
-import { Button } from '@/components/ui/button';
+import { ServiceQuoteBlock } from '@/components/service/ServiceQuoteBlock';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -14,7 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL } from '@/lib/site-config';
 import {
   buildServiceSchema,
   buildFaqSchema,
@@ -97,7 +96,7 @@ export function ServiceLayout(props: ServiceLayoutProps) {
         <div className={PROSE}>{props.children}</div>
 
         {faq && faq.length > 0 && <FaqSection items={faq} />}
-        <QuoteBlock />
+        <ServiceQuoteBlock serviceTitle={title} />
       </div>
     </SiteLayout>
   );
@@ -115,38 +114,6 @@ function FaqSection({ items }: { items: FaqItem[] }) {
           </div>
         ))}
       </dl>
-    </section>
-  );
-}
-
-function QuoteBlock() {
-  return (
-    <section className="mt-12 rounded-sm border border-border bg-card p-6">
-      <h2 className="text-xl font-bold text-foreground">How we quote</h2>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-        We diagnose the gun before we price the job. Guessing a figure from a description usually
-        means quoting for the wrong fault — the thing a customer is sure is a broken gearbox is
-        very often a battery, a connector or a fuse.
-      </p>
-      <ul className="mt-4 space-y-2 text-sm text-muted-foreground list-disc pl-5">
-        <li>Bring the gun in, or talk to us first if you are not sure it is worth the trip.</li>
-        <li>We diagnose, then tell you what it needs and what it will cost.</li>
-        <li>Nothing gets done until you say so. If it is not worth repairing, we will say that too.</li>
-      </ul>
-      <div className="mt-5 flex flex-col sm:flex-row gap-3">
-        <Button asChild>
-          <Link href="/contact">
-            Get in touch
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-        <Button asChild variant="outline">
-          <a href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}>
-            <Phone className="mr-2 h-4 w-4" />
-            {BUSINESS.telephone}
-          </a>
-        </Button>
-      </div>
     </section>
   );
 }

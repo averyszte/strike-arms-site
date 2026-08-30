@@ -90,8 +90,13 @@ export default function ServicesHub() {
             quoting for the wrong job. You get the cost once we know what it actually needs, and
             nothing happens until you agree to it.
           </p>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            Every service above ends with a short quote form. Tell us what the gun is and what it is
+            doing and we will come back with what it is likely to need � that is a quicker first
+            answer than a message that only says something is broken.
+          </p>
           <p className="mt-4 text-sm text-muted-foreground">
-            Call us on{' '}
+            Prefer to talk? Call us on{' '}
             <a
               href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}
               className="inline-flex items-center gap-1 font-medium text-accent hover:underline"

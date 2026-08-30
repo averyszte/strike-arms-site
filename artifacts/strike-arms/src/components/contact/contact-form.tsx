@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 
 import { CheckoutField } from '@/components/cart/CheckoutField';
+import { HoneypotField } from '@/components/contact/honeypot-field';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -38,8 +39,7 @@ export function ContactForm() {
 
   const submit = useSubmitInquiry();
 
-  const patch = (update: Partial<InquiryForm>) =>
-    setForm((current) => ({ ...current, ...update }));
+  const patch = (update: Partial<InquiryForm>) => setForm((current) => ({ ...current, ...update }));
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -76,8 +76,8 @@ export function ContactForm() {
           <h2 className="font-semibold text-foreground">Thanks — we have it</h2>
         </div>
         <p className="mt-3 text-muted-foreground leading-relaxed">
-          We read every message and normally come back within a day or two. If it is urgent,
-          ring the shop on{' '}
+          We read every message and normally come back within a day or two. If it is urgent, ring
+          the shop on{' '}
           <a
             href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}
             className="font-medium text-accent hover:underline"
@@ -150,7 +150,11 @@ export function ContactForm() {
         )}
       </div>
 
-      <HoneypotField value={form.website} onChange={(website) => patch({ website })} />
+      <HoneypotField
+        id="contact-website"
+        value={form.website}
+        onChange={(website) => patch({ website })}
+      />
 
       <div>
         <div className="flex items-start gap-2">
@@ -183,28 +187,5 @@ export function ContactForm() {
         {submit.isPending ? 'Sending…' : 'Send message'}
       </Button>
     </form>
-  );
-}
-
-/**
- * Hidden from people and from screen readers, but not with `display: none` —
- * some bots skip what is displayed none. It is moved off-screen instead, taken
- * out of the tab order, and told not to autofill, so a password manager cannot
- * fill it in on a real customer's behalf and get them silently dropped.
- */
-function HoneypotField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  return (
-    <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
-      <label htmlFor="contact-website">Website</label>
-      <input
-        id="contact-website"
-        name="website"
-        type="text"
-        value={value}
-        tabIndex={-1}
-        autoComplete="off"
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </div>
   );
 }

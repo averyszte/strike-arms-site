@@ -155,7 +155,7 @@ Everything below has to be built from the Supabase Auth docs, not lifted.
 |---|---|---|---|
 | F1 | **Guides cluster** (10 pages) | DONE | |
 | F2 | **Services cluster** (6 pages + hub) | PARTIAL **[alan]** | Prices, turnaround, warranty missing. |
-| F2.1 | Service booking / quote form | MISSING | Every CTA is tel/contact. Should feed D8. |
+| F2.1 | Service booking / quote form | DONE 2026-08-30 | Quote form at the foot of all six service pages: name, email, phone, gun make/model, symptoms. Files into `inquiries` with the service in the subject, so it lands in the enquiries screen Alan already reads. Same honeypot and fill-time checks as the contact form. Not a booking — no calendar, no D8 job record yet; reopen when D8 lands so a quote can become a job. |
 | F3 | **Airsoft law hub** | PARTIAL **[legal]** | Hub exists; spoke pages need solicitor sign-off. |
 | F4 | **Where to play** | PARTIAL **[alan]** | Four venues sourced, unpublished, need re-verification. |
 | F5 | **About** | PARTIAL **[alan]** | 5 questions outstanding. |
