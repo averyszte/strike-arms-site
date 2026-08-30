@@ -1,0 +1,61 @@
+# Cloudflare Pages response headers.
+#
+# The Supabase origin below is the project ref, not a secret -- it is in every
+# request the browser makes. It is written out in full rather than as a
+# wildcard so a different project cannot be talked to from this site by
+# accident. It must be changed alongside VITE_SUPABASE_URL.
+#
+# Verify after the first deploy: open the site, check the console for CSP
+# violations on the home page, a product page, the cart, and a checkout
+# redirect. A CSP that blocks the app fails silently for users and loudly only
+# in the console.
+
+/*
+  # HSTS. Two years and preload-eligible; do not shorten without meaning to,
+  # browsers remember the longest value they have seen.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Nothing here asks for any of these. Payment is included because checkout
+  # happens on Stripe's own domain, never on ours.
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  # style-src needs 'unsafe-inline': Radix and framer-motion both set style
+  # attributes on elements, and there is no nonce to give them. script-src
+  # deliberately does not -- the app ships no inline script and must not start.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+
+# Hashed filenames, so the content at a given URL never changes.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The shell must not be cached, or a deploy leaves people on the old bundle.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+# Transactional and account pages. robots.txt asks crawlers not to fetch these;
+# a header is what stops one that fetched anyway from indexing the result.
+/cart
+  X-Robots-Tag: noindex, nofollow
+
+/checkout/*
+  X-Robots-Tag: noindex, nofollow
+
+/account
+  X-Robots-Tag: noindex, nofollow
+
+/account/*
+  X-Robots-Tag: noindex, nofollow
+
+/admin
+  X-Robots-Tag: noindex, nofollow
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow

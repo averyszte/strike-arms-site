@@ -10,5 +10,14 @@
 /guns-n-gear.php            /store                    301
 /Contact-us.php             /contact                  301
 
-# SPA fallback — every other path serves the app shell (must be LAST).
-/*                          /index.html               200
+# SPA fallback -- every other path serves the app shell. Must be LAST: rules
+# here are matched before static files, so anything below this line is dead and
+# anything above it must not shadow a real asset.
+#
+# The destination is `/`, not `/index.html`. Pages 308-redirects a `.html` URL
+# to its clean form, and on the florist site that turned every client-only
+# route into a redirect instead of a page. If this rule ever misbehaves,
+# deleting it is the fallback: Pages serves index.html for unmatched paths on
+# its own when a project has no 404.html. Check a deep link (/store/rifles) and
+# a reload on it after the first deploy.
+/*                          /                         200
