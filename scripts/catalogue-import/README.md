@@ -23,17 +23,21 @@ admin importer accepts, with his photographs already in the `product-images` buc
 - `catalogue.mjs` — assembles the pages and holds the two import defaults.
 - `build-csv.mjs` — validates, then writes `products.csv`.
 - `upload-images.mjs` — pushes the photographs to the bucket, writes `image-urls.json`.
+- `read-credentials.mjs` — finds the project URL and the service role key.
 - `images/` — the photographs, extracted from the emails. Git-ignored: they are source material,
   not source code, and they are 9.4 MB.
 
-`products.csv`, `image-urls.json` and `images/` are all git-ignored.
+`products.csv`, `image-urls.json`, `images/` and `service-role-key.txt` are all git-ignored.
 
 ## Running it
 
-1. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in your shell. Set them as environment
-   variables, not as arguments — arguments end up in shell history. The service role key is in
-   the Supabase dashboard under Project Settings, API. It bypasses RLS, so do not paste it
-   anywhere it can be read back.
+1. Open `scripts/catalogue-import/service-role-key.txt`, paste the Supabase service role key into
+   it, and save. It is in the Supabase dashboard under Project Settings, API — the one marked
+   `service_role`, not the anon key. The file is git-ignored and stays on the machine. The project
+   URL is read from the app's `.env.local`, so there is nothing else to set.
+
+   A file rather than an environment variable because PowerShell writes the command line to its
+   history file, and a key set that way sits in it in plain text.
 
 2. Upload the photographs:
 
@@ -53,6 +57,8 @@ node scripts/catalogue-import/build-csv.mjs
 4. Open the admin, Products, Import, and choose `scripts/catalogue-import/products.csv`. Read the
    preview before confirming. Slug is the identity column: it matches existing rows and creates
    the rest.
+
+5. When the import is done, delete `service-role-key.txt`.
 
 ## Decisions taken, and why
 

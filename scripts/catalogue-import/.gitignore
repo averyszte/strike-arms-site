@@ -2,3 +2,6 @@
 images/
 products.csv
 image-urls.json
+
+# Never commit this. It bypasses RLS.
+service-role-key.txt

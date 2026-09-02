@@ -11,9 +11,9 @@
  * products/<year>/<uuid>.<ext> - so the orphan sweeper and the admin uploader
  * keep seeing one kind of object, not two.
  *
- * Reads two variables from the environment and never prints either:
- *   SUPABASE_URL                 https://<project-ref>.supabase.co
- *   SUPABASE_SERVICE_ROLE_KEY    service role key, from the Supabase dashboard
+ * Before the first run, paste the service role key into service-role-key.txt in
+ * this folder. The project URL is read from the app's .env.local. Neither is
+ * ever printed. See read-credentials.mjs.
  *
  * Usage:  node scripts/catalogue-import/upload-images.mjs
  *
@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 
 import { CATALOGUE } from './catalogue.mjs';
+import { readCredentials } from './read-credentials.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = join(HERE, 'images');
@@ -41,15 +42,7 @@ const CONTENT_TYPES = {
   '.webp': 'image/webp',
 };
 
-const url = process.env.SUPABASE_URL?.replace(/\/+$/, '');
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !key) {
-  process.stderr.write(
-    'Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment first.\n' +
-      'Do not pass them on the command line - they end up in your shell history.\n',
-  );
-  process.exit(1);
-}
+const { url, key } = readCredentials();
 
 /** Keeps the extension the bucket's MIME allowlist accepts, lower-cased. */
 function extensionOf(filename) {
