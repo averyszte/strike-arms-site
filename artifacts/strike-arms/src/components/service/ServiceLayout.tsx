@@ -1,36 +1,49 @@
 import type { ReactNode } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'wouter';
 
-import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
+import { SiteLayout } from '@/components/SiteLayout';
+import { ServiceFaqList } from '@/components/service/ServiceFaqList';
+import { ServiceHero } from '@/components/service/ServiceHero';
 import { ServiceQuoteBlock } from '@/components/service/ServiceQuoteBlock';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { ServiceTocNav, type ServiceTocItem } from '@/components/service/ServiceTocNav';
+import type { ServiceFact } from '@/components/service/ServiceTiles';
 import { SITE_URL } from '@/lib/site-config';
 import {
-  buildServiceSchema,
-  buildFaqSchema,
   buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildServiceSchema,
   type FaqItem,
   type JsonLdObject,
 } from '@/lib/structured-data';
 
-// Tailwind child selectors so service bodies stay plain semantic HTML.
+/**
+ * Body copy styling.
+ *
+ * Block rules are direct-child only (`[&>p]`, not `[&_p]`) so they style the
+ * page's own prose and stop at the edge of a content component — otherwise a
+ * `[&_ol]:list-decimal` reaches inside ServiceSteps and undoes it, and the
+ * child selector wins on specificity. Inline rules (links, strong) stay
+ * descendant, because those should apply wherever they appear.
+ */
 const PROSE =
-  'mt-8 text-foreground [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold ' +
-  '[&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted-foreground ' +
-  '[&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:text-muted-foreground ' +
-  '[&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1.5 [&_ol]:text-muted-foreground ' +
+  'text-foreground ' +
+  '[&>h3]:mt-8 [&>h3]:text-lg [&>h3]:font-semibold [&>h3]:text-foreground ' +
+  '[&>p]:mt-4 [&>p]:leading-relaxed [&>p]:text-muted-foreground ' +
+  '[&>ul]:mt-4 [&>ul]:list-disc [&>ul]:space-y-2 [&>ul]:pl-5 [&>ul]:text-muted-foreground ' +
+  '[&>ol]:mt-4 [&>ol]:list-decimal [&>ol]:space-y-2 [&>ol]:pl-5 [&>ol]:text-muted-foreground ' +
   '[&_a]:font-medium [&_a]:text-accent hover:[&_a]:underline ' +
-  '[&_table]:mt-4 [&_table]:w-full [&_table]:text-sm [&_th]:text-left [&_th]:font-semibold [&_th]:py-2 [&_th]:pr-4 ' +
-  '[&_td]:py-2 [&_td]:pr-4 [&_td]:border-t [&_td]:border-border [&_td]:text-muted-foreground';
+  '[&_strong]:font-semibold [&_strong]:text-foreground ' +
+  '[&_table]:mt-4 [&_table]:w-full [&_table]:text-sm [&_th]:py-2 [&_th]:pr-4 [&_th]:text-left [&_th]:font-semibold ' +
+  '[&_td]:border-t [&_td]:border-border [&_td]:py-2 [&_td]:pr-4 [&_td]:text-muted-foreground';
+
+/** One h2-level block of a service page. */
+export interface ServiceSection {
+  /** Anchor target, also the ToC key. Kebab-case, unique to the page. */
+  id: string;
+  title: string;
+  body: ReactNode;
+}
 
 export interface ServiceLayoutProps {
   title: string;
@@ -39,12 +52,21 @@ export interface ServiceLayoutProps {
   path: string;
   serviceType: string;
   intro: string;
+  /** Small-caps line above the h1. */
+  eyebrow?: string;
+  /** Up to three scannable answers, shown under the hero. */
+  facts?: ServiceFact[];
+  sections: ServiceSection[];
   faq?: FaqItem[];
-  children: ReactNode;
 }
 
+const FAQ_HEADING = 'Frequently asked questions';
+
 export function ServiceLayout(props: ServiceLayoutProps) {
-  const { title, metaTitle, description, path, serviceType, intro, faq } = props;
+  const { title, metaTitle, description, path, serviceType, intro } = props;
+  const { eyebrow = 'Workshop service', facts = [], sections, faq } = props;
+
+
   const crumbs = [
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
@@ -55,6 +77,12 @@ export function ServiceLayout(props: ServiceLayoutProps) {
     buildBreadcrumbSchema(crumbs),
   ];
   if (faq && faq.length > 0) schema.push(buildFaqSchema(faq));
+
+  const toc: ServiceTocItem[] = sections.map(({ id, title: sectionTitle }) => ({
+    id,
+    title: sectionTitle,
+  }));
+  if (faq && faq.length > 0) toc.push({ id: 'faq', title: FAQ_HEADING });
 
   return (
     <SiteLayout>
@@ -69,51 +97,52 @@ export function ServiceLayout(props: ServiceLayoutProps) {
       </Helmet>
       <JsonLd data={schema} />
 
-      <div className="max-w-[760px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/services">Services</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{title}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <ServiceHero title={title} eyebrow={eyebrow} intro={intro} facts={facts} />
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">{title}</h1>
-        <p className="mt-5 text-lg text-foreground leading-relaxed">{intro}</p>
+      <div className="mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-14">
+        <div className="lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-14">
+          <aside className="hidden lg:block">
+            {toc.length > 1 && <ServiceTocNav items={toc} />}
+          </aside>
 
-        <div className={PROSE}>{props.children}</div>
+          <div className="min-w-0">
+            {sections.map((section) => (
+              <ServiceSectionBlock key={section.id} section={section} />
+            ))}
 
-        {faq && faq.length > 0 && <FaqSection items={faq} />}
-        <ServiceQuoteBlock serviceTitle={title} />
+            {faq && faq.length > 0 && (
+              <section id="faq" className="mt-14 scroll-mt-28">
+                <SectionHeading>{FAQ_HEADING}</SectionHeading>
+                <ServiceFaqList items={faq} />
+              </section>
+            )}
+
+            <div id="quote" className="scroll-mt-28">
+              <ServiceQuoteBlock serviceTitle={title} />
+            </div>
+          </div>
+        </div>
       </div>
     </SiteLayout>
   );
 }
 
-function FaqSection({ items }: { items: FaqItem[] }) {
+function ServiceSectionBlock({ section }: { section: ServiceSection }) {
   return (
-    <section className="mt-12">
-      <h2 className="text-2xl font-bold text-foreground">Frequently asked questions</h2>
-      <dl className="mt-4 space-y-6">
-        {items.map((item) => (
-          <div key={item.question}>
-            <dt className="font-semibold text-foreground">{item.question}</dt>
-            <dd className="mt-1 text-muted-foreground leading-relaxed">{item.answer}</dd>
-          </div>
-        ))}
-      </dl>
+    <section id={section.id} className="scroll-mt-28 [&+section]:mt-14">
+      <SectionHeading>{section.title}</SectionHeading>
+      <div className={PROSE}>{section.body}</div>
     </section>
+  );
+}
+
+function SectionHeading({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <span aria-hidden="true" className="block h-0.5 w-8 bg-accent" />
+      <h2 className="mt-4 text-2xl font-bold leading-tight text-foreground md:text-[1.75rem]">
+        {children}
+      </h2>
+    </>
   );
 }

@@ -1,7 +1,157 @@
 import { Link } from 'wouter';
 
-import { ServiceLayout } from '@/components/service/ServiceLayout';
+import { ServiceCallout } from '@/components/service/ServiceCallout';
+import { ServiceLayout, type ServiceSection } from '@/components/service/ServiceLayout';
+import { ServiceSteps } from '@/components/service/ServiceSteps';
+import type { ServiceFact } from '@/components/service/ServiceTiles';
 import type { FaqItem } from '@/lib/structured-data';
+
+const FACTS: ServiceFact[] = [
+  { label: 'Our rule', value: 'One change, one measured reason, test after' },
+  { label: 'First money', value: 'BBs, hop-up, then air seal' },
+  { label: 'Power work', value: 'Last, and only against a target figure' },
+];
+
+const SECTIONS: ServiceSection[] = [
+  {
+    id: 'what-works',
+    title: 'Where the money actually makes a difference',
+    body: (
+      <>
+        <p>In rough order of what you will notice on the field:</p>
+        <ServiceSteps
+          steps={[
+            {
+              title: (
+                <>
+                  Quality <Link href="/store/consumables/bbs">BBs</Link>
+                </>
+              ),
+              detail: 'The cheapest change that improves every single shot.',
+            },
+            {
+              title: (
+                <>
+                  <Link href="/glossary#hop-up">Hop-up</Link> consistency
+                </>
+              ),
+              detail: 'Plus the bucking and nub, if the stock parts are poor.',
+            },
+            {
+              title: 'Fixing air-seal inconsistency',
+              detail: 'Most guns that feel weak are inconsistent rather than underpowered.',
+            },
+            {
+              title: 'Motor and electronics',
+              detail: 'For trigger response, efficiency or control features.',
+            },
+          ]}
+        />
+        <p>
+          Notice what is not on that list: a stronger spring, or an extremely tight barrel. Both add
+          stress without usable accuracy, and both are near the top of what customers ask for.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'what-we-talk-you-out-of',
+    title: 'What we will talk you out of',
+    body: (
+      <>
+        <p>
+          Replacing working internals. Fitting a stronger spring with no goal. Cosmetic parts sold as
+          performance parts. Anything fitted because a list on the internet said so rather than
+          because the gun demonstrated a problem.
+        </p>
+        <ServiceCallout tone="note" title="The rule we work to">
+          <p>
+            Change one thing for a measured reason, and test after each step. An upgrade you cannot
+            measure the effect of was not an upgrade.
+          </p>
+        </ServiceCallout>
+      </>
+    ),
+  },
+  {
+    id: 'power-order',
+    title: 'If you want more power, this is the order',
+    body: (
+      <>
+        <p>
+          Power work comes last, not first, and it starts with knowing your target rather than your
+          current number.
+        </p>
+        <ServiceSteps
+          steps={[
+            { title: 'Establish the limit your site enforces, and measure the gun against it.' },
+            { title: 'Correct the air seal.' },
+            { title: 'Set the hop-up properly.' },
+            {
+              title: (
+                <>
+                  Settle on the{' '}
+                  <Link href="/guides/airsoft-bb-weight-guide">BB weight</Link> you will actually
+                  play with.
+                </>
+              ),
+            },
+            {
+              title: 'Only then change the spring.',
+              detail: 'And only if a measured adjustment is genuinely needed.',
+            },
+            { title: "Chrono again, to the site's stated method." },
+          ]}
+        />
+        <p>
+          Chasing a headline figure without improving consistency adds stress to the gun and gains
+          you nothing usable. Our{' '}
+          <Link href="/guides/fps-and-joules-explained">FPS and joules guide</Link> explains why, and
+          our <Link href="/services/chrono-service">chrono service</Link> gives you the real numbers.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'mosfets',
+    title: 'MOSFETs and electronics',
+    body: (
+      <>
+        <p>
+          A <Link href="/glossary#mosfet">MOSFET</Link> or ETU earns its place when the setup draws
+          more current, runs an 11.1v battery, needs programmable trigger functions or diagnostics,
+          or would otherwise put heavy arcing and wear on mechanical trigger contacts.
+        </p>
+        <p>
+          It is not a status upgrade, and we will not fit one where the standard system is reliable
+          and doing its job. Fitting a MOSFET also does not automatically mean you should now run a
+          higher voltage — see the{' '}
+          <Link href="/guides/airsoft-battery-lipo-guide">battery guide</Link>.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'diy-work',
+    title: 'Undoing DIY work',
+    body: (
+      <>
+        <p>
+          A regular job, and no judgement — everyone learns somewhere. The recurring ones are
+          shimming set too tightly, motor height by guesswork, an unsuitable spring or battery,
+          pinched wires, poor soldering, a misaligned hop rubber, lost gearbox timing or small parts,
+          and angle-of-engagement changes made without understanding pickup and release.
+        </p>
+        <p>
+          We diagnose what was actually changed before quoting, because the secondary damage is often
+          larger than the fault that prompted the work. If it has gone far enough, a{' '}
+          <Link href="/services/gearbox-rebuilds">full rebuild</Link> is sometimes the cheaper
+          answer.
+        </p>
+      </>
+    ),
+  },
+];
 
 const FAQ: FaqItem[] = [
   {
@@ -39,83 +189,11 @@ export default function UpgradesServicePage() {
       description="In-house airsoft upgrades in Swords, Co. Dublin: hop-up and air-seal work, buckings, motors, MOSFETs and electronics — fitted to solve a measured problem, not a shopping list."
       path="/services/upgrades"
       serviceType="Airsoft gun upgrade and tuning"
+      eyebrow="Workshop service"
       intro="We will happily fit whatever you ask for. We would rather first ask what the gun is actually failing to do, because a good half of the upgrade money we see spent goes on parts that were never going to fix the problem."
+      facts={FACTS}
+      sections={SECTIONS}
       faq={FAQ}
-    >
-      <h2>Where the money actually makes a difference</h2>
-      <p>In rough order of what you will notice on the field:</p>
-      <ol>
-        <li>
-          Quality <Link href="/store/consumables/bbs">BBs</Link> — the cheapest change that improves
-          every shot.
-        </li>
-        <li>
-          <Link href="/glossary#hop-up">Hop-up</Link> consistency, and the bucking and nub if the
-          stock parts are poor.
-        </li>
-        <li>Fixing air-seal inconsistency.</li>
-        <li>Motor and electronics, for trigger response, efficiency or control features.</li>
-      </ol>
-      <p>
-        Notice what is not on that list: a stronger spring, or an extremely tight barrel. Both add
-        stress without usable accuracy, and both are near the top of what customers ask for.
-      </p>
-
-      <h2>What we will talk you out of</h2>
-      <p>
-        Replacing working internals. Fitting a stronger spring with no goal. Cosmetic parts sold as
-        performance parts. Anything fitted because a list on the internet said so rather than
-        because the gun demonstrated a problem.
-      </p>
-      <p>
-        The rule we work to: <strong>change one thing for a measured reason, and test after each
-        step.</strong> An upgrade you cannot measure the effect of was not an upgrade.
-      </p>
-
-      <h2>If you want more power, this is the order</h2>
-      <p>
-        Power work comes last, not first, and it starts with knowing your target rather than your
-        current number.
-      </p>
-      <ol>
-        <li>Establish the limit your site enforces, and measure the gun consistently against it.</li>
-        <li>Correct the air seal.</li>
-        <li>Set the hop-up properly.</li>
-        <li>Settle on the <Link href="/guides/airsoft-bb-weight-guide">BB weight</Link> you will actually play with.</li>
-        <li>Only then change the spring, and only if a measured adjustment is genuinely needed.</li>
-        <li>Chrono again, to the site's stated method.</li>
-      </ol>
-      <p>
-        Chasing a headline figure without improving consistency adds stress to the gun and gains you
-        nothing usable. Most guns that feel weak are not underpowered — they are inconsistent. Our{' '}
-        <Link href="/guides/fps-and-joules-explained">FPS and joules guide</Link> explains why, and
-        our <Link href="/services/chrono-service">chrono service</Link> gives you the real numbers.
-      </p>
-
-      <h2>MOSFETs and electronics</h2>
-      <p>
-        A <Link href="/glossary#mosfet">MOSFET</Link> or ETU earns its place when the setup draws
-        more current, runs an 11.1v battery, needs programmable trigger functions or diagnostics, or
-        would otherwise put heavy arcing and wear on mechanical trigger contacts.
-      </p>
-      <p>
-        It is not a status upgrade, and we will not fit one where the standard system is reliable and
-        doing its job. Fitting a MOSFET also does not automatically mean you should now run a higher
-        voltage — see the <Link href="/guides/airsoft-battery-lipo-guide">battery guide</Link>.
-      </p>
-
-      <h2>Undoing DIY work</h2>
-      <p>
-        A regular job, and no judgement — everyone learns somewhere. The recurring ones are shimming
-        set too tightly, motor height by guesswork, an unsuitable spring or battery, pinched wires,
-        poor soldering, a misaligned hop rubber, lost gearbox timing or small parts, and
-        angle-of-engagement changes made without understanding pickup and release.
-      </p>
-      <p>
-        We diagnose what was actually changed before quoting, because the secondary damage is often
-        larger than the fault that prompted the work. If it has gone far enough, a{' '}
-        <Link href="/services/gearbox-rebuilds">full rebuild</Link> is sometimes the cheaper answer.
-      </p>
-    </ServiceLayout>
+    />
   );
 }
