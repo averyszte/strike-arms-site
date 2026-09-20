@@ -34,6 +34,7 @@ const COLUMNS = [
   'Category',
   'Subcategory',
   'Brand',
+  'Condition',
   'Price',
   'Sale price',
   'Short description',
@@ -115,6 +116,8 @@ function row(item, urls) {
     item.category,
     item.subcategory,
     brandSlug(item.brand),
+    // Everything except the Pre-Loved page is new stock.
+    item.condition === 'pre-loved' ? 'Pre-loved' : 'New',
     item.price,
     '',
     item.short,

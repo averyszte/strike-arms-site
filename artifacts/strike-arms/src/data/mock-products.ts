@@ -12,7 +12,9 @@
 
 import type { Product } from '@/types/product';
 
-export const MOCK_PRODUCTS: Product[] = [
+// Seeded without a condition and stamped 'new' below, rather than repeating
+// condition: 'new' fifty-six times in a file that is on its way out.
+const MOCK_SEED: Omit<Product, 'condition'>[] = [
   // ─── RIFLES (15) ────────────────────────────────────────────────────────────
   {
     id: 'r-001',
@@ -888,3 +890,8 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2025-05-05T10:00:00Z',
   },
 ];
+
+export const MOCK_PRODUCTS: Product[] = MOCK_SEED.map((product) => ({
+  ...product,
+  condition: 'new',
+}));

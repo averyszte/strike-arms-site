@@ -22,6 +22,7 @@ function toFormValues(product: Product): ProductFormValues {
     category: product.category,
     subcategory: product.subcategory,
     brand: product.brand,
+    condition: product.condition,
     priceEuros: (product.price / 100).toFixed(2),
     salePriceEuros: product.salePrice != null ? (product.salePrice / 100).toFixed(2) : '',
     shortDescription: product.shortDescription,
@@ -42,6 +43,8 @@ const DEFAULT_VALUES: ProductFormValues = {
   category: 'rifles',
   subcategory: '',
   brand: '',
+  // New stock is the ordinary case; secondhand is the one you have to choose.
+  condition: 'new',
   priceEuros: '',
   salePriceEuros: '',
   shortDescription: '',
@@ -62,6 +65,7 @@ function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'create
     category: values.category as Category,
     subcategory: values.subcategory,
     brand: values.brand,
+    condition: values.condition,
     price: Math.round(parseFloat(values.priceEuros) * 100),
     salePrice: values.salePriceEuros
       ? Math.round(parseFloat(values.salePriceEuros) * 100)

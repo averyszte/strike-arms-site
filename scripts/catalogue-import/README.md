@@ -71,11 +71,13 @@ node scripts/catalogue-import/build-csv.mjs
 - **Stock imports as zero,** because the importer always writes zero by design: stock moves
   through `adjust_stock` so the ledger can say who changed it and why. The pre-loved rows are
   one-offs and each needs an adjustment to 1.
-- **Pre-loved products keep their real category** (`rifles/aeg-rifles` and so on) and carry the
-  tags `pre-loved`, `secondhand` and `sold-as-seen`. Alan's "sold as seen … secondhand … will
-  require batteries and a charger" is appended to every one of those descriptions rather than
-  left to a page banner, because a customer arriving from search never sees the banner. A
-  `/pre-loved` listing page filtered on the tag is a front-end job and is not built here.
+- **Pre-loved products keep their real category** (`rifles/aeg-rifles` and so on), carry the
+  tags `pre-loved`, `secondhand` and `sold-as-seen`, and set the `Condition` column to
+  `Pre-loved`. The column is what the shop reads: migration 018 made `condition` a real column,
+  and the storefront prints the badge, the sold-as-seen notice and the `/pre-loved` page off it.
+  Alan's "sold as seen … secondhand … will require batteries and a charger" used to be appended
+  to each description instead; it is not any more, because descriptions are not rendered on the
+  storefront at all. The wording now lives in `src/lib/product-condition.ts`.
 - **Jumble products keep their real category too** and carry a `jumble` tag, for the same reason.
   Alan's own words: "I was thinking to lump them all together as a Miscellaneous page and call it
   our jumble page."

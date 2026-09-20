@@ -10,6 +10,7 @@ import Brands from "@/pages/Brands";
 import BrandPage from "@/pages/BrandPage";
 import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
+import PreLoved from "@/pages/PreLoved";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
 import Login from "@/pages/auth/Login";
@@ -65,6 +66,7 @@ function Router() {
       <Route path="/brands/:slug" component={BrandPage} />
       <Route path="/new" component={NewArrivals} />
       <Route path="/sale" component={Sale} />
+      <Route path="/pre-loved" component={PreLoved} />
       <Route path="/gift-cards" component={GiftCards} />
       <Route path="/account">
         <RequireAuth>

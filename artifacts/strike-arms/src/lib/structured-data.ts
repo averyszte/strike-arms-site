@@ -8,6 +8,7 @@
 import type { Product } from '@/types/product';
 import type { GlossaryTerm } from '@/lib/glossary';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, BUSINESS, toAbsoluteUrl } from '@/lib/site-config';
+import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
 
 export type JsonLdObject = Record<string, unknown>;
@@ -181,7 +182,11 @@ export function buildProductSchema(product: Product): JsonLdObject {
       availability: product.inStock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
+      // Was hardcoded to NewCondition, which made every pre-loved rifle a false
+      // claim in the rich result Google reads.
+      itemCondition: isPreLoved(product.condition)
+        ? 'https://schema.org/UsedCondition'
+        : 'https://schema.org/NewCondition',
       url: `${SITE_URL}/products/${product.slug}`,
     },
   };

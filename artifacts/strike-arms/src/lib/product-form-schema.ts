@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { PRODUCT_CONDITIONS } from '@/lib/product-condition';
+
 // The admin product form's validation contract. Kept out of the field
 // components so the sheet can build its resolver without importing UI.
 
@@ -14,6 +16,10 @@ export const productFormSchema = z.object({
   ] as const),
   subcategory: z.string().min(1, 'Required'),
   brand: z.string().min(1, 'Required'),
+  // Mirrors the check constraint on products.condition (migration 018). Not a
+  // free text field: the badge, the filter and the schema.org itemCondition
+  // all branch on it, so a third value would go quietly unhandled.
+  condition: z.enum(PRODUCT_CONDITIONS),
   priceEuros: z.string().regex(PRICE_PATTERN, 'Enter a valid price e.g. 99.99'),
   salePriceEuros: z
     .string()

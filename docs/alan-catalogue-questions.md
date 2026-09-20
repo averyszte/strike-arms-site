@@ -93,9 +93,12 @@ Tick, cross, or tell us the whole thing is collect only for now.
   do so I was thinking to lump them all together as a Miscellaneous page and call it our jumble
   page." The seven items are loaded under their real categories and tagged `jumble`, so they show
   up in normal browsing. Building the jumble page itself is a separate job — say the word.
-- **The pre-loved page.** Same shape: the fourteen rifles are tagged `pre-loved` and carry your
-  "sold as seen, secondhand, will require batteries and a charger" wording in every description,
-  not just as a banner. A dedicated pre-loved page is a separate job.
+- **The pre-loved page.** Built. The fourteen rifles are marked pre-loved in the database rather
+  than by a tag somebody has to remember, so each one carries a **Pre-loved** badge wherever it
+  appears, your "sold as seen, secondhand, will require batteries and a charger" wording sits on
+  the product page itself, and there is a **Condition** filter in the shop plus a page of its own
+  at `/pre-loved`. When you add a secondhand item in the admin, pick Pre-loved from the Condition
+  box and the rest follows.
 
 Each pre-loved rifle is being set to a stock of **1**, since they are one-offs. Say if any of them
 is actually a pair.

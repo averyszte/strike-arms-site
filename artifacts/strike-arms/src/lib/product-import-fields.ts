@@ -1,5 +1,6 @@
+import { toProductCondition } from '@/lib/product-condition';
 import { LIST_SEPARATOR } from '@/lib/products-csv';
-import type { Category } from '@/types/product';
+import type { Category, ProductCondition } from '@/types/product';
 
 /**
  * Turning one spreadsheet cell into one product field, or saying why not.
@@ -51,6 +52,18 @@ export function parseCategory(raw: string): ParseResult<Category> {
     return { ok: false, message: `Category must be one of ${CATEGORIES.join(', ')} (got "${raw.trim()}")` };
   }
   return { ok: true, value: match };
+}
+
+/**
+ * New or Pre-loved, in any casing. Nothing else -- a blank or a "used" stops
+ * the row rather than quietly leaving a secondhand rifle advertised as new.
+ */
+export function parseCondition(raw: string): ParseResult<ProductCondition> {
+  const value = toProductCondition(raw);
+  if (!value) {
+    return { ok: false, message: `Condition must be New or Pre-loved (got "${raw.trim()}")` };
+  }
+  return { ok: true, value };
 }
 
 /** Euro amount to cents. Math.round, because 6.50 is 649.9999... in binary. */

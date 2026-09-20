@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/lib/format-price';
+import { isPreLoved } from '@/lib/product-condition';
 import type { Product } from '@/types/product';
 
 interface ProductCardProps {
@@ -11,6 +12,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { slug, name, brand, price, salePrice, images, inStock, isNew, isFeatured } = product;
   const displayImage = images[0] ?? '/images/category-rifles.png';
   const hasDiscount = salePrice !== undefined && salePrice < price;
+  const preLoved = isPreLoved(product.condition);
 
   return (
     <Link
@@ -29,12 +31,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Badge row — top-left */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-          {isNew && (
+          {/* First, and never alongside "New". isNew means newly listed, which a
+              secondhand rifle can also be -- printing both would put the word
+              NEW on a used gun. Condition wins. */}
+          {preLoved && (
+            <Badge className="text-[10px] px-1.5 py-0.5 bg-foreground text-background uppercase tracking-wide">
+              Pre-loved
+            </Badge>
+          )}
+          {isNew && !preLoved && (
             <Badge className="text-[10px] px-1.5 py-0.5 bg-accent text-accent-foreground uppercase tracking-wide">
               New
             </Badge>
           )}
-          {isFeatured && !isNew && (
+          {isFeatured && !isNew && !preLoved && (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 uppercase tracking-wide">
               Featured
             </Badge>

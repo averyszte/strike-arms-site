@@ -17,10 +17,12 @@ export type InquiryStatus = 'new' | 'replied' | 'archived';
 export type OrderChannel = 'web' | 'counter' | 'phone';
 export type PaymentMethod = 'stripe' | 'cash' | 'card_terminal' | 'bank_transfer';
 export type NotificationStatus = 'pending' | 'sent' | 'failed';
+export type ProductCondition = 'new' | 'pre-loved';
 // ─── Rows ─────────────────────────────────────────────────────────────────────
 
 export type ProductRow = {
   id: string; slug: string; name: string; category: string; subcategory: string; brand: string;
+  condition: ProductCondition;
   price_cents: number; sale_price_cents: number | null;
   // Generated: coalesce(sale_price_cents, price_cents). Read-only — the shop
   // sorts on it because PostgREST cannot order by an expression.

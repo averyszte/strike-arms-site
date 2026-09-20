@@ -1,3 +1,4 @@
+import { toProductCondition } from '@/lib/product-condition';
 import type { Category, ProductFilters } from '@/types/product';
 
 const VALID_SORTS = ['featured', 'newest', 'price-asc', 'price-desc', 'name-asc'] as const;
@@ -18,6 +19,7 @@ export function parseFiltersFromSearch(
   const page = params.get('page');
   const minPrice = params.get('minPrice');
   const maxPrice = params.get('maxPrice');
+  const condition = params.get('condition');
 
   return {
     category,
@@ -28,6 +30,9 @@ export function parseFiltersFromSearch(
     maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
     inStockOnly: params.get('inStockOnly') === '1',
     onSaleOnly: params.get('onSaleOnly') === '1',
+    // Narrowed rather than cast: ?condition=anything must not reach the query
+    // builder and come back as an empty shop with no explanation.
+    condition: condition ? toProductCondition(condition) ?? undefined : undefined,
     sort: sort && (VALID_SORTS as readonly string[]).includes(sort)
       ? (sort as ProductFilters['sort'])
       : undefined,
@@ -49,6 +54,7 @@ export function filtersToSearchParams(filters: ProductFilters): URLSearchParams 
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
   if (filters.inStockOnly) params.set('inStockOnly', '1');
   if (filters.onSaleOnly) params.set('onSaleOnly', '1');
+  if (filters.condition) params.set('condition', filters.condition);
   if (filters.sort && filters.sort !== 'featured') params.set('sort', filters.sort);
   if (filters.page && filters.page > 1) params.set('page', String(filters.page));
 
@@ -56,7 +62,8 @@ export function filtersToSearchParams(filters: ProductFilters): URLSearchParams 
 }
 
 /**
- * Returns true when any non-navigation filter is active (brand, price, stock, sale).
+ * Returns true when any non-navigation filter is active (brand, price, stock,
+ * sale, condition).
  * Category and subcategory are URL-path navigation — not counted as "filters".
  */
 export function hasActiveFilters(filters: ProductFilters): boolean {
@@ -65,6 +72,7 @@ export function hasActiveFilters(filters: ProductFilters): boolean {
     filters.minPrice !== undefined ||
     filters.maxPrice !== undefined ||
     filters.inStockOnly ||
-    filters.onSaleOnly
+    filters.onSaleOnly ||
+    filters.condition
   );
 }

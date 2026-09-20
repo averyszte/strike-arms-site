@@ -1,6 +1,7 @@
 import {
   parseBoolean,
   parseCategory,
+  parseCondition,
   parseEuros,
   parseList,
   parseOptionalEuros,
@@ -26,6 +27,7 @@ export type ColumnKey =
   | 'category'
   | 'subcategory'
   | 'brand'
+  | 'condition'
   | 'price'
   | 'salePrice'
   | 'shortDescription'
@@ -44,6 +46,7 @@ const COLUMN_KEYS: Record<string, ColumnKey> = {
   category: 'category',
   subcategory: 'subcategory',
   brand: 'brand',
+  condition: 'condition',
   price: 'price',
   'sale price': 'salePrice',
   'short description': 'shortDescription',
@@ -65,6 +68,7 @@ export type ParsedFields = Partial<
     | 'category'
     | 'subcategory'
     | 'brand'
+    | 'condition'
     | 'price'
     | 'shortDescription'
     | 'description'
@@ -92,6 +96,7 @@ export const FIELD_LABELS: Record<string, string> = {
   category: 'Category',
   subcategory: 'Subcategory',
   brand: 'Brand',
+  condition: 'Condition',
   price: 'Price',
   salePrice: 'Sale price',
   shortDescription: 'Short description',
@@ -154,6 +159,9 @@ export function parseFields(read: CellReader): { fields: ParsedFields; messages:
   when('category', parseCategory, (v) => void (fields.category = v));
   when('subcategory', (r) => parseSlugLike('Subcategory', r), (v) => void (fields.subcategory = v));
   when('brand', (r) => parseSlugLike('Brand', r), (v) => void (fields.brand = v));
+  // Absent from the file leaves the product as it is, and a new one defaults
+  // to new in the database -- the same rule every other optional column follows.
+  when('condition', parseCondition, (v) => void (fields.condition = v));
   when('price', (r) => parseEuros('Price', r), (v) => void (fields.price = v));
   when('salePrice', (r) => parseOptionalEuros('Sale price', r), (v) => void (fields.salePrice = v));
   when(

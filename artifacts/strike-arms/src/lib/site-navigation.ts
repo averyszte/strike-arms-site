@@ -39,6 +39,7 @@ export const navItems: NavItem[] = [
           { label: "Rifle Magazines", href: "/store/rifles/rifle-magazines" },
           { label: "Rifle Accessories", href: "/store/rifles/rifle-accessories" },
           { label: "New Arrivals", href: "/new" },
+          { label: "Pre-Loved", href: "/pre-loved" },
           { label: "Best Sellers", href: "/new" },
         ],
       },
@@ -270,6 +271,7 @@ export const navItems: NavItem[] = [
         title: "Store",
         links: [
           { label: "New Arrivals", href: "/new" },
+          { label: "Pre-Loved", href: "/pre-loved" },
           { label: "Sale", href: "/sale" },
           { label: "Brands", href: "/brands" },
           { label: "Gift Cards", href: "/gift-cards" },

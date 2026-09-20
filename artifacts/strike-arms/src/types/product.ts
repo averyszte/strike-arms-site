@@ -7,6 +7,16 @@ export type Category =
   | 'parts'
   | 'more';
 
+/**
+ * New stock, or a secondhand one-off.
+ *
+ * A real column since migration 018, not a slug prefix and a tag that somebody
+ * has to remember to type. Alan's instruction was that secondhand items are
+ * stressed as sold as seen -- which needs something the shop can badge, filter
+ * and put in structured data, not a sentence at the bottom of a description.
+ */
+export type ProductCondition = 'new' | 'pre-loved';
+
 export type Product = {
   id: string;
   slug: string;
@@ -14,6 +24,9 @@ export type Product = {
   category: Category;
   subcategory: string;        // matches mega-menu sub-slugs e.g. 'aeg-rifles', 'sniper'
   brand: string;              // lowercase slug e.g. 'specna-arms'
+  // Not the same thing as isNew. isNew is a marketing badge meaning "newly
+  // listed"; this is what the customer is actually buying.
+  condition: ProductCondition;
   price: number;              // EUR in cents (integer)
   salePrice?: number;         // EUR in cents
   images: string[];           // relative paths for now, absolute URLs later
@@ -45,6 +58,7 @@ export type ProductFilters = {
   inStockOnly?: boolean;
   onSaleOnly?: boolean;
   isNewOnly?: boolean;
+  condition?: ProductCondition;
   sort?: 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'name-asc';
   page?: number;
   pageSize?: number;

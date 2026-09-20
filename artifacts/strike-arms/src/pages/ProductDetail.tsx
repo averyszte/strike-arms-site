@@ -6,6 +6,7 @@ import { ShoppingCart, Wrench, Truck, MapPin, Store } from 'lucide-react';
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
 import { ProductRecommendations } from '@/components/catalog/ProductRecommendations';
+import { PreLovedNotice } from '@/components/catalog/PreLovedNotice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +22,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useProduct } from '@/hooks/useProduct';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
+import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
 import { SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
@@ -155,6 +157,7 @@ function ProductInfo({ product }: { product: Product }) {
   const { addLine } = useCart();
   const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
   const unitPriceCents = hasDiscount ? product.salePrice! : product.price;
+  const preLoved = isPreLoved(product.condition);
 
   const handleAddToCart = () => {
     addLine({
@@ -201,6 +204,9 @@ function ProductInfo({ product }: { product: Product }) {
         >
           {product.inStock ? 'In stock' : 'Out of stock'}
         </Badge>
+        {preLoved && (
+          <Badge className="bg-foreground text-background uppercase tracking-wide">Pre-loved</Badge>
+        )}
       </div>
 
       <p className="mt-4 text-muted-foreground leading-relaxed">{product.shortDescription}</p>
@@ -235,6 +241,8 @@ function ProductInfo({ product }: { product: Product }) {
           <Wrench className="h-4 w-4 shrink-0" /> In-house repairs &amp; upgrades
         </li>
       </ul>
+
+      {preLoved && <PreLovedNotice />}
     </div>
   );
 }

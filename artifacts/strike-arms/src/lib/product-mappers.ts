@@ -11,6 +11,7 @@ export function rowToProduct(row: ProductRow): Product {
     category: row.category as Category,
     subcategory: row.subcategory,
     brand: row.brand,
+    condition: row.condition,
     price: row.price_cents,
     salePrice: row.sale_price_cents ?? undefined,
     images: row.images,

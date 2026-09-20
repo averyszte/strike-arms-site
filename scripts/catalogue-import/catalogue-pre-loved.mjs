@@ -3,16 +3,17 @@
  *
  * These are secondhand one-offs. Alan's instruction, verbatim: "We will have to
  * stress that these rifles or pistols are sold as seen and are secondhand and
- * will require batteries and a charger." That sentence is appended to every
- * description here rather than left to a page banner, because a customer who
- * arrives on a product page from search never sees the banner.
+ * will require batteries and a charger."
+ *
+ * That sentence used to be appended to every description below. It is not any
+ * more: descriptions are not rendered on the storefront at all, so the warning
+ * was only ever visible inside the admin. These rows now set condition to
+ * pre-loved, and the shop prints the badge and the sold-as-seen notice itself
+ * -- see src/lib/product-condition.ts, which holds the sentence.
  *
  * Each of these is a single item. The importer always writes stock 0 by design,
  * so after the import every row needs one adjust_stock to 1. See README.md.
  */
-
-const SOLD_AS_SEEN =
-  'Sold as seen. This is a secondhand item and will require batteries and a charger, which are not included.';
 
 const PRE_LOVED_TAGS = ['pre-loved', 'secondhand', 'sold-as-seen'];
 
@@ -181,10 +182,12 @@ export const PRE_LOVED = [
     image: 'STEN MK2 S.jpeg',
     flag: 'Alan did not name a maker. Brand left as Unbranded rather than guessed.',
   },
-].map(({ extraTags = [], description, ...item }) => ({
+].map(({ extraTags = [], ...item }) => ({
   ...item,
   category: 'rifles',
   folder: 'Pre-Loved_Page',
-  description: `${description} ${SOLD_AS_SEEN}`,
+  // The column, not the convention. The tags stay because they feed
+  // search_text, so "pre-loved" finds these in the shop's own search.
+  condition: 'pre-loved',
   tags: [...PRE_LOVED_TAGS, ...extraTags],
 }));

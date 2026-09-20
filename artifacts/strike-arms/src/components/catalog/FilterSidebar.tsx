@@ -1,89 +1,46 @@
-import { Link } from 'wouter';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { CategoryTree } from '@/components/catalog/CategoryTree';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 import { useBrands } from '@/hooks/useProducts';
 import { hasActiveFilters } from '@/lib/category-filters';
-import { TAXONOMY } from '@/lib/taxonomy';
+import { CONDITION_LABELS, PRODUCT_CONDITIONS } from '@/lib/product-condition';
 import type { CategorySlug } from '@/lib/taxonomy';
-import type { Category, ProductFilters } from '@/types/product';
+import type { Category, ProductCondition, ProductFilters } from '@/types/product';
 
 const MAX_PRICE_CENTS = 80000;
 
-// ── CategoryTree ──────────────────────────────────────────────────────────────
+// ── ConditionOption ───────────────────────────────────────────────────────────
 
-interface CategoryTreeProps {
-  activeCategorySlug?: CategorySlug;
-  activeSubcategorySlug?: string;
-  onNavigate?: () => void;
+interface ConditionOptionProps {
+  condition: ProductCondition;
+  active: boolean;
+  onChange: (patch: Partial<ProductFilters>) => void;
 }
 
-function CategoryTree({
-  activeCategorySlug,
-  activeSubcategorySlug,
-  onNavigate,
-}: CategoryTreeProps) {
+/**
+ * One of two, and picking one clears the other — the same single-select
+ * checkbox the brand list uses, so the whole sidebar behaves one way.
+ */
+function ConditionOption({ condition, active, onChange }: ConditionOptionProps) {
   return (
-    <div className="space-y-0.5">
-      <Link
-        href="/store"
-        onClick={onNavigate}
-        className={cn(
-          'block px-2 py-1.5 text-sm rounded-sm transition-colors',
-          !activeCategorySlug
-            ? 'text-foreground font-semibold'
-            : 'text-muted-foreground hover:text-foreground',
-        )}
+    <div className="flex items-center gap-2">
+      <Checkbox
+        id={`condition-${condition}`}
+        checked={active}
+        onCheckedChange={(checked) =>
+          onChange({ condition: checked ? condition : undefined, page: 1 })
+        }
+      />
+      <Label
+        htmlFor={`condition-${condition}`}
+        className="text-sm cursor-pointer font-normal flex-1"
       >
-        All Products
-      </Link>
-
-      {TAXONOMY.map((cat) => {
-        const isActiveCat = activeCategorySlug === cat.slug;
-        return (
-          <div key={cat.slug}>
-            <Link
-              href={`/store/${cat.slug}`}
-              onClick={onNavigate}
-              className={cn(
-                'block px-2 py-1.5 text-sm rounded-sm transition-colors',
-                isActiveCat
-                  ? 'text-foreground font-semibold'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {cat.shortLabel}
-            </Link>
-
-            {isActiveCat && (
-              <div className="ml-4 mt-0.5 mb-1 space-y-0.5">
-                {cat.subcategories.map((sub) => {
-                  const isActiveSub = activeSubcategorySlug === sub.slug;
-                  return (
-                    <Link
-                      key={sub.slug}
-                      href={`/store/${cat.slug}/${sub.slug}`}
-                      onClick={onNavigate}
-                      className={cn(
-                        'block px-2 py-1 text-sm rounded-sm transition-colors',
-                        isActiveSub
-                          ? 'text-accent font-medium'
-                          : 'text-muted-foreground hover:text-foreground',
-                      )}
-                    >
-                      {sub.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      })}
+        {CONDITION_LABELS[condition]}
+      </Label>
     </div>
   );
 }
@@ -142,12 +99,32 @@ export function FilterSidebarContent({
               maxPrice: undefined,
               inStockOnly: false,
               onSaleOnly: false,
+              condition: undefined,
             })
           }
         >
           Clear all filters
         </Button>
       )}
+
+      {/* Condition — new stock or a secondhand one-off */}
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3">
+          Condition
+        </p>
+        <div className="space-y-1.5">
+          {PRODUCT_CONDITIONS.map((condition) => (
+            <ConditionOption
+              key={condition}
+              condition={condition}
+              active={filters.condition === condition}
+              onChange={onFilterChange}
+            />
+          ))}
+        </div>
+      </div>
+
+      <Separator />
 
       {/* Brand */}
       {brands.length > 0 && (

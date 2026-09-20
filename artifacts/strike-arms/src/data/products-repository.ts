@@ -72,6 +72,7 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (filters.inStockOnly) query = query.eq('in_stock', true);
   if (filters.onSaleOnly) query = query.not('sale_price_cents', 'is', null);
   if (filters.isNewOnly) query = query.eq('is_new', true);
+  if (filters.condition) query = query.eq('condition', filters.condition);
 
   if (filters.q) {
     const term = escapeSearchTerm(filters.q);

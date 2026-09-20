@@ -14,6 +14,7 @@ import {
 import { ProductImagesField } from '@/components/admin/ProductImagesField';
 import { useSubcategories } from '@/hooks/use-categories';
 import type { ProductImageUpload } from '@/hooks/use-product-image-upload';
+import { CONDITION_LABELS, PRODUCT_CONDITIONS } from '@/lib/product-condition';
 import type { Category } from '@/types/product';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 
@@ -132,10 +133,37 @@ export function ProductFormFields({ upload }: Props) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="brand">Brand slug *</Label>
-        <Input id="brand" {...register('brand')} placeholder="e.g. specna-arms" />
-        <FieldError message={errors.brand?.message} />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="brand">Brand slug *</Label>
+          <Input id="brand" {...register('brand')} placeholder="e.g. specna-arms" />
+          <FieldError message={errors.brand?.message} />
+        </div>
+
+        <div className="space-y-1">
+          <Label>Condition *</Label>
+          <Controller
+            name="condition"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRODUCT_CONDITIONS.map(c => (
+                    <SelectItem key={c} value={c}>
+                      {CONDITION_LABELS[c]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {/* Pre-loved prints its own badge and its own sold-as-seen notice on
+              the product page, so nobody has to remember to type the warning. */}
+          <FieldError message={errors.condition?.message} />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

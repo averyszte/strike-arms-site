@@ -17,6 +17,7 @@ import type {
   OrderStatusLogRow,
   OrphanedImageRow,
   PaymentMethod,
+  ProductCondition,
   ProductRow,
   StoreSettingsRow,
   SubcategoryRow,
@@ -37,10 +38,13 @@ export type Database = {
           ProductRow,
           'id' | 'in_stock' | 'effective_price_cents' | 'search_text' | 'created_at' | 'updated_at' |
           'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
-          'is_shippable' | 'ship_weight_g'
+          'is_shippable' | 'ship_weight_g' | 'condition'
         > & {
           id?: string; created_at?: string; updated_at?: string;
           description?: string; is_published?: boolean;
+          // Defaults to 'new' in the database (018), so an insert may leave it
+          // out -- but anything secondhand has to say so.
+          condition?: ProductCondition;
           stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
           is_shippable?: boolean; ship_weight_g?: number;
         };

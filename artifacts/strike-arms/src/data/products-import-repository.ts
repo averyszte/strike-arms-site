@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import type { ImportCreate, ImportPlan, ImportUpdate } from '@/lib/product-import';
 import type { ParsedFields } from '@/lib/product-import-columns';
 import type { ImportOutcome } from '@/types/product-import';
+import type { ProductCondition } from '@/types/product';
 import { updateProduct } from '@/data/admin-products-repository';
 
 /** Insert batch size. Keeps one request from carrying a whole catalogue. */
@@ -29,6 +30,7 @@ type InsertRow = {
   category: string;
   subcategory: string;
   brand: string;
+  condition: ProductCondition;
   price_cents: number;
   sale_price_cents: number | null;
   images: string[];
@@ -59,6 +61,9 @@ function toInsertRow(slug: string, fields: ParsedFields): InsertRow | null {
     category,
     subcategory,
     brand,
+    // Absent from the file means new stock, which is what the column
+    // defaults to anyway. Secondhand is never inferred.
+    condition: fields.condition ?? 'new',
     price_cents: price,
     sale_price_cents: fields.salePrice ?? null,
     images: fields.images ?? [],
