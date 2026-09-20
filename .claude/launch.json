@@ -3,8 +3,14 @@
   "configurations": [
     {
       "name": "strike-arms",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@workspace/strike-arms", "run", "dev"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "artifacts/strike-arms/node_modules/vite/bin/vite.js",
+        "--config",
+        "artifacts/strike-arms/vite.config.ts",
+        "--host",
+        "0.0.0.0"
+      ],
       "port": 5173
     }
   ]

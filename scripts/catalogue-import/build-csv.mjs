@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { CATALOGUE, PAGES, IMPORT_PUBLISHED, IMPORT_SHIPPABLE } from './catalogue.mjs';
+import { brandSlug } from './brands.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..', '..');
@@ -90,6 +91,10 @@ function validate(taxonomy) {
       problems.push(`${where}: "${item.subcategory}" is not a subcategory of ${item.category}`);
     }
 
+    if (item.brand && !brandSlug(item.brand)) {
+      problems.push(`${where}: brand "${item.brand}" has no slug in brands.mjs`);
+    }
+
     if (item.image && !existsSync(join(IMAGES_DIR, item.folder, item.image))) {
       problems.push(`${where}: photo not found - ${item.folder}/${item.image}`);
     }
@@ -109,7 +114,7 @@ function row(item, urls) {
     item.name,
     item.category,
     item.subcategory,
-    item.brand,
+    brandSlug(item.brand),
     item.price,
     '',
     item.short,

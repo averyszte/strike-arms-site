@@ -18,6 +18,13 @@ export const BRAND_NAMES: Record<string, string> = {
   'shs': 'SHS',
   'perun': 'Perun',
   'acetech': 'Acetech',
+  'umarex': 'Umarex',
+  'action-army': 'Action Army',
+  'cyma': 'CYMA',
+  'jg': 'JG',
+  'abbey': 'Abbey',
+  'bolle': 'Bolle',
+  'unbranded': 'Unbranded',
 };
 
 export function getBrandName(slug: string): string {
