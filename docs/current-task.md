@@ -5,7 +5,8 @@ migrations 017-018, the TOTP flow and the real-catalogue import.
 
 ## Where the project is right now
 
-The Supabase backend is live with migrations `001` through `018` applied and verified. The
+The Supabase backend is live with migrations `001` through `018` applied and verified.
+**`019` and `020` are written but NOT applied** -- the user runs `echo y | npx supabase db push`. The
 admin dashboard works and now enforces TOTP (aal2) for writes. The public site is largely built
 and the commerce path is written end to end. Nothing is in **production**: there is no
 Cloudflare Pages project (G1) and the `strikearms.ie` domain is unconfirmed (G2).
@@ -18,7 +19,8 @@ Feature inventory (`docs/feature-inventory.md`), last counted: **51 DONE, 26 MIS
 
 Nothing has been pushed since `1dfc41a`. Unpushed on this branch, oldest first: `6bd9150`
 services, `a722b4d` TOTP/MFA, `8e1d395` brand slugs, `0ea8b4d` migration 017, `7918ade` product
-condition, plus the tidy-up commit that rewrote this file. Push only when the user asks, with
+condition, then `56b8535` handover/mock-products, `b9c8ae1` ProductDetail split, `beeb667`
+migration 019, `bfda5bd` inquiries paging, `e80ca32` migration 020. Push only when the user asks, with
 `git push origin HEAD:main`.
 
 ## What landed recently
@@ -36,6 +38,15 @@ condition, plus the tidy-up commit that rewrote this file. Push only when the us
 - **`6bd9150`** the service pages were redesigned.
 - **Tidy-up:** `src/data/mock-products.ts` deleted (nothing imported it; the sitemap already read
   Supabase since `75648a9`). `/pre-loved` added to the sitemap's static routes.
+- **`b9c8ae1`** `ProductGallery` and `ProductInfo` moved to `components/catalog/`; the page is 132
+  lines.
+- **`beeb667` migration 019** drops `adjust_stock`'s ignored `p_adjusted_by`. The front end no
+  longer sends it and works against either signature, so it can ship before the push.
+- **`bfda5bd`** the admin inquiries list loads 50 at a time with "Load more"; the dashboard badge
+  reads the exact count instead of the list length.
+- **`e80ca32` migration 020** makes `checkout_reservations.order_id` ON DELETE RESTRICT, so
+  deleting an order can no longer silently strand `reserved_count`. To delete an order by hand,
+  run `release_order_reservations(id)` first.
 
 ## NEEDS THE USER (aal2 admin session)
 
@@ -72,8 +83,6 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 
 ## Open items, roughly in order
 
-- **Split `pages/ProductDetail.tsx`** (267 lines, past the 250 mark). Move `ProductGallery` and
-  `ProductInfo` into `components/catalog/`, leaving the page at about 110 lines.
 - **Decide whether the sitemap runs inside `build`.** Pro: a deploy can never ship a stale
   sitemap. Con: the build fails while nothing is published, which would block a Cloudflare
   preview deploy. Not decided.
@@ -87,9 +96,7 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
   "rifle". Needs a decision on desired ordering before a migration.
 - **Content clusters, later:** the guides (10 pages + GuidesHub), then the bespoke pages
   About, AirsoftLaw, WhereToPlay, Glossary, Privacy, GiftCards.
-- Tidy-up: drop `p_adjusted_by` from `adjust_stock`; `listInquiries` is unpaged;
-  `checkout_reservations.order_id` cascade leak; the orphan image sweeper's deploy and cron are
-  unverified.
+- Tidy-up: the orphan image sweeper's deploy and cron schedule are unverified.
 
 ## Key gotchas / rules (read before working)
 
