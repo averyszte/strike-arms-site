@@ -80,8 +80,8 @@ node scripts/catalogue-import/build-csv.mjs
   `docs/alan-catalogue-questions.md` is the shortest way to unblock them.
 - **Stock:** batch 1 imported at zero. Since then the importer takes a Stock column for new rows
   only, and books it through `adjust_stock` as "Opening stock (import)", so the ledger still says
-  where it came from. Batch 2 opens jumble and wallhanger one-offs at 1 (2 where Alan listed the
-  same item twice). Magazines and gloves open at 0: Alan gave no quantities.
+  where it came from. Batch 2 opens jumble and wallhanger one-offs at 1. Where Alan listed an
+  item twice (B7/B8, C16/C17, C23/C24) they are two designs, so two products. Magazines and gloves open at 0: Alan gave no quantities.
 - **Batch 2 shelves:** jumble rows carry the `jumble` tag (shown on `/jumble`, kept off
   `/pre-loved`); gloves and masks carry `safety` (`/safety-equipment`); wallhangers sit in
   `more/wallhangers-props` with the `wallhanger` tag and Alan's non-firing wording as the page
@@ -110,6 +110,7 @@ node scripts/catalogue-import/build-csv.mjs
 ## Still open
 
 The 25 flagged batch 1 rows are listed in `docs/alan-catalogue-questions.md`, which is written to
-be forwarded to Alan as it stands. Batch 2 flags print when `build-csv.mjs --batch=2` runs. Also
-open from batch 2: no photos came for the 12 wallhangers; Alan said "75 extra items" but listed 73
-(there is no C9); Books & Manuals is still to come.
+be forwarded to Alan as it stands. Batch 2 flags print when `build-csv.mjs --batch=2` runs. Batch 2
+questions were answered on 27 Sep 2026. Still open: no photos came for the 12 wallhangers, and
+Books & Manuals is still to come. Alan said "75 extra items" but listed 73 (no C9); we list what
+was sent.

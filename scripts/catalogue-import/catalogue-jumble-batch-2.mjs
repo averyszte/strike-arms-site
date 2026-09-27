@@ -9,19 +9,21 @@
  * Alan's rule of thumb is read literally: an item he calls "used" or
  * "pre-owned" imports as pre-loved, and everything else as new. Every row is a
  * one-off, so it opens with a stock of one; where Alan listed the same thing
- * twice under two codes it is one product with a stock of two.
+ * twice under two codes they are two designs, so each is its own product.
  *
  * His code goes into the description, which only the admin shows, so he can
  * match a product back to his list.
  */
 
 const USED = { used: true };
+/** Helmets and masks also go on Alan's Safety Equipment page. */
+const SAFETY = { safety: true };
 
 const ROWS = [
   ['A1', 'ghillie-partial-suit-wool', 'Ghillie Partial Suit, Wool Type', 'gear/ghillie', '30.00', 'Partial ghillie suit, head dress and torso, wool type. Used.', USED],
   ['A2', 'smg-magazine-pouches-webb-belt', 'SMG Magazine Pouches with Webb Belt', 'gear/pouches', '35.00', 'Magazine pouches on a webb belt, suits the longer SMG type magazines.'],
-  ['A3', 'water-canteen-webb-belt', 'Water Canteen and Webb Belt', 'more/outdoor', '25.00', 'Water canteen and webb belt, a surplus item.', { flag: 'Alan calls it surplus but not used. Imported as new; confirm the condition.' }],
-  ['A4', 'ww2-replica-german-gas-mask-container', 'WW2 Replica German Gas Mask Container', 'more/outdoor', '45.00', 'Replica WW2 German steel gas mask container.', { flag: 'No militaria aisle in the taxonomy, so filed under More / Outdoor. Confirm.' }],
+  ['A3', 'water-canteen-webb-belt', 'Water Canteen and Webb Belt', 'more/outdoor', '25.00', 'Water canteen and webb belt, a surplus item.', USED],
+  ['A4', 'ww2-replica-german-gas-mask-container', 'WW2 Replica German Gas Mask Container', 'gear/headwear', '45.00', 'Replica WW2 German steel gas mask container.', SAFETY],
   ['A5', 'small-shoulder-bag-od', 'Small Shoulder Bag OD', 'gear/pouches', '5.00', 'Small olive drab shoulder bag with a velcro fastener.'],
   ['A6', 'viper-black-leather-gloves-small', 'Viper Black Leather Gloves, Small', 'gear/gloves', '5.00', 'Black leather gloves by Viper, size small. Used.', { used: true, brand: 'Viper Tactical' }],
   ['A7', 'camo-dump-pouch', 'Camo Dump Pouch', 'gear/pouches', '10.00', 'Camo dump pouch.'],
@@ -39,8 +41,8 @@ const ROWS = [
   ['A19', 'flecktarn-waist-pouch', 'Flecktarn Waist Pouch, Large', 'gear/pouches', '15.00', 'Large Flecktarn waist pouch with zipped pouches. Used.', USED],
   ['A20', 'od-molle-belt-pouch', 'OD MOLLE Belt Pouch', 'gear/pouches', '8.00', 'Olive drab MOLLE pouch for a belt.'],
   ['A21', 'tan-twin-pistol-magazine-pouch', 'Tan Twin Pistol Magazine Pouch', 'gear/pouches', '15.00', 'Tan twin pistol magazine pouch, universal fit.'],
-  ['A22', 'black-mesh-mask-nose-teeth', 'Black Mesh Mask', 'gear/headwear', '10.00', 'Black mesh mask covering the nose and teeth.'],
-  ['A23', 'eastern-bloc-police-riot-helmet', 'Eastern Bloc Police Riot Helmet', 'gear/helmets', '40.00', 'Vintage Eastern Bloc police riot helmet.', { flag: 'Alan calls it vintage but not used. Imported as new; confirm the condition.' }],
+  ['A22', 'black-mesh-mask-nose-teeth', 'Black Mesh Mask', 'gear/headwear', '10.00', 'Black mesh mask covering the nose and teeth.', SAFETY],
+  ['A23', 'eastern-bloc-police-riot-helmet', 'Eastern Bloc Police Riot Helmet', 'gear/helmets', '40.00', 'Vintage Eastern Bloc police riot helmet. Used.', { used: true, safety: true }],
   ['A24', 'molle-shotgun-shell-holder', 'MOLLE Shotgun Shell Holder', 'gear/pouches', '10.00', 'Hard plastic shotgun shell dispenser with MOLLE attachments.'],
   ['A25', 'black-kydex-pistol-magazine-holder', 'Black Kydex Pistol Magazine Holder', 'gear/pouches', '5.00', 'Black Kydex pistol magazine holder that clips to a belt. Loose fit.'],
 
@@ -50,7 +52,8 @@ const ROWS = [
   ['B4', 'ak-200rd-steel-magazine', 'AK 200rd Steel Magazine', 'rifles/rifle-magazines', '10.00', 'AK 200 round steel magazine. Used.', USED],
   ['B5', 'm4-magpul-style-fore-end', 'M4 Magpul Style Fore End', 'parts/external-parts', '10.00', 'M4 Magpul style fore end. Used.', USED],
   ['B6', 'bipod-20mm-ris', 'Bipod for 20mm RIS', 'accessories/bipods', '20.00', 'Bipod for 20mm RIS attachment.'],
-  ['B7', 'm4a1-style-stock', 'M4A1 Style Stock', 'parts/external-parts', '5.00', 'M4A1 style stock. Used.', { used: true, stock: 2, flag: 'Alan listed this twice (B7 and B8): one product, stock 2, B7 photo.' }],
+  ['B7', 'm4a1-style-stock-smooth', 'M4A1 Style Stock, Smooth', 'parts/external-parts', '5.00', 'M4A1 style stock with smooth sides. Used.', USED],
+  ['B8', 'm4a1-style-stock-ribbed', 'M4A1 Style Stock, Ribbed', 'parts/external-parts', '5.00', 'M4A1 style stock with ribbed sides. Used.', USED],
   ['B9', 'spotting-scope', 'Spotting Scope', 'accessories/optics', '15.00', 'Spotting scope, good, missing its tripod. Used.', USED],
   ['B10', 'wrist-band-compass', 'Compass on Velcro Wrist Band', 'more/outdoor', '5.00', 'Compass on a velcro wrist band. Used.', USED],
   ['B11', 'military-style-compass-pouch', 'Military Style Compass with Pouch', 'more/outdoor', '10.00', 'Military style compass with pouch. Used, nice.', USED],
@@ -66,7 +69,7 @@ const ROWS = [
   ['B21', 'black-single-point-sling-used', 'Black Single Point Sling, Used', 'accessories/slings', '10.00', 'Black single point sling. Used.', USED],
   ['B22', 'm4-front-ris-rail-boxed', 'M4 Front RIS Rail, Boxed', 'accessories/rails', '20.00', 'M4 front RIS rail, new in box.'],
   ['B23', 'm4-front-ris-rail-used', 'M4 Front RIS Rail, Used', 'accessories/rails', '15.00', 'M4 front RIS rail. Used.', USED],
-  ['B24', 'halo-suppressor-m4-muzzle', 'Halo Suppressor with M4 Muzzle Attachment', 'accessories/suppressors', '20.00', 'Halo suppressor with M4 muzzle attachment, old stock.', { flag: 'Is Halo the maker or the model? Left unbranded.' }],
+  ['B24', 'gemtech-boise-id-halo-suppressor-m4-muzzle', 'Gemtech Boise ID Halo Suppressor with M4 Muzzle Attachment', 'accessories/suppressors', '20.00', 'Gemtech Boise ID Halo suppressor with M4 muzzle attachment, old stock.', { brand: 'Gemtech' }],
   ['B25', 'stock-sling-d-attachment', 'Rifle Stock Sling D Attachment', 'accessories/slings', '5.00', 'Rifle stock sling D attachment for a single point sling.'],
 
   ['C1', 'large-carbine-clips-3', 'Large Carbine Clips, Pack of 3', 'gear/pouches', '3.50', 'Three large carbine clips, for tac vest attachment.'],
@@ -83,13 +86,15 @@ const ROWS = [
   ['C13', 'urban-camo-peaked-cap', 'Urban Camo Peaked Cap', 'gear/headwear', '9.00', 'Peaked cap in urban camo. Used.', USED],
   ['C14', 'camo-baseball-cap', 'Camo Baseball Cap', 'gear/headwear', '15.00', 'Camo baseball style cap, adjustable.'],
   ['C15', 'camo-golfer-hat', 'Camo Golfer Style Hat', 'gear/headwear', '5.00', 'Camo golfer style hat with the letter B. Used.', USED],
-  ['C16', 'black-boonie-hat', 'Black Boonie Hat', 'gear/headwear', '8.00', 'Black boonie hat, adult size. Used.', { used: true, stock: 2, flag: 'Alan listed this twice (C16 and C17): one product, stock 2, C16 photo.' }],
+  ['C16', 'black-boonie-hat-brass-eyelets', 'Black Boonie Hat, Brass Eyelets', 'gear/headwear', '8.00', 'Black boonie hat with brass eyelets, adult size. Used.', USED],
+  ['C17', 'black-boonie-hat-foliage-loops', 'Black Boonie Hat, Foliage Loops', 'gear/headwear', '8.00', 'Black boonie hat with foliage loops, adult size. Used.', USED],
   ['C18', 'south-african-style-tac-vest-desert', 'South African Style Tac Vest, Desert Camo', 'gear/chest-rigs', '40.00', 'South African style tac vest in desert camo. Used.', USED],
   ['C19', 'od-tac-vest-holster-m4-pouches', 'OD Tac Vest with Holster and M4 Pouches', 'gear/chest-rigs', '40.00', 'Olive drab tac vest with a holster and M4 pouches. Used.', USED],
   ['C20', 'leaf-print-ghillie-suit-large', 'Leaf Print Ghillie Suit, Large', 'gear/ghillie', '25.00', 'Ghillie suit in a bag, large adult size, leaf print. Used.', USED],
   ['C21', 'woollen-ghillie-suit-stuff-sack', 'Woollen Ghillie Suit with Stuff Sack', 'gear/ghillie', '50.00', 'Woollen type ghillie suit in a stuff sack, adult size. Used.', USED],
   ['C22', 'camo-bag-extra-pouch', 'Camo Bag with Extra Pouch', 'more/outdoor', '15.00', 'Camo schoolbag type bag with an extra pouch attached. Used.', USED],
-  ['C23', 'digital-plate-carrier-3-pouches', 'Digital Pattern Plate Carrier with 3 Pouches', 'gear/plate-carriers', '40.00', 'Digital pattern plate carrier with three pouches, in good used condition.', { used: true, stock: 2, flag: 'Alan listed this twice (C23 and C24): one product, stock 2, C23 photo.' }],
+  ['C23', 'digital-plate-carrier-3-pouches-style-1', 'Digital Pattern Plate Carrier with 3 Pouches, Style 1', 'gear/plate-carriers', '40.00', 'Digital pattern plate carrier with three pouches, in good used condition.', USED],
+  ['C24', 'digital-plate-carrier-3-pouches-style-2', 'Digital Pattern Plate Carrier with 3 Pouches, Style 2', 'gear/plate-carriers', '40.00', 'Digital pattern plate carrier with three pouches, in good used condition.', USED],
 ];
 
 export const JUMBLE_BATCH_2 = ROWS.map(([code, slug, name, path, price, short, options = {}]) => {
@@ -104,8 +109,8 @@ export const JUMBLE_BATCH_2 = ROWS.map(([code, slug, name, path, price, short, o
     short,
     description: `${short} Alan's jumble list ref ${code}.`,
     condition: options.used ? 'pre-loved' : 'new',
-    stock: options.stock ?? 1,
-    tags: ['jumble'],
+    stock: 1,
+    tags: options.safety ? ['jumble', 'safety'] : ['jumble'],
     image: `${code}.jpeg`,
     folder: 'Jumble_Batch_2',
     flag: options.flag,

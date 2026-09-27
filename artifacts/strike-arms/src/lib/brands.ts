@@ -28,6 +28,7 @@ export const BRAND_NAMES: Record<string, string> = {
   'bushnell': 'Bushnell',
   'double-bell': 'Double Bell',
   'evolution': 'Evolution',
+  'gemtech': 'Gemtech',
   'invader-gear': 'Invader Gear',
   'viper-tactical': 'Viper Tactical',
   'well': 'Well',

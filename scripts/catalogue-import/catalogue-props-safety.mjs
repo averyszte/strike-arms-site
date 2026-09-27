@@ -39,7 +39,7 @@ export const SAFETY_GLOVES = GLOVE_COLOURS.flatMap(({ colour, image }) =>
 );
 
 const WALLHANGER_ROWS = [
-  ['aap-01-wallhanger', 'AAP-01', 'Unbranded', '30.00', 'Side folding stock and a removable magazine.', 'Alan wrote "AAOP-A1"; corrected to AAP-01, as on the Pre-loved page.'],
+  ['aap-01-wallhanger', 'AAP-01', 'Unbranded', '30.00', 'Side folding stock and a removable magazine.'],
   ['full-metal-dan-wesson-wallhanger', 'Full Metal Dan Wesson', 'Unbranded', '20.00', 'Includes six brass shells. A good prop.'],
   ['m92-plastic-wallhanger', 'M92, Plastic', 'Unbranded', '20.00', 'Plastic. Can be cocked back and the magazine is removable.'],
   ['beretta-rifle-wallhanger', 'Beretta Rifle', 'Unbranded', '70.00', 'Fully functioning as an airsoft rifle, but makes a better prop.'],
@@ -53,7 +53,7 @@ const WALLHANGER_ROWS = [
   ['tm-g36l-wallhanger', 'Tokyo Marui G36L', 'Tokyo Marui', '80.00', 'G36L with recoil. Sold as non-firing, but shoots intermittently. A great prop, wallhanger or parts gun. Includes a gun bag with some additional accessories.'],
 ];
 
-export const WALLHANGERS = WALLHANGER_ROWS.map(([slug, name, brand, price, short, flag]) => ({
+export const WALLHANGERS = WALLHANGER_ROWS.map(([slug, name, brand, price, short]) => ({
   slug,
   name,
   category: 'more',
@@ -66,5 +66,4 @@ export const WALLHANGERS = WALLHANGER_ROWS.map(([slug, name, brand, price, short
   stock: 1,
   tags: ['wallhanger'],
   folder: 'Wallhangers_Props',
-  flag,
 }));

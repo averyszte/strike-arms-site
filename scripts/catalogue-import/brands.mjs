@@ -24,6 +24,7 @@ export const BRAND_SLUGS = {
   CYMA: 'cyma',
   'Double Bell': 'double-bell',
   Evolution: 'evolution',
+  Gemtech: 'gemtech',
   'Invader Gear': 'invader-gear',
   JG: 'jg',
   'Specna Arms': 'specna-arms',
