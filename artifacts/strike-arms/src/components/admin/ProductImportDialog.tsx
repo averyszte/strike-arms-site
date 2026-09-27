@@ -110,8 +110,8 @@ export function ProductImportDialog({ open, products, onClose }: Props) {
           <DialogDescription>
             Export first, edit the file, then upload it here. Rows are matched on Slug. Only the
             columns present in the file are written, so a file of just Slug and Price changes prices
-            and nothing else. Stock is never imported &mdash; use Adjust stock, so the inventory
-            history records who changed it and why.
+            and nothing else. Stock is only read for new products, and is booked through the
+            inventory history; for existing products use Adjust stock.
           </DialogDescription>
         </DialogHeader>
 

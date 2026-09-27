@@ -31,7 +31,21 @@ import type { Product } from '@/types/product';
  * changes prices and nothing else; an absent column never blanks a field.
  */
 
-export type ImportCreate = { line: number; slug: string; name: string; fields: ParsedFields };
+export type ImportCreate = {
+  line: number;
+  slug: string;
+  name: string;
+  fields: ParsedFields;
+  /** Units to book in once the row exists. 0 when the Stock cell is empty. */
+  openingStock: number;
+};
+
+/**
+ * The ledger reason for stock a new row arrives with. Existing rows never take
+ * stock from a file; a new one may, because it has no history to contradict and
+ * the units still go through adjust_stock, so the ledger records who and why.
+ */
+export const OPENING_STOCK_REASON = 'Opening stock (import)';
 
 export type ImportUpdate = {
   line: number;
@@ -80,6 +94,14 @@ function emptyPlan(): ImportPlan {
 function stockWouldHaveChanged(cell: string | undefined, existing: Product | undefined): boolean {
   if (cell === undefined || cell.trim() === '' || !existing) return false;
   return cell.trim() !== String(existing.stockCount ?? 0);
+}
+
+/** A new row's Stock cell: empty means none, anything but digits is refused. */
+function readOpeningStock(cell: string | undefined): { value: number } | { message: string } {
+  const text = (cell ?? '').trim();
+  if (text === '') return { value: 0 };
+  if (!/^\d+$/.test(text)) return { message: 'Stock must be a whole number, or left empty.' };
+  return { value: Number(text) };
 }
 
 function missingForCreate(fields: ParsedFields): string[] {
@@ -149,6 +171,8 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
     const saleProblem = checkSalePrice(fields, product);
     if (saleProblem) messages.push(saleProblem);
     if (!product) messages.push(...missingForCreate(fields));
+    const opening = product ? { value: 0 } : readOpeningStock(read('stock'));
+    if ('message' in opening) messages.push(opening.message);
 
     if (messages.length > 0) {
       plan.problems.push({ line: record.line, slug, messages });
@@ -158,7 +182,8 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
     if (stockWouldHaveChanged(read('stock'), product)) plan.stockRowsIgnored += 1;
 
     if (!product) {
-      plan.creates.push({ line: record.line, slug, name: fields.name ?? slug, fields });
+      const openingStock = 'value' in opening ? opening.value : 0;
+      plan.creates.push({ line: record.line, slug, name: fields.name ?? slug, fields, openingStock });
       continue;
     }
 
@@ -184,4 +209,9 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
 /** Nothing to do — used to keep the confirm button honest. */
 export function planIsEmpty(plan: ImportPlan): boolean {
   return plan.creates.length === 0 && plan.updates.length === 0;
+}
+
+/** New rows that will be booked in with stock once they exist. */
+export function countOpeningStockRows(plan: ImportPlan): number {
+  return plan.creates.filter((create) => create.openingStock > 0).length;
 }

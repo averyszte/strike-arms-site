@@ -1,5 +1,6 @@
 import { AlertTriangle, FilePlus2, FileWarning, PencilLine } from 'lucide-react';
 
+import { countOpeningStockRows, OPENING_STOCK_REASON } from '@/lib/product-import';
 import type { ImportPlan } from '@/lib/product-import';
 
 /**
@@ -45,7 +46,13 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
   const notices: string[] = [];
   if (plan.stockRowsIgnored > 0) {
     notices.push(
-      `Stock is not imported. ${plan.stockRowsIgnored} row${plan.stockRowsIgnored === 1 ? '' : 's'} would have changed it — use Adjust stock instead, so the inventory history records who and why.`,
+      `Stock is not imported for existing products. ${plan.stockRowsIgnored} row${plan.stockRowsIgnored === 1 ? '' : 's'} would have changed it — use Adjust stock instead, so the inventory history records who and why.`,
+    );
+  }
+  const openingRows = countOpeningStockRows(plan);
+  if (openingRows > 0) {
+    notices.push(
+      `${openingRows} new product${openingRows === 1 ? '' : 's'} will open with stock, logged in the inventory history as "${OPENING_STOCK_REASON}".`,
     );
   }
   if (plan.unknownColumns.length > 0) {
