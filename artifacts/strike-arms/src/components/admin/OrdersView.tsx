@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { AdminPager } from '@/components/admin/AdminPager';
 import { CounterOrderSheet } from '@/components/admin/CounterOrderSheet';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
 import { OrdersBoard } from '@/components/admin/OrdersBoard';
@@ -18,6 +19,7 @@ import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useOrdersView } from '@/hooks/use-orders-view';
 import { useToast } from '@/hooks/use-toast';
+import { ADMIN_PAGE_SIZE, pageBounds } from '@/lib/page-bounds';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
 /**
@@ -44,20 +46,33 @@ export function OrdersView() {
   const {
     payment,
     fulfillment,
+    query,
+    page,
     showArchived,
     filters,
     setPayment,
     setFulfillment,
+    setQuery,
+    setPage,
     toggleArchived,
   } = useOrdersFilters();
 
-  const { data, isLoading } = useOrders({
+  const isBoard = view === 'board';
+  const { data, isLoading, isFetching } = useOrders({
     ...filters,
-    pageSize: view === 'board' ? BOARD_PAGE_SIZE : undefined,
+    page: isBoard ? 1 : page,
+    pageSize: isBoard ? BOARD_PAGE_SIZE : ADMIN_PAGE_SIZE,
   });
 
   const orders = useMemo(() => data?.items ?? [], [data]);
   const total = data?.total ?? 0;
+
+  // Archiving the last rows of the last page, or a link to ?page=40, would
+  // otherwise leave an empty table that reads as "no orders".
+  const lastPage = pageBounds(page, ADMIN_PAGE_SIZE, total).pageCount;
+  useEffect(() => {
+    if (!isBoard && data && !isFetching && page > lastPage) setPage(lastPage);
+  }, [isBoard, data, isFetching, page, lastPage, setPage]);
 
   const updateStatus = useUpdateFulfillmentStatus();
   const setArchived = useSetOrderArchived();
@@ -138,12 +153,14 @@ export function OrdersView() {
         showArchived={showArchived}
         paymentFilter={payment}
         fulfillmentFilter={fulfillment}
+        query={query}
         selectedCount={selectedCount}
         isExporting={isExporting}
         onViewChange={setView}
         onToggleArchived={toggleArchived}
         onPaymentFilterChange={setPayment}
         onFulfillmentFilterChange={setFulfillment}
+        onQueryChange={setQuery}
         onNewCounterSale={() => setIsCounterSaleOpen(true)}
         onExport={() => void handleExport()}
       />
@@ -152,7 +169,7 @@ export function OrdersView() {
         <div className="flex justify-center py-16">
           <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-accent" />
         </div>
-      ) : view === 'board' ? (
+      ) : isBoard ? (
         <>
           <OrdersBoard
             orders={orders}
@@ -189,6 +206,14 @@ export function OrdersView() {
             onSelect={setSelectedOrderId}
             onStatusChange={(orderId, status) => void handleStatusChange(orderId, status)}
             onToggleArchive={(order) => void handleToggleArchive(order)}
+          />
+          <AdminPager
+            page={page}
+            pageSize={ADMIN_PAGE_SIZE}
+            total={total}
+            noun="orders"
+            isFetching={isFetching}
+            onPageChange={setPage}
           />
         </>
       )}

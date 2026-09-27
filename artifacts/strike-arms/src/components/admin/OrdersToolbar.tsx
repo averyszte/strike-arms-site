@@ -1,5 +1,6 @@
 import { Archive, Columns3, Download, Plus, Table2 } from 'lucide-react';
 
+import { AdminSearchBox } from '@/components/admin/AdminSearchBox';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -35,12 +36,14 @@ type OrdersToolbarProps = {
   showArchived: boolean;
   paymentFilter: PaymentFilter;
   fulfillmentFilter: FulfillmentFilter;
+  query: string;
   selectedCount: number;
   isExporting: boolean;
   onViewChange: (view: OrdersViewMode) => void;
   onToggleArchived: () => void;
   onPaymentFilterChange: (value: PaymentFilter) => void;
   onFulfillmentFilterChange: (value: FulfillmentFilter) => void;
+  onQueryChange: (value: string) => void;
   onNewCounterSale: () => void;
   onExport: () => void;
 };
@@ -51,12 +54,14 @@ export function OrdersToolbar({
   showArchived,
   paymentFilter,
   fulfillmentFilter,
+  query,
   selectedCount,
   isExporting,
   onViewChange,
   onToggleArchived,
   onPaymentFilterChange,
   onFulfillmentFilterChange,
+  onQueryChange,
   onNewCounterSale,
   onExport,
 }: OrdersToolbarProps) {
@@ -154,6 +159,13 @@ export function OrdersToolbar({
             ))}
           </SelectContent>
         </Select>
+
+        <AdminSearchBox
+          value={query}
+          label="Search orders"
+          placeholder="Name, email or order number"
+          onSearch={onQueryChange}
+        />
       </div>
 
       {showArchived && (

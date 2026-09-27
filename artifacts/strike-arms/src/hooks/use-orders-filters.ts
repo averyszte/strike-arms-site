@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useSearch } from 'wouter';
 
 import { FULFILLMENT_OPTIONS } from '@/lib/order-display';
+import { readPageParam } from '@/lib/page-bounds';
 import type { FulfillmentStatus, OrderListFilters, PaymentStatus } from '@/types/order';
 
 /**
@@ -15,7 +16,8 @@ import type { FulfillmentStatus, OrderListFilters, PaymentStatus } from '@/types
  * disagree with the address bar.
  *
  * Changes replace rather than push: nobody wants six back-presses to undo
- * flicking through the payment tabs.
+ * flicking through the payment tabs. The search term and the page live there
+ * too, so a reload, or coming back from a printed order, lands on the same rows.
  *
  * The query string is typed by whoever is holding the keyboard, so both values
  * are checked against the statuses that exist rather than cast into place.
@@ -54,15 +56,23 @@ export function useOrdersFilters() {
   const params = useMemo(() => new URLSearchParams(search), [search]);
   const payment = readPayment(params);
   const fulfillment = readFulfillment(params);
+  const query = params.get('q') ?? '';
+  const page = readPageParam(params.get('page'));
 
+  /**
+   * Writes one parameter. Anything but the page itself also drops the page:
+   * page 3 of "paid" is not page 3 of "refunded", and landing past the end of
+   * a shorter list would show an empty table that looks like no orders.
+   */
   const setParam = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(search);
-      if (value === 'all') next.delete(key);
+      if (value === 'all' || value === '' || (key === 'page' && value === '1')) next.delete(key);
       else next.set(key, value);
+      if (key !== 'page') next.delete('page');
 
-      const query = next.toString();
-      navigate(query ? `${path}?${query}` : path, { replace: true });
+      const nextQuery = next.toString();
+      navigate(nextQuery ? `${path}?${nextQuery}` : path, { replace: true });
     },
     [search, path, navigate],
   );
@@ -71,14 +81,17 @@ export function useOrdersFilters() {
     () => ({
       paymentStatus: payment === 'all' ? undefined : payment,
       fulfillmentStatus: fulfillment === 'all' ? undefined : fulfillment,
+      search: query || undefined,
       isArchived: showArchived,
     }),
-    [payment, fulfillment, showArchived],
+    [payment, fulfillment, query, showArchived],
   );
 
   return {
     payment,
     fulfillment,
+    query,
+    page,
     showArchived,
     filters,
     setPayment: useCallback((value: PaymentFilter) => setParam('payment', value), [setParam]),
@@ -86,6 +99,11 @@ export function useOrdersFilters() {
       (value: FulfillmentFilter) => setParam('fulfillment', value),
       [setParam],
     ),
-    toggleArchived: () => setShowArchived((current) => !current),
+    setQuery: useCallback((value: string) => setParam('q', value), [setParam]),
+    setPage: useCallback((value: number) => setParam('page', String(value)), [setParam]),
+    toggleArchived: () => {
+      setShowArchived((current) => !current);
+      setParam('page', '1');
+    },
   };
 }

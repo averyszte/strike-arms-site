@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   listOrders,
   updateOrderFulfillment,
@@ -14,6 +14,9 @@ export function useOrders(filters: OrderListFilters = {}) {
   return useQuery({
     queryKey: ['admin', 'orders', filters],
     queryFn: () => listOrders(filters),
+    // Keeps the current page on screen while the next one or a new search
+    // loads, instead of dropping to a spinner on every click.
+    placeholderData: keepPreviousData,
   });
 }
 
