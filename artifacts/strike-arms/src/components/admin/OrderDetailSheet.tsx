@@ -1,4 +1,5 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import {
   Select,
   SelectContent,
@@ -28,13 +29,45 @@ function fmtEuros(cents: number) {
   return `€${(cents / 100).toFixed(2)}`;
 }
 
+/**
+ * Everything the sheet shows instead of an order: loading, a failed read, or
+ * an order that has gone. A failed read is not "no longer exists" -- it says
+ * nothing about whether the order is there.
+ */
+function OrderSheetStatus({ query, hasId }: { query: ReturnType<typeof useOrder>; hasId: boolean }) {
+  if (query.isLoading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
+      </div>
+    );
+  }
+  if (query.isError) {
+    return (
+      <div className="mt-4">
+        <AdminLoadError
+          what="this order"
+          error={query.error}
+          isRetrying={query.isFetching}
+          onRetry={() => void query.refetch()}
+        />
+      </div>
+    );
+  }
+  if (hasId && !query.data) {
+    return <p className="mt-4 text-sm text-muted-foreground">That order no longer exists.</p>;
+  }
+  return null;
+}
+
 interface Props {
   orderId: string | null;
   onClose: () => void;
 }
 
 export function OrderDetailSheet({ orderId, onClose }: Props) {
-  const { data: order, isLoading } = useOrder(orderId);
+  const orderQuery = useOrder(orderId);
+  const { data: order, isLoading } = orderQuery;
   const updateFulfillment = useUpdateFulfillmentStatus();
   const setArchived = useSetOrderArchived();
   const { toast } = useToast();
@@ -79,11 +112,7 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
           )}
         </SheetHeader>
 
-        {isLoading && (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
-          </div>
-        )}
+        <OrderSheetStatus query={orderQuery} hasId={orderId !== null} />
 
         {!isLoading && order && (
           <div className="space-y-6">

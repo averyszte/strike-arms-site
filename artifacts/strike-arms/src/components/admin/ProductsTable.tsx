@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
 import { ProductImportDialog } from '@/components/admin/ProductImportDialog';
 import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
@@ -32,7 +33,7 @@ import { buildProductsCsv, productsCsvFilename } from '@/lib/products-csv';
 import type { Product, ProductBulkPatch } from '@/types/product';
 
 export function ProductsTable() {
-  const { data: products, isLoading } = useAdminProducts();
+  const { data: products, isLoading, isError, error, isFetching, refetch } = useAdminProducts();
   const deleteProduct = useDeleteProduct();
   const bulkUpdate = useBulkUpdateProducts();
   const bulkDelete = useBulkDeleteProducts();
@@ -89,6 +90,17 @@ export function ProductsTable() {
         variant: 'destructive',
       });
     }
+  }
+
+  if (isError) {
+    return (
+      <AdminLoadError
+        what="the products"
+        error={error}
+        isRetrying={isFetching}
+        onRetry={() => void refetch()}
+      />
+    );
   }
 
   if (isLoading) {

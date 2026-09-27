@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { useRoute, useSearch } from 'wouter';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { DocumentHeader } from '@/components/admin/print/document-header';
 import { PackingSlip } from '@/components/admin/print/packing-slip';
 import { Invoice } from '@/components/admin/print/invoice';
@@ -19,12 +20,29 @@ import { formatOrderNumber } from '@/lib/order-display';
 export default function OrderPrintPage() {
   const [, params] = useRoute('/admin/orders/:orderId/print');
   const kind = readDocumentKind(useSearch());
-  const { data: order, isLoading } = useOrder(params?.orderId ?? null);
+  const { data: order, isLoading, isError, error, isFetching, refetch } = useOrder(
+    params?.orderId ?? null,
+  );
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
         <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-accent" />
+      </div>
+    );
+  }
+
+  // Checked before "no longer exists": a failed read says nothing about
+  // whether the order is there.
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20">
+        <AdminLoadError
+          what="this order"
+          error={error}
+          isRetrying={isFetching}
+          onRetry={() => void refetch()}
+        />
       </div>
     );
   }

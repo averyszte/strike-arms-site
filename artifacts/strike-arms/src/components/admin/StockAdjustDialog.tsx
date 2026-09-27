@@ -33,7 +33,7 @@ export function StockAdjustDialog({ product, onClose }: Props) {
   const [form, setForm] = useState(EMPTY_STOCK_ADJUSTMENT);
   const [errors, setErrors] = useState<StockAdjustmentErrors>({});
   const adjust = useAdjustStock();
-  const { data: history = [] } = useInventoryHistory(product?.id ?? null);
+  const { data: history = [], isError: isHistoryError } = useInventoryHistory(product?.id ?? null);
   const { toast } = useToast();
 
   const stockCount = product?.stockCount ?? 0;
@@ -127,6 +127,12 @@ export function StockAdjustDialog({ product, onClose }: Props) {
               ))}
             </div>
           </div>
+
+          {isHistoryError && (
+            <p className="border-t border-border pt-3 text-xs text-destructive">
+              Recent adjustments could not be loaded. The count above is still current.
+            </p>
+          )}
 
           {history.length > 0 && (
             <div className="border-t border-border pt-3">

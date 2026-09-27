@@ -48,7 +48,11 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
   const [draft, setDraft] = useState<CounterOrderDraft>(EMPTY_COUNTER_ORDER_DRAFT);
   const [errors, setErrors] = useState<CounterOrderFieldErrors>({});
 
-  const { data: products = [], isLoading: isLoadingProducts } = useAdminProducts();
+  const {
+    data: products = [],
+    isLoading: isLoadingProducts,
+    isError: isProductsError,
+  } = useAdminProducts();
   const { data: rates } = useStoreRates();
   const createOrder = useCreateCounterOrder();
   const { toast } = useToast();
@@ -155,6 +159,13 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
             addedIds={addedIds}
             onAdd={addProduct}
           />
+
+          {isProductsError && (
+            <p className="flex items-center gap-1.5 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+              The catalogue could not be loaded, so nothing can be added. Close this and try again.
+            </p>
+          )}
 
           {errors.lines && (
             <p className="flex items-center gap-1.5 text-sm text-destructive">

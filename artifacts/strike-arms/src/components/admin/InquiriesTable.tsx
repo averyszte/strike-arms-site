@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { format } from 'date-fns';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -33,7 +34,7 @@ export function InquiriesTable() {
   const [limit, setLimit] = useState(INQUIRIES_PAGE_SIZE);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
-  const { data, isLoading, isFetching } = useInquiries(
+  const { data, isLoading, isFetching, isError, error, refetch } = useInquiries(
     statusFilter === 'all' ? undefined : statusFilter,
     limit,
   );
@@ -73,7 +74,14 @@ export function InquiriesTable() {
         </Tabs>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <AdminLoadError
+          what="the inquiries"
+          error={error}
+          isRetrying={isFetching}
+          onRetry={() => void refetch()}
+        />
+      ) : isLoading ? (
         <div className="flex justify-center py-16">
           <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-accent" />
         </div>

@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { SubcategoryFormSheet } from '@/components/admin/SubcategoryFormSheet';
 import { useSubcategories, useDeleteSubcategory } from '@/hooks/use-categories';
 import { useToast } from '@/hooks/use-toast';
@@ -34,7 +35,14 @@ const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 export default function CategoriesPage() {
-  const { data: allSubcategories = [], isLoading } = useSubcategories();
+  const {
+    data: allSubcategories = [],
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
+  } = useSubcategories();
   const deleteSubcategory = useDeleteSubcategory();
   const { toast } = useToast();
 
@@ -85,7 +93,14 @@ export default function CategoriesPage() {
         </p>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <AdminLoadError
+          what="the categories"
+          error={error}
+          isRetrying={isFetching}
+          onRetry={() => void refetch()}
+        />
+      ) : isLoading ? (
         <div className="flex justify-center py-16">
           <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-accent" />
         </div>

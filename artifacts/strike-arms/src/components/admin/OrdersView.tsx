@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { AdminPager } from '@/components/admin/AdminPager';
 import { CounterOrderSheet } from '@/components/admin/CounterOrderSheet';
 import { OrderDetailSheet } from '@/components/admin/OrderDetailSheet';
@@ -58,7 +59,7 @@ export function OrdersView() {
   } = useOrdersFilters();
 
   const isBoard = view === 'board';
-  const { data, isLoading, isFetching } = useOrders({
+  const { data, isLoading, isFetching, isError, error, refetch } = useOrders({
     ...filters,
     page: isBoard ? 1 : page,
     pageSize: isBoard ? BOARD_PAGE_SIZE : ADMIN_PAGE_SIZE,
@@ -165,7 +166,14 @@ export function OrdersView() {
         onExport={() => void handleExport()}
       />
 
-      {isLoading ? (
+      {isError ? (
+        <AdminLoadError
+          what="the orders"
+          error={error}
+          isRetrying={isFetching}
+          onRetry={() => void refetch()}
+        />
+      ) : isLoading ? (
         <div className="flex justify-center py-16">
           <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-accent" />
         </div>
@@ -179,7 +187,16 @@ export function OrdersView() {
           />
           {total > orders.length && (
             <p className="mt-3 text-xs text-muted-foreground">
-              Showing the {orders.length} most recent of {total}. Use the table to see the rest.
+              Showing the {orders.length} most recent of {total}.{' '}
+              {!isTableForced && (
+                <button
+                  type="button"
+                  className="font-medium text-foreground underline underline-offset-2"
+                  onClick={() => setView('table')}
+                >
+                  Open the table to see the rest.
+                </button>
+              )}
             </p>
           )}
         </>

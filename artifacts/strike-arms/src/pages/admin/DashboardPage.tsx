@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Euro, Clock, TrendingUp, Package } from 'lucide-react';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { StatCard } from '@/components/admin/dashboard/stat-card';
 import { RevenueTrackerCard } from '@/components/admin/dashboard/revenue-tracker-card';
 import { DeliveryStatusCard } from '@/components/admin/dashboard/delivery-status-card';
@@ -21,16 +22,35 @@ function fmtEuros(cents: number) {
 }
 
 export default function DashboardPage() {
-  const { data: orders = [], isLoading } = useAllOrdersWithItems();
-  const { data: products = [] } = useAdminProducts();
+  const ordersQuery = useAllOrdersWithItems();
+  const productsQuery = useAdminProducts();
   // Only the count is shown, and `total` is exact whatever the limit.
-  const { data: newInquiries } = useInquiries('new', 1);
+  const inquiriesQuery = useInquiries('new', 1);
+  const orders = useMemo(() => ordersQuery.data ?? [], [ordersQuery.data]);
+  const products = productsQuery.data ?? [];
+  const newInquiries = inquiriesQuery.data;
+  const isLoading = ordersQuery.isLoading;
+
+  // Any one of them failing makes a figure wrong rather than missing: no
+  // orders reads as EUR 0 revenue, no products as nothing published.
+  const failed = [ordersQuery, productsQuery, inquiriesQuery].filter((q) => q.isError);
 
   const metrics = computeDashboardMetrics(orders);
   // Money and volume read every order; the queues and alerts read only what is
   // still open. Archiving an order must never make revenue go down.
   const active = useMemo(() => workQueue(orders), [orders]);
   const publishedCount = products.filter(p => p.isPublished).length;
+
+  if (failed.length > 0) {
+    return (
+      <AdminLoadError
+        what="the dashboard"
+        error={failed[0].error}
+        isRetrying={failed.some((q) => q.isFetching)}
+        onRetry={() => failed.forEach((q) => void q.refetch())}
+      />
+    );
+  }
 
   if (isLoading) {
     return (

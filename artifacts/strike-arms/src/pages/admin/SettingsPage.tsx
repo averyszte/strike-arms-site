@@ -1,10 +1,11 @@
 import { Helmet } from 'react-helmet-async';
+import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { MigrationStatusPanel } from '@/components/admin/MigrationStatusPanel';
 import { StoreRatesForm } from '@/components/admin/StoreRatesForm';
 import { useStoreRates } from '@/hooks/use-store-rates';
 
 export default function SettingsPage() {
-  const { data: rates, isLoading, error } = useStoreRates();
+  const { data: rates, isLoading, error, isFetching, refetch } = useStoreRates();
 
   return (
     <>
@@ -27,9 +28,12 @@ export default function SettingsPage() {
       {/* No fallback rates on screen either: showing a plausible default here
           would let an admin "confirm" numbers the shop is not actually using. */}
       {!isLoading && !rates && (
-        <p className="text-sm text-destructive">
-          The rates could not be read{error instanceof Error ? `: ${error.message}` : '.'}
-        </p>
+        <AdminLoadError
+          what="the shipping rates"
+          error={error}
+          isRetrying={isFetching}
+          onRetry={() => void refetch()}
+        />
       )}
 
       {rates && <StoreRatesForm rates={rates} />}
