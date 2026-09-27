@@ -16,7 +16,6 @@ export const CATEGORY_ORDER: Category[] = [
   'consumables',
   'accessories',
   'gear',
-  'parts',
   'more',
 ];
 
@@ -26,7 +25,6 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   consumables: 'Consumables',
   accessories: 'Accessories',
   gear: 'Gear',
-  parts: 'Parts',
   more: 'More',
 };
 

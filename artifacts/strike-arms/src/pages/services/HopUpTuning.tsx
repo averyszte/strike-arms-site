@@ -27,7 +27,7 @@ const SECTIONS: ServiceSection[] = [
             {
               title: (
                 <>
-                  Clean and inspect the <Link href="/store/parts/barrels">barrel</Link>.
+                  Clean and inspect the <Link href="/glossary#tightbore-barrel">barrel</Link>.
                 </>
               ),
             },

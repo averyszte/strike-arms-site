@@ -12,7 +12,7 @@ export const productFormSchema = z.object({
   name: z.string().min(2, 'Required'),
   slug: z.string().min(2, 'Required').regex(SLUG_PATTERN, 'Lowercase, numbers, hyphens only'),
   category: z.enum([
-    'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'parts', 'more',
+    'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'more',
   ] as const),
   subcategory: z.string().min(1, 'Required'),
   brand: z.string().min(1, 'Required'),

@@ -98,7 +98,7 @@ export default function BbWeightGuide() {
       <p>
         A precise, well-graded BB feeds cleanly and flies true. Cheap, seamed or poorly-polished BBs
         misfeed, jam, and damage the hop-up — and can wear the hop rubber and{' '}
-        <Link href="/store/parts/barrels">inner barrel</Link>. It is worth being blunt about this:
+        <Link href="/glossary#tightbore-barrel">inner barrel</Link>. It is worth being blunt about this:
         a bag of cheap BBs is one of the few things that will actively cost you money by breaking
         parts, and good BBs are one of the cheapest ways to make any gun shoot better.
       </p>

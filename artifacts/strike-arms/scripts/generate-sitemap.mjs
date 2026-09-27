@@ -39,7 +39,6 @@ const STATIC_PATHS = [
   '/store/consumables',
   '/store/accessories',
   '/store/gear',
-  '/store/parts',
   '/store/more',
   // Promoted subcategories (own canonical SEO pages)
   '/store/rifles/aeg-rifles',

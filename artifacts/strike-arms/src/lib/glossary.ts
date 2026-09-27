@@ -35,7 +35,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'angle-of-engagement',
     definition:
       'The angle at which the sector gear first contacts the piston pickup tooth inside a gearbox. Correcting AoE spreads load across more teeth and is a common durability upgrade during a rebuild.',
-    seeAlso: [{ label: 'Gearboxes & internals', href: '/store/parts/gearboxes' }],
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
   },
   {
     term: 'BB',
@@ -70,7 +70,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'bucking',
     definition:
       'The rubber sleeve inside the hop-up unit that grips the BB and applies backspin. Swapping the bucking is one of the cheapest, most effective accuracy upgrades.',
-    seeAlso: [{ label: 'Hop-up units & buckings', href: '/store/parts/hop-up' }],
+    seeAlso: [{ label: 'Hop-up tuning', href: '/services/hop-up-tuning' }],
   },
   {
     term: 'Chronograph (Chrono)',
@@ -104,7 +104,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'etu',
     definition:
       'Electronic Trigger Unit. Replaces mechanical trigger contacts with electronics for a crisper trigger, burst modes and trigger protection. Often paired with a MOSFET.',
-    seeAlso: [{ label: 'MOSFETs & ETUs', href: '/store/parts/mosfets' }],
+    seeAlso: [{ label: 'Upgrades', href: '/services/upgrades' }],
   },
   {
     term: 'FPS',
@@ -138,7 +138,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'gearbox',
     definition:
       'The sealed mechanical core of an AEG containing the gears, piston, spring and cylinder. Versions (V2, V3, etc.) correspond to different gun platforms.',
-    seeAlso: [{ label: 'Shop gearboxes', href: '/store/parts/gearboxes' }],
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
   },
   {
     term: 'Green gas',
@@ -152,7 +152,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'hop-up',
     definition:
       'A system that applies backspin to the BB to flatten its trajectory and extend range. Adjusting the hop-up correctly is essential to accuracy on any airsoft gun.',
-    seeAlso: [{ label: 'Hop-up units & buckings', href: '/store/parts/hop-up' }],
+    seeAlso: [{ label: 'Hop-up tuning', href: '/services/hop-up-tuning' }],
   },
   {
     term: 'HPA',
@@ -211,7 +211,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'mosfet',
     definition:
       'An electronic switch fitted to an AEG’s wiring that protects the trigger contacts from arcing, allows higher-output setups and can add features like active braking.',
-    seeAlso: [{ label: 'MOSFETs & ETUs', href: '/store/parts/mosfets' }],
+    seeAlso: [{ label: 'Upgrades', href: '/services/upgrades' }],
   },
   {
     term: 'NiMH',
@@ -225,7 +225,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'piston',
     definition:
       'The gearbox part driven back by the gears and forward by the spring to push air behind the BB. Piston teeth (full or half steel) are a common wear and upgrade point.',
-    seeAlso: [{ label: 'Shop gearboxes & parts', href: '/store/parts/gearboxes' }],
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
   },
   {
     term: 'Picatinny / RIS rail',
@@ -259,7 +259,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'shimming',
     definition:
       'Setting the correct spacing of gearbox gears with thin washers (shims) so they mesh smoothly. Good shimming reduces noise and wear; poor shimming causes both.',
-    seeAlso: [{ label: 'Shop gearboxes & parts', href: '/store/parts/gearboxes' }],
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
   },
   {
     term: 'Skirmish',
@@ -285,7 +285,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'tightbore-barrel',
     definition:
       'An inner barrel with a slightly narrower bore (e.g. 6.03mm, 6.01mm) than stock, used to improve air seal and consistency. A common accuracy upgrade.',
-    seeAlso: [{ label: 'Shop barrels', href: '/store/parts/barrels' }],
+    seeAlso: [{ label: 'Hop-up tuning', href: '/services/hop-up-tuning' }],
   },
   {
     term: 'Tracer',

@@ -78,7 +78,7 @@ export default function MaintenanceGuide() {
       <h2>Cleaning the barrel</h2>
       <p>
         Run a cleaning rod with a lightly-oiled cloth patch through the{' '}
-        <Link href="/store/parts/barrels">inner barrel</Link> to clear dust, BB residue and moisture,
+        <Link href="/glossary#tightbore-barrel">inner barrel</Link> to clear dust, BB residue and moisture,
         then a dry patch to finish. A clean barrel feeds and shoots more consistently, and a build-up
         is a common cause of stray shots.
       </p>

@@ -4,7 +4,6 @@ export type Category =
   | 'consumables'
   | 'accessories'
   | 'gear'
-  | 'parts'
   | 'more';
 
 /**

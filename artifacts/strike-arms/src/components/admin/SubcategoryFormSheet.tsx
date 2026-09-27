@@ -15,7 +15,7 @@ import type { Subcategory } from '@/types/category';
 
 const CATEGORY_LABELS: Record<Category, string> = {
   rifles: 'Rifles', pistols: 'Pistols', consumables: 'Consumables',
-  accessories: 'Accessories', gear: 'Gear', parts: 'Parts', more: 'More',
+  accessories: 'Accessories', gear: 'Gear', more: 'More',
 };
 
 function toSlug(name: string) {

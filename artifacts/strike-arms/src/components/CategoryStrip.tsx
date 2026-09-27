@@ -7,7 +7,7 @@ const categories = [
   { name: "Consumables",         image: "/images/category-bbs.png",         href: "/store/consumables" },
   { name: "Accessories",         image: "/images/category-accessories.png", href: "/store/accessories" },
   { name: "Gear",                image: "/images/category-gear.png",        href: "/store/gear" },
-  { name: "Parts & Internals",   image: "/images/category-repairs.png",     href: "/store/parts" },
+  { name: "Repairs & Upgrades",  image: "/images/category-repairs.png",     href: "/services" },
 ];
 
 export function CategoryStrip() {

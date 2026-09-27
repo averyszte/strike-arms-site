@@ -125,7 +125,6 @@ const BY_SUBCATEGORY: Record<string, CrossSellTarget[]> = {
   'pistols/revolvers': [CO2, BBS, HOLSTERS],
   'pistols/machine-pistols': [GREEN_GAS, BBS, PISTOL_MAGS],
   'pistols/pistol-magazines': [GREEN_GAS, CO2, BBS],
-  'pistols/pistol-parts': [LUBRICANTS, MAINTENANCE],
   'pistols/holsters': [PISTOL_MAGS, GREEN_GAS],
 
   'consumables/bbs': [SPEED_LOADERS, RIFLE_MAGS, BIO_BBS],
@@ -163,7 +162,6 @@ const BY_CATEGORY: Record<Category, CrossSellTarget[]> = {
   consumables: [BBS, MAINTENANCE],
   accessories: [MOUNTS, RAILS],
   gear: [EYE_PROTECTION, CAMO],
-  parts: [LUBRICANTS, MAINTENANCE],
   more: [BBS, EYE_PROTECTION],
 };
 

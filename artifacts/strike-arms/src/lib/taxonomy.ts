@@ -4,7 +4,6 @@ export type CategorySlug =
   | 'consumables'
   | 'accessories'
   | 'gear'
-  | 'parts'
   | 'more';
 
 export type SubcategoryDef = {
@@ -66,9 +65,9 @@ export const TAXONOMY: CategoryDef[] = [
         seo: {
           title: 'Airsoft Sniper Rifles Ireland | Bolt-Action | Strike Arms',
           description:
-            'Airsoft sniper rifles in Ireland: bolt-action platforms built for range and accuracy, with the parts and in-house tuning to get the most from them. Ships nationwide.',
+            'Airsoft sniper rifles in Ireland: bolt-action platforms built for range and accuracy, with in-house tuning to get the most from them. Ships nationwide.',
           intro:
-            'Airsoft sniper rifles reward patience and precision. These bolt-action platforms are built for range and a consistent single shot, and most benefit from tuning and heavier BBs to reach their potential. We stock capable base rifles and the parts to upgrade them, with in-house work available. It is rarely the best first gun. Ships across Ireland.',
+            'Airsoft sniper rifles reward patience and precision. These bolt-action platforms are built for range and a consistent single shot, and most benefit from tuning and heavier BBs to reach their potential. We stock capable base rifles, and our workshop can tune them further. It is rarely the best first gun. Ships across Ireland.',
         },
       },
       { slug: 'shotguns', label: 'Shotguns' },
@@ -98,7 +97,6 @@ export const TAXONOMY: CategoryDef[] = [
       { slug: 'revolvers', label: 'Revolvers' },
       { slug: 'machine-pistols', label: 'Machine Pistols' },
       { slug: 'pistol-magazines', label: 'Pistol Magazines' },
-      { slug: 'pistol-parts', label: 'Pistol Parts' },
       { slug: 'holsters', label: 'Holsters' },
     ],
   },
@@ -230,25 +228,6 @@ export const TAXONOMY: CategoryDef[] = [
     ],
   },
   {
-    slug: 'parts',
-    label: 'Parts & Internals',
-    shortLabel: 'Parts',
-    subcategories: [
-      { slug: 'aeg-parts', label: 'AEG Internal Parts' },
-      { slug: 'gbb-parts', label: 'GBB / Pistol Parts' },
-      { slug: 'sniper-parts', label: 'Sniper Parts' },
-      { slug: 'hop-up', label: 'Hop-Up Units & Buckings' },
-      { slug: 'barrels', label: 'Barrels' },
-      { slug: 'motors', label: 'Motors' },
-      { slug: 'gearboxes', label: 'Gearboxes' },
-      { slug: 'springs', label: 'Springs' },
-      { slug: 'pistons', label: 'Pistons' },
-      { slug: 'mosfets', label: 'MOSFETs / ETUs' },
-      { slug: 'hpa-upgrades', label: 'HPA Upgrades' },
-      { slug: 'external-parts', label: 'External Parts' },
-    ],
-  },
-  {
     slug: 'more',
     label: 'Equipment & Outdoor',
     shortLabel: 'More',
@@ -306,8 +285,6 @@ export const CATEGORY_INTROS: Record<CategorySlug, string> = {
     'Accessories tune your setup to how you play — optics and red dots for faster target acquisition, plus magazines, slings, grips and more. We stock reliable brands and can advise on what genuinely improves performance versus what just adds weight. Fitting and setup advice comes as standard. Ships across Ireland.',
   gear:
     'The right tactical gear keeps you comfortable and in the game, which matters in the wet, cold conditions typical of Irish sites. From eye protection and plate carriers to chest rigs, gloves and footwear, we stock durable kit and can help you build a practical loadout without over-spending. Ships across Ireland.',
-  parts:
-    'Parts and internals are where a gun is won or lost — barrels, hop-up units, gearboxes, motors and MOSFETs. Whether you are upgrading for performance or fixing a fault, we stock quality components and fit them in-house. Not sure what your gun needs? Bring it in and our techs will advise. Ships across Ireland.',
   more:
     'Everything else you need around the game: chronographs to check your gun is site-legal, tools and maintenance kits, targets, and outdoor gear. Practical kit from a shop that actually plays the sport. Ships across Ireland.',
 };

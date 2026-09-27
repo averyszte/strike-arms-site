@@ -19,7 +19,7 @@ import type { Category } from '@/types/product';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 
 const CATEGORIES = [
-  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'parts', 'more',
+  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'more',
 ] as const;
 
 type BooleanFieldName = keyof ProductFormValues &

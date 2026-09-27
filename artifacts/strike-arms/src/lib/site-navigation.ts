@@ -60,10 +60,9 @@ export const navItems: NavItem[] = [
         ],
       },
       {
-        title: "Parts & Accessories",
+        title: "Accessories",
         links: [
           { label: "Pistol Magazines", href: "/store/pistols/pistol-magazines" },
-          { label: "Pistol Parts", href: "/store/pistols/pistol-parts" },
           { label: "Holsters", href: "/store/pistols/holsters" },
         ],
       },
@@ -195,25 +194,12 @@ export const navItems: NavItem[] = [
         links: [...SERVICE_LINKS, { label: "Call the Shop", href: SHOP_TEL }],
       },
       {
-        title: "Internal Parts",
+        title: "Know Your Internals",
         links: [
-          { label: "AEG Internal Parts", href: "/store/parts/aeg-parts" },
-          { label: "GBB / Pistol Parts", href: "/store/parts/gbb-parts" },
-          { label: "Sniper Parts", href: "/store/parts/sniper-parts" },
-          { label: "Hop-Up Units & Buckings", href: "/store/parts/hop-up" },
-          { label: "Barrels", href: "/store/parts/barrels" },
-          { label: "Motors", href: "/store/parts/motors" },
-        ],
-      },
-      {
-        title: "More Parts",
-        links: [
-          { label: "Gearboxes", href: "/store/parts/gearboxes" },
-          { label: "Springs", href: "/store/parts/springs" },
-          { label: "Pistons", href: "/store/parts/pistons" },
-          { label: "MOSFETs / ETUs", href: "/store/parts/mosfets" },
-          { label: "HPA Upgrades", href: "/store/parts/hpa-upgrades" },
-          { label: "External Parts", href: "/store/parts/external-parts" },
+          { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
+          { label: "Batteries & LiPo Guide", href: "/guides/airsoft-battery-lipo-guide" },
+          { label: "FPS & Joules Explained", href: "/guides/fps-and-joules-explained" },
+          { label: "Airsoft Glossary", href: "/glossary" },
         ],
       },
     ],

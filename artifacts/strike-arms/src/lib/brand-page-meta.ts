@@ -26,7 +26,7 @@ function productWord(count: number): string {
 
 export function brandPageMeta(name: string, count: number): BrandPageMeta {
   return {
-    title: `${name} Airsoft — Guns, Gear & Parts in Ireland | Strike Arms`,
+    title: `${name} Airsoft — Guns & Gear in Ireland | Strike Arms`,
     description: `Browse the ${name} range at Strike Arms in Swords, Co. Dublin. ${count} ${productWord(
       count,
     )} listed, shipped across Ireland with in-house advice and support.`,

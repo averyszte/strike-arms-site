@@ -11,7 +11,7 @@ const INDEX = [
   { code: "AMM", name: "BBs & Gas", href: "/store/bbs", img: "/images/category-bbs.png" },
   { code: "KIT", name: "Tactical Gear", href: "/store/gear", img: "/images/category-gear.png" },
   { code: "ACC", name: "Accessories", href: "/store/accessories", img: "/images/category-accessories.png" },
-  { code: "PRT", name: "Parts & Internals", href: "/store/parts", img: "/images/category-repairs.png" },
+  { code: "SVC", name: "Repairs & Upgrades", href: "/services", img: "/images/category-repairs.png" },
 ];
 
 export function ArmoryIndex() {

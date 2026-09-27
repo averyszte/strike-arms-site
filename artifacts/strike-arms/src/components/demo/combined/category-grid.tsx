@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { ArrowUpRight } from "lucide-react";
 
 /**
- * Combined homepage — Shop by Category. Same six live categories and the site's
+ * Combined homepage — Shop by Category. The five live categories plus the workshop, and the site's
  * tokens, but with bolder type and a firmer hover than the live CategoryStrip.
  * Laid out as full-width stacked rows (one category per row).
  */
@@ -12,7 +12,7 @@ const CATEGORIES = [
   { name: "Consumables", image: "/images/category-bbs.png", href: "/store/consumables" },
   { name: "Accessories", image: "/images/category-accessories.png", href: "/store/accessories" },
   { name: "Gear", image: "/images/category-gear.png", href: "/store/gear" },
-  { name: "Parts & Internals", image: "/images/category-repairs.png", href: "/store/parts" },
+  { name: "Repairs & Upgrades", image: "/images/category-repairs.png", href: "/services" },
 ];
 
 export function CategoryGrid() {

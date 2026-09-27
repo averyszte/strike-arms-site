@@ -27,7 +27,6 @@ const CATEGORIES: Category[] = [
   'consumables',
   'accessories',
   'gear',
-  'parts',
   'more',
 ];
 

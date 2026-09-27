@@ -28,7 +28,7 @@ const items = [
   {
     icon: Wrench,
     title: "Repairs & Upgrades",
-    sub: "Support for maintenance & parts",
+    sub: "Support for maintenance & repairs",
     filled: false,
   },
 ];

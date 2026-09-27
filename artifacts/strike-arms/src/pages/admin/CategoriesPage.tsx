@@ -25,12 +25,12 @@ import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';
 
 const CATEGORY_ORDER: Category[] = [
-  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'parts', 'more',
+  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'more',
 ];
 
 const CATEGORY_LABELS: Record<Category, string> = {
   rifles: 'Rifles', pistols: 'Pistols', consumables: 'Consumables',
-  accessories: 'Accessories', gear: 'Gear', parts: 'Parts', more: 'More',
+  accessories: 'Accessories', gear: 'Gear', more: 'More',
 };
 
 export default function CategoriesPage() {

@@ -11,7 +11,7 @@ const CATEGORIES = [
   { name: "Tactical gear", href: "/store/gear", img: "/images/category-gear.png" },
   { name: "BBs & gas", href: "/store/bbs", img: "/images/category-bbs.png" },
   { name: "Accessories", href: "/store/accessories", img: "/images/category-accessories.png" },
-  { name: "Parts & internals", href: "/store/parts", img: "/images/category-repairs.png" },
+  { name: "Repairs & upgrades", href: "/services", img: "/images/category-repairs.png" },
 ];
 
 export function CategoriesLocal() {

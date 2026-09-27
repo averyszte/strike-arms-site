@@ -63,8 +63,7 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
     title: "Upgrades & Repairs",
     links: [
       ...SERVICE_LINKS,
-      { label: "AEG Internal Parts", href: "/store/parts/aeg-parts" },
-      { label: "Hop-Up Units & Buckings", href: "/store/parts/hop-up" },
+      { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
       { label: `Call: ${BUSINESS.telephone}`, href: SHOP_TEL },
     ],
   },

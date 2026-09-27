@@ -92,7 +92,7 @@ export default function BatteryGuide() {
       <h2>Connectors, fit and everything else that matters</h2>
       <p>
         A battery is not just a voltage. Shape, connector, available space, wiring, the fuse and any{' '}
-        <Link href="/store/parts/mosfets">MOSFET</Link> all bear on whether a given pack suits a given
+        <Link href="/glossary#mosfet">MOSFET</Link> all bear on whether a given pack suits a given
         gun. The battery has to physically fit the stock tube, handguard or PEQ box, so always check
         dimensions before buying.
       </p>
