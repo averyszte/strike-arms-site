@@ -56,6 +56,8 @@ const STATIC_PATHS = [
   '/new',
   '/sale',
   '/pre-loved',
+  '/jumble',
+  '/safety-equipment',
   '/gift-cards',
   '/contact',
   '/privacy',

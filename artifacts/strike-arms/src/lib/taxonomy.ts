@@ -259,6 +259,19 @@ export const TAXONOMY: CategoryDef[] = [
       { slug: 'maintenance-kits', label: 'Maintenance Kits' },
       { slug: 'camping', label: 'Camping Gear' },
       { slug: 'outdoor', label: 'Outdoor Gear' },
+      {
+        // Alan, 19 Sep 2026, asked for this to be stressed at the top of the
+        // page. The intro is his wording, capitals tidied and nothing added.
+        slug: 'wallhangers-props',
+        label: 'Wallhangers & Props',
+        seo: {
+          title: 'Wallhangers & Props — Non-Firing Display Pieces | Strike Arms',
+          description:
+            'Non-firing and written-off replica rifles and pistols for display, cosplay, film and stage. Strike Arms, Swords, Co. Dublin.',
+          intro:
+            'Rifles and pistols in this section are either non-firing replicas or airsoft, and are considered non-repairable or written off. These are ideal for display as wallhangers, cosplay costume accessories, or as film and stage props.',
+        },
+      },
     ],
   },
 ];

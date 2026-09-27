@@ -54,6 +54,19 @@ function applySort(query: ProductQuery, sort: NonNullable<ProductFilters['sort']
   }
 }
 
+/**
+ * Shelves such as Jumble and Safety Equipment are tags rather than
+ * subcategories, so a product can sit on one and in its normal aisle too.
+ */
+function applyTagFilters(query: ProductQuery, filters: ProductFilters) {
+  let next = query;
+  if (filters.tag) next = next.contains('tags', [filters.tag]);
+  if (filters.excludeTags?.length) {
+    next = next.not('tags', 'ov', `{${filters.excludeTags.join(',')}}`);
+  }
+  return next;
+}
+
 // ─── Read operations ──────────────────────────────────────────────────────────
 
 export async function listProducts(filters: ProductFilters): Promise<ProductListResult> {
@@ -73,6 +86,7 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (filters.onSaleOnly) query = query.not('sale_price_cents', 'is', null);
   if (filters.isNewOnly) query = query.eq('is_new', true);
   if (filters.condition) query = query.eq('condition', filters.condition);
+  query = applyTagFilters(query, filters);
 
   if (filters.q) {
     const term = escapeSearchTerm(filters.q);

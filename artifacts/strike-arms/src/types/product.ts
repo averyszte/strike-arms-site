@@ -59,6 +59,8 @@ export type ProductFilters = {
   onSaleOnly?: boolean;
   isNewOnly?: boolean;
   condition?: ProductCondition;
+  tag?: string;               // a shelf built from a tag, e.g. 'jumble'
+  excludeTags?: string[];     // keeps those shelves off a broader one
   sort?: 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'name-asc';
   page?: number;
   pageSize?: number;

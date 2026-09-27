@@ -14,7 +14,14 @@ export default function PreLoved() {
       description="Secondhand airsoft rifles, pistols and SMGs at Strike Arms in Swords, Co. Dublin. Every pre-loved item is a one-off, sold as seen, and needs a battery and charger."
       path="/pre-loved"
       intro="Secondhand airsoft guns, sold as seen. Every pre-loved item is a one-off, so once it is gone it is gone, and each will need a battery and a charger — neither is included. Call in to the shop in Swords if you would rather see one in person first."
-      filters={{ condition: 'pre-loved', sort: 'newest', pageSize: 48 }}
+      // Used kit from the Jumble and Wallhangers pages is pre-loved too, but it
+      // has shelves of its own and would bury the guns this page is for.
+      filters={{
+        condition: 'pre-loved',
+        excludeTags: ['jumble', 'wallhanger'],
+        sort: 'newest',
+        pageSize: 48,
+      }}
     />
   );
 }

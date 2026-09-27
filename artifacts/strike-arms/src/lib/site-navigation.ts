@@ -165,6 +165,7 @@ export const navItems: NavItem[] = [
       {
         title: "Protection & Clothing",
         links: [
+          { label: "Safety Equipment", href: "/safety-equipment" },
           { label: "Helmets", href: "/store/gear/helmets" },
           { label: "Face & Eye Protection", href: "/store/gear/eye-protection" },
           { label: "Gloves", href: "/store/gear/gloves" },
@@ -272,6 +273,8 @@ export const navItems: NavItem[] = [
         links: [
           { label: "New Arrivals", href: "/new" },
           { label: "Pre-Loved", href: "/pre-loved" },
+          { label: "Jumble", href: "/jumble" },
+          { label: "Wallhangers & Props", href: "/store/more/wallhangers-props" },
           { label: "Sale", href: "/sale" },
           { label: "Brands", href: "/brands" },
           { label: "Gift Cards", href: "/gift-cards" },

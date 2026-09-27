@@ -11,6 +11,8 @@ import BrandPage from "@/pages/BrandPage";
 import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
 import PreLoved from "@/pages/PreLoved";
+import Jumble from "@/pages/Jumble";
+import SafetyEquipment from "@/pages/SafetyEquipment";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
 import Login from "@/pages/auth/Login";
@@ -67,6 +69,8 @@ function Router() {
       <Route path="/new" component={NewArrivals} />
       <Route path="/sale" component={Sale} />
       <Route path="/pre-loved" component={PreLoved} />
+      <Route path="/jumble" component={Jumble} />
+      <Route path="/safety-equipment" component={SafetyEquipment} />
       <Route path="/gift-cards" component={GiftCards} />
       <Route path="/account">
         <RequireAuth>
