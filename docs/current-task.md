@@ -1,191 +1,131 @@
 # Current Task
 
-Last updated: 2026-09-02 (handover). The previous revision described migrations 007-008 as
-unpushed and claimed there was no lint script. Both were out of date; corrected below.
+Last updated: 2026-09-27 (handover). Replaces the 2026-09-02 revision, which predated
+migrations 017-018, the TOTP flow and the real-catalogue import.
 
 ## Where the project is right now
 
-The Supabase backend is **fully migrated and live** — migrations `001` through `016` are all
-applied and verified against the real project. The admin dashboard works. The public site is
-largely built and the commerce path is written end to end. Nothing is in **production** yet:
-there is no Cloudflare Pages project (G1) and the `strikearms.ie` domain is still unconfirmed
-(G2). Those two are the launch blockers.
+The Supabase backend is live with migrations `001` through `018` applied and verified. The
+admin dashboard works and now enforces TOTP (aal2) for writes. The public site is largely built
+and the commerce path is written end to end. Nothing is in **production**: there is no
+Cloudflare Pages project (G1) and the `strikearms.ie` domain is unconfirmed (G2).
 
-Branch: `claude/admin-login-500-diagnosis-67c091`, in a git worktree under `.claude/worktrees/`.
-`origin/main` and `origin/claude/admin-login-500-diagnosis-67c091` are both at `1dfc41a`. The
-worktree is clean.
+**The shop currently has zero published products.** Migration 017 deleted the 56 demo rows.
+Alan's 64 real products are imported but unpublished, pending the checks below.
 
 Feature inventory (`docs/feature-inventory.md`), last counted: **51 DONE, 26 MISSING, 17 PARTIAL,
-4 DEPLOYED-UNTESTED, 1 BLOCKED**. That file is the master list — read it before picking work.
+4 DEPLOYED-UNTESTED, 1 BLOCKED**. That file is the master list; read it before picking work.
 
-## What landed in the last session
+Nothing has been pushed since `1dfc41a`. Unpushed on this branch, oldest first: `6bd9150`
+services, `a722b4d` TOTP/MFA, `8e1d395` brand slugs, `0ea8b4d` migration 017, `7918ade` product
+condition, plus the tidy-up commit that rewrote this file. Push only when the user asks, with
+`git push origin HEAD:main`.
 
-Three commits, all pushed:
+## What landed recently
 
-- **`ff71e1e` fix(build): stop requiring Replit's PORT and BASE_PATH.** `vite.config.ts` had two
-  module-scope `throw`s left over from Replit: it demanded a valid `PORT` and read `BASE_PATH`.
-  Cloudflare Pages sets neither, so the build died before it started. Removed. Verified: a build
-  with neither variable set emits root-absolute `/assets/...` URLs, which is what nested routes
-  need. `verifySupabaseConfig` (`1c70556`) is deliberately untouched — that check is wanted.
-- **`1250a5e` fix(db): make the search_text expression immutable (015).** `supabase db push`
-  failed on 015 with `generation expression is not immutable (SQLSTATE 42P17)`. Cause:
-  `array_to_string` is marked STABLE, not IMMUTABLE, because it takes `anyarray` and for some
-  element types the output function reads session state (`timestamptz` reads `TimeZone`).
-  Postgres has one volatility marking per function, so it takes the weakest case. Fix: a narrow
-  wrapper `public.text_array_to_string(text[], text)` marked `immutable` — for `text[]` that is
-  genuinely true, not a lie told to the planner. **Its body must never be edited in place.** A
-  stored generated column is computed once and written to disk; `create or replace` does not
-  recompute existing rows, so a changed body would silently leave old rows holding stale text.
-  Granted to `authenticated, service_role` only: the column is evaluated by whoever writes the
-  row, and reads do not evaluate it, so `anon` is correctly excluded.
-- **`1dfc41a` fix(search): stop reporting a failed search as an empty one.** Found by actually
-  running the dev server: typing "rifle" showed "No results for 'rifle'" while the RPC was
-  404ing. `use-search-products.ts` destructured only `data`, and `data ?? NO_RESULTS` flattened
-  a hard error into an empty array. It now surfaces `isError` and `isPending`, and skips React
-  Query's retries for `PGRST*` codes (PGRST202 = function not in the exposed schema, PGRST204 =
-  column missing — deterministic facts, so three more attempts cannot help). Without that skip
-  the honest message took about seven seconds to appear. `SearchDropdown.tsx` gained a four-way
-  panel (error, searching, results, no results) and `SearchResultRow.tsx` was extracted to keep
-  it under the line limit. Verified live: search returns 6 real products, `/store?q=rifle`
-  returns 8.
+- **`7918ade` product condition, end to end.** Migration 018 added `products.condition` (text,
+  check constraint, default `'new'`), backfilled from the `pre-loved-` slug prefix or the
+  `pre-loved` tag. Storefront: Pre-loved badge on card and product page, a sold-as-seen notice
+  in Alan's wording, a Condition filter, and a `/pre-loved` page with route and nav links. Wired
+  through the admin form, CSV export/import (a bad Condition value is refused, not corrected)
+  and the catalogue import scripts. schema.org `itemCondition` now branches instead of always
+  saying `NewCondition`.
+- **`0ea8b4d` migration 017** deleted the 56 demo products.
+- **`a722b4d` TOTP/MFA** for the admin, matching the `is_admin_aal2()` RLS policies.
+- **`8e1d395`** the CSV builder emits brand slugs, not display names.
+- **`6bd9150`** the service pages were redesigned.
+- **Tidy-up:** `src/data/mock-products.ts` deleted (nothing imported it; the sitemap already read
+  Supabase since `75648a9`). `/pre-loved` added to the sitemap's static routes.
 
-## YOU MUST RUN THESE
+## NEEDS THE USER (aal2 admin session)
 
-1. **Pull in the main checkout.** Local `main` in
-   `C:\Users\Avery\Downloads\_Easywebs\_Repos\strike-arms-site` is around 50 commits behind
-   `origin/main`. Nothing is stranded — it is an ancestor of HEAD — but it needs
-   fast-forwarding. Run this in the **main checkout, not the worktree**:
+1. **Confirm the 018 backfill count of 14** in the admin product list. Anon cannot see
+   unpublished rows, so this was not verifiable from REST.
+2. **Set stock to 1 on the 14 pre-loved rifles.** They are one-offs; the importer always writes
+   0, so each needs one `adjust_stock`.
+3. **Spot-check 3 imported products** for photo and price before anything is published.
+4. **A1.3, a testing blocker:** every row is `is_shippable = false`. Flip 2-3 so the delivery
+   and mixed-basket flows can be exercised.
+5. **Regenerate the sitemap after publishing.** `public/sitemap.xml` still lists the demo products
+   and 15 brand pages that now 404. The script refuses to write when nothing is published, by
+   design:
 
 ```bash
-git pull --ff-only
+pnpm --filter @workspace/strike-arms run sitemap
 ```
 
-2. **Deploy the refund function.** `supabase/functions/refund-order/` was written in `1f769fd`
-   but has never been deployed:
-
-```bash
-npx supabase functions deploy refund-order
-```
-
-3. **Confirm `charge.refunded` is in the Stripe endpoint's event list** in the Stripe dashboard.
-   The webhook handles it, but if the endpoint is not subscribed to it the event never arrives.
-
-`supabase db push` is blocked by the permission classifier — the **user** must run it, from the
-worktree, as `echo y | npx supabase db push`. Nothing is currently pending: 001-016 are applied.
+Also still outstanding: delete the orphan storage image `ce710cbd-de92-446f-875e-4985ba0635ed.jpg`,
+deploy `refund-order` (`npx supabase functions deploy refund-order`), and confirm
+`charge.refunded` is in the Stripe endpoint's event list.
 
 ## BLOCKED on Alan / the accountant (do not guess these)
 
-1. **Real brand/model list.** THE catalogue blocker. The 23 July meeting produced only a rough
-   verbal note (Tokyo Marui, D-Boys, G&G, Specna Arms came up; the new vs pre-loved split was
-   not pinned down). **Brand range is UNKNOWN.** 56 demo products are seeded and published — do
-   not treat them as real. Do not reseed until Alan supplies the brands, new vs pre-loved per
-   brand, and the always-stockable models.
-2. **Delivery pricing.** `SHIPPING_FLAT_CENTS = 650` and `FREE_SHIPPING_THRESHOLD_CENTS = 7500`
-   are **deliberate visible placeholders**, not Alan's numbers. Checkout cannot run without a
-   figure, so they are named constants at the top of a named file rather than a guess buried in
-   a component. Zones (IE only? NI? EU?) are also undecided.
-3. **VAT rate.** `VAT_RATE_BASIS_POINTS = 2300` — displayed prices are VAT-inclusive, so the
-   figure is *extracted* from the gross, not added to it. Confirm with the accountant. Alan's
-   VAT registration number is also still needed for a printed invoice.
-4. **Which products are postable.** Every product defaults to not-shippable. Alan must tick the
-   ones he actually posts.
-5. **Shop address + real email** — finishes `/about` and the Contact NAP/schema.
-6. **Domain status** — does Alan own `strikearms.ie`, has it lapsed, who is the registrar? Gates
-   the whole 301 migration. Launch blocker.
+1. **Which items are postable.** The unblocking question in `docs/alan-catalogue-questions.md`
+   is "which items do you actually post?". That doc still needs forwarding to Alan.
+2. **The 22 "unbranded" rows.** Decide before launch; as-is they generate `/brands/unbranded`.
+3. **Delivery pricing.** `SHIPPING_FLAT_CENTS = 650` and `FREE_SHIPPING_THRESHOLD_CENTS = 7500`
+   are deliberate visible placeholders. Zones (IE only? NI? EU?) are undecided.
+4. **VAT rate.** `VAT_RATE_BASIS_POINTS = 2300`, extracted from VAT-inclusive prices. Confirm with
+   the accountant; Alan's VAT number is needed for a printed invoice.
+5. **Shop address + real email** for `/about` and the Contact NAP/schema.
+6. **Domain status** of `strikearms.ie`. Gates the 301 migration; launch blocker.
 
-Lower urgency: repairs job list + turnaround, warranty scope on new electricals, per-tier
-best-seller models, beginner site names, gift-card amounts/format.
+## Open items, roughly in order
 
-## Known gaps, roughly in the order they matter
-
-- **G1 Cloudflare Pages** — no project created. Env vars, build command, `_redirects`. The Vite
-  config no longer blocks this (see `ff71e1e`).
-- **C3 / C3.1 / C3.2 / C4 are DEPLOYED-UNTESTED.** Nothing has run against real Stripe. Take one
-  end-to-end test payment for each basket shape — all-collect, all-delivery, mixed. That is the
-  only thing that proves the webhook signing secret, `verify_jwt = false`, and the platform's
-  raw-body handling together. `stripe listen` does not prove the deployed endpoint.
-- **C11 bot protection** — `create-checkout-session` is a public endpoint that writes an order
-  row. No Turnstile, no rate limit.
-- **E3 transactional email / C5.x notifications** — no receipt, no owner "new order" alert, no
-  dispatch notice, no alert on exhausted outbox retries. Resend with `EMAIL_FROM` as a secret is
-  the reference pattern. An outbox nobody watches is the failure mode to avoid.
-- **B1-B4 customer accounts** — still on the placeholder auth. B1.2 email verification is a hard
-  blocker: default Supabase SMTP only sends to organisation team addresses and is rate-capped.
-  B3 order history needs a nullable `orders.user_id` plus an RLS read policy; the schema
-  currently stores email only.
-- **Search ranking oddity, flagged not fixed.** Real data shows "ASG 3-9x40 Rifle Scope"
-  outranking "G&G CM16 Raider AEG" for "rifle", because a name match scores 6 and a tag match
-  only 2 — so an actual rifle whose name lacks the word ties with green gas. A category-match
-  score would fix it in one migration, but the desired ordering needs a decision first.
-- **Tidy-up carried over:** drop `p_adjusted_by` from `adjust_stock` and
-  `inventory-repository.ts` now that 014 is applied; `listInquiries` is unpaged;
-  `checkout_reservations.order_id` has a cascade leak; `ProductDetail.tsx` is at 259 lines
-  (limit 300, split threshold 250); the orphan image sweeper's deploy and cron schedule are
+- **Split `pages/ProductDetail.tsx`** (267 lines, past the 250 mark). Move `ProductGallery` and
+  `ProductInfo` into `components/catalog/`, leaving the page at about 110 lines.
+- **Decide whether the sitemap runs inside `build`.** Pro: a deploy can never ship a stale
+  sitemap. Con: the build fails while nothing is published, which would block a Cloudflare
+  preview deploy. Not decided.
+- **G1 Cloudflare Pages** project: env vars, build command, `_redirects`.
+- **C3 / C3.1 / C3.2 / C4 are DEPLOYED-UNTESTED.** One real test payment per basket shape
+  (all-collect, all-delivery, mixed). Needs A1.3 first.
+- **C11 bot protection** on `create-checkout-session`: no Turnstile, no rate limit.
+- **E3 transactional email / C5.x notifications.** Deferred, never chosen.
+- **B1-B4 customer accounts.** B1.2 email verification needs real SMTP.
+- **Search ranking:** a name match scores 6 and a tag match 2, so a scope can outrank a rifle for
+  "rifle". Needs a decision on desired ordering before a migration.
+- **Content clusters, later:** the guides (10 pages + GuidesHub), then the bespoke pages
+  About, AirsoftLaw, WhereToPlay, Glossary, Privacy, GiftCards.
+- Tidy-up: drop `p_adjusted_by` from `adjust_stock`; `listInquiries` is unpaged;
+  `checkout_reservations.order_id` cascade leak; the orphan image sweeper's deploy and cron are
   unverified.
-- **D8 service job tracker** has no agreed spec. **G9 automated tests** would be a stack
-  decision — CLAUDE.md forbids picking one unilaterally, so ask before adding vitest.
 
 ## Key gotchas / rules (read before working)
 
-- **Free-tier auto-pause** recurs every ~7 idle days. If admin login dies with "Failed to fetch",
-  that is it: restore from the Supabase dashboard. Before launch: Pro plan or a keep-alive ping.
-- Real Supabase credentials live in `artifacts/strike-arms/.env.local`; the committed `.env`
-  holds placeholders only. **`.env.local` is NOT committed, so a freshly created worktree will
-  not have it** — copy it in from a sibling worktree. Since `1c70556` the build fails loudly in
-  that state rather than producing a broken bundle. `supabase/.temp/` is also local-only.
-- A fresh worktree also has **no `node_modules`** — run `pnpm install` in it first.
-- **`shipping.ts` exists twice** — `artifacts/strike-arms/src/lib/shipping.ts` and
-  `supabase/functions/_shared/shipping.ts`. Deno cannot import from the Vite `src/` tree. Both
-  carry a boxed warning: **change both copies in the same commit.** If they drift, the price in
-  the cart stops matching what Stripe charges — a billing bug the customer sees first.
-- **No emojis anywhere** — lucide-react icons only. Irish/British English.
-- **Never invent Irish airsoft/firearms law.** Legal content stays question-framed,
-  primary-source-cited, and flagged for a solicitor.
-- **Do not paste secrets into the chat.** No service-role key, no Stripe secret key, no webhook
-  signing secret, no `.env` contents. The Supabase anon key and the project ref
-  (`cxnhkgndvzgyqhiwsvrr`) are public by design and are the only exceptions. Never put a
-  placeholder secret inside a runnable bash fence — the app renders a Run button on those.
-- **Stay lean** — do NOT run big multi-agent workflows or the deep-research harness. A prior
-  106-agent run torched the user's usage.
-- CLAUDE.md hard rules: no file over 300 lines, no function over 80 lines, `@/` aliases, no
-  `any`, no `console.log`, layer rule (pages to hooks to data to Supabase; components never
-  import from `data/`). Both gates exist and must pass:
+- **Free-tier auto-pause** every ~7 idle days. "Failed to fetch" on admin login means restore it
+  from the Supabase dashboard.
+- **A fresh worktree has no `.env.local`, `node_modules` or `supabase/.temp/`.** Copy `.env.local`
+  into `artifacts/strike-arms/` from a sibling worktree and run `pnpm install` at the root (it
+  installs, then the root preinstall hook reports a failure; the packages are there).
+- **Gates:** `pnpm --filter ... run typecheck/lint` fails on the root preinstall hook. Run the
+  binaries directly from `artifacts/strike-arms`:
 
 ```bash
-pnpm --filter @workspace/strike-arms run typecheck
+../../node_modules/.bin/tsc -p tsconfig.json --noEmit
 ```
 
 ```bash
-pnpm --filter @workspace/strike-arms run lint
+./node_modules/.bin/eslint .
 ```
 
-- Commits end with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`; write the message to
-  a file and use `git commit -F`, never `-m` with a here-string. Push with
-  `git push origin HEAD:main`.
-- Prettier lives at the worktree root:
-  `node node_modules/.pnpm/prettier@3.8.1/node_modules/prettier/bin/prettier.cjs --single-quote --print-width 100 --write <files>`
-
-## Relevant files
-
-- `docs/feature-inventory.md` — the master status list, read this first
-- `supabase/migrations/001-016` · `supabase/config.toml` · `supabase/seed.sql` (WRONG brands,
-  dev/demo only, never seed production)
-- `supabase/functions/{create-checkout-session,stripe-webhook,refund-order,sweep-orphan-images}/`
-  · `supabase/functions/_shared/**`
-- `artifacts/strike-arms/src/lib/{cart-context,cart-totals,cart-storage,shipping,order-display}`
-- `artifacts/strike-arms/src/pages/admin/**` · `src/data/*-repository.ts` · `src/hooks/use-*`
-- `artifacts/strike-arms/seo/alan-interview-answers.md` (the 23 July block at the top is
-  authoritative)
-- `docs/build-backlog.md` · `docs/auth-roles.md`
+- `supabase db push` is blocked for Claude. The user runs it from the worktree as
+  `echo y | npx supabase db push`.
+- **`shipping.ts` exists twice**: `artifacts/strike-arms/src/lib/shipping.ts` and
+  `supabase/functions/_shared/shipping.ts`. Change both in the same commit.
+- **No emojis anywhere.** lucide-react icons only. Irish/British English.
+- **Never invent Irish airsoft/firearms law.** Question-framed, primary-source-cited, flagged for
+  a solicitor.
+- **No secrets in chat.** The Supabase anon key and project ref `cxnhkgndvzgyqhiwsvrr` are the
+  only exceptions. Never put a placeholder secret inside a runnable bash fence.
+- **Stay lean.** No multi-agent workflows, no deep-research harness.
+- CLAUDE.md hard rules: 300-line files, 80-line functions, `@/` aliases, no `any`, no
+  `console.log`, layer rule.
+- Commits: write the message to a file and `git commit -F`, ending with
+  `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
+- Prettier: `node node_modules/.pnpm/prettier@3.8.1/node_modules/prettier/bin/prettier.cjs
+  --single-quote --print-width 100 --write <files>`
 
 ## Suggested next step
 
-Ask which of these the user wants first:
-
-1. **Prove the money path.** Deploy `refund-order`, confirm the Stripe event list, then take one
-   test payment per basket shape. This is the largest block of DEPLOYED-UNTESTED work and the
-   part most likely to be quietly broken.
-2. **Create the Cloudflare Pages project (G1).** The build blocker is gone, so this is now
-   unblocked, and it is a launch blocker.
-
-The user's stated method is: work through the list one item at a time, back end before front end.
+Ask the user which item to take. One item at a time, back end before front end.

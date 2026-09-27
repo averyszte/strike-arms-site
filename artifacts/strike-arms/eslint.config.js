@@ -191,9 +191,7 @@ export default tseslint.config(
   {
     // Static lookup tables, not logic. Splitting a 300-line list of terms into
     // two 150-line lists makes it harder to read, not easier.
-    // mock-products.ts is the seeded placeholder catalogue and is due for
-    // deletion once Alan's real products land (feature inventory A1.2).
-    files: ['src/data/mock-products.ts', 'src/lib/glossary.ts', 'src/lib/taxonomy.ts'],
+    files: ['src/lib/glossary.ts', 'src/lib/taxonomy.ts'],
     rules: { 'max-lines': 'off' },
   },
 

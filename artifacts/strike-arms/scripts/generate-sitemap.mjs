@@ -55,6 +55,7 @@ const STATIC_PATHS = [
   '/brands',
   '/new',
   '/sale',
+  '/pre-loved',
   '/gift-cards',
   '/contact',
   '/privacy',
