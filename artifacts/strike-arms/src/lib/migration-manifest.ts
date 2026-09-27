@@ -31,4 +31,5 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '017', name: 'remove_demo_products', file: '017_remove_demo_products.sql' },
   { version: '018', name: 'product_condition', file: '018_product_condition.sql' },
   { version: '019', name: 'drop_adjusted_by_argument', file: '019_drop_adjusted_by_argument.sql' },
+  { version: '020', name: 'reservation_order_fk_restrict', file: '020_reservation_order_fk_restrict.sql' },
 ];
