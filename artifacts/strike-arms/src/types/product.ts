@@ -94,5 +94,23 @@ export type ProductBulkPatch = {
  * means "the caller said nothing about it", null means "take the sale off".
  * Product itself keeps the narrower optional number, because a product either
  * has a sale price or has none.
+ *
+ * Stock is not here, for the same reason as ProductBulkPatch: it moves only
+ * through adjust_stock, so the inventory ledger always agrees with the shelf.
  */
-export type ProductPatch = Partial<Omit<Product, 'salePrice'>> & { salePrice?: number | null };
+export type ProductPatch = Partial<Omit<Product, 'salePrice' | StockField>> & {
+  salePrice?: number | null;
+};
+
+/** Fields the database owns: stock_count and reserved_count move through RPCs. */
+type StockField = 'inStock' | 'stockCount' | 'reservedCount';
+
+/** What the product form sends to create a row. Stock follows via adjust_stock. */
+export type NewProduct = Omit<Product, 'id' | 'createdAt' | StockField>;
+
+/**
+ * A created product, and why its opening stock was not booked if it was not.
+ * The row exists either way, so a failed stock step is a warning, not an error:
+ * throwing would invite a second Create that the unique slug then refuses.
+ */
+export type CreatedProduct = { product: Product; stockError?: string };

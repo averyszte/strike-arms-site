@@ -13,7 +13,7 @@ import type { ProductFormValues } from '@/lib/product-form-schema';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/use-admin-products';
 import { useProductImageUpload } from '@/hooks/use-product-image-upload';
 import { useToast } from '@/hooks/use-toast';
-import type { Product, Category } from '@/types/product';
+import type { Category, NewProduct, Product } from '@/types/product';
 
 function toFormValues(product: Product): ProductFormValues {
   return {
@@ -31,7 +31,7 @@ function toFormValues(product: Product): ProductFormValues {
     isNew: product.isNew ?? false,
     isFeatured: product.isFeatured ?? false,
     isShippable: product.isShippable,
-    stockCount: product.stockCount ?? 0,
+    openingStock: 0,
     tags: (product.tags ?? []).join(', '),
     images: product.images,
   };
@@ -53,12 +53,12 @@ const DEFAULT_VALUES: ProductFormValues = {
   isNew: false,
   isFeatured: false,
   isShippable: false,
-  stockCount: 0,
+  openingStock: 0,
   tags: '',
   images: [],
 };
 
-function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'createdAt'> {
+function toProductInput(values: ProductFormValues): NewProduct {
   return {
     name: values.name,
     slug: values.slug,
@@ -76,8 +76,6 @@ function toProductInput(values: ProductFormValues): Omit<Product, 'id' | 'create
     isNew: values.isNew,
     isFeatured: values.isFeatured,
     isShippable: values.isShippable,
-    stockCount: values.stockCount,
-    inStock: values.stockCount > 0,
     tags: values.tags
       .split(',')
       .map(t => t.trim())
@@ -120,15 +118,22 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   async function onSubmit(values: ProductFormValues) {
     try {
       const input = toProductInput(values);
+      let stockError: string | undefined;
       if (isEdit && product) {
         await update.mutateAsync({ id: product.id, patch: input });
       } else {
-        await create.mutateAsync(input);
+        ({ stockError } = await create.mutateAsync({ input, openingStock: values.openingStock }));
       }
       // The product row owns the images now; the trigger in migration 011 is
       // what cleans them up from here on.
       upload.commit();
-      toast({ title: isEdit ? 'Product updated' : 'Product created' });
+      toast(stockError
+        ? {
+            title: 'Product created, but opening stock was not set',
+            description: `${stockError}. Use Adjust stock.`,
+            variant: 'destructive',
+          }
+        : { title: isEdit ? 'Product updated' : 'Product created' });
       onClose();
     } catch (err: unknown) {
       toast({
@@ -151,7 +156,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
         </SheetHeader>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
-            <ProductFormFields upload={upload} />
+            <ProductFormFields upload={upload} stockOnShelf={isEdit ? product?.stockCount ?? 0 : undefined} />
             <div className="flex gap-2 pt-2 border-t border-border sticky bottom-0 bg-background pb-2">
               <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
                 Cancel

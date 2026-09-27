@@ -7,7 +7,7 @@ import {
   bulkUpdateProducts,
   bulkDeleteProducts,
 } from '@/data/admin-products-repository';
-import type { Product, ProductBulkPatch, ProductPatch } from '@/types/product';
+import type { NewProduct, ProductBulkPatch, ProductPatch } from '@/types/product';
 
 export function useAdminProducts() {
   return useQuery({
@@ -19,9 +19,11 @@ export function useAdminProducts() {
 export function useCreateProduct() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Omit<Product, 'id' | 'createdAt'>) => createProduct(input),
-    onSuccess: () => {
+    mutationFn: ({ input, openingStock }: { input: NewProduct; openingStock: number }) =>
+      createProduct(input, openingStock),
+    onSuccess: ({ product }) => {
       qc.invalidateQueries({ queryKey: ['admin', 'products'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'inventory', product.id] });
       qc.invalidateQueries({ queryKey: ['products'] });
       qc.invalidateQueries({ queryKey: ['subcategories'] });
     },

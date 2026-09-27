@@ -14,6 +14,9 @@ export const EMPTY_STOCK_ADJUSTMENT: StockAdjustmentForm = {
   reason: '',
 };
 
+/** The ledger reason for the stock a product is created with in the form. */
+export const OPENING_STOCK_FORM_REASON = 'Opening stock';
+
 /** Fills the reason field in one tap. Free text still wins if none of them fit. */
 export const STOCK_REASONS = [
   'Delivery received',

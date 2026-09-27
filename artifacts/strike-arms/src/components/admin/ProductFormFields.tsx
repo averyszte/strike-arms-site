@@ -42,9 +42,11 @@ function FieldError({ message }: { message?: string }) {
 interface Props {
   /** Owned by ProductFormSheet, which also has to discard on cancel. */
   upload: ProductImageUpload;
+  /** Set when editing. Stock is then shown, not edited: Adjust stock owns it. */
+  stockOnShelf?: number;
 }
 
-export function ProductFormFields({ upload }: Props) {
+export function ProductFormFields({ upload, stockOnShelf }: Props) {
   const {
     register,
     control,
@@ -179,11 +181,18 @@ export function ProductFormFields({ upload }: Props) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="stockCount">Stock Count</Label>
-        <Input id="stockCount" type="number" min={0} {...register('stockCount')} />
-        <FieldError message={errors.stockCount?.message} />
-      </div>
+      {stockOnShelf === undefined ? (
+        <div className="space-y-1">
+          <Label htmlFor="openingStock">Opening stock</Label>
+          <Input id="openingStock" type="number" min={0} {...register('openingStock')} />
+          <FieldError message={errors.openingStock?.message} />
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {stockOnShelf} on the shelf. To change it, use Adjust stock in the products
+          list, so the inventory history records who and why.
+        </p>
+      )}
 
       <ProductImagesField upload={upload} />
 

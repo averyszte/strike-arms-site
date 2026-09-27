@@ -12,7 +12,15 @@
 
 import { supabase } from '@/lib/supabase';
 import { rowToProduct } from '@/lib/product-mappers';
-import type { Product, ProductBulkPatch, ProductPatch } from '@/types/product';
+import { OPENING_STOCK_FORM_REASON } from '@/lib/stock-adjustment';
+import { adjustStock } from '@/data/inventory-repository';
+import type {
+  CreatedProduct,
+  NewProduct,
+  Product,
+  ProductBulkPatch,
+  ProductPatch,
+} from '@/types/product';
 
 export async function listAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase
@@ -23,7 +31,15 @@ export async function listAllProducts(): Promise<Product[]> {
   return (data ?? []).map(rowToProduct);
 }
 
-export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): Promise<Product> {
+/**
+ * Inserts the row with no stock, then books the opening stock through
+ * adjust_stock like the CSV import does, so the ledger has a first entry that
+ * says who put the units there.
+ */
+export async function createProduct(
+  input: NewProduct,
+  openingStock: number,
+): Promise<CreatedProduct> {
   const { data, error } = await supabase
     .from('products')
     .insert({
@@ -39,7 +55,7 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): P
       short_description: input.shortDescription,
       description: input.description ?? '',
       is_published: input.isPublished ?? false,
-      stock_count: input.stockCount ?? 0,
+      stock_count: 0,
       is_new: input.isNew ?? false,
       is_featured: input.isFeatured ?? false,
       is_shippable: input.isShippable,
@@ -49,7 +65,16 @@ export async function createProduct(input: Omit<Product, 'id' | 'createdAt'>): P
     .single();
 
   if (error) throw error;
-  return rowToProduct(data);
+  const product = rowToProduct(data);
+  if (openingStock <= 0) return { product };
+
+  try {
+    await adjustStock(product.id, openingStock, OPENING_STOCK_FORM_REASON);
+    return { product };
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : 'the stock change was refused';
+    return { product, stockError: detail };
+  }
 }
 
 export async function updateProduct(id: string, patch: ProductPatch): Promise<Product> {
@@ -68,7 +93,6 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
       ...(patch.shortDescription !== undefined && { short_description: patch.shortDescription }),
       ...(patch.description != null && { description: patch.description }),
       ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
-      ...(patch.stockCount !== undefined && { stock_count: patch.stockCount }),
       ...(patch.isNew !== undefined && { is_new: patch.isNew }),
       ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
       ...(patch.isShippable !== undefined && { is_shippable: patch.isShippable }),

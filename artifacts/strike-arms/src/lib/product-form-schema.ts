@@ -31,7 +31,10 @@ export const productFormSchema = z.object({
   isNew: z.boolean(),
   isFeatured: z.boolean(),
   isShippable: z.boolean(),
-  stockCount: z.coerce.number().int().min(0, 'Must be 0 or more'),
+  // Used on create only. An existing product's stock changes through Adjust
+  // stock, never this form, so saving an edit cannot overwrite a sale that
+  // happened while the sheet was open.
+  openingStock: z.coerce.number().int().min(0, 'Must be 0 or more'),
   tags: z.string(),
   // Public URLs, in display order — the first is the card image. Written by
   // ProductImagesField after upload rather than typed, so there is no format
