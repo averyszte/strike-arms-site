@@ -25,6 +25,12 @@ export const BRAND_NAMES: Record<string, string> = {
   'abbey': 'Abbey',
   'bolle': 'Bolle',
   'unbranded': 'Unbranded',
+  'bushnell': 'Bushnell',
+  'double-bell': 'Double Bell',
+  'evolution': 'Evolution',
+  'invader-gear': 'Invader Gear',
+  'viper-tactical': 'Viper Tactical',
+  'well': 'Well',
 };
 
 export function getBrandName(slug: string): string {

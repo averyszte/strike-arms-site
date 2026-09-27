@@ -50,6 +50,11 @@ migration 019, `bfda5bd` inquiries paging, `e80ca32` migration 020. Push only wh
 
 ## NEEDS THE USER (aal2 admin session)
 
+0. **Import batch 2 (106 new products, emails of 19 and 27 Sep).** Run `upload-images.mjs`,
+   then `build-csv.mjs --batch=2`, then import `products-batch-2.csv`, then import
+   `safety-tags.csv` (moves the live masks onto `/safety-equipment`). Never re-import the full
+   `products.csv`: it would unpublish everything. See `scripts/catalogue-import/README.md`.
+
 1. **Confirm the 018 backfill count of 14** in the admin product list. Anon cannot see
    unpublished rows, so this was not verifiable from REST.
 2. **Set stock to 1 on the 14 pre-loved rifles.** They are one-offs; the importer always writes

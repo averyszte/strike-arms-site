@@ -100,6 +100,9 @@ export const MASKS = [
 ].map((item) => ({
   brand: 'Unbranded',
   ...item,
+  // Alan renamed this page Safety Equipment on 19 Sep 2026; the tag puts
+  // these on /safety-equipment. build-safety-tags.mjs retags the live rows.
+  tags: [...item.tags, 'safety'],
   category: 'gear',
   folder: 'Masks_and_Goggles_Page',
   note: NO_COPY,

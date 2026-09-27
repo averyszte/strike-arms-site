@@ -7,7 +7,13 @@
  * price is left out of the CSV and named in the report rather than shipped with
  * a guessed figure.
  *
- * Usage:  node scripts/catalogue-import/build-csv.mjs
+ * Usage:  node scripts/catalogue-import/build-csv.mjs            (every page)
+ *         node scripts/catalogue-import/build-csv.mjs --batch=2  (one round)
+ *
+ * The batch form writes products-batch-N.csv holding only the pages from that
+ * email round. Importing it cannot touch a product from an earlier round, so
+ * nothing Alan has already published is set back to unpublished. The Stock
+ * column is honoured for new rows only, as opening stock.
  *
  * Image URLs are filled in by upload-images.mjs, which writes image-urls.json
  * next to this file. If that file is present its URLs are used; if not, the
@@ -26,7 +32,10 @@ const REPO = join(HERE, '..', '..');
 const TAXONOMY_FILE = join(REPO, 'artifacts', 'strike-arms', 'src', 'lib', 'taxonomy.ts');
 const IMAGES_DIR = join(HERE, 'images');
 const URLS_FILE = join(HERE, 'image-urls.json');
-const OUT_FILE = join(HERE, 'products.csv');
+const BATCH = Number(process.argv.find((arg) => arg.startsWith('--batch='))?.split('=')[1]) || null;
+const OUT_FILE = join(HERE, BATCH ? `products-batch-${BATCH}.csv` : 'products.csv');
+const SELECTED_PAGES = BATCH ? PAGES.filter((page) => page.batch === BATCH) : PAGES;
+const SELECTED = SELECTED_PAGES.flatMap((page) => page.items);
 
 const COLUMNS = [
   'Slug',
@@ -128,17 +137,17 @@ function row(item, urls) {
     'No',
     item.isNew ? 'Yes' : 'No',
     IMPORT_SHIPPABLE ? 'Yes' : 'No',
-    '',
+    item.stock ?? '',
   ].map(csvCell);
 }
 
 function report(withPrice, withoutPrice, urls) {
   const missingPhoto = withPrice.filter((item) => !item.image).map((item) => item.slug);
-  const flagged = CATALOGUE.filter((item) => item.flag);
+  const flagged = SELECTED.filter((item) => item.flag);
 
   const lines = [
     `Wrote ${withPrice.length} rows to ${OUT_FILE}`,
-    ...PAGES.map((page) => `  ${page.label}: ${page.items.length}`),
+    ...SELECTED_PAGES.map((page) => `  ${page.label}: ${page.items.length}`),
     '',
     Object.keys(urls).length
       ? `Images column filled from image-urls.json (${Object.keys(urls).length} URLs).`
@@ -167,8 +176,13 @@ if (problems.length) {
 }
 
 const urls = existsSync(URLS_FILE) ? JSON.parse(readFileSync(URLS_FILE, 'utf8')) : {};
-const withPrice = CATALOGUE.filter((item) => item.price);
-const withoutPrice = CATALOGUE.filter((item) => !item.price);
+if (BATCH && SELECTED.length === 0) {
+  process.stderr.write(`No pages are marked batch ${BATCH} in catalogue.mjs.
+`);
+  process.exit(1);
+}
+const withPrice = SELECTED.filter((item) => item.price);
+const withoutPrice = SELECTED.filter((item) => !item.price);
 
 const csv = [COLUMNS, ...withPrice.map((item) => row(item, urls))]
   .map((cells) => cells.join(','))

@@ -1,6 +1,8 @@
 # Alan photographs, extracted from his emails. Source material, not source code.
 images/
 products.csv
+products-batch-*.csv
+safety-tags.csv
 image-urls.json
 
 # Never commit this. It bypasses RLS.

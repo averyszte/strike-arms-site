@@ -18,16 +18,26 @@ admin importer accepts, with his photographs already in the `product-images` buc
 ## Files
 
 - `catalogue-guns.mjs` · `catalogue-pre-loved.mjs` · `catalogue-consumables.mjs` ·
-  `catalogue-gear.mjs` — Alan's stock, transcribed. **This is the source of truth, not the CSV.**
+  `catalogue-gear.mjs` — batch 1 (emails of 31 Aug and 1 Sep 2026).
+- `catalogue-magazines.mjs` · `catalogue-props-safety.mjs` · `catalogue-jumble-batch-2.mjs` —
+  batch 2 (emails of 19 and 27 Sep 2026). Together these are Alan's stock, transcribed. **This is the source of truth, not the CSV.**
   When Alan answers a question, fix it here and rebuild.
 - `catalogue.mjs` — assembles the pages and holds the two import defaults.
-- `build-csv.mjs` — validates, then writes `products.csv`.
+- `build-csv.mjs` — validates, then writes `products.csv`, or `products-batch-N.csv` with
+  `--batch=N`.
+- `build-safety-tags.mjs` — writes `safety-tags.csv`, a Slug and Tags only file that moves the
+  live masks and goggles onto Safety Equipment without touching anything else about them.
 - `upload-images.mjs` — pushes the photographs to the bucket, writes `image-urls.json`.
 - `read-credentials.mjs` — finds the project URL and the service role key.
 - `images/` — the photographs, extracted from the emails. Git-ignored: they are source material,
   not source code, and they are 9.4 MB.
 
-`products.csv`, `image-urls.json`, `images/` and `service-role-key.txt` are all git-ignored.
+The CSVs, `image-urls.json`, `images/` and `service-role-key.txt` are all git-ignored.
+
+**Importing a later batch:** never re-import the full `products.csv` once Alan has published
+anything, because its Published column says No for every row. Use `build-csv.mjs --batch=2`
+instead: it carries only that round's pages. Every batch is validated against the whole catalogue,
+so a slug clash with an earlier batch still stops the build.
 
 ## Running it
 
@@ -68,9 +78,16 @@ node scripts/catalogue-import/build-csv.mjs
   postable" as blocked on Alan, so nothing here guesses it. That does mean the delivery and
   mixed-basket checkout paths (C3.1, C3.2) still have nothing to test against — the tick list in
   `docs/alan-catalogue-questions.md` is the shortest way to unblock them.
-- **Stock imports as zero,** because the importer always writes zero by design: stock moves
-  through `adjust_stock` so the ledger can say who changed it and why. The pre-loved rows are
-  one-offs and each needs an adjustment to 1.
+- **Stock:** batch 1 imported at zero. Since then the importer takes a Stock column for new rows
+  only, and books it through `adjust_stock` as "Opening stock (import)", so the ledger still says
+  where it came from. Batch 2 opens jumble and wallhanger one-offs at 1 (2 where Alan listed the
+  same item twice). Magazines and gloves open at 0: Alan gave no quantities.
+- **Batch 2 shelves:** jumble rows carry the `jumble` tag (shown on `/jumble`, kept off
+  `/pre-loved`); gloves and masks carry `safety` (`/safety-equipment`); wallhangers sit in
+  `more/wallhangers-props` with the `wallhanger` tag and Alan's non-firing wording as the page
+  intro. Jumble items Alan calls used or pre-owned import as pre-loved; the rest as new.
+- **Gloves are one product per size,** because the shop has no size picker: the customer pays for
+  the size they chose and stock is counted per size.
 - **Pre-loved products keep their real category** (`rifles/aeg-rifles` and so on), carry the
   tags `pre-loved`, `secondhand` and `sold-as-seen`, and set the `Condition` column to
   `Pre-loved`. The column is what the shop reads: migration 018 made `condition` a real column,
@@ -92,5 +109,7 @@ node scripts/catalogue-import/build-csv.mjs
 
 ## Still open
 
-The 25 flagged rows are listed in `docs/alan-catalogue-questions.md`, which is written to be
-forwarded to Alan as it stands.
+The 25 flagged batch 1 rows are listed in `docs/alan-catalogue-questions.md`, which is written to
+be forwarded to Alan as it stands. Batch 2 flags print when `build-csv.mjs --batch=2` runs. Also
+open from batch 2: no photos came for the 12 wallhangers; Alan said "75 extra items" but listed 73
+(there is no C9); Books & Manuals is still to come.

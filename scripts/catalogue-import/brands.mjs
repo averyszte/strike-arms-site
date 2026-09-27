@@ -20,13 +20,19 @@ export const BRAND_SLUGS = {
   Abbey: 'abbey',
   'Action Army': 'action-army',
   Bolle: 'bolle',
+  Bushnell: 'bushnell',
   CYMA: 'cyma',
+  'Double Bell': 'double-bell',
+  Evolution: 'evolution',
+  'Invader Gear': 'invader-gear',
   JG: 'jg',
   'Specna Arms': 'specna-arms',
   'Tokyo Marui': 'tokyo-marui',
   Umarex: 'umarex',
   Unbranded: 'unbranded',
+  'Viper Tactical': 'viper-tactical',
   WE: 'we',
+  Well: 'well',
 };
 
 export function brandSlug(displayName) {
