@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import type { Database } from '@/types/database';
 import type { Inquiry, InquiryStatus, CreateInquiryInput } from '@/types/inquiry';
 
@@ -41,17 +42,25 @@ export async function createInquiry(input: CreateInquiryInput): Promise<void> {
   if (error) throw error;
 }
 
-export async function listInquiries(status?: InquiryStatus): Promise<Inquiry[]> {
+/**
+ * The most recent `limit` inquiries, plus the total that match. "Load more"
+ * raises the limit rather than fetching a second page, so the list never has
+ * to be stitched together on the client.
+ */
+export async function listInquiries(
+  status?: InquiryStatus,
+  limit = INQUIRIES_PAGE_SIZE,
+): Promise<{ items: Inquiry[]; total: number }> {
   let query = supabase
     .from('inquiries')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (status) query = query.eq('status', status);
 
-  const { data, error } = await query;
+  const { data, error, count } = await query.range(0, limit - 1);
   if (error) throw error;
-  return (data ?? []).map(rowToInquiry);
+  return { items: (data ?? []).map(rowToInquiry), total: count ?? 0 };
 }
 
 export async function updateInquiryStatus(id: string, status: InquiryStatus): Promise<Inquiry> {

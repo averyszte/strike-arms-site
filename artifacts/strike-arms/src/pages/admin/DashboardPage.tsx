@@ -23,7 +23,8 @@ function fmtEuros(cents: number) {
 export default function DashboardPage() {
   const { data: orders = [], isLoading } = useAllOrdersWithItems();
   const { data: products = [] } = useAdminProducts();
-  const { data: newInquiries = [] } = useInquiries('new');
+  // Only the count is shown, and `total` is exact whatever the limit.
+  const { data: newInquiries } = useInquiries('new', 1);
 
   const metrics = computeDashboardMetrics(orders);
   // Money and volume read every order; the queues and alerts read only what is
@@ -87,7 +88,7 @@ export default function DashboardPage() {
         <OperationalAlertsCard
           orders={active}
           products={products}
-          newInquiryCount={newInquiries.length}
+          newInquiryCount={newInquiries?.total ?? 0}
         />
       </div>
     </>

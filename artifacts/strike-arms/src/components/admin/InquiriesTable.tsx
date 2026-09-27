@@ -8,7 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { useInquiries, useUpdateInquiryStatus } from '@/hooks/use-inquiries';
+import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import { InquiryDetailSheet } from '@/components/admin/InquiryDetailSheet';
 import { useToast } from '@/hooks/use-toast';
 import type { Inquiry, InquiryStatus } from '@/types/inquiry';
@@ -28,11 +30,20 @@ const STATUS_TABS: { value: InquiryStatus | 'all'; label: string }[] = [
 
 export function InquiriesTable() {
   const [statusFilter, setStatusFilter] = useState<InquiryStatus | 'all'>('all');
+  const [limit, setLimit] = useState(INQUIRIES_PAGE_SIZE);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
-  const { data: inquiries, isLoading } = useInquiries(
+  const { data, isLoading, isFetching } = useInquiries(
     statusFilter === 'all' ? undefined : statusFilter,
+    limit,
   );
+  const inquiries = data?.items;
+  const hasMore = (data?.total ?? 0) > (inquiries?.length ?? 0);
+
+  function changeStatusFilter(next: InquiryStatus | 'all') {
+    setStatusFilter(next);
+    setLimit(INQUIRIES_PAGE_SIZE);
+  }
   const updateStatus = useUpdateInquiryStatus();
   const { toast } = useToast();
 
@@ -50,7 +61,7 @@ export function InquiriesTable() {
         <h2 className="text-lg font-semibold text-foreground mb-3">Inquiries</h2>
         <Tabs
           value={statusFilter}
-          onValueChange={v => setStatusFilter(v as InquiryStatus | 'all')}
+          onValueChange={v => changeStatusFilter(v as InquiryStatus | 'all')}
         >
           <TabsList>
             {STATUS_TABS.map(t => (
@@ -127,6 +138,22 @@ export function InquiriesTable() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {hasMore && (
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-muted-foreground">
+          <span>
+            Showing {inquiries?.length ?? 0} of {data?.total ?? 0}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isFetching}
+            onClick={() => setLimit(current => current + INQUIRIES_PAGE_SIZE)}
+          >
+            {isFetching ? 'Loading...' : 'Load more'}
+          </Button>
         </div>
       )}
 
