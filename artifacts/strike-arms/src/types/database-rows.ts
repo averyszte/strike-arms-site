@@ -31,6 +31,11 @@ export type ProductRow = {
   is_new: boolean; is_featured: boolean; is_published: boolean;
   stock_count: number; reserved_count: number; low_stock_threshold: number;
   in_stock: boolean; tags: string[];
+  // Generated: stock_count - reserved_count (026). Read-only -- the admin
+  // list filters on it because PostgREST cannot filter on an expression.
+  sellable_count: number;
+  // An archived product is never published (026), and stands in for delete.
+  is_archived: boolean; archived_at: string | null;
   // Generated: name, brand, short description and tags, lowercased and
   // joined. Read-only -- the storefront search filters on it (migration 015).
   search_text: string;

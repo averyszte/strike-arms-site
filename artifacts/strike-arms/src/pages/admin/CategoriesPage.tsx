@@ -22,6 +22,7 @@ import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { SubcategoryFormSheet } from '@/components/admin/SubcategoryFormSheet';
 import { useSubcategories, useDeleteSubcategory } from '@/hooks/use-categories';
 import { useToast } from '@/hooks/use-toast';
+import { loadErrorMessage } from '@/lib/load-error-message';
 import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';
 
@@ -62,8 +63,12 @@ export default function CategoriesPage() {
     try {
       await deleteSubcategory.mutateAsync(deleting.id);
       toast({ title: 'Subcategory deleted' });
-    } catch {
-      toast({ title: 'Error', description: 'Failed to delete', variant: 'destructive' });
+    } catch (error) {
+      toast({
+        title: 'Not deleted',
+        description: loadErrorMessage(error),
+        variant: 'destructive',
+      });
     } finally {
       setDeleting(null);
     }
@@ -208,8 +213,9 @@ export default function CategoriesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete subcategory?</AlertDialogTitle>
             <AlertDialogDescription>
-              &ldquo;{deleting?.name}&rdquo; will be removed. Products using this subcategory will
-              keep their existing value but the subcategory won&apos;t appear in the dropdown.
+              &ldquo;{deleting?.name}&rdquo; will be removed. If any product still uses it, the
+              delete is refused: move those products to another subcategory, or archive them,
+              first.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -37,4 +37,5 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '023', name: 'admin_policy_form', file: '023_admin_policy_form.sql' },
   { version: '024', name: 'admin_invites', file: '024_admin_invites.sql' },
   { version: '025', name: 'order_status_rules', file: '025_order_status_rules.sql' },
+  { version: '026', name: 'product_archive', file: '026_product_archive.sql' },
 ];

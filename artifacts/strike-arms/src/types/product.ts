@@ -43,6 +43,9 @@ export type Product = {
   reservedCount?: number;
   isNew?: boolean;
   isFeatured?: boolean;
+  // Archived stands in for delete (026): off the shop and out of the admin
+  // list, but its stock history and order links are kept.
+  isArchived?: boolean;
   tags?: string[];
   createdAt: string;          // ISO date — used for sort-by-newest
 };
@@ -81,6 +84,18 @@ export type ProductListResult = {
  * straight would step around adjust_stock and leave the inventory ledger
  * claiming a number the shelf does not have.
  */
+/** The products list's stock filter. See lib/stock-levels.ts for what each means. */
+export type ProductStockFilter = 'all' | 'low' | 'out';
+
+export type AdminProductListFilters = {
+  search?: string;
+  stock?: ProductStockFilter;
+  /** Archived products are a separate view, never mixed in with live ones. */
+  isArchived?: boolean;
+  page?: number;
+  pageSize?: number;
+};
+
 export type ProductBulkPatch = {
   isPublished?: boolean;
   isFeatured?: boolean;
@@ -98,7 +113,7 @@ export type ProductBulkPatch = {
  * Stock is not here, for the same reason as ProductBulkPatch: it moves only
  * through adjust_stock, so the inventory ledger always agrees with the shelf.
  */
-export type ProductPatch = Partial<Omit<Product, 'salePrice' | StockField>> & {
+export type ProductPatch = Partial<Omit<Product, 'salePrice' | 'isArchived' | StockField>> & {
   salePrice?: number | null;
 };
 

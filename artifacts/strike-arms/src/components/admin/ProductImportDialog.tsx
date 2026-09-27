@@ -12,11 +12,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProductImportPreview } from '@/components/admin/ProductImportPreview';
+import { useAdminProducts } from '@/hooks/use-admin-products';
 import { useProductImport } from '@/hooks/use-product-import';
 import { useToast } from '@/hooks/use-toast';
 import { planIsEmpty, planProductImport, type ImportPlan } from '@/lib/product-import';
+import { loadErrorMessage } from '@/lib/load-error-message';
 import type { ImportOutcome } from '@/types/product-import';
-import type { Product } from '@/types/product';
 
 /**
  * Read the file, show what it would do, and only then write anything.
@@ -25,6 +26,9 @@ import type { Product } from '@/types/product';
  * button under it has been pressed. If the write is partial -- there is no
  * transaction across PostgREST -- the failures are listed by slug rather than
  * summarised, because "3 rows failed" is not something anyone can act on.
+ *
+ * Rows are matched against the whole catalogue, archived products included,
+ * so it is loaded when the dialog opens rather than taken from the list page.
  */
 
 /** Big enough for a catalogue several times over; small enough not to hang the tab. */
@@ -32,11 +36,11 @@ const MAX_BYTES = 4 * 1024 * 1024;
 
 interface Props {
   open: boolean;
-  products: Product[];
   onClose: () => void;
 }
 
-export function ProductImportDialog({ open, products, onClose }: Props) {
+export function ProductImportDialog({ open, onClose }: Props) {
+  const catalogue = useAdminProducts({ enabled: open });
   const [fileName, setFileName] = useState('');
   const [plan, setPlan] = useState<ImportPlan | null>(null);
   const [readError, setReadError] = useState('');
@@ -69,7 +73,7 @@ export function ProductImportDialog({ open, products, onClose }: Props) {
       return;
     }
     try {
-      setPlan(planProductImport(await file.text(), products));
+      setPlan(planProductImport(await file.text(), catalogue.data ?? []));
     } catch {
       setReadError('That file could not be read.');
     }
@@ -121,9 +125,19 @@ export function ProductImportDialog({ open, products, onClose }: Props) {
               ref={inputRef}
               type="file"
               accept=".csv,text/csv"
+              disabled={!catalogue.data}
               onChange={(event) => void handleFile(event.target.files?.[0])}
             />
             {fileName && <p className="text-xs text-muted-foreground">{fileName}</p>}
+            {catalogue.isLoading && (
+              <p className="text-xs text-muted-foreground">Loading the catalogue to match against…</p>
+            )}
+            {catalogue.isError && (
+              <p className="text-xs text-destructive">
+                The catalogue could not be loaded, so nothing can be matched:{' '}
+                {loadErrorMessage(catalogue.error)}
+              </p>
+            )}
           </div>
         )}
 

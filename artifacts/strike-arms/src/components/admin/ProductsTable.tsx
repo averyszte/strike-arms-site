@@ -1,109 +1,70 @@
 import { useMemo, useState } from 'react';
-import { Download, Plus, Upload } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Accordion } from '@/components/ui/accordion';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
+import { AdminPager } from '@/components/admin/AdminPager';
 import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
 import { ProductImportDialog } from '@/components/admin/ProductImportDialog';
 import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
-import { ProductsTableGroup } from '@/components/admin/ProductsTableGroup';
+import { ProductsGroups } from '@/components/admin/ProductsGroups';
+import { ProductsToolbar } from '@/components/admin/ProductsToolbar';
 import { StockAdjustDialog } from '@/components/admin/StockAdjustDialog';
-import {
-  useAdminProducts,
-  useBulkDeleteProducts,
-  useBulkUpdateProducts,
-  useDeleteProduct,
-} from '@/hooks/use-admin-products';
-import { useCsvDownload } from '@/hooks/use-csv-download';
+import { useAdminProductsList } from '@/hooks/use-admin-products';
+import { useProductsActions } from '@/hooks/use-products-actions';
+import { useProductsExport } from '@/hooks/use-products-export';
+import { useProductsFilters } from '@/hooks/use-products-filters';
 import { useRowSelection } from '@/hooks/use-row-selection';
 import { useToast } from '@/hooks/use-toast';
 import { flattenGroups, groupProductsByCategory } from '@/lib/group-products';
-import { buildProductsCsv, productsCsvFilename } from '@/lib/products-csv';
-import type { Product, ProductBulkPatch } from '@/types/product';
+import { loadErrorMessage } from '@/lib/load-error-message';
+import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
+import type { Product } from '@/types/product';
+
+/**
+ * The products list: one server-side page at a time, filtered by search,
+ * stock level and archived. Export and import read the whole catalogue
+ * separately, whatever page is on screen.
+ */
+
+function emptyMessage(isFiltered: boolean, showArchived: boolean): string {
+  if (isFiltered) return 'No products match. Clear the search or the stock filter.';
+  if (showArchived) return 'Nothing is archived.';
+  return 'No products yet. Click “Add Product” to create one.';
+}
 
 export function ProductsTable() {
-  const { data: products, isLoading, isError, error, isFetching, refetch } = useAdminProducts();
-  const deleteProduct = useDeleteProduct();
-  const bulkUpdate = useBulkUpdateProducts();
-  const bulkDelete = useBulkDeleteProducts();
-  const download = useCsvDownload();
+  const filters = useProductsFilters();
+  const list = useAdminProductsList(filters.filters);
+  const { exportProducts, isExporting } = useProductsExport();
   const { toast } = useToast();
 
   const [editing, setEditing] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
-  const [deleting, setDeleting] = useState<Product | null>(null);
   const [adjusting, setAdjusting] = useState<Product | null>(null);
   const [importing, setImporting] = useState(false);
 
-  const groups = useMemo(() => groupProductsByCategory(products ?? []), [products]);
+  const groups = useMemo(() => groupProductsByCategory(list.data?.items ?? []), [list.data]);
   const visible = useMemo(() => flattenGroups(groups), [groups]);
   const selection = useRowSelection(visible);
+  const actions = useProductsActions(selection.clear);
 
-  async function handleDelete() {
-    if (!deleting) return;
-    try {
-      await deleteProduct.mutateAsync(deleting.id);
-      toast({ title: 'Product deleted' });
-    } catch {
-      toast({ title: 'Error', description: 'Failed to delete product', variant: 'destructive' });
-    } finally {
-      setDeleting(null);
-    }
+  function handleExport() {
+    exportProducts().catch((error: unknown) =>
+      toast({ title: 'Export failed', description: loadErrorMessage(error), variant: 'destructive' }),
+    );
   }
 
-  async function handleBulkPatch(patch: ProductBulkPatch) {
-    const count = selection.selectedIds.length;
-    try {
-      await bulkUpdate.mutateAsync({ ids: selection.selectedIds, patch });
-      selection.clear();
-      toast({ title: `${count} product${count === 1 ? '' : 's'} updated` });
-    } catch (error) {
-      toast({
-        title: 'Nothing was changed',
-        description: error instanceof Error ? error.message : 'The update failed.',
-        variant: 'destructive',
-      });
-    }
-  }
-
-  async function handleBulkDelete() {
-    const count = selection.selectedIds.length;
-    try {
-      await bulkDelete.mutateAsync(selection.selectedIds);
-      selection.clear();
-      toast({ title: `${count} product${count === 1 ? '' : 's'} deleted` });
-    } catch (error) {
-      toast({
-        title: 'Nothing was deleted',
-        description: error instanceof Error ? error.message : 'The delete failed.',
-        variant: 'destructive',
-      });
-    }
-  }
-
-  if (isError) {
+  if (list.isError) {
     return (
       <AdminLoadError
         what="the products"
-        error={error}
-        isRetrying={isFetching}
-        onRetry={() => void refetch()}
+        error={list.error}
+        isRetrying={list.isFetching}
+        onRetry={() => void list.refetch()}
       />
     );
   }
 
-  if (isLoading) {
+  if (list.isLoading) {
     return (
       <div className="flex justify-center py-16">
         <div className="h-7 w-7 animate-spin rounded-full border-b-2 border-accent" />
@@ -111,70 +72,60 @@ export function ProductsTable() {
     );
   }
 
-  const isPending = bulkUpdate.isPending || bulkDelete.isPending;
+  const ids = selection.selectedIds;
+  const total = list.data?.total ?? 0;
+  const isFiltered = filters.query !== '' || filters.stock !== 'all';
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">
-          Products ({products?.length ?? 0})
-        </h2>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!products || products.length === 0}
-            onClick={() =>
-              download(buildProductsCsv(products ?? []), productsCsvFilename(new Date()))
-            }
-          >
-            <Download className="mr-1.5 h-4 w-4" />
-            Export CSV
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => setImporting(true)}>
-            <Upload className="mr-1.5 h-4 w-4" />
-            Import CSV
-          </Button>
-          <Button size="sm" onClick={() => setAdding(true)}>
-            <Plus className="mr-1.5 h-4 w-4" />
-            Add Product
-          </Button>
-        </div>
-      </div>
+      <ProductsToolbar
+        total={total}
+        showArchived={filters.showArchived}
+        stock={filters.stock}
+        query={filters.query}
+        isExporting={isExporting}
+        onToggleArchived={filters.toggleArchived}
+        onStockChange={filters.setStock}
+        onQueryChange={filters.setQuery}
+        onExport={handleExport}
+        onImport={() => setImporting(true)}
+        onAdd={() => setAdding(true)}
+      />
 
-      {selection.selectedIds.length > 0 && (
+      {ids.length > 0 && (
         <ProductsBulkBar
           selected={selection.selectedRows}
-          isPending={isPending}
+          isPending={actions.isPending}
+          isArchivedView={filters.showArchived}
           onClear={selection.clear}
-          onPatch={(patch) => void handleBulkPatch(patch)}
-          onDelete={() => void handleBulkDelete()}
+          onPatch={(patch) => actions.patch(ids, patch)}
+          onArchive={() => actions.archive(ids)}
+          onRestore={() => actions.restore(ids)}
         />
       )}
 
-      {groups.length === 0 ? (
-        <div className="rounded-md border border-border px-4 py-12 text-center text-muted-foreground">
-          No products yet. Click &ldquo;Add Product&rdquo; to create one.
-        </div>
-      ) : (
-        <Accordion type="multiple" defaultValue={[]} className="space-y-2">
-          {groups.map((group) => (
-            <ProductsTableGroup
-              key={group.category}
-              category={group.category}
-              label={group.label}
-              products={group.products}
-              selectionState={selection.groupState(group.products.map((p) => p.id))}
-              isSelected={selection.isSelected}
-              onToggleSelect={selection.toggle}
-              onToggleGroup={selection.toggleMany}
-              onEdit={setEditing}
-              onAdjustStock={setAdjusting}
-              onDelete={setDeleting}
-            />
-          ))}
-        </Accordion>
-      )}
+      <ProductsGroups
+        groups={groups}
+        emptyMessage={emptyMessage(isFiltered, filters.showArchived)}
+        groupState={selection.groupState}
+        isSelected={selection.isSelected}
+        onToggleSelect={selection.toggle}
+        onToggleGroup={selection.toggleMany}
+        onEdit={setEditing}
+        onAdjustStock={setAdjusting}
+        onArchiveToggle={(product) =>
+          product.isArchived ? actions.restoreOne(product) : actions.archiveOne(product)
+        }
+      />
+
+      <AdminPager
+        page={filters.page}
+        pageSize={ADMIN_PAGE_SIZE}
+        total={total}
+        noun="products"
+        isFetching={list.isFetching}
+        onPageChange={filters.setPage}
+      />
 
       <ProductFormSheet open={adding} onClose={() => setAdding(false)} />
       <ProductFormSheet
@@ -183,43 +134,12 @@ export function ProductsTable() {
         onClose={() => setEditing(null)}
         product={editing ?? undefined}
       />
-
-      <ProductImportDialog
-        open={importing}
-        products={products ?? []}
-        onClose={() => setImporting(false)}
-      />
-
+      <ProductImportDialog open={importing} onClose={() => setImporting(false)} />
       <StockAdjustDialog
         key={adjusting?.id ?? 'none'}
         product={adjusting}
         onClose={() => setAdjusting(null)}
       />
-
-      <AlertDialog
-        open={!!deleting}
-        onOpenChange={(open) => {
-          if (!open) setDeleting(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete product?</AlertDialogTitle>
-            <AlertDialogDescription>
-              &ldquo;{deleting?.name}&rdquo; will be permanently deleted. This cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => void handleDelete()}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

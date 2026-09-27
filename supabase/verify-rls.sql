@@ -112,7 +112,7 @@ findings(severity, rule, object, detail) as (
   where roles = '{public}'
 
   union all
-  -- 10. The one intentional anon write, listed so it is not forgotten (029, inquiries_lockdown).
+  -- 10. The one intentional anon write, listed so it is not forgotten (030, inquiries_lockdown).
   select 'review', 'anon-insert-inquiries', 'inquiries',
          'open anon insert; replace with the submit-inquiry function'
   from information_schema.role_table_grants g
@@ -127,6 +127,16 @@ findings(severity, rule, object, detail) as (
   where g.table_schema = 'public' and g.table_name = 'inventory_adjustments'
     and g.grantee in ('anon', 'authenticated')
     and g.privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')
+
+  union all
+  -- 12. Products are archived, never deleted: a delete cascades away the
+  --     stock history (026).
+  select 'fail', 'products-deletable-from-browser', 'products',
+         g.grantee || ' has ' || g.privilege_type
+  from information_schema.role_table_grants g
+  where g.table_schema = 'public' and g.table_name = 'products'
+    and g.grantee in ('anon', 'authenticated')
+    and g.privilege_type in ('DELETE', 'TRUNCATE')
 )
 select severity, rule, object, detail
 from findings

@@ -1,57 +1,42 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   listAllProducts,
+  listProducts,
   createProduct,
   updateProduct,
-  deleteProduct,
   bulkUpdateProducts,
-  bulkDeleteProducts,
+  setProductsArchived,
 } from '@/data/admin-products-repository';
-import type { NewProduct, ProductBulkPatch, ProductPatch } from '@/types/product';
+import type {
+  AdminProductListFilters,
+  NewProduct,
+  ProductBulkPatch,
+  ProductPatch,
+} from '@/types/product';
 
-export function useAdminProducts() {
+export const ALL_PRODUCTS_KEY = ['admin', 'products', 'all'] as const;
+
+/**
+ * The whole catalogue, archived included. `enabled` lets a dialog ask for it
+ * only once it is open, rather than every visit to the products page paying
+ * for a read of everything.
+ */
+export function useAdminProducts({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery({
-    queryKey: ['admin', 'products'],
+    queryKey: ALL_PRODUCTS_KEY,
     queryFn: listAllProducts,
+    enabled,
   });
 }
 
-export function useCreateProduct() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ input, openingStock }: { input: NewProduct; openingStock: number }) =>
-      createProduct(input, openingStock),
-    onSuccess: ({ product }) => {
-      qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-      qc.invalidateQueries({ queryKey: ['admin', 'inventory', product.id] });
-      qc.invalidateQueries({ queryKey: ['products'] });
-      qc.invalidateQueries({ queryKey: ['subcategories'] });
-    },
-  });
-}
-
-export function useUpdateProduct() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: ProductPatch }) =>
-      updateProduct(id, patch),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-      qc.invalidateQueries({ queryKey: ['products'] });
-      qc.invalidateQueries({ queryKey: ['subcategories'] });
-    },
-  });
-}
-
-export function useDeleteProduct() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => deleteProduct(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-      qc.invalidateQueries({ queryKey: ['products'] });
-      qc.invalidateQueries({ queryKey: ['subcategories'] });
-    },
+/** One page of the products list, filtered on the server. */
+export function useAdminProductsList(filters: AdminProductListFilters) {
+  return useQuery({
+    queryKey: ['admin', 'products', 'list', filters],
+    queryFn: () => listProducts(filters),
+    // Keeps the current page on screen while the next one or a new search
+    // loads, instead of dropping to a spinner on every keystroke.
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -59,10 +44,31 @@ export function useDeleteProduct() {
 function useProductInvalidation() {
   const qc = useQueryClient();
   return () => {
-    qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-    qc.invalidateQueries({ queryKey: ['products'] });
-    qc.invalidateQueries({ queryKey: ['subcategories'] });
+    void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
+    void qc.invalidateQueries({ queryKey: ['products'] });
+    void qc.invalidateQueries({ queryKey: ['subcategories'] });
   };
+}
+
+export function useCreateProduct() {
+  const qc = useQueryClient();
+  const invalidate = useProductInvalidation();
+  return useMutation({
+    mutationFn: ({ input, openingStock }: { input: NewProduct; openingStock: number }) =>
+      createProduct(input, openingStock),
+    onSuccess: ({ product }) => {
+      invalidate();
+      void qc.invalidateQueries({ queryKey: ['admin', 'inventory', product.id] });
+    },
+  });
+}
+
+export function useUpdateProduct() {
+  const invalidate = useProductInvalidation();
+  return useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: ProductPatch }) => updateProduct(id, patch),
+    onSuccess: invalidate,
+  });
 }
 
 export function useBulkUpdateProducts() {
@@ -74,10 +80,12 @@ export function useBulkUpdateProducts() {
   });
 }
 
-export function useBulkDeleteProducts() {
+/** Archive (true) or restore (false). Products are never deleted from here. */
+export function useSetProductsArchived() {
   const invalidate = useProductInvalidation();
   return useMutation({
-    mutationFn: (ids: string[]) => bulkDeleteProducts(ids),
-    onSuccess: invalidate,
+    mutationFn: ({ ids, isArchived }: { ids: string[]; isArchived: boolean }) =>
+      setProductsArchived(ids, isArchived),
+    onSettled: invalidate,
   });
 }

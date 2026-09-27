@@ -58,6 +58,8 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
   const { toast } = useToast();
 
   const resolved = useMemo(() => resolveCounterLines(lines, products), [lines, products]);
+  // Archived products are off sale; they stay in `products` only so lines resolve.
+  const pickable = useMemo(() => products.filter((product) => !product.isArchived), [products]);
   const totals = useMemo(() => calculateCounterTotals(resolved, rates), [resolved, rates]);
 
   const addedIds = useMemo(
@@ -154,7 +156,7 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
 
         <form className="mt-5 space-y-5" onSubmit={handleSubmit} noValidate>
           <CounterOrderProductPicker
-            products={products}
+            products={pickable}
             isLoading={isLoadingProducts}
             addedIds={addedIds}
             onAdd={addProduct}

@@ -27,7 +27,7 @@ type ProductsTableGroupProps = {
   onToggleGroup: (ids: string[]) => void;
   onEdit: (product: Product) => void;
   onAdjustStock: (product: Product) => void;
-  onDelete: (product: Product) => void;
+  onArchiveToggle: (product: Product) => void;
 };
 
 export function ProductsTableGroup({
@@ -40,7 +40,7 @@ export function ProductsTableGroup({
   onToggleGroup,
   onEdit,
   onAdjustStock,
-  onDelete,
+  onArchiveToggle,
 }: ProductsTableGroupProps) {
   return (
     <AccordionItem value={category} className="overflow-hidden rounded-md border border-border">
@@ -92,7 +92,7 @@ export function ProductsTableGroup({
                   onToggleSelect={onToggleSelect}
                   onEdit={onEdit}
                   onAdjustStock={onAdjustStock}
-                  onDelete={onDelete}
+                  onArchiveToggle={onArchiveToggle}
                 />
               ))}
             </tbody>

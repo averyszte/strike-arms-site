@@ -11,10 +11,16 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { chunkArray } from '@/lib/chunk-array';
+import { escapeSearchTerm } from '@/lib/escape-search-term';
+import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import { rowToProduct } from '@/lib/product-mappers';
 import { OPENING_STOCK_FORM_REASON } from '@/lib/stock-adjustment';
+import { LOW_STOCK_THRESHOLD } from '@/lib/stock-levels';
 import { adjustStock } from '@/data/inventory-repository';
+import { ID_CHUNK, pageAll } from '@/data/orders-bulk-reads';
 import type {
+  AdminProductListFilters,
   CreatedProduct,
   NewProduct,
   Product,
@@ -22,13 +28,67 @@ import type {
   ProductPatch,
 } from '@/types/product';
 
+/**
+ * Every product, archived included, paged past the server's row cap.
+ *
+ * For the screens that need the whole catalogue at once: the dashboard's
+ * counts, the counter sale picker, CSV export, and the import's slug match --
+ * which must see archived slugs, because the slug stays taken.
+ */
 export async function listAllProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
+  const rows = await pageAll((from, to) =>
+    supabase
+      .from('products')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .order('id')
+      .range(from, to),
+  );
+  return rows.map(rowToProduct);
+}
+
+/**
+ * One page of the admin products list.
+ *
+ * Sorted by category, subcategory and name so the page splits into the same
+ * category groups the table shows, and id last so a page boundary never falls
+ * between two rows that sort equal. The stock filters mirror
+ * lib/stock-levels.ts, on the generated sellable_count (026).
+ */
+export async function listProducts(
+  filters: AdminProductListFilters = {},
+): Promise<{ items: Product[]; total: number }> {
+  const page = filters.page ?? 1;
+  const pageSize = filters.pageSize ?? ADMIN_PAGE_SIZE;
+
+  let query = supabase
     .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('*', { count: 'exact' })
+    .eq('is_archived', filters.isArchived ?? false);
+
+  if (filters.stock === 'low') {
+    query = query
+      .eq('is_published', true)
+      .gt('sellable_count', 0)
+      .lte('sellable_count', LOW_STOCK_THRESHOLD);
+  } else if (filters.stock === 'out') {
+    query = query.eq('is_published', true).lte('sellable_count', 0);
+  }
+
+  // Escaped for the same reason as the orders search: .or() is a
+  // comma-separated list, and a raw comma would become another clause.
+  const search = filters.search ? escapeSearchTerm(filters.search) : '';
+  if (search) query = query.or(`search_text.ilike.%${search}%,slug.ilike.%${search}%`);
+
+  const { data, error, count } = await query
+    .order('category')
+    .order('subcategory')
+    .order('name')
+    .order('id')
+    .range((page - 1) * pageSize, page * pageSize - 1);
   if (error) throw error;
-  return (data ?? []).map(rowToProduct);
+
+  return { items: (data ?? []).map(rowToProduct), total: count ?? 0 };
 }
 
 /**
@@ -91,7 +151,9 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
       ...('salePrice' in patch && { sale_price_cents: patch.salePrice ?? null }),
       ...(patch.images !== undefined && { images: patch.images }),
       ...(patch.shortDescription !== undefined && { short_description: patch.shortDescription }),
-      ...(patch.description != null && { description: patch.description }),
+      // !== undefined, not != null: clearing the description is a real edit.
+      // No description is stored as the empty string the column wants.
+      ...(patch.description !== undefined && { description: patch.description ?? '' }),
       ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
       ...(patch.isNew !== undefined && { is_new: patch.isNew }),
       ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
@@ -106,32 +168,34 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
   return rowToProduct(data);
 }
 
-/**
- * The images are not deleted here. Migration 011 puts a trigger on the table
- * that files every path into orphaned_images, which the sweeper drains — so
- * cleanup happens whether the row goes through this function, a cascade, or
- * someone in the SQL editor.
- */
-export async function deleteProduct(id: string): Promise<void> {
-  const { error } = await supabase.from('products').delete().eq('id', id);
-  if (error) throw error;
-}
-
-// ─── Bulk operations ──────────────────────────────────────────────────────────
+// ─── Archive and bulk operations ──────────────────────────────────────────────
 
 /**
- * How many ids go into one `in (...)` filter.
+ * Archives or restores products. There is no delete (026): archiving keeps the
+ * stock ledger and the order links that a delete would cascade away.
  *
- * PostgREST puts the filter in the query string, so a few hundred UUIDs is a
- * URL long enough for a proxy to reject — and the failure looks like the
- * database refusing the write rather than the request never arriving.
+ * Archiving also unpublishes and unfeatures, because an archived product may
+ * not be live (the database refuses it) and a featured flag left behind would
+ * put it back on the homepage the day it is restored. Restoring brings it
+ * back as a draft, to be checked before it is published again.
+ *
+ * Chunked because PostgREST puts the id filter in the URL, and a few hundred
+ * UUIDs is long enough for a proxy to reject.
  */
-const ID_CHUNK = 100;
+export async function setProductsArchived(ids: string[], isArchived: boolean): Promise<void> {
+  const row = isArchived
+    ? {
+        is_archived: true,
+        archived_at: new Date().toISOString(),
+        is_published: false,
+        is_featured: false,
+      }
+    : { is_archived: false, archived_at: null };
 
-function chunk<T>(items: T[], size: number): T[][] {
-  const out: T[][] = [];
-  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
-  return out;
+  for (const batch of chunkArray(ids, ID_CHUNK)) {
+    const { error } = await supabase.from('products').update(row).in('id', batch);
+    if (error) throw error;
+  }
 }
 
 /** Applies the same patch to many products. See ProductBulkPatch for why it is narrow. */
@@ -144,19 +208,8 @@ export async function bulkUpdateProducts(ids: string[], patch: ProductBulkPatch)
   };
   if (Object.keys(row).length === 0) return;
 
-  for (const batch of chunk(ids, ID_CHUNK)) {
+  for (const batch of chunkArray(ids, ID_CHUNK)) {
     const { error } = await supabase.from('products').update(row).in('id', batch);
-    if (error) throw error;
-  }
-}
-
-/**
- * Images are not deleted here either — see deleteProduct. The trigger from
- * migration 011 files them for the sweeper however the row goes away.
- */
-export async function bulkDeleteProducts(ids: string[]): Promise<void> {
-  for (const batch of chunk(ids, ID_CHUNK)) {
-    const { error } = await supabase.from('products').delete().in('id', batch);
     if (error) throw error;
   }
 }

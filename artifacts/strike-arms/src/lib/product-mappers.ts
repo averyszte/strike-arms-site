@@ -24,6 +24,7 @@ export function rowToProduct(row: ProductRow): Product {
     reservedCount: row.reserved_count,
     isNew: row.is_new,
     isFeatured: row.is_featured,
+    isArchived: row.is_archived,
     tags: row.tags,
     createdAt: row.created_at,
   };

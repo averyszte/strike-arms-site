@@ -1,4 +1,5 @@
 import { migrationAlerts, type MigrationAlertInput } from '@/lib/migration-alerts';
+import { LOW_STOCK_THRESHOLD, matchesStockFilter } from '@/lib/stock-levels';
 import type { AlertSeverity, OperationalAlert } from '@/types/admin-alert';
 import type { Order } from '@/types/order';
 import type { Product } from '@/types/product';
@@ -27,17 +28,10 @@ const PACKED_STALE_MS = 2 * DAY_MS;
 /** A week is long enough that the customer probably is not coming this week. */
 const UNCOLLECTED_STALE_MS = 7 * DAY_MS;
 
-/** Sellable units at which it is worth ordering more. */
-const LOW_STOCK_THRESHOLD = 2;
-
 function ageOf(order: Order, now: number): number {
   return now - new Date(order.createdAt).getTime();
 }
 
-/** What can actually be sold: the rest is promised to checkouts in flight. */
-function sellableCount(product: Product): number {
-  return (product.stockCount ?? 0) - (product.reservedCount ?? 0);
-}
 
 function plural(count: number, one: string, many: string): string {
   return count === 1 ? one : many;
@@ -126,9 +120,7 @@ function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
 
 function stockAlerts(products: Product[]): OperationalAlert[] {
   const alerts: OperationalAlert[] = [];
-  const published = products.filter((p) => p.isPublished);
-
-  const soldOut = published.filter((p) => sellableCount(p) <= 0);
+  const soldOut = products.filter((p) => matchesStockFilter(p, 'out'));
   if (soldOut.length > 0) {
     alerts.push({
       id: 'published-out-of-stock',
@@ -136,14 +128,11 @@ function stockAlerts(products: Product[]): OperationalAlert[] {
       count: soldOut.length,
       title: `${soldOut.length} live ${plural(soldOut.length, 'product is', 'products are')} out of stock`,
       action: 'Restock or unpublish',
-      href: '/admin/products',
+      href: '/admin/products?stock=out',
     });
   }
 
-  const low = published.filter((p) => {
-    const sellable = sellableCount(p);
-    return sellable > 0 && sellable <= LOW_STOCK_THRESHOLD;
-  });
+  const low = products.filter((p) => matchesStockFilter(p, 'low'));
   if (low.length > 0) {
     alerts.push({
       id: 'low-stock',
@@ -151,7 +140,7 @@ function stockAlerts(products: Product[]): OperationalAlert[] {
       count: low.length,
       title: `${low.length} live ${plural(low.length, 'product is', 'products are')} down to ${LOW_STOCK_THRESHOLD} or fewer`,
       action: 'Reorder',
-      href: '/admin/products',
+      href: '/admin/products?stock=low',
     });
   }
 

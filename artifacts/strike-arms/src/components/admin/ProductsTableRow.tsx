@@ -1,10 +1,11 @@
-import { Boxes, Edit2, Trash2 } from 'lucide-react';
+import { Archive, ArchiveRestore, Boxes, Edit2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatBrand } from '@/lib/format-brand';
 import { formatPrice } from '@/lib/format-price';
 import { formatSubcategoryName } from '@/lib/format-subcategory';
+import { stockLevel, type StockLevel } from '@/lib/stock-levels';
 import type { Product } from '@/types/product';
 
 interface Props {
@@ -13,7 +14,32 @@ interface Props {
   onToggleSelect: (id: string) => void;
   onEdit: (product: Product) => void;
   onAdjustStock: (product: Product) => void;
-  onDelete: (product: Product) => void;
+  /** Archives a live product, or restores an archived one. */
+  onArchiveToggle: (product: Product) => void;
+}
+
+const STOCK_COLOURS: Record<StockLevel, string> = {
+  out: 'text-destructive',
+  low: 'text-yellow-600 dark:text-yellow-500',
+  ok: 'text-green-600',
+};
+
+function StatusBadge({ product }: { product: Product }) {
+  if (product.isArchived) {
+    return (
+      <Badge variant="secondary" className="text-[10px]">
+        Archived
+      </Badge>
+    );
+  }
+  if (product.isPublished) {
+    return <Badge className="bg-green-600 text-[10px] text-white hover:bg-green-600">Live</Badge>;
+  }
+  return (
+    <Badge variant="outline" className="text-[10px]">
+      Draft
+    </Badge>
+  );
 }
 
 export function ProductsTableRow({
@@ -22,7 +48,7 @@ export function ProductsTableRow({
   onToggleSelect,
   onEdit,
   onAdjustStock,
-  onDelete,
+  onArchiveToggle,
 }: Props) {
   return (
     <tr
@@ -57,18 +83,10 @@ export function ProductsTableRow({
         )}
       </td>
       <td className="px-4 py-3 text-center">
-        <span className={product.inStock ? 'text-green-600' : 'text-destructive'}>
-          {product.stockCount ?? 0}
-        </span>
+        <span className={STOCK_COLOURS[stockLevel(product)]}>{product.stockCount ?? 0}</span>
       </td>
       <td className="px-4 py-3 text-center">
-        {product.isPublished ? (
-          <Badge className="bg-green-600 text-[10px] text-white hover:bg-green-600">Live</Badge>
-        ) : (
-          <Badge variant="outline" className="text-[10px]">
-            Draft
-          </Badge>
-        )}
+        <StatusBadge product={product} />
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center justify-end gap-1">
@@ -95,12 +113,16 @@ export function ProductsTableRow({
           <Button
             size="icon"
             variant="ghost"
-            className="h-7 w-7 hover:text-destructive"
-            title="Delete"
-            onClick={() => onDelete(product)}
+            className="h-7 w-7"
+            title={product.isArchived ? 'Restore as draft' : 'Archive'}
+            onClick={() => onArchiveToggle(product)}
           >
-            <Trash2 className="h-3.5 w-3.5" />
-            <span className="sr-only">Delete</span>
+            {product.isArchived ? (
+              <ArchiveRestore className="h-3.5 w-3.5" />
+            ) : (
+              <Archive className="h-3.5 w-3.5" />
+            )}
+            <span className="sr-only">{product.isArchived ? 'Restore as draft' : 'Archive'}</span>
           </Button>
         </div>
       </td>

@@ -36,7 +36,8 @@ export type Database = {
         Row: ProductRow;
         Insert: Omit<
           ProductRow,
-          'id' | 'in_stock' | 'effective_price_cents' | 'search_text' | 'created_at' | 'updated_at' |
+          'id' | 'in_stock' | 'effective_price_cents' | 'search_text' | 'sellable_count' |
+          'is_archived' | 'archived_at' | 'created_at' | 'updated_at' |
           'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
           'is_shippable' | 'ship_weight_g' | 'condition'
         > & {
@@ -47,8 +48,11 @@ export type Database = {
           condition?: ProductCondition;
           stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
           is_shippable?: boolean; ship_weight_g?: number;
+          is_archived?: boolean; archived_at?: string | null;
         };
-        Update: Partial<Omit<ProductRow, 'in_stock' | 'effective_price_cents' | 'search_text'>>;
+        Update: Partial<
+          Omit<ProductRow, 'in_stock' | 'effective_price_cents' | 'search_text' | 'sellable_count'>
+        >;
         Relationships: [];
       };
       orders: {
