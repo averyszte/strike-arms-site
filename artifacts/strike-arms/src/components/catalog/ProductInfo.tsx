@@ -100,7 +100,7 @@ export function ProductInfo({ product }: { product: Product }) {
         </li>
       </ul>
 
-      {preLoved && <PreLovedNotice />}
+      {preLoved && <PreLovedNotice subcategory={product.subcategory} />}
     </div>
   );
 }

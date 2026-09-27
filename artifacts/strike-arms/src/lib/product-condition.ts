@@ -28,6 +28,34 @@ export const CONDITION_LABELS: Record<ProductCondition, string> = {
 export const SOLD_AS_SEEN =
   'Sold as seen. This is a secondhand item and will require batteries and a charger, which are not included.';
 
+/** For everything that is not a gun: a used pouch or belt needs no battery. */
+export const SOLD_AS_SEEN_KIT = 'Sold as seen. This is a secondhand item.';
+
+/**
+ * Alan's sentence was about "rifles or pistols", so it goes on the guns and
+ * nothing else -- not on a pre-owned magazine that happens to sit under
+ * pistols, and not on the used kit from his jumble pages.
+ */
+const GUN_SUBCATEGORIES: ReadonlySet<string> = new Set([
+  'aeg-rifles',
+  'smgs',
+  'lmgs',
+  'dmr',
+  'gbbr',
+  'sniper',
+  'shotguns',
+  'spring-rifles',
+  'gbb-pistols',
+  'electric-pistols',
+  'spring-pistols',
+  'revolvers',
+  'machine-pistols',
+]);
+
+export function soldAsSeenNotice(subcategory: string): string {
+  return GUN_SUBCATEGORIES.has(subcategory) ? SOLD_AS_SEEN : SOLD_AS_SEEN_KIT;
+}
+
 export function isPreLoved(condition: ProductCondition | undefined): boolean {
   return condition === 'pre-loved';
 }
