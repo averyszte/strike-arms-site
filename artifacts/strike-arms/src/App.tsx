@@ -46,6 +46,7 @@ import { AdminAuthProvider } from "@/lib/admin-auth-context";
 // Admin is lazy-loaded so the dashboard never weighs down the public bundle.
 const AdminLoginPage = lazy(() => import("@/pages/admin/LoginPage"));
 const AcceptInvitePage = lazy(() => import("@/pages/admin/AcceptInvitePage"));
+const AdminResetPasswordPage = lazy(() => import("@/pages/admin/ResetPasswordPage"));
 const AdminRoot = lazy(() => import("@/pages/admin/AdminRoot"));
 import ServicesHub from "@/pages/services/ServicesHub";
 import RepairsServicePage from "@/pages/services/Repairs";
@@ -112,7 +113,7 @@ function Router() {
       <Route path="/services" component={ServicesHub} />
       <Route path="/about" component={About} />
 
-      {/* Admin — login and invite-accept are public, the rest is behind AuthGuard */}
+      {/* Admin — login, invite-accept and password reset are public, the rest is behind AuthGuard */}
       <Route path="/admin/login">
         <Suspense fallback={null}>
           <AdminLoginPage />
@@ -121,6 +122,11 @@ function Router() {
       <Route path="/auth/confirm">
         <Suspense fallback={null}>
           <AcceptInvitePage />
+        </Suspense>
+      </Route>
+      <Route path="/admin/reset-password">
+        <Suspense fallback={null}>
+          <AdminResetPasswordPage />
         </Suspense>
       </Route>
       <Route path="/admin">

@@ -21,6 +21,24 @@ site_url = "http://localhost:5173"
 additional_redirect_urls = ["https://cxnhkgndvzgyqhiwsvrr.supabase.co"]
 jwt_expiry = 3600
 enable_signup = false
+# Mirrored in src/lib/password-policy.ts so the forms can say what is wrong
+# before Supabase refuses. This file sets it for the local stack only: on the
+# hosted project it is Authentication > Sign In / Providers > Email, and
+# docs/admin-auth-emails.md lists the values.
+minimum_password_length = 12
+password_requirements = "lower_upper_letters_digits"
+
+# Both links carry a token_hash that the site redeems itself, rather than
+# Supabase's default link, which signs the user in on whatever page the Site
+# URL points at. Local stack only, like the policy above; the hosted project
+# needs the same HTML pasted in -- see docs/admin-auth-emails.md.
+[auth.email.template.invite]
+subject = "Your Strike Arms admin invite"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Strike Arms admin password"
+content_path = "./supabase/templates/recovery.html"
 
 # Product images live in the product-images bucket created by migration 011.
 # The per-file cap here is the local API's ceiling; the bucket sets its own

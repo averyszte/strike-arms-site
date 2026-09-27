@@ -51,3 +51,12 @@ export interface TotpEnrolment {
   /** The same secret as text, for an authenticator that cannot scan. */
   secret: string;
 }
+
+/** The two kinds of emailed link an admin can arrive from. */
+export type EmailLinkType = 'invite' | 'recovery';
+
+/** Where redeeming an invite or password reset link has got to. */
+export type EmailLinkState =
+  | { state: 'redeeming' }
+  | { state: 'redeemed' }
+  | { state: 'invalid'; message: string };

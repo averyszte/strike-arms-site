@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Redirect } from 'wouter';
-import { Helmet } from 'react-helmet-async';
+import { AdminAuthScreen } from '@/components/admin/AdminAuthScreen';
+import { ForgotPasswordPanel } from '@/components/admin/ForgotPasswordPanel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import { useAdminAuth } from '@/lib/admin-auth-context';
 
 export default function LoginPage() {
   const { user, isAdmin, isLoading, signIn } = useAdminAuth();
+  const [view, setView] = useState<'sign-in' | 'forgot'>('sign-in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,48 +31,55 @@ export default function LoginPage() {
     }
   }
 
+  if (view === 'forgot') {
+    return (
+      <AdminAuthScreen pageTitle="Reset password" heading="Reset password">
+        <ForgotPasswordPanel initialEmail={email} onBack={() => setView('sign-in')} />
+      </AdminAuthScreen>
+    );
+  }
+
   return (
-    <>
-      <Helmet>
-        <title>Admin Login | Strike Arms</title>
-      </Helmet>
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="w-full max-w-[360px]">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Admin</h1>
-          <p className="text-sm text-muted-foreground mb-7">Strike Arms management portal</p>
-
-          <form onSubmit={e => void handleSubmit(e)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </div>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? 'Signing in…' : 'Sign In'}
-            </Button>
-          </form>
+    <AdminAuthScreen pageTitle="Login" heading="Admin" intro="Strike Arms management portal">
+      <form onSubmit={e => void handleSubmit(e)} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
         </div>
-      </div>
-    </>
+        <div className="space-y-1.5">
+          <div className="flex items-baseline justify-between">
+            <Label htmlFor="password">Password</Label>
+            <button
+              type="button"
+              onClick={() => setView('forgot')}
+              className="text-xs font-medium text-accent hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </div>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
+
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? 'Signing in…' : 'Sign In'}
+        </Button>
+      </form>
+    </AdminAuthScreen>
   );
 }

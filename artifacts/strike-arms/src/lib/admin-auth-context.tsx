@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
+import {
+  getSession,
+  isCurrentUserAdmin,
+  onAuthStateChange,
+  signInWithPassword,
+  signOut as signOutOfSupabase,
+} from '@/data/admin-auth-repository';
 import { getMfaState } from '@/data/admin-mfa-repository';
 import type { MfaState } from '@/types/auth';
 import type { Session, User } from '@supabase/supabase-js';
@@ -46,20 +52,10 @@ const SIGNED_OUT: AdminSession = {
 const CHECK_FAILED_MESSAGE =
   "Could not check this account's admin access. Check the connection and try again.";
 
-// The admins table is RLS-closed to the browser by design, so a direct select
-// always returns nothing. is_admin() is security definer and reads auth.uid().
-// It throws on a failed call: reading the error as "not an admin" sent a real
-// admin back to the login page whenever the connection dropped.
-async function checkIsAdmin(): Promise<boolean> {
-  const { data, error } = await supabase.rpc('is_admin');
-  if (error) throw error;
-  return data === true;
-}
-
 async function resolveSession(session: Session | null): Promise<AdminSession> {
   if (!session?.user) return SIGNED_OUT;
   try {
-    const [isAdmin, mfa] = await Promise.all([checkIsAdmin(), getMfaState()]);
+    const [isAdmin, mfa] = await Promise.all([isCurrentUserAdmin(), getMfaState()]);
     return { user: session.user, isAdmin, mfa, connectionError: null };
   } catch (error: unknown) {
     return {
@@ -84,15 +80,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
 
-    void supabase.auth.getSession().then(({ data }) => apply(data.session));
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => void apply(session));
+    void getSession().then(apply);
+    const unsubscribe = onAuthStateChange((_, session) => void apply(session));
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      unsubscribe();
     };
   }, []);
 
@@ -102,29 +95,23 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const recheck = useCallback(async () => {
-    const { data } = await supabase.auth.getSession();
-    setState(await resolveSession(data.session));
+    setState(await resolveSession(await getSession()));
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    const {
-      data: { user: u },
-    } = await supabase.auth.getUser();
-    if (!u) throw new Error('Authentication failed');
-    const admin = await checkIsAdmin().catch(async () => {
-      await supabase.auth.signOut();
+    await signInWithPassword(email, password);
+    const admin = await isCurrentUserAdmin().catch(async () => {
+      await signOutOfSupabase();
       throw new Error(CHECK_FAILED_MESSAGE);
     });
     if (!admin) {
-      await supabase.auth.signOut();
+      await signOutOfSupabase();
       throw new Error('Access denied — this account is not an admin');
     }
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    await signOutOfSupabase();
   }, []);
 
   return (

@@ -35,4 +35,5 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '021', name: 'retire_parts_category', file: '021_retire_parts_category.sql' },
   { version: '022', name: 'admin_security', file: '022_admin_security.sql' },
   { version: '023', name: 'admin_policy_form', file: '023_admin_policy_form.sql' },
+  { version: '024', name: 'admin_invites', file: '024_admin_invites.sql' },
 ];
