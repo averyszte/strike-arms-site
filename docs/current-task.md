@@ -25,6 +25,15 @@ migration 019, `bfda5bd` inquiries paging, `e80ca32` migration 020. Push only wh
 
 ## What landed recently
 
+- **Site-wide restyle (2026-09-27).** Every storefront page now uses the homepage's (Direction D)
+  look: a `PageHero` band (grid texture, accent glow, black uppercase display title, accent
+  eyebrow, uppercase breadcrumb) and, on content pages, a closing `CtaBand`. The shared class
+  vocabulary is in `src/lib/storefront-styles.ts` (EYEBROW, *_TITLE, CTA_*, PANEL, ARTICLE_PROSE);
+  new pages should compose it rather than hand-rolling type. The accent is now `16 100% 56%`
+  everywhere, and the storefront squares its corners via `body:has(.site-theme)` in `index.css`
+  (the admin keeps rounded corners). The shop's SEO intro now sits under the h1, not above the
+  breadcrumb. The 404 is a storefront page with noindex. Alan's batch 2 (106 products) is imported.
+
 - **`7918ade` product condition, end to end.** Migration 018 added `products.condition` (text,
   check constraint, default `'new'`), backfilled from the `pre-loved-` slug prefix or the
   `pre-loved` tag. Storefront: Pre-loved badge on card and product page, a sold-as-seen notice
