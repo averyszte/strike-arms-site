@@ -1,4 +1,5 @@
 import { FULFILLMENT_OPTIONS } from '@/lib/order-display';
+import { FULFILLMENT_LANES, canMoveFulfillment } from '@/lib/order-transitions';
 import type { FulfillmentMethod, FulfillmentStatus, Order } from '@/types/order';
 
 /**
@@ -25,11 +26,7 @@ export const ORDER_BOARD_KEYS: OrderBoardKey[] = ['pickup', 'delivery', 'mixed']
  * Cancelled orders are absent from every board. The board is a to-do list, and
  * a cancelled order is not something to do — the table still finds it.
  */
-const BOARD_LANES: Record<OrderBoardKey, FulfillmentStatus[]> = {
-  pickup: ['pending', 'ready_for_pickup', 'collected'],
-  delivery: ['pending', 'packed', 'shipped', 'delivered'],
-  mixed: ['pending', 'packed', 'ready_for_pickup', 'shipped', 'collected', 'delivered'],
-};
+const BOARD_LANES: Record<OrderBoardKey, FulfillmentStatus[]> = FULFILLMENT_LANES;
 
 const STATUS_LABELS = new Map(FULFILLMENT_OPTIONS.map((option) => [option.value, option.label]));
 
@@ -44,8 +41,8 @@ export type OrderBoardLanes = {
   /**
    * Orders on this board whose status is not one of its lanes — a delivery
    * order marked "ready for pickup", say. Nothing stops that being set from
-   * the table, and a card that silently vanished would be worse than one in a
-   * box labelled odd.
+   * the table before migration 025, and a card that silently vanished would be
+   * worse than one in a box labelled odd.
    */
   unplaced: Order[];
 };
@@ -75,18 +72,17 @@ export function buildOrderBoardLanes(orders: Order[], board: OrderBoardKey): Ord
 }
 
 /**
- * The lane after this one, or null at the end of the board.
+ * The lane after this one, or null at the end of the board or when the
+ * database would refuse the move (an unpaid order, say).
  *
  * This is what the card's single button moves an order to. Anything other than
  * one step forward — a correction, a cancellation — is done from the detail
  * sheet, where the full list of states is visible and the choice is deliberate.
  */
-export function nextBoardStatus(
-  board: OrderBoardKey,
-  status: FulfillmentStatus,
-): FulfillmentStatus | null {
+export function nextBoardStatus(board: OrderBoardKey, order: Order): FulfillmentStatus | null {
   const laneStatuses = BOARD_LANES[board];
-  const index = laneStatuses.indexOf(status);
+  const index = laneStatuses.indexOf(order.fulfillmentStatus);
   if (index === -1 || index === laneStatuses.length - 1) return null;
-  return laneStatuses[index + 1];
+  const next = laneStatuses[index + 1];
+  return canMoveFulfillment(order, next) ? next : null;
 }

@@ -4,14 +4,8 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { FULFILLMENT_OPTIONS, ORDER_CHANNEL_LABELS, formatOrderNumber } from '@/lib/order-display';
+import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
+import { ORDER_CHANNEL_LABELS, formatOrderNumber } from '@/lib/order-display';
 import { formatPrice } from '@/lib/format-price';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
@@ -85,21 +79,10 @@ export function OrdersTableRow({
       </td>
 
       <td className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
-        <Select
-          value={order.fulfillmentStatus}
-          onValueChange={(value) => onStatusChange(order.id, value as FulfillmentStatus)}
-        >
-          <SelectTrigger className="h-7 w-44 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FULFILLMENT_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value} className="text-xs">
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <OrderFulfilmentSelect
+          order={order}
+          onChange={(status) => onStatusChange(order.id, status)}
+        />
       </td>
 
       <td className="px-4 py-3 text-right" onClick={(event) => event.stopPropagation()}>

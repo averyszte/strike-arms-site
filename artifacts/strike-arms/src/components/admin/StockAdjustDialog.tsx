@@ -130,23 +130,23 @@ export function StockAdjustDialog({ product, onClose }: Props) {
 
           {isHistoryError && (
             <p className="border-t border-border pt-3 text-xs text-destructive">
-              Recent adjustments could not be loaded. The count above is still current.
+              The stock history could not be loaded. The count above is still current.
             </p>
           )}
 
           {history.length > 0 && (
             <div className="border-t border-border pt-3">
               <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Recent adjustments
+                Stock history ({history.length})
               </p>
-              <ul className="max-h-32 space-y-1 overflow-y-auto text-xs">
-                {history.slice(0, 8).map((entry) => (
+              <ul className="max-h-48 space-y-1 overflow-y-auto text-xs">
+                {history.map((entry) => (
                   <li key={entry.id} className="flex justify-between gap-3">
                     <span className="truncate text-muted-foreground">{entry.reason}</span>
                     <span className="shrink-0 tabular-nums">
                       {entry.adjustment > 0 ? `+${entry.adjustment}` : entry.adjustment}
                       <span className="ml-2 text-muted-foreground">
-                        {format(new Date(entry.createdAt), 'dd MMM')}
+                        {format(new Date(entry.createdAt), 'dd MMM yyyy')}
                       </span>
                     </span>
                   </li>

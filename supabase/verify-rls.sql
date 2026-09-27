@@ -112,12 +112,21 @@ findings(severity, rule, object, detail) as (
   where roles = '{public}'
 
   union all
-  -- 10. The one intentional anon write, listed so it is not forgotten (028).
+  -- 10. The one intentional anon write, listed so it is not forgotten (029, inquiries_lockdown).
   select 'review', 'anon-insert-inquiries', 'inquiries',
          'open anon insert; replace with the submit-inquiry function'
   from information_schema.role_table_grants g
   where g.table_schema = 'public' and g.table_name = 'inquiries'
     and g.grantee = 'anon' and g.privilege_type = 'INSERT'
+
+  union all
+  -- 11. The stock ledger is written only by definer functions, never edited (025).
+  select 'fail', 'ledger-writable-from-browser', 'inventory_adjustments',
+         g.grantee || ' has ' || g.privilege_type
+  from information_schema.role_table_grants g
+  where g.table_schema = 'public' and g.table_name = 'inventory_adjustments'
+    and g.grantee in ('anon', 'authenticated')
+    and g.privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')
 )
 select severity, rule, object, detail
 from findings

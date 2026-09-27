@@ -107,7 +107,7 @@ taking real money.
    - Moving `admin-auth-context.tsx` out of `lib/` so its Supabase calls go
      through `data/` (the 4 unused `admin-auth-repository` functions already
      exist for this).
-8. **Migration 024, order status rules** (M):
+8. **Migration 025, order status rules** (M). 024 went to admin invites (item 7), so every later number in section 4 moved up by one:
    - an allowed-transitions guard;
    - restock on cancel, through `adjust_stock` so the ledger records it;
    - `changed_by` defaults to `auth.uid()`;
@@ -262,13 +262,14 @@ taking real money.
 |---|---|---|---|
 | 022 | `admin_security` | subcategories policy; `search_path` on 3 functions; function revokes; aal2 on reservations writes | 1 |
 | 023 | `admin_reads_aal2` | PII reads need aal2; 002 policies moved to `(select …)` + `TO` | 1 |
-| 024 | `order_status_rules` | transition guard; restock on cancel; `changed_by`; insert-only ledger | 1 |
-| 025 | `checkout_integrity` | summed lines; re-check in `confirm_order_paid`; abandon instead of delete; `record_refund` `greatest()` | 2 |
-| 026 | `checkout_rate_limit` | per-IP and per-attempt throttle | 2 |
-| 027 | `notification_producer` | enqueue in `confirm_order_paid`; skip-locked claim; cron | 3 |
-| 028 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
-| 029 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
-| 030 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
+| 024 | `admin_invites` | invited users get an `admins` row (item 7) | 1 |
+| 025 | `order_status_rules` | transition guard; restock on cancel; `changed_by`; insert-only ledger; `record_refund` `greatest()` (moved up from checkout_integrity) | 1 |
+| 026 | `checkout_integrity` | summed lines; re-check in `confirm_order_paid`; abandon instead of delete | 2 |
+| 027 | `checkout_rate_limit` | per-IP and per-attempt throttle | 2 |
+| 028 | `notification_producer` | enqueue in `confirm_order_paid`; skip-locked claim; cron | 3 |
+| 029 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
+| 030 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
+| 031 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
 | later | `customer_accounts` | profiles, order link, age record, **plus narrowed `authenticated` grants in the same file** | later |
 
 Also in Phase 1: `config.toml`, covering `site_url`, a password policy, an MFA

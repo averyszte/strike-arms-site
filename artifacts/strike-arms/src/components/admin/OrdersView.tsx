@@ -20,6 +20,7 @@ import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useOrdersView } from '@/hooks/use-orders-view';
 import { useToast } from '@/hooks/use-toast';
+import { loadErrorMessage } from '@/lib/load-error-message';
 import { ADMIN_PAGE_SIZE, pageBounds } from '@/lib/page-bounds';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
@@ -85,15 +86,16 @@ export function OrdersView() {
 
   const selectedCount = selection.selectedIds.length;
 
-  function failed(description: string) {
-    toast({ title: 'Error', description, variant: 'destructive' });
+  function failed(description: string, error?: unknown) {
+    const reason = error === undefined ? '' : ` ${loadErrorMessage(error)}`;
+    toast({ title: 'Error', description: `${description}.${reason}`, variant: 'destructive' });
   }
 
   async function handleStatusChange(orderId: string, status: FulfillmentStatus) {
     try {
       await updateStatus.mutateAsync({ orderId, status });
-    } catch {
-      failed('Failed to update status');
+    } catch (error) {
+      failed('Status not changed', error);
     }
   }
 
@@ -132,8 +134,9 @@ export function OrdersView() {
       await bulkStatus.mutateAsync({ orderIds, status });
       selection.clear();
       toast({ title: 'Orders updated', description: `${orderIds.length} changed.` });
-    } catch {
-      failed('Failed to update the selected orders');
+    } catch (error) {
+      // Chunked, so orders before the refused one may already have moved.
+      failed('Not every selected order was changed', error);
     }
   }
 

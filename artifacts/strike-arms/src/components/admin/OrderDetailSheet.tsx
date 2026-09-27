@@ -1,12 +1,5 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
@@ -15,10 +8,11 @@ import { useOrder, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hoo
 import { useToast } from '@/hooks/use-toast';
 import { ContactLinks } from '@/components/admin/contact-links';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
+import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { OrderRefundSection } from '@/components/admin/OrderRefundSection';
 import { PrintActions } from '@/components/admin/print/print-actions';
+import { loadErrorMessage } from '@/lib/load-error-message';
 import {
-  FULFILLMENT_OPTIONS,
   ORDER_CHANNEL_LABELS,
   PAYMENT_METHOD_LABELS,
   formatOrderNumber,
@@ -90,8 +84,12 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
     if (!order) return;
     try {
       await updateFulfillment.mutateAsync({ orderId: order.id, status });
-    } catch {
-      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+    } catch (error) {
+      toast({
+        title: 'Status not changed',
+        description: loadErrorMessage(error),
+        variant: 'destructive',
+      });
     }
   }
 
@@ -152,21 +150,10 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
                   Fulfillment
                 </p>
-                <Select
-                  value={order.fulfillmentStatus}
-                  onValueChange={v => void handleFulfillmentChange(v as FulfillmentStatus)}
-                >
-                  <SelectTrigger className="h-7 text-xs w-44">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FULFILLMENT_OPTIONS.map(o => (
-                      <SelectItem key={o.value} value={o.value} className="text-xs">
-                        {o.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <OrderFulfilmentSelect
+                  order={order}
+                  onChange={status => void handleFulfillmentChange(status)}
+                />
               </div>
             </section>
 

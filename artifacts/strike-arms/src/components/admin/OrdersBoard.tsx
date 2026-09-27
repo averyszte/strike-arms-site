@@ -54,7 +54,7 @@ function LaneColumn({ lane, board, isMoving, onSelect, onAdvance }: LaneColumnPr
             <OrderBoardCard
               key={order.id}
               order={order}
-              nextStatus={nextBoardStatus(board, order.fulfillmentStatus)}
+              nextStatus={nextBoardStatus(board, order)}
               isMoving={isMoving}
               onSelect={onSelect}
               onAdvance={onAdvance}
