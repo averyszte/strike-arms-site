@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { listAllProducts } from '@/data/admin-products-repository';
 import { ALL_PRODUCTS_KEY } from '@/hooks/use-admin-products';
 import { useCsvDownload } from '@/hooks/use-csv-download';
+import { useToast } from '@/hooks/use-toast';
+import { loadErrorMessage } from '@/lib/load-error-message';
 import { buildProductsCsv, productsCsvFilename } from '@/lib/products-csv';
 
 /**
@@ -15,6 +17,7 @@ export function useProductsExport() {
   const [isExporting, setIsExporting] = useState(false);
   const qc = useQueryClient();
   const download = useCsvDownload();
+  const { toast } = useToast();
 
   const exportProducts = useCallback(async () => {
     setIsExporting(true);
@@ -28,5 +31,11 @@ export function useProductsExport() {
     }
   }, [qc, download]);
 
-  return { exportProducts, isExporting };
+  const exportWithToast = useCallback(() => {
+    exportProducts().catch((error: unknown) =>
+      toast({ title: 'Export failed', description: loadErrorMessage(error), variant: 'destructive' }),
+    );
+  }, [exportProducts, toast]);
+
+  return { exportProducts: exportWithToast, isExporting };
 }

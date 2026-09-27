@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useInquiries, useUpdateInquiryStatus } from '@/hooks/use-inquiries';
 import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import { InquiryDetailSheet } from '@/components/admin/InquiryDetailSheet';
+import { TableScrollHint } from '@/components/admin/TableScrollHint';
 import { useToast } from '@/hooks/use-toast';
 import type { Inquiry, InquiryStatus } from '@/types/inquiry';
 
@@ -87,6 +88,7 @@ export function InquiriesTable() {
         </div>
       ) : (
         <div className="border border-border rounded-md overflow-hidden">
+          <TableScrollHint />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b border-border">

@@ -1,5 +1,6 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { OrdersTableRow } from '@/components/admin/OrdersTableRow';
+import { TableScrollHint } from '@/components/admin/TableScrollHint';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
 /**
@@ -35,6 +36,7 @@ export function OrdersTable({
 }: OrdersTableProps) {
   return (
     <div className="overflow-hidden rounded-md border border-border">
+      <TableScrollHint />
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/50">

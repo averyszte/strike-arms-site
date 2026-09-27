@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { useProductsFilters } from '@/hooks/use-products-filters';
 import { STOCK_FILTER_LABELS } from '@/lib/stock-levels';
 import type { ProductStockFilter } from '@/types/product';
 
@@ -18,13 +19,8 @@ const STOCK_FILTERS: ProductStockFilter[] = ['all', 'low', 'out'];
 
 type ProductsToolbarProps = {
   total: number;
-  showArchived: boolean;
-  stock: ProductStockFilter;
-  query: string;
+  filters: ReturnType<typeof useProductsFilters>;
   isExporting: boolean;
-  onToggleArchived: () => void;
-  onStockChange: (value: ProductStockFilter) => void;
-  onQueryChange: (value: string) => void;
   onExport: () => void;
   onImport: () => void;
   onAdd: () => void;
@@ -32,17 +28,13 @@ type ProductsToolbarProps = {
 
 export function ProductsToolbar({
   total,
-  showArchived,
-  stock,
-  query,
+  filters,
   isExporting,
-  onToggleArchived,
-  onStockChange,
-  onQueryChange,
   onExport,
   onImport,
   onAdd,
 }: ProductsToolbarProps) {
+  const { showArchived, stock, query } = filters;
   return (
     <div className="mb-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -55,7 +47,7 @@ export function ProductsToolbar({
             size="sm"
             variant={showArchived ? 'default' : 'outline'}
             aria-pressed={showArchived}
-            onClick={onToggleArchived}
+            onClick={filters.toggleArchived}
           >
             <Archive className="mr-1.5 h-4 w-4" aria-hidden="true" />
             Archived
@@ -80,7 +72,7 @@ export function ProductsToolbar({
       <div className="flex flex-wrap items-center gap-2">
         {/* Addressable, so the dashboard's stock alerts land on exactly the
             products they count. */}
-        <Select value={stock} onValueChange={(value) => onStockChange(value as ProductStockFilter)}>
+        <Select value={stock} onValueChange={(value) => filters.setStock(value as ProductStockFilter)}>
           <SelectTrigger className="h-9 w-52 text-xs" aria-label="Stock">
             <SelectValue />
           </SelectTrigger>
@@ -97,7 +89,7 @@ export function ProductsToolbar({
           value={query}
           label="Search products"
           placeholder="Name, brand, tag or slug"
-          onSearch={onQueryChange}
+          onSearch={filters.setQuery}
         />
       </div>
 

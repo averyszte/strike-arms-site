@@ -1,23 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { AdminPager } from '@/components/admin/AdminPager';
-import { ProductFormSheet } from '@/components/admin/ProductFormSheet';
-import { ProductImportDialog } from '@/components/admin/ProductImportDialog';
 import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
+import { ProductsDialogs } from '@/components/admin/ProductsDialogs';
 import { ProductsGroups } from '@/components/admin/ProductsGroups';
 import { ProductsToolbar } from '@/components/admin/ProductsToolbar';
-import { StockAdjustDialog } from '@/components/admin/StockAdjustDialog';
 import { useAdminProductsList } from '@/hooks/use-admin-products';
 import { useProductsActions } from '@/hooks/use-products-actions';
+import { useProductsDialogs } from '@/hooks/use-products-dialogs';
 import { useProductsExport } from '@/hooks/use-products-export';
 import { useProductsFilters } from '@/hooks/use-products-filters';
+import { usePageClamp } from '@/hooks/use-page-clamp';
 import { useRowSelection } from '@/hooks/use-row-selection';
-import { useToast } from '@/hooks/use-toast';
 import { flattenGroups, groupProductsByCategory } from '@/lib/group-products';
-import { loadErrorMessage } from '@/lib/load-error-message';
 import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
-import type { Product } from '@/types/product';
 
 /**
  * The products list: one server-side page at a time, filtered by search,
@@ -35,23 +32,13 @@ export function ProductsTable() {
   const filters = useProductsFilters();
   const list = useAdminProductsList(filters.filters);
   const { exportProducts, isExporting } = useProductsExport();
-  const { toast } = useToast();
-
-  const [editing, setEditing] = useState<Product | null>(null);
-  const [adding, setAdding] = useState(false);
-  const [adjusting, setAdjusting] = useState<Product | null>(null);
-  const [importing, setImporting] = useState(false);
-
+  const dialogs = useProductsDialogs();
   const groups = useMemo(() => groupProductsByCategory(list.data?.items ?? []), [list.data]);
   const visible = useMemo(() => flattenGroups(groups), [groups]);
   const selection = useRowSelection(visible);
   const actions = useProductsActions(selection.clear);
-
-  function handleExport() {
-    exportProducts().catch((error: unknown) =>
-      toast({ title: 'Export failed', description: loadErrorMessage(error), variant: 'destructive' }),
-    );
-  }
+  const settledTotal = list.isFetching ? undefined : list.data?.total;
+  usePageClamp(filters.page, ADMIN_PAGE_SIZE, settledTotal, filters.setPage);
 
   if (list.isError) {
     return (
@@ -63,7 +50,6 @@ export function ProductsTable() {
       />
     );
   }
-
   if (list.isLoading) {
     return (
       <div className="flex justify-center py-16">
@@ -80,18 +66,12 @@ export function ProductsTable() {
     <>
       <ProductsToolbar
         total={total}
-        showArchived={filters.showArchived}
-        stock={filters.stock}
-        query={filters.query}
+        filters={filters}
         isExporting={isExporting}
-        onToggleArchived={filters.toggleArchived}
-        onStockChange={filters.setStock}
-        onQueryChange={filters.setQuery}
-        onExport={handleExport}
-        onImport={() => setImporting(true)}
-        onAdd={() => setAdding(true)}
+        onExport={exportProducts}
+        onImport={dialogs.importCsv}
+        onAdd={dialogs.add}
       />
-
       {ids.length > 0 && (
         <ProductsBulkBar
           selected={selection.selectedRows}
@@ -103,7 +83,6 @@ export function ProductsTable() {
           onRestore={() => actions.restore(ids)}
         />
       )}
-
       <ProductsGroups
         groups={groups}
         emptyMessage={emptyMessage(isFiltered, filters.showArchived)}
@@ -111,13 +90,12 @@ export function ProductsTable() {
         isSelected={selection.isSelected}
         onToggleSelect={selection.toggle}
         onToggleGroup={selection.toggleMany}
-        onEdit={setEditing}
-        onAdjustStock={setAdjusting}
+        onEdit={dialogs.edit}
+        onAdjustStock={dialogs.adjustStock}
         onArchiveToggle={(product) =>
           product.isArchived ? actions.restoreOne(product) : actions.archiveOne(product)
         }
       />
-
       <AdminPager
         page={filters.page}
         pageSize={ADMIN_PAGE_SIZE}
@@ -126,20 +104,7 @@ export function ProductsTable() {
         isFetching={list.isFetching}
         onPageChange={filters.setPage}
       />
-
-      <ProductFormSheet open={adding} onClose={() => setAdding(false)} />
-      <ProductFormSheet
-        key={editing?.id ?? 'none'}
-        open={!!editing}
-        onClose={() => setEditing(null)}
-        product={editing ?? undefined}
-      />
-      <ProductImportDialog open={importing} onClose={() => setImporting(false)} />
-      <StockAdjustDialog
-        key={adjusting?.id ?? 'none'}
-        product={adjusting}
-        onClose={() => setAdjusting(null)}
-      />
+      <ProductsDialogs dialogs={dialogs} />
     </>
   );
 }

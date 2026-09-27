@@ -5,6 +5,7 @@ import {
 } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ProductsTableRow } from '@/components/admin/ProductsTableRow';
+import { TableScrollHint } from '@/components/admin/TableScrollHint';
 import type { GroupSelectionState } from '@/hooks/use-row-selection';
 import type { Category, Product } from '@/types/product';
 
@@ -53,7 +54,10 @@ export function ProductsTableGroup({
         </div>
       </AccordionTrigger>
       <AccordionContent className="p-0">
-        <div className="overflow-x-auto border-t border-border">
+        <div className="border-t border-border md:hidden">
+          <TableScrollHint />
+        </div>
+        <div className="overflow-x-auto border-border md:border-t">
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-muted/50">
               <tr>

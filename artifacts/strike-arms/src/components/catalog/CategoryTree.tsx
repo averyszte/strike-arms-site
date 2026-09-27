@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/class-names';
 import { TAXONOMY } from '@/lib/taxonomy';
 import type { CategorySlug } from '@/lib/taxonomy';
 
