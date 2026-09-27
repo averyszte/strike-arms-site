@@ -5,3 +5,6 @@ image-urls.json
 
 # Never commit this. It bypasses RLS.
 service-role-key.txt
+
+# Alan's stock emails, as received. Source material, and they carry his address.
+emails/
