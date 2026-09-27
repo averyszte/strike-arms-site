@@ -19,6 +19,7 @@ import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 import Privacy from "@/pages/Privacy";
 import { RequireAuth } from "@/components/RequireAuth";
+import { useScrollToTop } from "@/hooks/use-scroll-to-top";
 import { AuthProvider } from "@/lib/auth-context";
 import { CartProvider } from "@/lib/cart-context";
 import Cart from "@/pages/Cart";
@@ -58,6 +59,8 @@ import About from "@/pages/About";
 const queryClient = new QueryClient();
 
 function Router() {
+  useScrollToTop();
+
   return (
     <Switch>
       <Route path="/" component={Home} />
