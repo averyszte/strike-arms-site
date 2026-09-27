@@ -18,6 +18,7 @@ import {
   type ServiceQuoteForm as QuoteForm,
 } from '@/lib/service-quote';
 import { BUSINESS } from '@/lib/site-config';
+import { CARD_TITLE, CTA_PRIMARY, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
 
 /**
  * Asks for a quote on one service, from the page describing it.
@@ -168,8 +169,8 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={submit.isPending}>
-        <Send className="mr-2 h-4 w-4" aria-hidden="true" />
+      <Button type="submit" size="lg" disabled={submit.isPending} className={CTA_PRIMARY}>
+        <Send className="h-4 w-4" aria-hidden="true" />
         {submit.isPending ? 'Sending…' : 'Request a quote'}
       </Button>
     </form>
@@ -178,19 +179,16 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
 
 function QuoteSent() {
   return (
-    <div className="mt-6 rounded-sm border border-border bg-background p-5">
+    <div className="mt-6 border border-border/60 bg-background p-5">
       <div className="flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
-        <h3 className="font-semibold text-foreground">Thanks — we have it</h3>
+        <h3 className={`${CARD_TITLE} text-base`}>Thanks — we have it</h3>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         We normally come back within a day or two. Any figure we give before seeing the gun is a
         range rather than a price — the job gets quoted properly once it is on the bench. If it is
         urgent, ring the shop on{' '}
-        <a
-          href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}
-          className="font-medium text-accent hover:underline"
-        >
+        <a href={phoneHref(BUSINESS.telephone)} className={TEXT_LINK}>
           {BUSINESS.telephone}
         </a>
         .

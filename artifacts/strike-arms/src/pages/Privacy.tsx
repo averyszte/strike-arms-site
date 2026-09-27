@@ -2,7 +2,9 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
 
 import { SiteLayout } from '@/components/SiteLayout';
+import { PageHero } from '@/components/PageHero';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { ARTICLE_PROSE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
 
 const UPDATED = 'July 2026';
 
@@ -17,16 +19,21 @@ export default function Privacy() {
         />
         <link rel="canonical" href={`${SITE_URL}/privacy`} />
       </Helmet>
-      <div className="max-w-[760px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <h1 className="text-3xl font-bold text-foreground">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated: {UPDATED}</p>
+      <PageHero
+        crumbs={[{ label: 'Privacy' }]}
+        eyebrow="Your data"
+        title="Privacy Policy"
+        meta={`Last updated: ${UPDATED}`}
+        width="narrow"
+      />
 
-        <div className="mt-4 rounded-sm border border-border bg-card p-4 text-sm text-muted-foreground">
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
+        <div className={`${PANEL} border-l-2 border-l-accent p-4 text-sm text-muted-foreground`}>
           Draft — this policy should be reviewed by a solicitor or against Data Protection Commission
           guidance before the site goes live.
         </div>
 
-        <div className="mt-8 space-y-8 text-muted-foreground leading-relaxed [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-foreground [&_h2]:mb-2 [&_a]:text-accent hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ul]:mt-2">
+        <div className={`mt-6 ${ARTICLE_PROSE} [&>section:first-child>h2]:mt-8`}>
           <section>
             <h2>Who we are</h2>
             <p>

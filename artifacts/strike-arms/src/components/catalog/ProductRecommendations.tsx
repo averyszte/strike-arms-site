@@ -1,5 +1,6 @@
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { useCrossSellProducts, useSimilarProducts } from '@/hooks/use-related-products';
+import { CONTENT_TITLE } from '@/lib/storefront-styles';
 import type { Product } from '@/types/product';
 
 /**
@@ -24,10 +25,10 @@ function Row({
 }) {
   if (products.length === 0) return null;
   return (
-    <section className="mt-14">
-      <h2 className="text-xl font-bold text-foreground">{title}</h2>
-      {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
-      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+    <section className="mt-16 border-t border-border/60 pt-12">
+      <h2 className={CONTENT_TITLE}>{title}</h2>
+      {subtitle && <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>}
+      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         {products.map((item) => (
           <ProductCard key={item.id} product={item} />
         ))}

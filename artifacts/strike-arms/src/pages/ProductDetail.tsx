@@ -76,7 +76,7 @@ function ProductDetailView({ product }: { product: Product }) {
 
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 md:py-10">
         <ProductCrumbs crumbs={crumbs} />
-        <div className="mt-6 grid gap-8 md:grid-cols-2">
+        <div className="mt-8 grid gap-8 md:grid-cols-2 md:gap-12">
           <ProductGallery product={product} />
           <ProductInfo product={product} />
         </div>
@@ -89,14 +89,14 @@ function ProductDetailView({ product }: { product: Product }) {
 function ProductCrumbs({ crumbs }: { crumbs: BreadcrumbEntry[] }) {
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="text-xs font-bold uppercase tracking-wider">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1;
           return (
             <Fragment key={crumb.path}>
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
+                  <BreadcrumbPage className="line-clamp-1">{crumb.name}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
                     <Link href={crumb.path}>{crumb.name}</Link>

@@ -19,13 +19,13 @@ export function ServiceTiles({ items }: { items: ServiceFact[] }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mt-6 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-3">
+    <div className="mt-6 grid gap-px overflow-hidden border border-border/60 bg-border/60 sm:grid-cols-3">
       {items.map((item) => (
         <div key={item.label} className="bg-card p-4">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
             {item.label}
           </p>
-          <p className="mt-1.5 text-sm font-semibold leading-snug text-foreground">{item.value}</p>
+          <p className="mt-1.5 text-sm font-bold leading-snug text-foreground">{item.value}</p>
         </div>
       ))}
     </div>

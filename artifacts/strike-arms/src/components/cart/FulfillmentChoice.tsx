@@ -3,6 +3,7 @@ import { Store, Truck } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { BUSINESS } from '@/lib/site-config';
+import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 
 type FulfillmentChoiceProps = {
   wantsDelivery: boolean;
@@ -23,8 +24,8 @@ export function FulfillmentChoice({
   onChange,
 }: FulfillmentChoiceProps) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <h2 className="text-lg font-semibold text-foreground">How would you like it?</h2>
+    <div className={`${PANEL} p-5`}>
+      <h2 className={`${CARD_TITLE} text-lg`}>How would you like it?</h2>
 
       <RadioGroup
         className="mt-4 space-y-3"
@@ -34,8 +35,8 @@ export function FulfillmentChoice({
         <div className="flex items-start gap-3">
           <RadioGroupItem value="pickup" id="fulfilment-pickup" className="mt-1" />
           <Label htmlFor="fulfilment-pickup" className="cursor-pointer font-normal">
-            <span className="flex items-center gap-2 font-medium text-foreground">
-              <Store className="h-4 w-4" aria-hidden="true" />
+            <span className="flex items-center gap-2 font-bold text-foreground">
+              <Store className="h-4 w-4 text-accent" aria-hidden="true" />
               Collect in store
             </span>
             <span className="mt-1 block text-sm text-muted-foreground">
@@ -55,8 +56,8 @@ export function FulfillmentChoice({
             htmlFor="fulfilment-delivery"
             className={`cursor-pointer font-normal ${hasShippableItems ? '' : 'opacity-60'}`}
           >
-            <span className="flex items-center gap-2 font-medium text-foreground">
-              <Truck className="h-4 w-4" aria-hidden="true" />
+            <span className="flex items-center gap-2 font-bold text-foreground">
+              <Truck className="h-4 w-4 text-accent" aria-hidden="true" />
               Deliver to me
             </span>
             <span className="mt-1 block text-sm text-muted-foreground">
@@ -69,7 +70,7 @@ export function FulfillmentChoice({
       </RadioGroup>
 
       {wantsDelivery && hasShippableItems && hasPickupItems && (
-        <p className="mt-4 rounded border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+        <p className="mt-4 border border-border/60 bg-muted/40 p-3 text-sm text-muted-foreground">
           Some items in your cart are collect-in-store only and will be held for you at the shop.
           The rest will be posted to the address you give below.
         </p>

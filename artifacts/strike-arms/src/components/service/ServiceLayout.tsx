@@ -9,6 +9,7 @@ import { ServiceQuoteBlock } from '@/components/service/ServiceQuoteBlock';
 import { ServiceTocNav, type ServiceTocItem } from '@/components/service/ServiceTocNav';
 import type { ServiceFact } from '@/components/service/ServiceTiles';
 import { SITE_URL } from '@/lib/site-config';
+import { CONTENT_TITLE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 import {
   buildBreadcrumbSchema,
   buildFaqSchema,
@@ -28,14 +29,15 @@ import {
  */
 const PROSE =
   'text-foreground ' +
-  '[&>h3]:mt-8 [&>h3]:text-lg [&>h3]:font-semibold [&>h3]:text-foreground ' +
+  '[&>h3]:mt-8 [&>h3]:text-lg [&>h3]:font-black [&>h3]:uppercase [&>h3]:tracking-wide [&>h3]:text-foreground ' +
   '[&>p]:mt-4 [&>p]:leading-relaxed [&>p]:text-muted-foreground ' +
   '[&>ul]:mt-4 [&>ul]:list-disc [&>ul]:space-y-2 [&>ul]:pl-5 [&>ul]:text-muted-foreground ' +
   '[&>ol]:mt-4 [&>ol]:list-decimal [&>ol]:space-y-2 [&>ol]:pl-5 [&>ol]:text-muted-foreground ' +
-  '[&_a]:font-medium [&_a]:text-accent hover:[&_a]:underline ' +
+  '[&>ul>li::marker]:text-accent [&>ol>li::marker]:text-accent ' +
+  '[&_a]:font-bold [&_a]:text-accent hover:[&_a]:underline ' +
   '[&_strong]:font-semibold [&_strong]:text-foreground ' +
-  '[&_table]:mt-4 [&_table]:w-full [&_table]:text-sm [&_th]:py-2 [&_th]:pr-4 [&_th]:text-left [&_th]:font-semibold ' +
-  '[&_td]:border-t [&_td]:border-border [&_td]:py-2 [&_td]:pr-4 [&_td]:text-muted-foreground';
+  '[&_table]:mt-4 [&_table]:w-full [&_table]:text-sm [&_th]:py-2 [&_th]:pr-4 [&_th]:text-left [&_th]:text-xs [&_th]:font-black [&_th]:uppercase [&_th]:tracking-wider ' +
+  '[&_td]:border-t [&_td]:border-border/60 [&_td]:py-2 [&_td]:pr-4 [&_td]:text-muted-foreground';
 
 /** One h2-level block of a service page. */
 export interface ServiceSection {
@@ -65,7 +67,6 @@ const FAQ_HEADING = 'Frequently asked questions';
 export function ServiceLayout(props: ServiceLayoutProps) {
   const { title, metaTitle, description, path, serviceType, intro } = props;
   const { eyebrow = 'Workshop service', facts = [], sections, faq } = props;
-
 
   const crumbs = [
     { name: 'Home', path: '/' },
@@ -99,7 +100,7 @@ export function ServiceLayout(props: ServiceLayoutProps) {
 
       <ServiceHero title={title} eyebrow={eyebrow} intro={intro} facts={facts} />
 
-      <div className="mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-14">
+      <div className={`mx-auto px-4 py-12 md:px-6 md:py-16 ${PAGE_WIDTHS.medium}`}>
         <div className="lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-14">
           <aside className="hidden lg:block">
             {toc.length > 1 && <ServiceTocNav items={toc} />}
@@ -140,7 +141,7 @@ function SectionHeading({ children }: { children: ReactNode }) {
   return (
     <>
       <span aria-hidden="true" className="block h-0.5 w-8 bg-accent" />
-      <h2 className="mt-4 text-2xl font-bold leading-tight text-foreground md:text-[1.75rem]">
+      <h2 className={`${CONTENT_TITLE} mt-4`}>
         {children}
       </h2>
     </>

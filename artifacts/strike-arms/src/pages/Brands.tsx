@@ -3,17 +3,11 @@ import { Link } from 'wouter';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
+import { PageHero } from '@/components/PageHero';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { useBrands } from '@/hooks/useProducts';
 import { SITE_URL } from '@/lib/site-config';
+import { CARD_TITLE } from '@/lib/storefront-styles';
 import { buildItemListSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 
 const TITLE = 'Airsoft Brands in Ireland — G&G, Specna, Tokyo Marui & More | Strike Arms';
@@ -46,44 +40,30 @@ export default function Brands() {
       </Helmet>
       <JsonLd data={schema} />
 
-      <div className="max-w-[1000px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Brands</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <PageHero
+        crumbs={[{ label: 'Brands' }]}
+        eyebrow="Genuine stock"
+        title="Airsoft Brands"
+        intro="We stock the airsoft brands that earn their place on the field and the bench, from beginner-friendly AEGs to premium platforms and reliable consumables. Browse a brand to see what we carry, all shipped across Ireland with in-house advice and support."
+      />
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">Airsoft Brands</h1>
-        <p className="mt-3 text-muted-foreground leading-relaxed max-w-2xl">
-          We stock the airsoft brands that earn their place on the field and the bench, from
-          beginner-friendly AEGs to premium platforms and reliable consumables. Browse a brand to see
-          what we carry, all shipped across Ireland with in-house advice and support.
-        </p>
-
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-16">
         {isLoading ? (
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-sm" />
+              <Skeleton key={i} className="h-24" />
             ))}
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {(brands ?? []).map((brand) => (
               <Link
                 key={brand.slug}
                 href={`/brands/${brand.slug}`}
-                className="flex flex-col items-center justify-center rounded-sm border border-border bg-card p-5 text-center transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group flex flex-col items-center justify-center border border-border/60 bg-card p-6 text-center transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <span className="font-semibold text-foreground">{brand.name}</span>
-                <span className="mt-1 text-xs text-muted-foreground">
+                <span className={`${CARD_TITLE} group-hover:text-accent`}>{brand.name}</span>
+                <span className="mt-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {brand.count} {brand.count === 1 ? 'product' : 'products'}
                 </span>
               </Link>

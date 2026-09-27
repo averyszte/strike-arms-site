@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 import { SiteLayout } from '@/components/SiteLayout';
+import { PageHero } from '@/components/PageHero';
 import { CartLineRow } from '@/components/cart/CartLineRow';
 import { CartSummary } from '@/components/cart/CartSummary';
 import { CheckoutForm } from '@/components/cart/CheckoutForm';
@@ -10,6 +11,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useCartPricing } from '@/hooks/use-cart-pricing';
 import { useCheckout } from '@/hooks/use-checkout';
 import { SITE_URL } from '@/lib/site-config';
+import { CARD_TITLE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
 
 const TITLE = 'Your Cart — Strike Arms Airsoft Dublin';
 const DESCRIPTION =
@@ -29,17 +31,15 @@ export default function Cart() {
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <div className="mx-auto max-w-[1100px] px-4 py-8 md:px-6 md:py-12">
-        <h1 className="text-3xl font-bold text-foreground md:text-4xl">Your cart</h1>
+      <PageHero crumbs={[{ label: 'Cart' }]} eyebrow="Checkout" title="Your cart" isCompact />
 
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.medium}`}>
         {lines.length === 0 ? (
-          <div className="mt-8">
-            <EmptyCart />
-          </div>
+          <EmptyCart />
         ) : (
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
             <div>
-              <ul className="border-t border-border">
+              <ul className="border-t border-border/60">
                 {lines.map((line) => (
                   <CartLineRow
                     key={line.productId}
@@ -64,8 +64,8 @@ export default function Cart() {
             <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
               <CartSummary basics={basics} pricing={pricing} wantsDelivery={wantsDelivery} />
 
-              <div className="rounded-lg border border-border bg-card p-5">
-                <h2 className="mb-4 text-lg font-semibold text-foreground">Checkout</h2>
+              <div className={`${PANEL} p-5`}>
+                <h2 className={`${CARD_TITLE} mb-4 text-lg`}>Checkout</h2>
                 <CheckoutForm
                   wantsDelivery={wantsDelivery && basics.hasShippableItems}
                   isSubmitting={isSubmitting}

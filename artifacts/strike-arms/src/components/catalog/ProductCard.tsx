@@ -17,11 +17,11 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${slug}`}
-      className="group block rounded-sm border border-border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-transform duration-150 hover:-translate-y-0.5"
+      className="group block border border-border/60 bg-card transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       tabIndex={0}
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden rounded-t-sm bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={displayImage}
           alt={name}
@@ -63,21 +63,21 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="p-3 space-y-1">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+      <div className="p-4 space-y-1.5">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
           {brand.replace(/-/g, ' ')}
         </p>
-        <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
+        <p className="text-sm font-bold text-foreground leading-snug line-clamp-2 transition-colors group-hover:text-accent">
           {name}
         </p>
         <div className="flex items-baseline gap-2 pt-0.5">
           {hasDiscount ? (
             <>
-              <span className="text-sm font-bold text-accent">{formatPrice(salePrice!)}</span>
+              <span className="text-base font-black text-accent">{formatPrice(salePrice!)}</span>
               <span className="text-xs text-muted-foreground line-through">{formatPrice(price)}</span>
             </>
           ) : (
-            <span className="text-sm font-bold text-foreground">{formatPrice(price)}</span>
+            <span className="text-base font-black text-foreground">{formatPrice(price)}</span>
           )}
         </div>
       </div>

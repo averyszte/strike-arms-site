@@ -22,12 +22,12 @@ export function CartLineRow({
   const lineTotal = line.unitPriceCents * line.quantity;
 
   return (
-    <li className="flex gap-4 py-5 border-b border-border">
+    <li className="flex gap-4 py-5 border-b border-border/60">
       <Link href={`/products/${line.slug}`} className="shrink-0">
         <img
           src={line.image ?? '/images/placeholder-product.png'}
           alt={line.name}
-          className="h-20 w-20 rounded object-cover bg-muted"
+          className="h-20 w-20 border border-border/60 object-cover bg-muted"
           loading="lazy"
         />
       </Link>
@@ -35,7 +35,7 @@ export function CartLineRow({
       <div className="min-w-0 flex-1">
         <Link
           href={`/products/${line.slug}`}
-          className="font-medium text-foreground hover:text-accent line-clamp-2"
+          className="font-bold uppercase tracking-tight text-foreground transition-colors hover:text-accent line-clamp-2"
         >
           {line.name}
         </Link>
@@ -95,7 +95,7 @@ export function CartLineRow({
       </div>
 
       <div className="shrink-0 text-right">
-        <p className="font-semibold text-foreground tabular-nums">{formatPrice(lineTotal)}</p>
+        <p className="font-black text-foreground tabular-nums">{formatPrice(lineTotal)}</p>
         {line.quantity > 1 && (
           <p className="mt-1 text-xs text-muted-foreground tabular-nums">
             {formatPrice(line.unitPriceCents)} each

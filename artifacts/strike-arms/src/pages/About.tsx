@@ -1,20 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { MapPin, Wrench, MessageSquare, ArrowRight } from 'lucide-react';
+import { MapPin, Wrench, MessageSquare } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
-import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { PageHero } from '@/components/PageHero';
+import { CtaBand } from '@/components/CtaBand';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
 import { buildBreadcrumbSchema, buildLocalBusinessSchema } from '@/lib/structured-data';
+import { CARD_TITLE, CONTENT_TITLE, PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 
 const TITLE = 'About Strike Arms | Airsoft Shop in Swords, Co. Dublin';
 const DESCRIPTION =
@@ -59,31 +53,24 @@ export default function About() {
       </Helmet>
       <JsonLd data={[buildLocalBusinessSchema(), buildBreadcrumbSchema(crumbs)]} />
 
-      <div className="max-w-[760px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>About</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <PageHero
+        crumbs={[{ label: 'About' }]}
+        eyebrow="Airsoft shop and workshop"
+        title="About Strike Arms"
+        intro={
+          <p>
+            We are an airsoft shop and repair workshop in {BUSINESS.addressLocality}, Co. Dublin,
+            serving players across Ireland. The short version of what we are for: most of the
+            airsoft advice available to an Irish player is written for somewhere else, and most of
+            the cheapest options turn out to cost the most.
+          </p>
+        }
+        width="narrow"
+      />
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">About Strike Arms</h1>
-        <p className="mt-5 text-lg text-foreground leading-relaxed">
-          We are an airsoft shop and repair workshop in {BUSINESS.addressLocality}, Co. Dublin,
-          serving players across Ireland. The short version of what we are for: most of the airsoft
-          advice available to an Irish player is written for somewhere else, and most of the cheapest
-          options turn out to cost the most.
-        </p>
-
-        <h2 className="mt-12 text-2xl font-bold text-foreground">Seventeen years in the sport</h2>
-        <p className="mt-3 text-muted-foreground leading-relaxed">
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
+        <h2 className={CONTENT_TITLE}>Seventeen years in the sport</h2>
+        <p className="mt-4 text-muted-foreground leading-relaxed">
           Strike Arms has been part of Irish airsoft for 17 years — the oldest airsoft shop in
           Dublin, and the only one in the north of the county you can actually walk into. That
           length of time is the whole point: we have watched brands come and go, seen which guns
@@ -92,26 +79,26 @@ export default function About() {
           the trip to Swords rather than clicking &lsquo;buy&rsquo; on a website.
         </p>
 
-        <div className="mt-10 space-y-8">
+        <div className="mt-10 space-y-4">
           {PILLARS.map((pillar) => (
-            <section key={pillar.heading}>
+            <section key={pillar.heading} className={`${PANEL} p-6`}>
               <div className="flex items-center gap-3">
                 <pillar.icon className="h-5 w-5 shrink-0 text-accent" />
-                <h2 className="text-xl font-bold text-foreground">{pillar.heading}</h2>
+                <h2 className={`${CARD_TITLE} text-lg`}>{pillar.heading}</h2>
               </div>
               <p className="mt-3 text-muted-foreground leading-relaxed">{pillar.body}</p>
             </section>
           ))}
         </div>
 
-        <h2 className="mt-12 text-2xl font-bold text-foreground">
+        <h2 className={`${CONTENT_TITLE} mt-14`}>
           What in-person catches that a product page cannot
         </h2>
-        <p className="mt-3 text-muted-foreground leading-relaxed">
+        <p className="mt-4 text-muted-foreground leading-relaxed">
           These are the things we correct across the counter most weeks, and none of them are
           visible when you are buying from a photo:
         </p>
-        <ul className="mt-4 list-disc pl-5 space-y-2 text-muted-foreground">
+        <ul className="mt-4 list-disc pl-5 space-y-2 text-muted-foreground marker:text-accent">
           <li>A gun that is the wrong size or weight for the person holding it.</li>
           <li>Awkward controls for how they actually shoot.</li>
           <li>The wrong battery shape or connector for the gun.</li>
@@ -125,39 +112,31 @@ export default function About() {
           we are always cheaper, but that the total cost of getting it wrong is carried by you.
         </p>
 
-        <h2 className="mt-10 text-2xl font-bold text-foreground">Where to start</h2>
-        <p className="mt-3 text-muted-foreground leading-relaxed">
+        <h2 className={`${CONTENT_TITLE} mt-14`}>Where to start</h2>
+        <p className="mt-4 text-muted-foreground leading-relaxed">
           If you are new, the{' '}
-          <Link href="/guides/beginners-guide" className="font-medium text-accent hover:underline">
+          <Link href="/guides/beginners-guide" className={TEXT_LINK}>
             beginner's guide
           </Link>{' '}
           covers the budget and kit picture, and{' '}
-          <Link href="/guides/first-airsoft-gun" className="font-medium text-accent hover:underline">
+          <Link href="/guides/first-airsoft-gun" className={TEXT_LINK}>
             choosing a first gun
           </Link>{' '}
           walks through the decision. If you already play and something is not working right, that is
           what the{' '}
-          <Link href="/services" className="font-medium text-accent hover:underline">
+          <Link href="/services" className={TEXT_LINK}>
             workshop
           </Link>{' '}
           is for.
         </p>
-
-        <div className="mt-12 rounded-sm border border-border bg-card p-6">
-          <p className="font-semibold text-foreground">Come in and ask</p>
-          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-            Tell us where you play, what you want to spend and what matters most to you. Ten minutes
-            across the counter saves a lot of guesswork — and we will tell you honestly when the
-            cheaper option is the better one.
-          </p>
-          <Button asChild className="mt-4">
-            <Link href="/contact">
-              Find us and get in touch
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
+
+      <CtaBand
+        eyebrow="Walk-in shop in Swords"
+        title="Come in and ask"
+        text="Tell us where you play, what you want to spend and what matters most to you. Ten minutes across the counter saves a lot of guesswork — and we will tell you honestly when the cheaper option is the better one."
+        cta={{ label: 'Find us and get in touch', href: '/contact' }}
+      />
     </SiteLayout>
   );
 }

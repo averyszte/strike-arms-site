@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { SiteLayout } from '@/components/SiteLayout';
+import { PageHero } from '@/components/PageHero';
 import { ResultsHeader } from '@/components/catalog/ResultsHeader';
 import { FilterSidebarContent } from '@/components/catalog/FilterSidebar';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
@@ -20,6 +21,7 @@ import {
 } from '@/lib/category-filters';
 import { isValidCategorySlug, getSubcategory } from '@/lib/taxonomy';
 import { deriveShopPageMeta } from '@/lib/shop-page-meta';
+import { buildShopHeading } from '@/lib/shop-heading';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { Category, ProductFilters } from '@/types/product';
 import NotFound from '@/pages/not-found';
@@ -138,6 +140,7 @@ function ShopPageInner({
     setLocation(buildBasePath(), { replace: true });
   }, [buildBasePath, setLocation]);
 
+  const heading = buildShopHeading(categorySlug, rawSubcategory, filters.q);
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
 
@@ -150,14 +153,16 @@ function ShopPageInner({
         <link rel="canonical" href={`https://strikearms.ie${canonicalPath}`} />
       </Helmet>
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
-        {introText && (
-          <p className="text-muted-foreground mb-6 max-w-2xl">{introText}</p>
-        )}
+      <PageHero
+        width="wide"
+        crumbs={heading.crumbs}
+        eyebrow={heading.eyebrow}
+        title={heading.title}
+        intro={introText}
+      />
 
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8 md:py-10">
         <ResultsHeader
-          activeCategorySlug={categorySlug}
-          activeSubcategorySlug={rawSubcategory}
           total={total}
           isLoading={isLoading}
           filters={filters}
@@ -200,7 +205,7 @@ function ShopPageInner({
       <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
         <SheetContent side="left" className="w-[300px] overflow-y-auto">
           <SheetHeader className="mb-6">
-            <SheetTitle>Filters</SheetTitle>
+            <SheetTitle className="font-black uppercase tracking-tight">Filters</SheetTitle>
           </SheetHeader>
           <FilterSidebarContent
             activeCategorySlug={categorySlug}

@@ -3,20 +3,14 @@ import { Link } from 'wouter';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { PageHero } from '@/components/PageHero';
 import { GLOSSARY, groupGlossaryByLetter, type GlossaryTerm } from '@/lib/glossary';
 import { SITE_URL } from '@/lib/site-config';
 import {
   buildDefinedTermSetSchema,
   buildBreadcrumbSchema,
 } from '@/lib/structured-data';
+import { CARD_TITLE, PAGE_WIDTHS, TEXT_LINK } from '@/lib/storefront-styles';
 
 const TITLE = 'Airsoft Glossary — Terms & Abbreviations Explained | Strike Arms';
 const DESCRIPTION =
@@ -47,33 +41,27 @@ export default function Glossary() {
         ]}
       />
 
-      <div className="max-w-[900px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Glossary</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">Airsoft Glossary</h1>
-        <p className="mt-3 text-muted-foreground leading-relaxed max-w-2xl">
-          The words, abbreviations and jargon you will hear around airsoft, explained plainly by the
-          team at Strike Arms. New to the sport? Start here, then browse the shop with confidence.
-        </p>
-
+      <PageHero
+        crumbs={[{ label: 'Glossary' }]}
+        eyebrow="Terms explained"
+        title="Airsoft Glossary"
+        intro={
+          <p>
+            The words, abbreviations and jargon you will hear around airsoft, explained plainly by
+            the team at Strike Arms. New to the sport? Start here, then browse the shop with
+            confidence.
+          </p>
+        }
+        width="medium"
+      >
         <LetterNav letters={groups.map((g) => g.letter)} />
+      </PageHero>
 
-        <div className="mt-10 space-y-10">
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.medium}`}>
+        <div className="space-y-12">
           {groups.map((group) => (
-            <section key={group.letter} id={`letter-${group.letter}`}>
-              <h2 className="text-xl font-bold text-accent border-b border-border pb-2">
+            <section key={group.letter} id={`letter-${group.letter}`} className="scroll-mt-28">
+              <h2 className="border-b border-border/60 pb-2 text-2xl font-black uppercase text-accent md:text-3xl">
                 {group.letter}
               </h2>
               <dl className="mt-4 space-y-6">
@@ -91,12 +79,12 @@ export default function Glossary() {
 
 function LetterNav({ letters }: { letters: string[] }) {
   return (
-    <nav aria-label="Jump to letter" className="mt-6 flex flex-wrap gap-1.5">
+    <nav aria-label="Jump to letter" className="flex flex-wrap gap-1.5">
       {letters.map((letter) => (
         <a
           key={letter}
           href={`#letter-${letter}`}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border text-sm font-medium text-muted-foreground hover:border-foreground hover:text-foreground"
+          className="inline-flex h-9 w-9 items-center justify-center border border-border/60 text-sm font-black text-muted-foreground transition-colors hover:border-accent hover:text-accent"
         >
           {letter}
         </a>
@@ -108,15 +96,15 @@ function LetterNav({ letters }: { letters: string[] }) {
 function GlossaryEntry({ term }: { term: GlossaryTerm }) {
   return (
     <div id={term.slug} className="scroll-mt-28">
-      <dt className="text-base font-semibold text-foreground">{term.term}</dt>
-      <dd className="mt-1 text-muted-foreground leading-relaxed">{term.definition}</dd>
+      <dt className={`${CARD_TITLE} text-base`}>{term.term}</dt>
+      <dd className="mt-1.5 text-muted-foreground leading-relaxed">{term.definition}</dd>
       {term.seeAlso && term.seeAlso.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
           {term.seeAlso.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="font-medium text-accent hover:underline"
+              className={TEXT_LINK}
             >
               {link.label}
             </Link>

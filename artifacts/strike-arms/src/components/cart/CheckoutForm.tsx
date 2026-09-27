@@ -11,6 +11,7 @@ import {
   validateCheckoutDetails,
   type CheckoutFieldErrors,
 } from '@/lib/checkout-validation';
+import { CTA_PRIMARY } from '@/lib/storefront-styles';
 import type { CheckoutDetails } from '@/types/cart';
 
 type CheckoutFormProps = {
@@ -45,7 +46,7 @@ export function CheckoutForm({
   return (
     <form className="space-y-6" onSubmit={handleSubmit} noValidate>
       <fieldset className="space-y-4">
-        <legend className="text-sm font-semibold text-foreground">Your details</legend>
+        <legend className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Your details</legend>
 
         <CheckoutField
           id="customer-name"
@@ -108,8 +109,8 @@ export function CheckoutForm({
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-        <Lock className="mr-2 h-4 w-4" aria-hidden="true" />
+      <Button type="submit" size="lg" className={`${CTA_PRIMARY} w-full`} disabled={isSubmitting}>
+        <Lock className="h-4 w-4" aria-hidden="true" />
         {isSubmitting ? 'Taking you to payment…' : 'Continue to payment'}
       </Button>
 

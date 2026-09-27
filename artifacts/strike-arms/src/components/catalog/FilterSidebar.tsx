@@ -74,7 +74,7 @@ export function FilterSidebarContent({
     <div className="space-y-6">
       {/* Category navigation tree */}
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3">
+        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-3">
           Browse
         </p>
         <CategoryTree
@@ -84,14 +84,14 @@ export function FilterSidebarContent({
         />
       </div>
 
-      <Separator />
+      <Separator className="bg-border/60" />
 
       {/* Clear filters button — only affects brand/price/stock/sale */}
       {isActive && (
         <Button
           variant="ghost"
           size="sm"
-          className="w-full text-muted-foreground hover:text-foreground"
+          className="w-full font-bold uppercase tracking-wider text-muted-foreground hover:text-accent"
           onClick={() =>
             onFilterChange({
               brand: undefined,
@@ -109,7 +109,7 @@ export function FilterSidebarContent({
 
       {/* Condition — new stock or a secondhand one-off */}
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3">
+        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-3">
           Condition
         </p>
         <div className="space-y-1.5">
@@ -124,12 +124,12 @@ export function FilterSidebarContent({
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/60" />
 
       {/* Brand */}
       {brands.length > 0 && (
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3">
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-3">
             Brand
           </p>
           <div className="space-y-1.5">
@@ -155,11 +155,11 @@ export function FilterSidebarContent({
         </div>
       )}
 
-      <Separator />
+      <Separator className="bg-border/60" />
 
       {/* Price range */}
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3">
+        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-3">
           Price
         </p>
         <Slider
@@ -182,7 +182,7 @@ export function FilterSidebarContent({
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/60" />
 
       {/* Toggles */}
       <div className="space-y-3">

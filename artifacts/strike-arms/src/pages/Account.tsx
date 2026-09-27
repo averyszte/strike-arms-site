@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Download, LogOut, Trash2 } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
+import { PageHero } from '@/components/PageHero';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,13 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { SITE_URL } from '@/lib/site-config';
+import {
+  CARD_TITLE,
+  CTA_PRIMARY_SM,
+  CTA_SECONDARY_SM,
+  PAGE_WIDTHS,
+  PANEL,
+} from '@/lib/storefront-styles';
 
 function downloadJson(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -50,18 +58,21 @@ export default function Account() {
         <meta name="robots" content="noindex,follow" />
         <link rel="canonical" href={`${SITE_URL}/account`} />
       </Helmet>
-      <div className="max-w-[720px] mx-auto px-4 md:px-6 py-10 md:py-14">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">My account</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Signed in as {user.email}</p>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" /> Sign out
-          </Button>
-        </div>
+      <PageHero
+        crumbs={[{ label: 'Account' }]}
+        eyebrow="Your account"
+        title="My account"
+        intro={`Signed in as ${user.email}`}
+        width="narrow"
+        isCompact
+      >
+        <Button variant="outline" size="sm" className={CTA_SECONDARY_SM} onClick={handleSignOut}>
+          <LogOut className="h-4 w-4" /> Sign out
+        </Button>
+      </PageHero>
 
-        <div className="mt-8 space-y-6">
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
+        <div className="space-y-6">
           <ProfileSection />
           <PreferencesSection />
           <DataSection />
@@ -73,8 +84,8 @@ export default function Account() {
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-sm border border-border bg-card p-6">
-      <h2 className="font-semibold text-foreground">{title}</h2>
+    <section className={`${PANEL} p-6`}>
+      <h2 className={`${CARD_TITLE} text-lg`}>{title}</h2>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-4">{children}</div>
     </section>
@@ -111,7 +122,9 @@ function ProfileSection() {
           <Label htmlFor="acc-email">Email</Label>
           <Input id="acc-email" value={user?.email ?? ''} disabled />
         </div>
-        <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</Button>
+        <Button type="submit" className={CTA_PRIMARY_SM} disabled={saving}>
+          {saving ? 'Saving…' : 'Save changes'}
+        </Button>
       </form>
     </Section>
   );
@@ -167,14 +180,17 @@ function DataSection() {
       description="Under GDPR you can download a copy of your data or delete your account at any time."
     >
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="mr-2 h-4 w-4" /> Download my data
+        <Button variant="outline" className={CTA_SECONDARY_SM} onClick={handleExport}>
+          <Download className="h-4 w-4" /> Download my data
         </Button>
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline" className="text-destructive hover:text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" /> Delete my account
+            <Button
+              variant="outline"
+              className={`${CTA_SECONDARY_SM} text-destructive hover:border-destructive hover:text-destructive`}
+            >
+              <Trash2 className="h-4 w-4" /> Delete my account
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

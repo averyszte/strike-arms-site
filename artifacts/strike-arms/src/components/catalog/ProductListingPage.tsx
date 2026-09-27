@@ -1,17 +1,10 @@
 import { Helmet } from 'react-helmet-async';
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
+import { PageHero } from '@/components/PageHero';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { useProducts } from '@/hooks/useProducts';
 import { SITE_URL } from '@/lib/site-config';
 import { buildBreadcrumbSchema } from '@/lib/structured-data';
@@ -19,6 +12,8 @@ import type { ProductFilters } from '@/types/product';
 
 interface ProductListingPageProps {
   title: string;
+  /** Accent label above the title. */
+  eyebrow?: string;
   metaTitle: string;
   description: string;
   path: string;
@@ -28,7 +23,7 @@ interface ProductListingPageProps {
 
 /** Simple filter-free product listing (New Arrivals, Sale, etc.). */
 export function ProductListingPage(props: ProductListingPageProps) {
-  const { title, metaTitle, description, path, intro, filters } = props;
+  const { title, eyebrow = 'Shop the range', metaTitle, description, path, intro, filters } = props;
   const [, setLocation] = useLocation();
   const { data, isLoading } = useProducts(filters);
   const items = data?.items ?? [];
@@ -50,25 +45,16 @@ export function ProductListingPage(props: ProductListingPageProps) {
       </Helmet>
       <JsonLd data={buildBreadcrumbSchema(crumbs)} />
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{title}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <PageHero
+        width="wide"
+        crumbs={[{ label: title }]}
+        eyebrow={eyebrow}
+        title={title}
+        intro={intro}
+      />
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">{title}</h1>
-        <p className="mt-3 text-muted-foreground leading-relaxed max-w-2xl">{intro}</p>
-
-        <div className="mt-8">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8 md:py-10">
+        <div>
           <ProductGrid
             products={items}
             isLoading={isLoading}

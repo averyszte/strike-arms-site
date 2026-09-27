@@ -4,14 +4,7 @@ import { AlertTriangle, ExternalLink } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { PageHero } from '@/components/PageHero';
 import { SITE_URL } from '@/lib/site-config';
 import {
   buildArticleSchema,
@@ -19,6 +12,7 @@ import {
   buildBreadcrumbSchema,
   type FaqItem,
 } from '@/lib/structured-data';
+import { CARD_TITLE, CONTENT_TITLE, PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 
 const TITLE = 'Airsoft and the Law in Ireland | Strike Arms';
 const DESCRIPTION =
@@ -124,52 +118,42 @@ export default function AirsoftLaw() {
         ]}
       />
 
-      <div className="max-w-[760px] mx-auto px-4 md:px-6 py-8 md:py-12">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Airsoft Law</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <PageHero
+        crumbs={[{ label: 'Airsoft Law' }]}
+        eyebrow="General information, not legal advice"
+        title="Airsoft and the Law in Ireland"
+        intro={
+          <p>
+            Airsoft is a popular, well-established sport in Ireland, but the questions around the
+            law come up a lot in the shop. This page gives you an honest starting point and, just as
+            importantly, points you to the official sources for the answers that matter.
+          </p>
+        }
+        meta={`Last reviewed: ${UPDATED_LABEL}`}
+        width="narrow"
+      />
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold text-foreground">
-          Airsoft and the Law in Ireland
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last reviewed: {UPDATED_LABEL}</p>
-
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
         <Disclaimer />
 
-        <p className="mt-6 text-lg text-foreground leading-relaxed">
-          Airsoft is a popular, well-established sport in Ireland, but the questions around the law
-          come up a lot in the shop. This page gives you an honest starting point and, just as
-          importantly, points you to the official sources for the answers that matter.
-        </p>
-
-        <div className="mt-8 space-y-8">
+        <div className="mt-12 space-y-12">
           {TOPICS.map((topic) => (
-            <section key={topic.id} id={topic.id}>
-              <h2 className="text-2xl font-bold text-foreground">{topic.heading}</h2>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{topic.body}</p>
+            <section key={topic.id} id={topic.id} className="scroll-mt-28">
+              <h2 className={CONTENT_TITLE}>{topic.heading}</h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">{topic.body}</p>
             </section>
           ))}
         </div>
 
         <SourcesBlock />
 
-        <p className="mt-8 text-muted-foreground leading-relaxed">
+        <p className="mt-10 text-muted-foreground leading-relaxed">
           Still not sure? It is what we are here for. Call in or{' '}
-          <Link href="/contact" className="font-medium text-accent hover:underline">
+          <Link href="/contact" className={TEXT_LINK}>
             get in touch
           </Link>
           , and read our{' '}
-          <Link href="/guides/fps-and-joules-explained" className="font-medium text-accent hover:underline">
+          <Link href="/guides/fps-and-joules-explained" className={TEXT_LINK}>
             FPS and joules guide
           </Link>{' '}
           for the power side of things.
@@ -181,7 +165,7 @@ export default function AirsoftLaw() {
 
 function Disclaimer() {
   return (
-    <div className="mt-5 flex gap-3 rounded-sm border border-border bg-card p-4">
+    <div className={`${PANEL} flex gap-3 border-l-2 border-l-accent p-5`}>
       <AlertTriangle className="h-5 w-5 shrink-0 text-accent" />
       <p className="text-sm text-muted-foreground leading-relaxed">
         This page is general orientation from an airsoft retailer, not legal advice. Airsoft and
@@ -195,23 +179,23 @@ function Disclaimer() {
 
 function SourcesBlock() {
   return (
-    <section className="mt-12">
-      <h2 className="text-2xl font-bold text-foreground">Where to check: official sources</h2>
-      <p className="mt-3 text-muted-foreground leading-relaxed">
+    <section className="mt-14 border-t border-border/60 pt-12">
+      <h2 className={CONTENT_TITLE}>Where to check: official sources</h2>
+      <p className="mt-4 text-muted-foreground leading-relaxed">
         For anything that matters, these are the authorities to rely on rather than forum posts or
         shop opinion, ours included.
       </p>
       <ul className="mt-4 space-y-3">
         {SOURCES.map((source) => (
-          <li key={source.url} className="rounded-sm border border-border bg-card p-4">
+          <li key={source.url} className={`${PANEL} p-5 transition-colors hover:border-accent`}>
             <a
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center font-semibold text-accent hover:underline"
+              className={`${CARD_TITLE} inline-flex items-center gap-1.5 text-base text-accent hover:underline`}
             >
               {source.name}
-              <ExternalLink className="ml-1 h-3.5 w-3.5" />
+              <ExternalLink className="h-3.5 w-3.5" />
             </a>
             <p className="mt-1 text-sm text-muted-foreground">{source.note}</p>
           </li>

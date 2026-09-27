@@ -15,7 +15,7 @@ export function DeliveryAddressFields({
 }: DeliveryAddressFieldsProps) {
   return (
     <fieldset className="space-y-4">
-      <legend className="text-sm font-semibold text-foreground">Delivery address</legend>
+      <legend className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Delivery address</legend>
 
       <CheckoutField
         id="shipping-name"

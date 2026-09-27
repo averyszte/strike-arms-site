@@ -2,6 +2,7 @@ import { Info } from 'lucide-react';
 
 import { Separator } from '@/components/ui/separator';
 import { formatPrice } from '@/lib/format-price';
+import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 import type { CartBasics, CartPricing } from '@/types/cart';
 
 type CartSummaryProps = {
@@ -25,8 +26,8 @@ export function CartSummary({ basics, pricing, wantsDelivery }: CartSummaryProps
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <h2 className="text-lg font-semibold text-foreground">Order summary</h2>
+    <div className={`${PANEL} p-5`}>
+      <h2 className={`${CARD_TITLE} text-lg`}>Order summary</h2>
 
       <dl className="mt-4 space-y-2 text-sm">
         <div className="flex justify-between">
@@ -43,7 +44,7 @@ export function CartSummary({ basics, pricing, wantsDelivery }: CartSummaryProps
 
         <Separator className="my-3" />
 
-        <div className="flex justify-between text-base font-semibold">
+        <div className="flex justify-between text-lg font-black">
           <dt className="text-foreground">Total</dt>
           <dd className="tabular-nums text-foreground">
             {pricing ? formatPrice(pricing.totalCents) : formatPrice(basics.itemsSubtotalCents)}

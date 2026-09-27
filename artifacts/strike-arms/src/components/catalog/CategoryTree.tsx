@@ -29,10 +29,10 @@ export function CategoryTree({
         href="/store"
         onClick={onNavigate}
         className={cn(
-          'block px-2 py-1.5 text-sm rounded-sm transition-colors',
+          'block border-l-2 border-transparent px-2 py-1.5 text-sm transition-colors',
           !activeCategorySlug
-            ? 'text-foreground font-semibold'
-            : 'text-muted-foreground hover:text-foreground',
+            ? 'border-l-2 border-accent text-foreground font-bold'
+            : 'text-muted-foreground hover:text-accent',
         )}
       >
         All Products
@@ -46,10 +46,10 @@ export function CategoryTree({
               href={`/store/${cat.slug}`}
               onClick={onNavigate}
               className={cn(
-                'block px-2 py-1.5 text-sm rounded-sm transition-colors',
+                'block border-l-2 border-transparent px-2 py-1.5 text-sm transition-colors',
                 isActiveCat
-                  ? 'text-foreground font-semibold'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'border-l-2 border-accent text-foreground font-bold'
+                  : 'text-muted-foreground hover:text-accent',
               )}
             >
               {cat.shortLabel}
@@ -65,10 +65,10 @@ export function CategoryTree({
                       href={`/store/${cat.slug}/${sub.slug}`}
                       onClick={onNavigate}
                       className={cn(
-                        'block px-2 py-1 text-sm rounded-sm transition-colors',
+                        'block px-2 py-1 text-sm transition-colors',
                         isActiveSub
-                          ? 'text-accent font-medium'
-                          : 'text-muted-foreground hover:text-foreground',
+                          ? 'text-accent font-bold'
+                          : 'text-muted-foreground hover:text-accent',
                       )}
                     >
                       {sub.label}

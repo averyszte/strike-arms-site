@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { EYEBROW, SECTION_TITLE } from "@/lib/storefront-styles";
 
 const faqs = [
   {
@@ -44,13 +45,14 @@ export function FAQSection() {
   return (
     <section className="py-24 bg-background border-b border-border/60">
       <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-12 text-center">
-          Common Questions
-        </h2>
+        <div className="mb-12 text-center">
+          <p className={EYEBROW}>Asked at the counter</p>
+          <h2 className={`${SECTION_TITLE} mt-4`}>Common Questions</h2>
+        </div>
         
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="border-border">
+            <AccordionItem key={index} value={`item-${index}`} className="border-border/60">
               <AccordionTrigger className="text-left font-bold text-lg hover:text-accent transition-colors">
                 {faq.question}
               </AccordionTrigger>

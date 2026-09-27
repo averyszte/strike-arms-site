@@ -22,14 +22,14 @@ export function ServiceSteps({ steps }: { steps: ServiceStep[] }) {
             {index < steps.length - 1 && (
               <span
                 aria-hidden="true"
-                className="absolute bottom-0 left-4 top-9 -ml-px w-px bg-border"
+                className="absolute bottom-0 left-4 top-9 -ml-px w-px bg-border/60"
               />
             )}
-            <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-sm font-semibold text-accent">
+            <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-sm font-black text-accent-foreground">
               {index + 1}
             </span>
             <div className="pt-1">
-              <p className="font-medium leading-snug text-foreground">{step.title}</p>
+              <p className="font-bold leading-snug text-foreground">{step.title}</p>
               {step.detail && (
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.detail}</p>
               )}

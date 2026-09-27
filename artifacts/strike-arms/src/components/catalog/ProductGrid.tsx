@@ -1,6 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
+import { CTA_SECONDARY_SM } from '@/lib/storefront-styles';
 import type { Product } from '@/types/product';
 
 interface ProductGridProps {
@@ -11,9 +12,9 @@ interface ProductGridProps {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-sm border border-border bg-card overflow-hidden">
+    <div className="border border-border/60 bg-card overflow-hidden">
       <Skeleton className="aspect-square w-full" />
-      <div className="p-3 space-y-2">
+      <div className="p-4 space-y-2">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
@@ -37,8 +38,8 @@ export function ProductGrid({ products, isLoading, onClearFilters }: ProductGrid
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <p className="text-muted-foreground mb-4">No products found for the selected filters.</p>
-        <Button variant="outline" size="sm" onClick={onClearFilters}>
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-6">No products found for the selected filters.</p>
+        <Button variant="outline" className={CTA_SECONDARY_SM} onClick={onClearFilters}>
           Clear filters
         </Button>
       </div>

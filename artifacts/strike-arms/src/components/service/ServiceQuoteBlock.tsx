@@ -3,6 +3,7 @@ import { Phone } from 'lucide-react';
 
 import { ServiceQuoteForm } from '@/components/service/ServiceQuoteForm';
 import { BUSINESS } from '@/lib/site-config';
+import { CARD_TITLE, PANEL, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
 
 /**
  * The foot of every service page.
@@ -19,14 +20,14 @@ import { BUSINESS } from '@/lib/site-config';
  */
 export function ServiceQuoteBlock({ serviceTitle }: { serviceTitle: string }) {
   return (
-    <section className="mt-12 rounded-sm border border-border bg-card p-6">
-      <h2 className="text-xl font-bold text-foreground">How we quote</h2>
+    <section className={`mt-14 ${PANEL} p-6 md:p-8`}>
+      <h2 className={`${CARD_TITLE} text-xl md:text-2xl`}>How we quote</h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         We diagnose the gun before we price the job. Guessing a figure from a description usually
         means quoting for the wrong fault — the thing a customer is sure is a broken gearbox is very
         often a battery, a connector or a fuse.
       </p>
-      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground [&_li::marker]:text-accent">
         <li>Tell us what you have and what it is doing, using the form below.</li>
         <li>We come back with what it is likely to need and what to expect.</li>
         <li>
@@ -34,22 +35,19 @@ export function ServiceQuoteBlock({ serviceTitle }: { serviceTitle: string }) {
         </li>
       </ul>
 
-      <h3 className="mt-6 border-t border-border pt-6 text-lg font-semibold text-foreground">
+      <h3 className={`${CARD_TITLE} mt-6 border-t border-border/60 pt-6 text-lg`}>
         Ask us about {serviceTitle.toLowerCase()}
       </h3>
       <ServiceQuoteForm serviceTitle={serviceTitle} />
 
-      <p className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
+      <p className="mt-6 border-t border-border/60 pt-4 text-sm text-muted-foreground">
         <Phone className="mr-1.5 inline h-4 w-4 align-text-bottom" aria-hidden="true" />
         Would rather talk it through? Ring the shop on{' '}
-        <a
-          href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}
-          className="font-medium text-accent hover:underline"
-        >
+        <a href={phoneHref(BUSINESS.telephone)} className={TEXT_LINK}>
           {BUSINESS.telephone}
         </a>
         , or use the{' '}
-        <Link href="/contact" className="font-medium text-accent hover:underline">
+        <Link href="/contact" className={TEXT_LINK}>
           general contact form
         </Link>{' '}
         for anything that is not about a specific gun.

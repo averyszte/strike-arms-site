@@ -10,6 +10,7 @@ import { BrandPageHeader } from '@/components/catalog/BrandPageHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBrandCategories, useBrands, useProducts } from '@/hooks/useProducts';
 import { brandCategoryLinks, brandPageMeta } from '@/lib/brand-page-meta';
+import { TEXT_LINK } from '@/lib/storefront-styles';
 import { SITE_URL } from '@/lib/site-config';
 import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/structured-data';
 import NotFound from '@/pages/not-found';
@@ -95,14 +96,14 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
       </Helmet>
       <JsonLd data={schema} />
 
-      <div className="mx-auto max-w-[1400px] px-4 py-8 md:px-6">
-        <BrandPageHeader
-          name={name}
-          intro={meta.intro}
-          links={brandCategoryLinks(slug, categories ?? [])}
-        />
+      <BrandPageHeader
+        name={name}
+        intro={meta.intro}
+        links={brandCategoryLinks(slug, categories ?? [])}
+      />
 
-        <div className="mt-8">
+      <div className="mx-auto max-w-[1400px] px-4 py-8 md:px-6 md:py-10">
+        <div>
           <ProductGrid
             products={items}
             isLoading={isLoading}
@@ -119,7 +120,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
 
         <p className="mt-10 text-sm text-muted-foreground">
           Looking for something specific?{' '}
-          <Link href={`/store?brand=${slug}`} className="underline hover:text-foreground">
+          <Link href={`/store?brand=${slug}`} className={TEXT_LINK}>
             Filter the {name} range by price, stock and category
           </Link>
           .

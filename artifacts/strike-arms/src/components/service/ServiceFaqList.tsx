@@ -17,10 +17,10 @@ import type { FaqItem } from '@/lib/structured-data';
  */
 export function ServiceFaqList({ items }: { items: FaqItem[] }) {
   return (
-    <Accordion type="single" collapsible className="mt-6 border-t border-border">
+    <Accordion type="single" collapsible className="mt-6 border-t border-border/60">
       {items.map((item) => (
         <AccordionItem key={item.question} value={item.question}>
-          <AccordionTrigger className="gap-4 text-left text-base font-medium text-foreground">
+          <AccordionTrigger className="gap-4 text-left text-base font-bold text-foreground hover:text-accent hover:no-underline">
             {item.question}
           </AccordionTrigger>
           <AccordionContent className="pr-8 leading-relaxed text-muted-foreground">

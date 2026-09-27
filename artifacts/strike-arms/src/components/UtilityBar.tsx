@@ -1,10 +1,5 @@
 import { Link } from "wouter";
 
-const brands = [
-  "G&G", "Specna Arms", "Tokyo Marui", "ASG", "Vorsk",
-  "Nuprol", "Valken", "WE", "Krytac", "ICS",
-];
-
 const utilityLinks = [
   { name: "Find a Store", href: "/contact" },
   { name: "Help", href: "/contact" },
@@ -16,20 +11,6 @@ const utilityLinks = [
 export function UtilityBar() {
   return (
     <div className="h-8 bg-[#0d0d0d] border-b border-border/40 flex items-center px-4 md:px-6">
-      {/* Brand marquee — constrained left portion */}
-      <div className="w-[340px] overflow-hidden relative shrink-0 hidden md:block">
-        <div className="flex items-center gap-7 animate-marquee whitespace-nowrap">
-          {[...brands, ...brands].map((brand, i) => (
-            <span
-              key={i}
-              className="text-[10px] font-semibold tracking-[0.18em] uppercase text-muted-foreground/60 cursor-default shrink-0"
-            >
-              {brand}
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* Spacer */}
       <div className="flex-1" />
 

@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
 import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
+import { CTA_PRIMARY, EYEBROW } from '@/lib/storefront-styles';
 import type { Product } from '@/types/product';
 
 export function ProductInfo({ product }: { product: Product }) {
@@ -38,15 +39,15 @@ export function ProductInfo({ product }: { product: Product }) {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+      <p className={EYEBROW}>
         {getBrandName(product.brand)}
       </p>
-      <h1 className="mt-1 text-2xl md:text-3xl font-bold text-foreground">{product.name}</h1>
+      <h1 className="mt-3 text-3xl md:text-4xl font-black uppercase tracking-tight leading-[0.95] text-foreground">{product.name}</h1>
 
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         {hasDiscount ? (
           <>
-            <span className="text-2xl font-bold text-accent">
+            <span className="text-3xl font-black text-accent">
               {formatPrice(product.salePrice!)}
             </span>
             <span className="text-base text-muted-foreground line-through">
@@ -54,7 +55,7 @@ export function ProductInfo({ product }: { product: Product }) {
             </span>
           </>
         ) : (
-          <span className="text-2xl font-bold text-foreground">{formatPrice(product.price)}</span>
+          <span className="text-3xl font-black text-foreground">{formatPrice(product.price)}</span>
         )}
         <Badge
           variant={product.inStock ? 'secondary' : 'outline'}
@@ -70,33 +71,32 @@ export function ProductInfo({ product }: { product: Product }) {
       <p className="mt-4 text-muted-foreground leading-relaxed">{product.shortDescription}</p>
 
       <Button
-        className="mt-6 w-full sm:w-auto"
-        size="lg"
+        className={`${CTA_PRIMARY} mt-8 w-full sm:w-auto`}
         onClick={handleAddToCart}
         disabled={!product.inStock}
       >
-        <ShoppingCart className="mr-2 h-4 w-4" />
+        <ShoppingCart className="h-5 w-5" />
         {product.inStock ? 'Add to cart' : 'Out of stock'}
       </Button>
 
-      <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
+      <ul className="mt-8 space-y-3 border-t border-border/60 pt-6 text-sm text-muted-foreground">
         <li className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 shrink-0" /> Walk-in shop in Swords, Co. Dublin
+          <MapPin className="h-4 w-4 shrink-0 text-accent" /> Walk-in shop in Swords, Co. Dublin
         </li>
         <li className="flex items-center gap-2">
           {product.isShippable ? (
             <>
-              <Truck className="h-4 w-4 shrink-0" /> Delivery across Ireland, or collect in store
+              <Truck className="h-4 w-4 shrink-0 text-accent" /> Delivery across Ireland, or collect in store
             </>
           ) : (
             <>
-              <Store className="h-4 w-4 shrink-0" /> Collect in store only &mdash; we do not post
+              <Store className="h-4 w-4 shrink-0 text-accent" /> Collect in store only &mdash; we do not post
               this item
             </>
           )}
         </li>
         <li className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 shrink-0" /> In-house repairs &amp; upgrades
+          <Wrench className="h-4 w-4 shrink-0 text-accent" /> In-house repairs &amp; upgrades
         </li>
       </ul>
 

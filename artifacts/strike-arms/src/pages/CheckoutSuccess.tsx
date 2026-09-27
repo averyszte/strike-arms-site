@@ -1,12 +1,19 @@
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { CheckCircle2, Mail, Store } from 'lucide-react';
+import { ArrowRight, Mail, Store } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
-import { Button } from '@/components/ui/button';
+import { PageHero } from '@/components/PageHero';
 import { useCart } from '@/hooks/use-cart';
 import { BUSINESS, SITE_URL } from '@/lib/site-config';
+import {
+  CTA_ARROW,
+  CTA_PRIMARY_SM,
+  CTA_SECONDARY_SM,
+  PAGE_WIDTHS,
+  PANEL,
+} from '@/lib/storefront-styles';
 
 const TITLE = 'Order Confirmed — Strike Arms Airsoft Dublin';
 
@@ -33,16 +40,17 @@ export default function CheckoutSuccess() {
         <link rel="canonical" href={`${SITE_URL}/checkout/success`} />
       </Helmet>
 
-      <div className="mx-auto max-w-[640px] px-4 py-16 text-center md:px-6">
-        <CheckCircle2 className="mx-auto h-12 w-12 text-accent" aria-hidden="true" />
+      <PageHero
+        crumbs={[{ label: 'Order confirmed' }]}
+        eyebrow="Order confirmed"
+        title="Thanks — your order is in"
+        intro="Payment went through. We are getting your order ready now."
+        width="narrow"
+        isCompact
+      />
 
-        <h1 className="mt-6 text-3xl font-bold text-foreground">Thanks — your order is in</h1>
-
-        <p className="mt-4 text-muted-foreground leading-relaxed">
-          Payment went through. We are getting your order ready now.
-        </p>
-
-        <div className="mt-8 space-y-4 rounded-lg border border-border bg-card p-6 text-left">
+      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
+        <div className={`${PANEL} space-y-4 p-6`}>
           <p className="flex items-start gap-3 text-sm text-muted-foreground">
             <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
             A confirmation with your order number is on its way to your inbox. Check your spam
@@ -57,13 +65,14 @@ export default function CheckoutSuccess() {
           </p>
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button asChild>
-            <Link href="/store">Keep shopping</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/contact">Contact the shop</Link>
-          </Button>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/store" className={CTA_PRIMARY_SM}>
+            Keep shopping
+            <ArrowRight className={CTA_ARROW} aria-hidden="true" />
+          </Link>
+          <Link href="/contact" className={CTA_SECONDARY_SM}>
+            Contact the shop
+          </Link>
         </div>
       </div>
     </SiteLayout>

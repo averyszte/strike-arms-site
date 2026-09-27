@@ -1,21 +1,38 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'wouter';
+import { ArrowRight } from 'lucide-react';
 
+import { SiteLayout } from '@/components/SiteLayout';
+import { PageHero } from '@/components/PageHero';
+import { CTA_ARROW, CTA_PRIMARY, CTA_SECONDARY } from '@/lib/storefront-styles';
+
+/**
+ * The storefront 404. Also rendered by ShopPage and BrandPage for a slug that
+ * matches nothing, so it takes no props.
+ */
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
-          </div>
+    <SiteLayout>
+      <Helmet>
+        <title>Page not found | Strike Arms</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
 
-          <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+      <PageHero
+        eyebrow="Error 404"
+        title="Page not found"
+        intro="That page has moved or never existed."
+      >
+        <div className="flex flex-wrap gap-3">
+          <Link href="/store" className={CTA_PRIMARY}>
+            Browse the shop
+            <ArrowRight className={CTA_ARROW} aria-hidden="true" />
+          </Link>
+          <Link href="/contact" className={CTA_SECONDARY}>
+            Contact the shop
+          </Link>
+        </div>
+      </PageHero>
+    </SiteLayout>
   );
 }

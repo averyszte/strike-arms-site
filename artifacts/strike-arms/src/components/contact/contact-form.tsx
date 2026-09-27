@@ -16,6 +16,7 @@ import {
   type InquiryForm,
 } from '@/lib/inquiry-validation';
 import { BUSINESS } from '@/lib/site-config';
+import { CARD_TITLE, CTA_PRIMARY, PANEL, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
 
 /**
  * The public contact form.
@@ -70,18 +71,15 @@ export function ContactForm() {
 
   if (isSent) {
     return (
-      <div className="rounded-sm border border-border bg-card p-6">
+      <div className={`${PANEL} p-6`}>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
-          <h2 className="font-semibold text-foreground">Thanks — we have it</h2>
+          <h2 className={`${CARD_TITLE} text-lg`}>Thanks — we have it</h2>
         </div>
         <p className="mt-3 text-muted-foreground leading-relaxed">
           We read every message and normally come back within a day or two. If it is urgent, ring
           the shop on{' '}
-          <a
-            href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}
-            className="font-medium text-accent hover:underline"
-          >
+          <a href={phoneHref(BUSINESS.telephone)} className={TEXT_LINK}>
             {BUSINESS.telephone}
           </a>{' '}
           — that is always the fastest way to reach us.
@@ -182,8 +180,8 @@ export function ContactForm() {
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={submit.isPending}>
-        <Send className="mr-2 h-4 w-4" aria-hidden="true" />
+      <Button type="submit" size="lg" disabled={submit.isPending} className={CTA_PRIMARY}>
+        <Send className="h-4 w-4" aria-hidden="true" />
         {submit.isPending ? 'Sending…' : 'Send message'}
       </Button>
     </form>

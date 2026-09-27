@@ -19,10 +19,10 @@ export function ServiceTocNav({ items }: { items: ServiceTocItem[] }) {
 
   return (
     <nav aria-label="On this page" className="sticky top-28">
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
         On this page
       </p>
-      <ul className="mt-3 border-l border-border">
+      <ul className="mt-3 border-l border-border/60">
         {items.map((item) => {
           const isActive = item.id === activeId;
           return (
@@ -32,7 +32,7 @@ export function ServiceTocNav({ items }: { items: ServiceTocItem[] }) {
                 aria-current={isActive ? 'true' : undefined}
                 className={`-ml-px block border-l-2 py-1.5 pl-3 text-sm leading-snug transition-colors ${
                   isActive
-                    ? 'border-accent font-medium text-foreground'
+                    ? 'border-accent font-bold text-foreground'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >

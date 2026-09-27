@@ -1,17 +1,9 @@
-import { ArrowDown, Phone } from 'lucide-react';
-import { Link } from 'wouter';
+import { ArrowRight, Phone } from 'lucide-react';
 
+import { PageHero } from '@/components/PageHero';
 import { ServiceTiles, type ServiceFact } from '@/components/service/ServiceTiles';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { BUSINESS } from '@/lib/site-config';
+import { CTA_ARROW, CTA_PRIMARY, CTA_SECONDARY, phoneHref } from '@/lib/storefront-styles';
 
 export interface ServiceHeroProps {
   title: string;
@@ -31,58 +23,25 @@ export interface ServiceHeroProps {
  */
 export function ServiceHero({ title, eyebrow, intro, facts }: ServiceHeroProps) {
   return (
-    <section className="relative overflow-hidden border-b border-border bg-card">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/10 blur-3xl"
-      />
-
-      <div className="relative mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-14">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/services">Services</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{title}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          {eyebrow}
-        </p>
-        <h1 className="mt-3 max-w-3xl text-3xl font-bold leading-[1.15] text-foreground md:text-[2.75rem]">
-          {title}
-        </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/90">{intro}</p>
-
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Button asChild size="lg">
-            <a href="#quote">
-              Request a quote
-              <ArrowDown aria-hidden="true" />
-            </a>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <a href={`tel:${BUSINESS.telephone.replace(/\s/g, '')}`}>
-              <Phone aria-hidden="true" />
-              {BUSINESS.telephone}
-            </a>
-          </Button>
-        </div>
-
-        <ServiceTiles items={facts} />
+    <PageHero
+      crumbs={[{ label: 'Services', href: '/services' }, { label: title }]}
+      eyebrow={eyebrow}
+      title={title}
+      intro={intro}
+      width="medium"
+    >
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <a href="#quote" className={CTA_PRIMARY}>
+          Request a quote
+          <ArrowRight className={CTA_ARROW} aria-hidden="true" />
+        </a>
+        <a href={phoneHref(BUSINESS.telephone)} className={CTA_SECONDARY}>
+          <Phone className="h-5 w-5" aria-hidden="true" />
+          {BUSINESS.telephone}
+        </a>
       </div>
-    </section>
+
+      <ServiceTiles items={facts} />
+    </PageHero>
   );
 }

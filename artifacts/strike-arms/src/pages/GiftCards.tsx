@@ -1,5 +1,9 @@
 import { Helmet } from "react-helmet-async";
+import { Link } from "wouter";
+
 import { SiteLayout } from "@/components/SiteLayout";
+import { PageHero } from "@/components/PageHero";
+import { CTA_SECONDARY_SM } from "@/lib/storefront-styles";
 
 export default function GiftCards() {
   return (
@@ -13,10 +17,17 @@ export default function GiftCards() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://strikearms.ie/gift-cards" />
       </Helmet>
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold text-foreground mb-4">Gift Cards</h1>
-        <p className="text-muted-foreground">Coming soon.</p>
-      </div>
+      <PageHero
+        crumbs={[{ label: "Gift cards" }]}
+        eyebrow="Gift cards"
+        title="Gift Cards"
+        intro="Coming soon."
+        isCompact
+      >
+        <Link href="/contact" className={CTA_SECONDARY_SM}>
+          Ask in store
+        </Link>
+      </PageHero>
     </SiteLayout>
   );
 }
