@@ -13,14 +13,13 @@ type AdjustInput = {
   productId: string;
   adjustment: number;
   reason: string;
-  adjustedBy: string | null;
 };
 
 export function useAdjustStock() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ productId, adjustment, reason, adjustedBy }: AdjustInput) =>
-      adjustStock(productId, adjustment, reason, adjustedBy),
+    mutationFn: ({ productId, adjustment, reason }: AdjustInput) =>
+      adjustStock(productId, adjustment, reason),
     onSuccess: (_result, { productId }) => {
       // The public catalogue reads the same stock_count, so a shelf corrected
       // in the admin has to stop showing as available on the shop at once.

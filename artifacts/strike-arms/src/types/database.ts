@@ -145,7 +145,6 @@ export type Database = {
           p_product_id: string;
           p_adjustment: number;
           p_reason: string;
-          p_adjusted_by?: string;
         };
         Returns: undefined;
       };

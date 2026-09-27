@@ -14,7 +14,6 @@ import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useAdjustStock, useInventoryHistory } from '@/hooks/use-inventory';
 import { useToast } from '@/hooks/use-toast';
-import { useAdminAuth } from '@/lib/admin-auth-context';
 import {
   EMPTY_STOCK_ADJUSTMENT,
   STOCK_REASONS,
@@ -35,7 +34,6 @@ export function StockAdjustDialog({ product, onClose }: Props) {
   const [errors, setErrors] = useState<StockAdjustmentErrors>({});
   const adjust = useAdjustStock();
   const { data: history = [] } = useInventoryHistory(product?.id ?? null);
-  const { user } = useAdminAuth();
   const { toast } = useToast();
 
   const stockCount = product?.stockCount ?? 0;
@@ -54,7 +52,6 @@ export function StockAdjustDialog({ product, onClose }: Props) {
         productId: product.id,
         adjustment: toSignedAdjustment(form),
         reason: form.reason.trim(),
-        adjustedBy: user?.id ?? null,
       },
       {
         onSuccess: () => {

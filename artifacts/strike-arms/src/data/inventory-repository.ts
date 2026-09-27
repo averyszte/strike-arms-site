@@ -32,29 +32,19 @@ function rowToAdjustment(row: InventoryAdjustmentRow): InventoryAdjustment {
 }
 
 /**
- * `adjusted_by` is now decided by the database, not by this call. Migration
- * 014 has `adjust_stock` attribute the row to `auth.uid()` and ignore the
- * argument, because an audit trail that records whoever the caller said they
- * were is not an audit trail.
- *
- * The argument is still sent so this file works against a database with or
- * without 014 applied. Drop the parameter, and this pass-through with it,
- * once 014 is confirmed pushed.
+ * There is no "adjusted by" argument: the database attributes the ledger row
+ * to `auth.uid()` (migrations 014 and 019), because an audit trail that
+ * records whoever the caller said they were is not an audit trail.
  */
 export async function adjustStock(
   productId: string,
   adjustment: number,
   reason: string,
-  adjustedBy: string | null = null,
 ): Promise<void> {
-  // The argument is omitted rather than sent as null when there is no signed-in
-  // id, so the function falls back to its own default instead of being handed
-  // one explicitly.
   const { error } = await supabase.rpc('adjust_stock', {
     p_product_id: productId,
     p_adjustment: adjustment,
     p_reason: reason,
-    ...(adjustedBy ? { p_adjusted_by: adjustedBy } : {}),
   });
   if (error) throw error;
 }
