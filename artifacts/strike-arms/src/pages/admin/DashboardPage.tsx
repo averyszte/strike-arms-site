@@ -8,6 +8,7 @@ import { DeliveryStatusCard } from '@/components/admin/dashboard/delivery-status
 import { TopProductsCard } from '@/components/admin/dashboard/top-products-card';
 import { RecentOrdersCard } from '@/components/admin/dashboard/recent-orders-card';
 import { OperationalAlertsCard } from '@/components/admin/dashboard/operational-alerts-card';
+import { UnmatchedPaymentsCard } from '@/components/admin/dashboard/unmatched-payments-card';
 import { useAllOrdersWithItems } from '@/hooks/use-orders';
 import { useAdminProducts } from '@/hooks/use-admin-products';
 import { useInquiries } from '@/hooks/use-inquiries';
@@ -67,6 +68,8 @@ export default function DashboardPage() {
       </Helmet>
       <div className="space-y-6">
         <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
+
+        <UnmatchedPaymentsCard />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard

@@ -148,6 +148,9 @@ taking real money.
       to instant methods in the Stripe dashboard (decision D4).
     - "No order found" alerts the owner rather than returning a silent 200.
     - An amount mismatch alerts rather than looping.
+
+    Done as migration 029, `webhook_alerts`, so the rate limit and every later
+    migration moved up by one again.
 15. **Persist the checkout attempt id** (S). It currently lives in a `useRef` in
     `use-checkout.ts`, so a retry after cancel can lock the shopper out. Put it
     in sessionStorage.
@@ -158,7 +161,7 @@ taking real money.
     - Port `_shared/turnstile.ts`, failing closed, onto checkout and the inquiry
       form.
     - Add length caps in `readString`.
-    - Migration 029 adds a rate limit per IP and attempt.
+    - Migration 030 adds a rate limit per IP and attempt.
     - Add `challenges.cloudflare.com` to the CSP.
     - Set the site key and secret key in the same deploy.
 18. **Cart freshness** (S). Re-read price and `is_shippable` when the cart opens,
@@ -170,7 +173,7 @@ taking real money.
     Resend with SPF/DKIM/DMARC, plus the matching Supabase Auth SMTP settings.
 20. **Port All Blooms' `_shared/resend.ts`** (S). Keep its idempotency key and
     make `escapeHtml` null-safe from day one (`00d82e6`).
-21. **Migration 030, the notification producer** (M):
+21. **Migration 031, the notification producer** (M):
     - `confirm_order_paid` enqueues `notification_jobs` in the same transaction;
     - a claim function using `for update skip locked`;
     - a `pg_cron` schedule for the worker.
@@ -181,7 +184,7 @@ taking real money.
     - ready-for-collection and dispatched status emails;
     - a refund notice.
 23. **`submit-inquiry` function plus Turnstile** (M). It emails Alan. Migration
-    031 then drops the anon insert on `inquiries` and adds length limits.
+    032 then drops the anon insert on `inquiries` and adds length limits.
 24. **Low-stock alert, and a "resend email" action on the order sheet** (S).
 
 ### Phase 4: storefront and legal (in parallel, gated on owner answers)
@@ -238,7 +241,7 @@ taking real money.
   - QueryClient `staleTime`.
 - **Dashboard query** (M). Bound it by date and aggregate on the server
   (FV-A8). It currently pulls every order with items.
-- **Migration 032, query indexes** (S). The full list is in section 4.
+- **Migration 033, query indexes** (S). The full list is in section 4.
 - **Shipping logic, deduplicated or asserted** (S). Add three tests around the
   free-shipping threshold (FV-D13).
 - **Build meta** (M). Generate the sitemap in `build`, and add prerender or edge
@@ -270,11 +273,12 @@ taking real money.
 | 026 | `product_archive` | `sellable_count`; `is_archived`; products not deletable from the browser; subcategory delete refused while in use (items 10, 11) | 1 |
 | 027 | `admin_invite_fix` | 024's trigger also fires on the update that sets `invited_at`; backfill invited users | 1 |
 | 028 | `checkout_integrity` | summed lines; re-check in `confirm_order_paid`; abandon instead of delete | 2 |
-| 029 | `checkout_rate_limit` | per-IP and per-attempt throttle | 2 |
-| 030 | `notification_producer` | enqueue in `confirm_order_paid`; skip-locked claim; cron | 3 |
-| 031 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
-| 032 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
-| 033 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
+| 029 | `webhook_alerts` | `expire_order` sets `expired`; `flag_order`; `payment_alerts` for money with no order | 2 |
+| 030 | `checkout_rate_limit` | per-IP and per-attempt throttle | 2 |
+| 031 | `notification_producer` | enqueue in `confirm_order_paid`; skip-locked claim; cron | 3 |
+| 032 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
+| 033 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
+| 034 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
 | later | `customer_accounts` | profiles, order link, age record, **plus narrowed `authenticated` grants in the same file** | later |
 
 Also in Phase 1: `config.toml`, covering `site_url`, a password policy, an MFA

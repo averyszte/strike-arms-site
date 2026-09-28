@@ -26,7 +26,7 @@ const PAYMENT_TABS: { value: PaymentFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'paid', label: 'Paid' },
   { value: 'pending', label: 'Pending' },
-  { value: 'failed', label: 'Failed' },
+  { value: 'expired', label: 'Expired' },
   { value: 'refunded', label: 'Refunded' },
 ];
 

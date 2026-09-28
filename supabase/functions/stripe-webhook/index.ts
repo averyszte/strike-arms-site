@@ -24,8 +24,12 @@ const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
+// Each of these must also be ticked on the endpoint in the Stripe dashboard,
+// or Stripe never sends it.
 const HANDLED_EVENTS = new Set([
   "checkout.session.completed",
+  "checkout.session.async_payment_succeeded",
+  "checkout.session.async_payment_failed",
   "checkout.session.expired",
   "charge.refunded",
 ]);
@@ -35,11 +39,14 @@ async function dispatch(event: Stripe.Event): Promise<string> {
 
   switch (event.type) {
     case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded":
       return await handleCheckoutCompleted(
         admin,
         event.data.object as Stripe.Checkout.Session,
+        event.id,
       );
     case "checkout.session.expired":
+    case "checkout.session.async_payment_failed":
       return await handleCheckoutExpired(
         admin,
         event.data.object as Stripe.Checkout.Session,

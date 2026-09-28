@@ -39,4 +39,6 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '025', name: 'order_status_rules', file: '025_order_status_rules.sql' },
   { version: '026', name: 'product_archive', file: '026_product_archive.sql' },
   { version: '027', name: 'admin_invite_fix', file: '027_admin_invite_fix.sql' },
+  { version: '028', name: 'checkout_integrity', file: '028_checkout_integrity.sql' },
+  { version: '029', name: 'webhook_alerts', file: '029_webhook_alerts.sql' },
 ];

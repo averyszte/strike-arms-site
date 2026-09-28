@@ -17,7 +17,8 @@ with
 -- Tables that hold customer data. Nothing here may be readable by anon.
 pii_tables(name) as (values
   ('orders'), ('order_items'), ('order_status_log'), ('inquiries'),
-  ('checkout_reservations'), ('notification_jobs'), ('stripe_event_log'), ('admins')
+  ('checkout_reservations'), ('notification_jobs'), ('stripe_event_log'), ('admins'),
+  ('payment_alerts')
 ),
 -- SECURITY DEFINER functions the browser is meant to call. Each one checks
 -- the caller itself (or, for the two helpers, only answers about the caller).

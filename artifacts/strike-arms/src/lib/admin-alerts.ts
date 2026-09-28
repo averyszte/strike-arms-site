@@ -61,17 +61,9 @@ function attentionAlerts(orders: Order[]): OperationalAlert[] {
 function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
   const alerts: OperationalAlert[] = [];
 
-  const failed = orders.filter((o) => o.paymentStatus === 'failed');
-  if (failed.length > 0) {
-    alerts.push({
-      id: 'failed-payments',
-      severity: 'critical',
-      count: failed.length,
-      title: `${failed.length} failed ${plural(failed.length, 'payment', 'payments')}`,
-      action: 'Review in Orders',
-      href: '/admin/orders?payment=failed',
-    });
-  }
+  // No "failed payments" alert: 'failed' only ever meant a shopper who walked
+  // away from Stripe, and since 029 that is recorded as 'expired'. Nothing
+  // about it needs Alan.
 
   // Money taken, order cancelled, nothing given back. There is no refund UI
   // yet (D5.1), so this needs a person in the Stripe dashboard or the till.

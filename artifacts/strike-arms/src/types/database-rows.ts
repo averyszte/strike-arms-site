@@ -128,3 +128,11 @@ export type StoreSettingsRow = {
   updated_at: string;
   updated_by: string | null;
 };
+
+// 029: money Stripe took that no order accounts for.
+export type PaymentAlertRow = {
+  id: string; kind: 'no_order'; stripe_event_id: string;
+  stripe_session_id: string | null; stripe_payment_intent: string | null;
+  amount_cents: number | null; currency: string | null; customer_email: string | null;
+  detail: string; created_at: string; resolved_at: string | null;
+};
