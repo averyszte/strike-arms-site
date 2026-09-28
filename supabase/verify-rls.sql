@@ -112,7 +112,7 @@ findings(severity, rule, object, detail) as (
   where roles = '{public}'
 
   union all
-  -- 10. The one intentional anon write, listed so it is not forgotten (030, inquiries_lockdown).
+  -- 10. The one intentional anon write, listed so it is not forgotten (031, inquiries_lockdown).
   select 'review', 'anon-insert-inquiries', 'inquiries',
          'open anon insert; replace with the submit-inquiry function'
   from information_schema.role_table_grants g
