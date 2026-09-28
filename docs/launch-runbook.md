@@ -19,8 +19,10 @@ environment variables and secrets.
 - [ ] **Add the live domain to Redirect URLs** in the same screen.
 - [ ] **Custom SMTP (Resend)**, under Emails > SMTP Settings. The built-in
       sender allows only a few emails an hour.
-- [ ] **Recheck the password policy** is still 12 characters with lowercase,
-      uppercase and digits, matching `src/lib/password-policy.ts`.
+- [ ] **Set the password policy** (step C in `docs/admin-auth-emails.md`, not
+      confirmed done yet): Sign In / Providers > Email, minimum length 12,
+      lowercase, uppercase and digits, matching `src/lib/password-policy.ts`.
+      Move it to the table below once it is set.
 
 ## Done already
 
@@ -32,4 +34,3 @@ Kept here so nobody redoes or second-guesses them. Details in
 | 2026-09-28 | Migrations 024, 025 and 026 pushed; `verify-rls.sql` clean (only the expected `anon-insert-inquiries` review row) |
 | 2026-09-28 | Invite and reset email templates pasted, with the Strike Arms subjects |
 | 2026-09-28 | Site URL set to `http://localhost:5173` for testing |
-| 2026-09-28 | Password policy set: minimum 12, lowercase, uppercase and digits |
