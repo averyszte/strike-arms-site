@@ -1,27 +1,60 @@
 # Current Task
 
-Last updated: 2026-09-28 (handover at the end of Phase 1). Replaces the 2026-09-27 revision.
+Last updated: 2026-09-28 (Phase 2 in progress, branch `claude/phase-2-money-path`). Replaces
+the end-of-Phase-1 revision.
 
 ## Where the project is right now
 
-The plan being followed is `docs/audit/completion-plan.md` (bring Strike Arms up to All Blooms'
-standard). **Phase 1, the admin dashboard, is done in code**, items 1-12, migrations 022-027,
-all applied by the user and checked with `supabase/verify-rls.sql` (the only review row left is
-the expected `anon-insert-inquiries`, which goes in Phase 3). Admin sign-in works end to end:
-invite email, set password, TOTP, admin access.
+The plan being followed is `docs/audit/completion-plan.md`. Phase 1 (admin dashboard) is done
+and on `origin/main`. **Phase 2, the money path, is done in code except item 17**, on branch
+`claude/phase-2-money-path`, not pushed:
 
-**Phase 1 leftover, needs the user:** item 9, deploy `refund-order`, confirm `charge.refunded`
-is on the Stripe endpoint, and do one test refund end to end.
+- 13: migration 028 checkout integrity (applied by the user), plus the "paid for stock that had
+  gone" flag in the admin.
+- 14: migration 029 webhook alerts. Mismatched amounts confirm and flag instead of throwing;
+  money with no order goes to `payment_alerts` and the dashboard's unmatched payments card;
+  walked-away checkouts are `expired`, not `failed`. v1 is limited to instant payment methods
+  (decision D4).
+- 15-16: the success page polls the new `checkout-status` function, shows the order number, and
+  says "do not pay again" if confirmation does not come. The checkout attempt id lives in
+  sessionStorage, so a retry after Stripe's cancel link reuses it.
+- 18: the cart re-reads price and postability when it opens and says what changed. It is
+  cleared only on a confirmed payment.
+- **17 (Turnstile and rate limit) is planned, not coded.** It needs keys from the Cloudflare
+  dashboard. See "Item 17 plan" below.
 
-**Next: Phase 2, the money path**, starting with item 13, migration **028** checkout integrity.
-027 went to `admin_invite_fix`, so every planned migration moved up one (028-033); the table
-in section 4 of the plan is current.
+Migrations renumbered again: 029 `webhook_alerts`, 030 rate limit, 031 notifications,
+032 inquiries lockdown, 033 indexes, 034 housekeeping.
 
-Go-live dashboard steps that must not be forgotten (Site URL off localhost, redirect URLs,
-SMTP) are in `docs/launch-runbook.md`. Nothing is in production.
+Push only when the user asks, with `git push origin HEAD:main`.
 
-All of Phase 1 was pushed to `origin/main` on 2026-09-28. Push only when the user asks, with
-`git push origin HEAD:main`. Start new work on a fresh branch from `main`.
+## NEEDS THE USER for Phase 2 (in this order)
+
+1. `echo y | npx supabase db push` for **029**, then re-run `supabase/verify-rls.sql`
+   (`payment_alerts` is new and should show no review rows).
+2. Deploy the three changed functions: `stripe-webhook`, `create-checkout-session`,
+   and the new `checkout-status`.
+3. Stripe dashboard, webhook endpoint: tick `checkout.session.async_payment_succeeded` and
+   `checkout.session.async_payment_failed`.
+4. Stripe dashboard, payment methods: leave only instant methods on (cards, Apple Pay,
+   Google Pay). D4.
+5. One test payment end to end: the success page should show the order number within a few
+   seconds and the cart should empty only then.
+
+## Item 17 plan (not started)
+
+- `_shared/turnstile.ts` ported from All Blooms, fail-closed (missing secret means refuse,
+  `ALLOW_INSECURE_NO_CAPTCHA=true` only for local), with a `SITE_HOSTNAME` check.
+- The Turnstile widget on the checkout form; the token goes in the create-checkout-session body.
+- Length caps in `readString`/`readOptionalString` in `parse-request.ts`.
+- Migration 030 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
+  before reserving stock.
+- CSP: `challenges.cloudflare.com` in `script-src` and `frame-src` in `public/_headers`.
+- The inquiry form has no function to verify a token in yet. It gets Turnstile with item 23
+  (`submit-inquiry`) and migration 032, not here.
+- Needs the user: a Turnstile site in Cloudflare, `VITE_TURNSTILE_SITE_KEY` in `.env.local` and
+  Pages, and `TURNSTILE_SECRET_KEY` plus `SITE_HOSTNAME` as Supabase function secrets, all in
+  the same deploy as the code.
 
 ## What landed in Phase 1
 
@@ -84,7 +117,7 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 - **G1 Cloudflare Pages** project: env vars, build command, `_redirects`.
 - **C3 / C3.1 / C3.2 / C4 are DEPLOYED-UNTESTED.** One real test payment per basket shape
   (all-collect, all-delivery, mixed). Needs A1.3 first.
-- **C11 bot protection** on `create-checkout-session`: no Turnstile, no rate limit.
+- **C11 bot protection** on `create-checkout-session`: Phase 2 item 17, planned above.
 - **E3 transactional email / C5.x notifications.** Deferred, never chosen.
 - **B1-B4 customer accounts.** B1.2 email verification needs real SMTP.
 - **Search ranking:** a name match scores 6 and a tag match 2, so a scope can outrank a rifle for
@@ -124,10 +157,11 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 - CLAUDE.md hard rules: 300-line files, 80-line functions, `@/` aliases, no `any`, no
   `console.log`, layer rule.
 - Commits: write the message to a file and `git commit -F`, ending with
-  `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
+  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - Prettier: `node node_modules/.pnpm/prettier@3.8.1/node_modules/prettier/bin/prettier.cjs
   --single-quote --print-width 100 --write <files>`
 
 ## Suggested next step
 
-Ask the user which item to take. One item at a time, back end before front end.
+The user runs the Phase 2 dashboard steps above. Then item 17 once the Turnstile keys exist,
+then Phase 3 (email). One item at a time, back end before front end.
