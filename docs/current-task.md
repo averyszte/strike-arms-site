@@ -1,61 +1,42 @@
 # Current Task
 
-Last updated: 2026-09-27 (handover). Replaces the 2026-09-02 revision, which predated
-migrations 017-018, the TOTP flow and the real-catalogue import.
+Last updated: 2026-09-28 (handover at the end of Phase 1). Replaces the 2026-09-27 revision.
 
 ## Where the project is right now
 
-The Supabase backend is live with migrations `001` through `018` applied and verified.
-**`019` and `020` are written but NOT applied** -- the user runs `echo y | npx supabase db push`. The
-admin dashboard works and now enforces TOTP (aal2) for writes. The public site is largely built
-and the commerce path is written end to end. Nothing is in **production**: there is no
-Cloudflare Pages project (G1) and the `strikearms.ie` domain is unconfirmed (G2).
+The plan being followed is `docs/audit/completion-plan.md` (bring Strike Arms up to All Blooms'
+standard). **Phase 1, the admin dashboard, is done in code**, items 1-12, migrations 022-027,
+all applied by the user and checked with `supabase/verify-rls.sql` (the only review row left is
+the expected `anon-insert-inquiries`, which goes in Phase 3). Admin sign-in works end to end:
+invite email, set password, TOTP, admin access.
 
-**The shop currently has zero published products.** Migration 017 deleted the 56 demo rows.
-Alan's 64 real products are imported but unpublished, pending the checks below.
+**Phase 1 leftover, needs the user:** item 9, deploy `refund-order`, confirm `charge.refunded`
+is on the Stripe endpoint, and do one test refund end to end.
 
-Feature inventory (`docs/feature-inventory.md`), last counted: **51 DONE, 26 MISSING, 17 PARTIAL,
-4 DEPLOYED-UNTESTED, 1 BLOCKED**. That file is the master list; read it before picking work.
+**Next: Phase 2, the money path**, starting with item 13, migration **028** checkout integrity.
+027 went to `admin_invite_fix`, so every planned migration moved up one (028-033); the table
+in section 4 of the plan is current.
 
-Nothing has been pushed since `1dfc41a`. Unpushed on this branch, oldest first: `6bd9150`
-services, `a722b4d` TOTP/MFA, `8e1d395` brand slugs, `0ea8b4d` migration 017, `7918ade` product
-condition, then `56b8535` handover/mock-products, `b9c8ae1` ProductDetail split, `beeb667`
-migration 019, `bfda5bd` inquiries paging, `e80ca32` migration 020. Push only when the user asks, with
-`git push origin HEAD:main`.
+Go-live dashboard steps that must not be forgotten (Site URL off localhost, redirect URLs,
+SMTP) are in `docs/launch-runbook.md`. Nothing is in production.
 
-## What landed recently
+Nothing has been pushed since `1dfc41a`; the branch is well ahead of `origin/main`. Push only
+when the user asks, with `git push origin HEAD:main`.
 
-- **Site-wide restyle (2026-09-27).** Every storefront page now uses the homepage's (Direction D)
-  look: a `PageHero` band (grid texture, accent glow, black uppercase display title, accent
-  eyebrow, uppercase breadcrumb) and, on content pages, a closing `CtaBand`. The shared class
-  vocabulary is in `src/lib/storefront-styles.ts` (EYEBROW, *_TITLE, CTA_*, PANEL, ARTICLE_PROSE);
-  new pages should compose it rather than hand-rolling type. The accent is now `16 100% 56%`
-  everywhere, and the storefront squares its corners via `body:has(.site-theme)` in `index.css`
-  (the admin keeps rounded corners). The shop's SEO intro now sits under the h1, not above the
-  breadcrumb. The 404 is a storefront page with noindex. Alan's batch 2 (106 products) is imported.
+## What landed in Phase 1
 
-- **`7918ade` product condition, end to end.** Migration 018 added `products.condition` (text,
-  check constraint, default `'new'`), backfilled from the `pre-loved-` slug prefix or the
-  `pre-loved` tag. Storefront: Pre-loved badge on card and product page, a sold-as-seen notice
-  in Alan's wording, a Condition filter, and a `/pre-loved` page with route and nav links. Wired
-  through the admin form, CSV export/import (a bad Condition value is refused, not corrected)
-  and the catalogue import scripts. schema.org `itemCondition` now branches instead of always
-  saying `NewCondition`.
-- **`0ea8b4d` migration 017** deleted the 56 demo products.
-- **`a722b4d` TOTP/MFA** for the admin, matching the `is_admin_aal2()` RLS policies.
-- **`8e1d395`** the CSV builder emits brand slugs, not display names.
-- **`6bd9150`** the service pages were redesigned.
-- **Tidy-up:** `src/data/mock-products.ts` deleted (nothing imported it; the sitemap already read
-  Supabase since `75648a9`). `/pre-loved` added to the sitemap's static routes.
-- **`b9c8ae1`** `ProductGallery` and `ProductInfo` moved to `components/catalog/`; the page is 132
-  lines.
-- **`beeb667` migration 019** drops `adjust_stock`'s ignored `p_adjusted_by`. The front end no
-  longer sends it and works against either signature, so it can ship before the push.
-- **`bfda5bd`** the admin inquiries list loads 50 at a time with "Load more"; the dashboard badge
-  reads the exact count instead of the list length.
-- **`e80ca32` migration 020** makes `checkout_reservations.order_id` ON DELETE RESTRICT, so
-  deleting an order can no longer silently strand `reserved_count`. To delete an order by hand,
-  run `release_order_reservations(id)` first.
+- 022 admin security, 023 admin reads need aal2, `verify-rls.sql` extended.
+- Stock left the product form (ledger only). Orders page and search on the server. Error states
+  on every admin screen.
+- Auth: password reset, token_hash invite and reset links, one password policy
+  (`lib/password-policy.ts`), templates in `supabase/templates`, dashboard steps in
+  `docs/admin-auth-emails.md`. 024 plus 027: an invited user gets an `admins` row (024's
+  trigger missed because Supabase writes `invited_at` in a later UPDATE; 027 fixed and
+  backfilled).
+- 025 order status rules, restock on cancel, insert-only ledger.
+- 026 product archive: products list pages on the server, stock filter, archive not delete.
+- Tidy-ups: `lib/utils.ts` is now `lib/class-names.ts`; `ProductsTable` and `OrdersView` split
+  into hooks and panels.
 
 ## NEEDS THE USER (aal2 admin session)
 
