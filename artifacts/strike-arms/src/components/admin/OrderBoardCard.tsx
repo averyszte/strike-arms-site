@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/format-price';
+import { needsAttention } from '@/lib/order-attention';
 import { ORDER_CHANNEL_LABELS, formatOrderNumber } from '@/lib/order-display';
 import { statusLabel } from '@/lib/order-board';
 import type { FulfillmentStatus, Order } from '@/types/order';
@@ -70,6 +71,13 @@ export function OrderBoardCard({
           {order.paymentStatus !== 'paid' && (
             <Badge variant="destructive" className="text-[10px] capitalize">
               {order.paymentStatus.replace(/_/g, ' ')}
+            </Badge>
+          )}
+          {/* Paid, but the stock had gone: moving it forward would hand over
+              something the shop does not have. */}
+          {needsAttention(order) && (
+            <Badge variant="destructive" className="text-[10px]">
+              Needs attention
             </Badge>
           )}
         </div>

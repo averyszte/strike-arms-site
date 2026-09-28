@@ -7,6 +7,7 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { useOrder, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hooks/use-orders';
 import { useToast } from '@/hooks/use-toast';
 import { ContactLinks } from '@/components/admin/contact-links';
+import { OrderAttentionNotice } from '@/components/admin/OrderAttentionNotice';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { OrderRefundSection } from '@/components/admin/OrderRefundSection';
@@ -114,6 +115,8 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
 
         {!isLoading && order && (
           <div className="space-y-6">
+            <OrderAttentionNotice order={order} />
+
             <section>
               <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                 Customer

@@ -78,6 +78,12 @@ export type Order = {
   shippingAddress: ShippingAddress | null;
   paidAt: string | null;
   refundedAt: string | null;
+  // Set by confirm_order_paid when the customer paid for stock that had gone
+  // (028). Whether it is still open is needsAttention() in lib/order-attention.
+  attentionReason: string | null;
+  attentionRaisedAt: string | null;
+  // Null when no stock was taken for this order, so cancelling it restocks nothing.
+  stockTakenAt: string | null;
   ageVerified: boolean;
   notes: string | null;
   isArchived: boolean;
@@ -101,6 +107,8 @@ export type OrderListFilters = {
   paymentStatus?: PaymentStatus;
   fulfillmentStatus?: FulfillmentStatus;
   search?: string;
+  // Only orders whose attention flag is still open (lib/order-attention).
+  needsAttention?: boolean;
   isArchived?: boolean;
   page?: number;
   pageSize?: number;

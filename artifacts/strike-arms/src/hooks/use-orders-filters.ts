@@ -55,6 +55,7 @@ export function useOrdersFilters() {
 
   const payment = readPayment(params);
   const fulfillment = readFulfillment(params);
+  const needsAttention = params.get('attention') === '1';
   const query = params.get('q') ?? '';
   const page = readPageParam(params.get('page'));
 
@@ -62,15 +63,17 @@ export function useOrdersFilters() {
     () => ({
       paymentStatus: payment === 'all' ? undefined : payment,
       fulfillmentStatus: fulfillment === 'all' ? undefined : fulfillment,
+      needsAttention: needsAttention || undefined,
       search: query || undefined,
       isArchived: showArchived,
     }),
-    [payment, fulfillment, query, showArchived],
+    [payment, fulfillment, needsAttention, query, showArchived],
   );
 
   return {
     payment,
     fulfillment,
+    needsAttention,
     query,
     page,
     showArchived,
@@ -78,6 +81,10 @@ export function useOrdersFilters() {
     setPayment: useCallback((value: PaymentFilter) => setParam('payment', value), [setParam]),
     setFulfillment: useCallback(
       (value: FulfillmentFilter) => setParam('fulfillment', value),
+      [setParam],
+    ),
+    setNeedsAttention: useCallback(
+      (value: boolean) => setParam('attention', value ? '1' : ''),
       [setParam],
     ),
     setQuery: useCallback((value: string) => setParam('q', value), [setParam]),

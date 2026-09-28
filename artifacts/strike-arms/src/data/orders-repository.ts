@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { chunkArray } from '@/lib/chunk-array';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
+import { ATTENTION_CLOSED_FULFILMENT, ATTENTION_OPEN_PAYMENT } from '@/lib/order-attention';
 import { ID_CHUNK, listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';
 import { rowToOrder, rowToOrderStatusLog, type OrderRow } from '@/lib/order-mappers';
 import type {
@@ -28,6 +29,12 @@ export function buildOrdersQuery(filters: OrderListFilters) {
 
   if (filters.paymentStatus) query = query.eq('payment_status', filters.paymentStatus);
   if (filters.fulfillmentStatus) query = query.eq('fulfillment_status', filters.fulfillmentStatus);
+  if (filters.needsAttention) {
+    query = query
+      .not('attention_reason', 'is', null)
+      .in('payment_status', ATTENTION_OPEN_PAYMENT)
+      .not('fulfillment_status', 'in', `(${ATTENTION_CLOSED_FULFILMENT.join(',')})`);
+  }
   // Escaped, not interpolated raw. PostgREST reads `.or()` as a
   // comma-separated list, so a customer called "Smith, John" typed into the
   // box does not fail -- it silently becomes two more filter clauses and the

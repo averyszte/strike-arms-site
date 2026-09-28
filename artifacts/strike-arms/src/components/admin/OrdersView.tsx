@@ -49,6 +49,7 @@ export function OrdersView() {
         showArchived={showArchived}
         paymentFilter={filterState.payment}
         fulfillmentFilter={filterState.fulfillment}
+        needsAttention={filterState.needsAttention}
         query={filterState.query}
         selectedCount={selection.selectedIds.length}
         isExporting={actions.isExporting}
@@ -56,6 +57,7 @@ export function OrdersView() {
         onToggleArchived={filterState.toggleArchived}
         onPaymentFilterChange={filterState.setPayment}
         onFulfillmentFilterChange={filterState.setFulfillment}
+        onNeedsAttentionChange={filterState.setNeedsAttention}
         onQueryChange={filterState.setQuery}
         onNewCounterSale={() => setIsCounterSaleOpen(true)}
         onExport={actions.exportCsv}

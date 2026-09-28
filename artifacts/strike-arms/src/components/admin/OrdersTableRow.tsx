@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
+import { needsAttention } from '@/lib/order-attention';
 import { ORDER_CHANNEL_LABELS, formatOrderNumber } from '@/lib/order-display';
 import { formatPrice } from '@/lib/format-price';
 import type { FulfillmentStatus, Order } from '@/types/order';
@@ -76,6 +77,11 @@ export function OrdersTableRow({
         >
           {order.paymentStatus.replace(/_/g, ' ')}
         </Badge>
+        {needsAttention(order) && (
+          <Badge variant="destructive" className="mt-1 text-[10px]">
+            Needs attention
+          </Badge>
+        )}
       </td>
 
       <td className="px-4 py-3" onClick={(event) => event.stopPropagation()}>

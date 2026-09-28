@@ -1,3 +1,4 @@
+import { needsAttention } from '@/lib/order-attention';
 import { migrationAlerts, type MigrationAlertInput } from '@/lib/migration-alerts';
 import { LOW_STOCK_THRESHOLD, matchesStockFilter } from '@/lib/stock-levels';
 import type { AlertSeverity, OperationalAlert } from '@/types/admin-alert';
@@ -35,6 +36,26 @@ function ageOf(order: Order, now: number): number {
 
 function plural(count: number, one: string, many: string): string {
   return count === 1 ? one : many;
+}
+
+/**
+ * Paid for stock that had gone (028). The customer is out of pocket until
+ * Alan refunds or sources the item, so this is critical.
+ */
+function attentionAlerts(orders: Order[]): OperationalAlert[] {
+  const flagged = orders.filter(needsAttention);
+  if (flagged.length === 0) return [];
+
+  return [
+    {
+      id: 'paid-stock-gone',
+      severity: 'critical',
+      count: flagged.length,
+      title: `${flagged.length} paid ${plural(flagged.length, 'order', 'orders')} for stock that had already gone`,
+      action: 'Refund or source the item',
+      href: '/admin/orders?attention=1',
+    },
+  ];
 }
 
 function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
@@ -195,6 +216,7 @@ export function buildOperationalAlerts({
 }: AlertInput): OperationalAlert[] {
   return [
     ...migrationAlerts(migrations),
+    ...attentionAlerts(orders),
     ...orderAlerts(orders, now),
     ...stockAlerts(products),
     ...inquiryAlerts(newInquiryCount),

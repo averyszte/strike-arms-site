@@ -1,4 +1,4 @@
-import { Archive, Columns3, Download, Plus, Table2 } from 'lucide-react';
+import { AlertTriangle, Archive, Columns3, Download, Plus, Table2 } from 'lucide-react';
 
 import { AdminSearchBox } from '@/components/admin/AdminSearchBox';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ type OrdersToolbarProps = {
   showArchived: boolean;
   paymentFilter: PaymentFilter;
   fulfillmentFilter: FulfillmentFilter;
+  needsAttention: boolean;
   query: string;
   selectedCount: number;
   isExporting: boolean;
@@ -43,6 +44,7 @@ type OrdersToolbarProps = {
   onToggleArchived: () => void;
   onPaymentFilterChange: (value: PaymentFilter) => void;
   onFulfillmentFilterChange: (value: FulfillmentFilter) => void;
+  onNeedsAttentionChange: (value: boolean) => void;
   onQueryChange: (value: string) => void;
   onNewCounterSale: () => void;
   onExport: () => void;
@@ -54,6 +56,7 @@ export function OrdersToolbar({
   showArchived,
   paymentFilter,
   fulfillmentFilter,
+  needsAttention,
   query,
   selectedCount,
   isExporting,
@@ -61,6 +64,7 @@ export function OrdersToolbar({
   onToggleArchived,
   onPaymentFilterChange,
   onFulfillmentFilterChange,
+  onNeedsAttentionChange,
   onQueryChange,
   onNewCounterSale,
   onExport,
@@ -159,6 +163,18 @@ export function OrdersToolbar({
             ))}
           </SelectContent>
         </Select>
+
+        {/* The dashboard's "paid for stock that had gone" alert lands here. */}
+        <Button
+          type="button"
+          size="sm"
+          variant={needsAttention ? 'destructive' : 'outline'}
+          aria-pressed={needsAttention}
+          onClick={() => onNeedsAttentionChange(!needsAttention)}
+        >
+          <AlertTriangle className="mr-1.5 h-4 w-4" aria-hidden="true" />
+          Needs attention
+        </Button>
 
         <AdminSearchBox
           value={query}
