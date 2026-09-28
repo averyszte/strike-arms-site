@@ -4,7 +4,8 @@ export type PaymentStatus =
   | 'refunded'
   | 'partially_refunded'
   | 'failed'
-  | 'expired';
+  | 'expired'
+  | 'abandoned';
 
 export type FulfillmentStatus =
   | 'pending'

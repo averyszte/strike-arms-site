@@ -52,13 +52,40 @@ async function reserveOrFail(
   );
 }
 
+/**
+ * A retry of the same attempt would otherwise leave the first attempt's order
+ * holding stock until its reservation lapsed. The old order is abandoned, not
+ * deleted, so a payment still in flight on it finds its order; its Stripe
+ * session is expired so that payment cannot start from here on.
+ *
+ * Neither step blocks the new checkout. If the abandon fails the old holds
+ * lapse through the sweeper; if an expire fails the session was already
+ * complete or expired, or times out on its own within 30 minutes.
+ */
+async function abandonStaleAttempt(admin: SupabaseClient, attemptId: string): Promise<void> {
+  const { data, error } = await admin.rpc("clear_stale_checkout_attempt", {
+    p_attempt_id: attemptId,
+  });
+
+  if (error) {
+    console.error("clear_stale_checkout_attempt failed", error.message);
+    return;
+  }
+
+  for (const sessionId of (data ?? []) as string[]) {
+    try {
+      await stripe.checkout.sessions.expire(sessionId);
+    } catch (expireError) {
+      console.error(`could not expire stale session ${sessionId}`, expireError);
+    }
+  }
+}
+
 async function handle(req: Request, cors: Record<string, string>): Promise<Response> {
   const request = parseCheckoutRequest(await req.json());
   const admin = createAdminClient();
 
-  // A retry of the same attempt would otherwise leave the first attempt's
-  // order holding stock until its reservation lapsed.
-  await admin.rpc("clear_stale_checkout_attempt", { p_attempt_id: request.attemptId });
+  await abandonStaleAttempt(admin, request.attemptId);
 
   const basket = await priceBasket(admin, request.lines, request.wantsDelivery);
 
@@ -124,8 +151,9 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
 
     return jsonResponse({ url: session.url, orderId }, 200, cors);
   } catch (error) {
-    await admin.rpc("release_order_reservations", { p_order_id: orderId });
-    await admin.from("orders").delete().eq("id", orderId);
+    // Abandoned, not deleted: if Stripe created the session but the response
+    // was lost, a payment on it must still find this order.
+    await admin.rpc("abandon_order", { p_order_id: orderId });
     throw error;
   }
 }

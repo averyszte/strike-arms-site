@@ -33,6 +33,7 @@ const PAYMENT_STATUSES: PaymentStatus[] = [
   'partially_refunded',
   'failed',
   'expired',
+  'abandoned',
 ];
 
 function readPayment(params: URLSearchParams): PaymentFilter {

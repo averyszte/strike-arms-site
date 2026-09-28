@@ -7,7 +7,7 @@
 
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
-export type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'partially_refunded' | 'failed' | 'expired';
+export type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'partially_refunded' | 'failed' | 'expired' | 'abandoned';
 export type FulfillmentStatus =
   | 'pending' | 'ready_for_pickup' | 'collected'
   | 'packed' | 'shipped' | 'delivered' | 'cancelled';
@@ -60,6 +60,11 @@ export type OrderRow = {
   shipping_city: string | null; shipping_county: string | null; shipping_eircode: string | null;
   age_verified: boolean; notes: string | null; is_archived: boolean;
   paid_at: string | null; refunded_at: string | null;
+  // 028: set when a paid order needs a human (e.g. its stock had gone), and
+  // when confirm_order_paid actually took stock. Cancelling restocks only if
+  // stock_taken_at is set.
+  attention_reason: string | null; attention_raised_at: string | null;
+  stock_taken_at: string | null;
   created_at: string; updated_at: string;
 };
 
