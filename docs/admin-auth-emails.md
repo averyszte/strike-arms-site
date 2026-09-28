@@ -42,7 +42,8 @@ emails point.
 
 - For testing now, use `http://localhost:5173`.
 - At go-live, use the live domain, e.g. `https://strikearms.ie`. Invites and
-  resets sent before the change point at localhost.
+  resets sent before the change point at localhost. This is on the checklist
+  in `docs/launch-runbook.md`.
 
 ## 3. Password policy
 

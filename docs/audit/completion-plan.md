@@ -218,7 +218,8 @@ taking real money.
 33. **Set `is_shippable` per product** once Alan has answered (D2), then run one
     test order each for collection, delivery, refund and cancel.
 34. **`.env.example` and `docs/launch-runbook.md`** (S). Use All Blooms' runbook
-    as the template.
+    as the template. The runbook is already started, with the Supabase Auth
+    go-live steps (Site URL, redirects, SMTP); extend it rather than replace it.
 35. **Supabase plan** (decision D8). The free tier auto-pauses. At minimum, add
     an uptime ping and a weekly backup export.
 
