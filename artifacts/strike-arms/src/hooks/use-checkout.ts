@@ -1,20 +1,20 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
+import { getCheckoutAttemptId } from '@/data/checkout-attempt-repository';
 import { createCheckoutSession, CheckoutError } from '@/data/checkout-repository';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
 /**
  * Starts a Stripe Checkout session and sends the browser to it.
  *
- * The attempt id is stable for as long as this component is mounted, so a
- * shopper who fails a card and tries again reuses it. The server uses it to
- * clean up the abandoned pending order from the previous try, which releases
- * the stock that order was holding.
+ * Every try in this tab shares one attempt id, including a try after coming
+ * back from Stripe's cancel link, until an order is paid. The server uses it
+ * to abandon the pending order from the previous try, which releases the
+ * stock that order was holding.
  */
 export function useCheckout() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const attemptId = useRef(crypto.randomUUID());
 
   const startCheckout = useCallback(
     async (lines: CartLine[], details: CheckoutDetails) => {
@@ -22,7 +22,7 @@ export function useCheckout() {
       setError(null);
 
       try {
-        const session = await createCheckoutSession(lines, details, attemptId.current);
+        const session = await createCheckoutSession(lines, details, getCheckoutAttemptId());
         // A full navigation, not a router push: Stripe Checkout is hosted.
         window.location.href = session.url;
       } catch (cause) {

@@ -60,6 +60,12 @@ verify_jwt = false
 [functions.stripe-webhook]
 verify_jwt = false
 
+# The success page asks whether its order is paid. Its authentication is
+# holding both the order id and the Stripe session id, and it answers with
+# two fields (see the function).
+[functions.checkout-status]
+verify_jwt = false
+
 # The refund endpoint is called by an admin in a browser, so the gateway
 # checks the JWT and the function then requires is_admin_aal2() on top -- a
 # valid customer session gets past the gateway and no further.

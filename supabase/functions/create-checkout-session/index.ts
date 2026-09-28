@@ -133,7 +133,9 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
       line_items: buildStripeLineItems(basket),
       customer_email: request.customerEmail,
       expires_at: Math.floor(Date.now() / 1000) + SESSION_MINUTES * 60,
-      success_url: `${siteUrl}/checkout/success?order=${orderId}`,
+      // {CHECKOUT_SESSION_ID} is filled in by Stripe. With the order id it is
+      // what lets the success page ask checkout-status for the order number.
+      success_url: `${siteUrl}/checkout/success?order=${orderId}&session={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/cart`,
       metadata: { order_id: orderId },
       payment_intent_data: { metadata: { order_id: orderId } },
