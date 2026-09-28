@@ -20,8 +20,8 @@ in section 4 of the plan is current.
 Go-live dashboard steps that must not be forgotten (Site URL off localhost, redirect URLs,
 SMTP) are in `docs/launch-runbook.md`. Nothing is in production.
 
-Nothing has been pushed since `1dfc41a`; the branch is well ahead of `origin/main`. Push only
-when the user asks, with `git push origin HEAD:main`.
+All of Phase 1 was pushed to `origin/main` on 2026-09-28. Push only when the user asks, with
+`git push origin HEAD:main`. Start new work on a fresh branch from `main`.
 
 ## What landed in Phase 1
 
