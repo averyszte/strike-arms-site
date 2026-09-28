@@ -2,12 +2,14 @@ import { Helmet } from 'react-helmet-async';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
+import { CartChangesNotice } from '@/components/cart/CartChangesNotice';
 import { CartLineRow } from '@/components/cart/CartLineRow';
 import { CartSummary } from '@/components/cart/CartSummary';
 import { CheckoutForm } from '@/components/cart/CheckoutForm';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { FulfillmentChoice } from '@/components/cart/FulfillmentChoice';
 import { useCart } from '@/hooks/use-cart';
+import { useCartFreshness } from '@/hooks/use-cart-freshness';
 import { useCartPricing } from '@/hooks/use-cart-pricing';
 import { useCheckout } from '@/hooks/use-checkout';
 import { SITE_URL } from '@/lib/site-config';
@@ -20,6 +22,7 @@ const DESCRIPTION =
 export default function Cart() {
   const { lines, basics, wantsDelivery, setWantsDelivery, setQuantity, removeLine } = useCart();
   const pricing = useCartPricing();
+  const cartChanges = useCartFreshness();
   const { startCheckout, isSubmitting, error } = useCheckout();
 
   return (
@@ -34,6 +37,7 @@ export default function Cart() {
       <PageHero crumbs={[{ label: 'Cart' }]} eyebrow="Checkout" title="Your cart" isCompact />
 
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.medium}`}>
+        <CartChangesNotice changes={cartChanges} />
         {lines.length === 0 ? (
           <EmptyCart />
         ) : (

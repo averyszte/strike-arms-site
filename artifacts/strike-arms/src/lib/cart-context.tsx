@@ -30,6 +30,8 @@ export interface CartContextValue {
   setQuantity: (productId: string, quantity: number) => void;
   removeLine: (productId: string) => void;
   clearCart: () => void;
+  /** Rewrite every line at once, e.g. to match the catalogue (use-cart-freshness). */
+  updateLines: (update: (current: CartLine[]) => CartLine[]) => void;
 }
 
 export const CartContext = createContext<CartContextValue | null>(null);
@@ -79,6 +81,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => setLines([]), []);
+  const updateLines = useCallback(
+    (update: (current: CartLine[]) => CartLine[]) => setLines(update),
+    [],
+  );
 
   const basics = useMemo(
     () => calculateCartBasics(lines, wantsDelivery),
@@ -95,8 +101,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setQuantity,
       removeLine,
       clearCart,
+      updateLines,
     }),
-    [lines, basics, wantsDelivery, addLine, setQuantity, removeLine, clearCart],
+    [lines, basics, wantsDelivery, addLine, setQuantity, removeLine, clearCart, updateLines],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
