@@ -6,7 +6,7 @@ import {
   buildWebsiteSchema,
   buildLocalBusinessSchema,
 } from "@/lib/structured-data";
-import { toAbsoluteUrl } from "@/lib/site-config";
+import { SITE_URL, toAbsoluteUrl } from "@/lib/site-config";
 import { HeroSection } from "@/components/HeroSection";
 import { BrandMarquee } from "@/components/BrandMarquee";
 import { FAQSection } from "@/components/FAQSection";
@@ -34,12 +34,12 @@ export default function Home() {
       <Helmet>
         <title>Strike Arms Airsoft | Dublin's Home for Airsoft Essentials</title>
         <meta name="description" content={DESCRIPTION} />
-        <link rel="canonical" href="https://strikearms.ie/" />
+        <link rel="canonical" href={`${SITE_URL}/`} />
         <meta property="og:title" content="Strike Arms Airsoft | Dublin's Home for Airsoft Essentials" />
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:image" content={toAbsoluteUrl("/opengraph.jpg")} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://strikearms.ie/" />
+        <meta property="og:url" content={`${SITE_URL}/`} />
       </Helmet>
       <JsonLd
         data={[

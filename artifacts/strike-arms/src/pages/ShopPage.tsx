@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useParams, useSearch, useLocation } from 'wouter';
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '@/lib/site-config';
 import {
   Sheet,
   SheetContent,
@@ -150,7 +151,7 @@ function ShopPageInner({
         <title>{helmetTitle}</title>
         <meta name="description" content={helmetDescription} />
         {noindex && <meta name="robots" content="noindex,follow" />}
-        <link rel="canonical" href={`https://strikearms.ie${canonicalPath}`} />
+        <link rel="canonical" href={`${SITE_URL}${canonicalPath}`} />
       </Helmet>
 
       <PageHero

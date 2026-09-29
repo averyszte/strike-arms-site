@@ -6,7 +6,12 @@
  * Geo coordinates are intentionally omitted until real lat/long is confirmed —
  * do not invent them (structured data must reflect reality).
  */
-export const SITE_URL = 'https://strikearms.ie';
+// The canonical origin for every canonical, og:url and schema URL. Set per
+// environment with VITE_SITE_URL; production is the default so a build that
+// forgets it still points search engines at the real site, never at a
+// preview host.
+const PRODUCTION_URL = 'https://strikearms.ie';
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || PRODUCTION_URL).replace(/\/+$/, '');
 export const SITE_NAME = 'Strike Arms';
 export const SITE_LEGAL_NAME = 'Strike Arms Airsoft';
 
