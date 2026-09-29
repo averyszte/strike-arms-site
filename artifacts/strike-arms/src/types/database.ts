@@ -203,6 +203,11 @@ export type Database = {
         };
         Returns: { order_id: string; order_number: string | null };
       };
+      // 031: queues a fresh copy of an order email. Checks is_admin_aal2().
+      resend_notification: {
+        Args: { p_job_id: string };
+        Returns: string;
+      };
       bump_orphan_attempts: {
         Args: { p_paths: string[]; p_error: string };
         Returns: undefined;

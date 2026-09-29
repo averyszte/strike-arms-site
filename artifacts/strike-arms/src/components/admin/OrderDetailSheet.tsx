@@ -8,6 +8,7 @@ import { useOrder, useSetOrderArchived, useUpdateFulfillmentStatus } from '@/hoo
 import { useToast } from '@/hooks/use-toast';
 import { ContactLinks } from '@/components/admin/contact-links';
 import { OrderAttentionNotice } from '@/components/admin/OrderAttentionNotice';
+import { OrderEmailsSection } from '@/components/admin/OrderEmailsSection';
 import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { OrderLinesSummary } from '@/components/admin/OrderLinesSummary';
@@ -160,6 +161,8 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
             <OrderLinesSummary order={order} />
 
             <OrderRefundSection order={order} />
+
+            <OrderEmailsSection orderId={order.id} />
 
             <section className="border-t border-border pt-4">
               <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">

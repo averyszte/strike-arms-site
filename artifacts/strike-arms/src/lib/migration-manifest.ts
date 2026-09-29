@@ -42,4 +42,5 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '028', name: 'checkout_integrity', file: '028_checkout_integrity.sql' },
   { version: '029', name: 'webhook_alerts', file: '029_webhook_alerts.sql' },
   { version: '030', name: 'notification_producer', file: '030_notification_producer.sql' },
+  { version: '031', name: 'notification_extras', file: '031_notification_extras.sql' },
 ];

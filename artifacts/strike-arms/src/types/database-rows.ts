@@ -99,12 +99,15 @@ export type InquiryRow = {
 
 export type NotificationEventType =
   | 'customer.order_confirmed' | 'owner.order_paid'
-  | 'customer.status_changed' | 'customer.refunded';
+  | 'customer.status_changed' | 'customer.refunded'
+  | 'owner.low_stock';
 
-// 030: the email outbox. Written by a trigger on orders, drained by the
-// notification-worker function. recipient is an address, or 'owner'.
+// 030: the email outbox. Written by triggers on orders and (031) products,
+// drained by the notification-worker function. recipient is an address, or
+// 'owner'. Exactly one of order_id and product_id is set.
 export type NotificationJobRow = {
-  id: string; event_type: NotificationEventType; order_id: string;
+  id: string; event_type: NotificationEventType;
+  order_id: string | null; product_id: string | null;
   recipient: string; payload: Json;
   status: NotificationStatus; attempt_count: number;
   next_attempt_at: string; last_error: string | null;

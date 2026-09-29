@@ -24,7 +24,7 @@ pii_tables(name) as (values
 -- the caller itself (or, for the two helpers, only answers about the caller).
 browser_definers(name) as (values
   ('is_admin'), ('is_admin_aal2'), ('adjust_stock'), ('create_counter_order'),
-  ('applied_migrations')
+  ('applied_migrations'), ('resend_notification')
 ),
 policies as (
   select tablename, policyname, cmd, roles,
@@ -113,7 +113,7 @@ findings(severity, rule, object, detail) as (
   where roles = '{public}'
 
   union all
-  -- 10. The one intentional anon write, listed so it is not forgotten (031, inquiries_lockdown).
+  -- 10. The one intentional anon write, listed so it is not forgotten (033, inquiries_lockdown).
   select 'review', 'anon-insert-inquiries', 'inquiries',
          'open anon insert; replace with the submit-inquiry function'
   from information_schema.role_table_grants g

@@ -3,11 +3,10 @@ import { requireEnv } from "../_shared/env.ts";
 import { sendEmail } from "../_shared/resend.ts";
 import { isServiceRoleCaller } from "../_shared/service-role-caller.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
-import { buildEmail, type NotificationJob } from "./build-email.ts";
-import { loadEmailOrder } from "./load-order.ts";
+import { renderJob, type NotificationJob } from "./build-email.ts";
 
 /**
- * Sends the order emails queued by migration 030.
+ * Sends the emails queued by migrations 030 (orders) and 031 (low stock).
  *
  * The trigger on orders writes a job in the same transaction as the change
  * that caused it, so an email is never promised for a change that rolled
@@ -26,8 +25,7 @@ const BATCH_SIZE = 10;
 type SupabaseAdmin = ReturnType<typeof createAdminClient>;
 
 async function sendJob(admin: SupabaseAdmin, job: NotificationJob): Promise<void> {
-  const order = await loadEmailOrder(admin, job.order_id);
-  const email = buildEmail(job, order, requireEnv("SITE_URL").replace(/\/$/, ""));
+  const email = await renderJob(admin, job, requireEnv("SITE_URL").replace(/\/$/, ""));
   // "owner" is resolved here so the address lives in one secret, not in rows.
   const to = job.recipient === "owner" ? requireEnv("OWNER_EMAIL") : job.recipient;
   await sendEmail({
@@ -35,7 +33,7 @@ async function sendJob(admin: SupabaseAdmin, job: NotificationJob): Promise<void
     subject: email.subject,
     html: email.html,
     text: email.text,
-    replyTo: job.recipient === "owner" ? order.customerEmail ?? undefined : undefined,
+    replyTo: email.replyTo,
     idempotencyKey: job.id,
   });
 }

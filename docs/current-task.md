@@ -1,6 +1,6 @@
 # Current Task
 
-Last updated: 2026-09-28 (Phase 2 in progress, branch `claude/phase-2-money-path`). Replaces
+Last updated: 2026-09-28 (Phase 3 in progress, branch `claude/phase-2-money-path`). Replaces
 the end-of-Phase-1 revision.
 
 ## Where the project is right now
@@ -23,8 +23,9 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
 - **17 (Turnstile and rate limit) is planned, not coded.** It needs keys from the Cloudflare
   dashboard. See "Item 17 plan" below.
 
-Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 rate limit,
-032 inquiries lockdown, 033 indexes, 034 housekeeping.
+Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
+032 rate limit, 033 inquiries lockdown, 034 indexes, 035 housekeeping. `db push` refuses a
+file numbered below one already on the remote, so numbers follow the order they are written.
 
 Push only when the user asks, with `git push origin HEAD:main`.
 
@@ -41,17 +42,43 @@ Push only when the user asks, with `git push origin HEAD:main`.
 5. **Still to do.** One test payment end to end: the success page should show the order number within a few
    seconds and the cart should empty only then.
 
+## Phase 3 (email): done in code except items 19 and 23
+
+- 20: `_shared/resend.ts` (idempotency key, reply-to) and a null-safe `escapeHtml`.
+- 21: migration 030. Triggers on orders queue emails in the same transaction as the change:
+  confirmation, owner alert (web orders), ready to collect / posted, refund. A skip-locked
+  claim with a lease, backoff to five attempts, and a cron job that calls the worker only when
+  a job is due, reading the key from Vault at run time.
+- 22: `notification-worker`, one template per email. `'owner'` resolves from `OWNER_EMAIL`.
+- 24: migration 031. A low-stock email when `stock_count` falls to the product's threshold,
+  and a Resend button per email on the order sheet (a fresh copy to the current address).
+- 19 (DNS) is the user's. 23 (`submit-inquiry`) waits for the Turnstile keys, like item 17.
+
+## NEEDS THE USER for Phase 3 (in this order)
+
+1. Item 19: verify the sending domain in Resend (SPF, DKIM, DMARC records at the DNS host).
+2. `echo y | npx supabase db push` for **030 and 031**, then re-run `supabase/verify-rls.sql`.
+3. Function secrets: `RESEND_API_KEY`, `EMAIL_FROM` (an address on the verified domain) and
+   `OWNER_EMAIL` (where Alan's alerts go). `SITE_URL` is already set for checkout.
+4. Deploy `notification-worker` (new) and `sweep-orphan-images` (its service-role check moved
+   to `_shared`).
+5. In the SQL editor: make sure Vault has a secret named `service_role_key` (Project Settings,
+   API, service_role key), then run
+   `select public.schedule_notification_worker('https://cxnhkgndvzgyqhiwsvrr.supabase.co');`
+6. Test: mark an order ready to collect in the admin; the customer email should arrive within
+   a minute and show as Sent on the order sheet.
+
 ## Item 17 plan (not started)
 
 - `_shared/turnstile.ts` ported from All Blooms, fail-closed (missing secret means refuse,
   `ALLOW_INSECURE_NO_CAPTCHA=true` only for local), with a `SITE_HOSTNAME` check.
 - The Turnstile widget on the checkout form; the token goes in the create-checkout-session body.
 - Length caps in `readString`/`readOptionalString` in `parse-request.ts`.
-- Migration 031 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
+- Migration 032 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
   before reserving stock.
 - CSP: `challenges.cloudflare.com` in `script-src` and `frame-src` in `public/_headers`.
 - The inquiry form has no function to verify a token in yet. It gets Turnstile with item 23
-  (`submit-inquiry`) and migration 032, not here.
+  (`submit-inquiry`) and migration 033, not here.
 - Needs the user: a Turnstile site in Cloudflare, `VITE_TURNSTILE_SITE_KEY` in `.env.local` and
   Pages, and `TURNSTILE_SECRET_KEY` plus `SITE_HOSTNAME` as Supabase function secrets, all in
   the same deploy as the code.
