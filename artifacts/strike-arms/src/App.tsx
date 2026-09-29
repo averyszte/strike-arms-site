@@ -19,6 +19,7 @@ import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 import Privacy from "@/pages/Privacy";
 import { RequireAuth } from "@/components/RequireAuth";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
 import { AuthProvider } from "@/lib/auth-context";
 import { CartProvider } from "@/lib/cart-context";
@@ -162,7 +163,9 @@ function App() {
             <AdminAuthProvider>
               <CartProvider>
                 <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                  <Router />
+                  <AppErrorBoundary>
+                    <Router />
+                  </AppErrorBoundary>
                 </WouterRouter>
                 <Toaster />
               </CartProvider>

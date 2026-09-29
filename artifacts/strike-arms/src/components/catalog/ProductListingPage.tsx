@@ -25,7 +25,7 @@ interface ProductListingPageProps {
 export function ProductListingPage(props: ProductListingPageProps) {
   const { title, eyebrow = 'Shop the range', metaTitle, description, path, intro, filters } = props;
   const [, setLocation] = useLocation();
-  const { data, isLoading } = useProducts(filters);
+  const { data, isLoading, isError, isFetching, refetch } = useProducts(filters);
   const items = data?.items ?? [];
   const crumbs = [
     { name: 'Home', path: '/' },
@@ -58,6 +58,9 @@ export function ProductListingPage(props: ProductListingPageProps) {
           <ProductGrid
             products={items}
             isLoading={isLoading}
+            isError={isError}
+            isRetrying={isFetching}
+            onRetry={() => void refetch()}
             onClearFilters={() => setLocation('/store')}
           />
         </div>

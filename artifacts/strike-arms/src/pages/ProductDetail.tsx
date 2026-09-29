@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { ProductRecommendations } from '@/components/catalog/ProductRecommendations';
 import { ProductGallery } from '@/components/catalog/ProductGallery';
 import { ProductInfo } from '@/components/catalog/ProductInfo';
+import { CatalogLoadErrorPage } from '@/components/catalog/CatalogLoadErrorPage';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Breadcrumb,
@@ -29,9 +30,14 @@ import NotFound from '@/pages/not-found';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: product, isLoading } = useProduct(slug);
+  const { data: product, isLoading, isError, isFetching, refetch } = useProduct(slug);
 
   if (isLoading) return <ProductDetailSkeleton />;
+  // Only a read that succeeded and found nothing is a 404. A failed read
+  // rendering NotFound told search engines a live product was gone.
+  if (!product && isError) {
+    return <CatalogLoadErrorPage what="this product" isRetrying={isFetching} onRetry={() => void refetch()} />;
+  }
   if (!product) return <NotFound />;
   return <ProductDetailView product={product} />;
 }

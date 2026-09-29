@@ -1,12 +1,17 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
+import { CatalogLoadError } from '@/components/catalog/CatalogLoadError';
 import { CTA_SECONDARY_SM } from '@/lib/storefront-styles';
 import type { Product } from '@/types/product';
 
 interface ProductGridProps {
   products: Product[];
   isLoading: boolean;
+  /** The read failed. Shown only when there is nothing older to show instead. */
+  isError: boolean;
+  isRetrying?: boolean;
+  onRetry: () => void;
   onClearFilters: () => void;
 }
 
@@ -24,7 +29,14 @@ function SkeletonCard() {
   );
 }
 
-export function ProductGrid({ products, isLoading, onClearFilters }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  isLoading,
+  isError,
+  isRetrying,
+  onRetry,
+  onClearFilters,
+}: ProductGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -33,6 +45,10 @@ export function ProductGrid({ products, isLoading, onClearFilters }: ProductGrid
         ))}
       </div>
     );
+  }
+
+  if (isError && products.length === 0) {
+    return <CatalogLoadError isRetrying={isRetrying} onRetry={onRetry} />;
   }
 
   if (products.length === 0) {

@@ -100,7 +100,7 @@ function ShopPageInner({
   setMobileFiltersOpen,
   setLocation,
 }: InnerProps) {
-  const { data, isLoading } = useProducts(filters);
+  const { data, isLoading, isError, isFetching, refetch } = useProducts(filters);
 
   const buildBasePath = useCallback(() => {
     if (rawSubcategory && categorySlug) return `/store/${categorySlug}/${rawSubcategory}`;
@@ -189,6 +189,9 @@ function ShopPageInner({
             <ProductGrid
               products={items}
               isLoading={isLoading}
+              isError={isError}
+              isRetrying={isFetching}
+              onRetry={() => void refetch()}
               onClearFilters={handleClearFilters}
             />
             {!isLoading && total > 0 && (

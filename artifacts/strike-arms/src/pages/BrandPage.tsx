@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
 import { Pagination } from '@/components/catalog/Pagination';
 import { BrandPageHeader } from '@/components/catalog/BrandPageHeader';
+import { CatalogLoadErrorPage } from '@/components/catalog/CatalogLoadErrorPage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBrandCategories, useBrands, useProducts } from '@/hooks/useProducts';
 import { brandCategoryLinks, brandPageMeta } from '@/lib/brand-page-meta';
@@ -32,7 +33,13 @@ const PAGE_SIZE = 24;
 
 export default function BrandPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: brands, isLoading: brandsLoading } = useBrands();
+  const {
+    data: brands,
+    isLoading: brandsLoading,
+    isError: brandsFailed,
+    isFetching: brandsFetching,
+    refetch: refetchBrands,
+  } = useBrands();
 
   if (brandsLoading) {
     return (
@@ -42,6 +49,18 @@ export default function BrandPage() {
           <Skeleton className="mt-4 h-5 w-full max-w-xl" />
         </div>
       </SiteLayout>
+    );
+  }
+
+  // A failed read is not a missing brand: only a list that arrived can say a
+  // slug does not exist.
+  if (!brands && brandsFailed) {
+    return (
+      <CatalogLoadErrorPage
+        what="this brand"
+        isRetrying={brandsFetching}
+        onRetry={() => void refetchBrands()}
+      />
     );
   }
 
@@ -55,7 +74,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
   const [, setLocation] = useLocation();
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useProducts({
+  const { data, isLoading, isError, isFetching, refetch } = useProducts({
     brand: slug,
     sort: 'featured',
     page,
@@ -107,6 +126,9 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
           <ProductGrid
             products={items}
             isLoading={isLoading}
+            isError={isError}
+            isRetrying={isFetching}
+            onRetry={() => void refetch()}
             onClearFilters={() => setLocation('/brands')}
           />
           {!isLoading && total > 0 && (
