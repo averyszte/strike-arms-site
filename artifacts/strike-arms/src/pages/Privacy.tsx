@@ -47,7 +47,7 @@ export default function Privacy() {
           <section>
             <h2>What we collect</h2>
             <ul>
-              <li>Account details: your name, email address and (optionally) phone number.</li>
+              <li>Your name, email address and phone number when you place an order.</li>
               <li>Order and delivery details when you buy from us.</li>
               <li>Your marketing-email preference.</li>
               <li>Limited technical data (e.g. essential cookies to keep you signed in).</li>
@@ -60,7 +60,7 @@ export default function Privacy() {
           <section>
             <h2>Why we use it and our lawful basis</h2>
             <ul>
-              <li>To create and run your account and fulfil your orders (performance of a contract).</li>
+              <li>To fulfil your orders (performance of a contract).</li>
               <li>To meet legal obligations, such as keeping tax and accounting records.</li>
               <li>To send marketing emails only where you have opted in (consent), which you can withdraw at any time.</li>
             </ul>
@@ -69,8 +69,7 @@ export default function Privacy() {
           <section>
             <h2>How long we keep it</h2>
             <p>
-              We keep your account data for as long as your account is open. Where the law requires us
-              to retain records (for example, order and accounting records for tax purposes), we keep
+              Where the law requires us to retain records (for example, order and accounting records for tax purposes), we keep
               those for the required period, after which they are deleted or anonymised.
             </p>
           </section>
@@ -81,12 +80,11 @@ export default function Privacy() {
             <ul>
               <li>Access a copy of your data, and receive it in a portable format.</li>
               <li>Correct inaccurate data.</li>
-              <li>Erase your data ("delete my account") — note we may retain records we are legally required to keep, in anonymised form.</li>
+              <li>Erase your data — note we may retain records we are legally required to keep, in anonymised form.</li>
               <li>Object to, or withdraw consent for, marketing at any time.</li>
             </ul>
             <p className="mt-2">
-              You can download your data or delete your account from your{' '}
-              <Link href="/account">account page</Link>, or contact us. You also have the right to
+              To use any of these rights, contact us. You also have the right to
               lodge a complaint with the Irish Data Protection Commission (dataprotection.ie).
             </p>
           </section>

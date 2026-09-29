@@ -1,6 +1,6 @@
 # Current Task
 
-Last updated: 2026-09-28 (Phase 3 in progress, branch `claude/phase-2-money-path`). Replaces
+Last updated: 2026-09-28 (Phase 4 in progress, branch `claude/phase-2-money-path`). Replaces
 the end-of-Phase-1 revision.
 
 ## Where the project is right now
@@ -84,6 +84,35 @@ then needs Resend on the order sheet.
 6. Test: mark an order ready to collect in the admin; the customer email should arrive within
    a minute and show as Sent on the order sheet.
 
+## Phase 4 (storefront): 25, 27, 29, 30 done in code
+
+- 29-30: zoom allowed; canonicals and `og:url` go through `SITE_URL` (`lib/site-config.ts`),
+  which reads `VITE_SITE_URL` and defaults to `https://strikearms.ie`.
+- 27: a failed product, brand or listing read shows a retryable "Could not load" state, with no
+  noindex. Only a read that succeeded and found nothing is a 404. `AppErrorBoundary` around the
+  router turns a render crash into a reload page instead of a blank screen.
+- 25 (decision D1, guest): the fake localStorage accounts are gone (`auth-repository`,
+  `auth-context`, `RequireAuth`, Login, Signup, the fake GDPR delete). `/account` is now "Track
+  your order": order number plus checkout email, via the new `order-lookup` function, which
+  returns status, items and totals but never name, address or phone. A wrong email answers the
+  same as a missing order. `/login` and `/signup` redirect to `/account`. The header and utility
+  bar say "Track an Order". Real accounts come later, in the same migration that narrows the
+  `authenticated` grants (FV-D2).
+- **Not rate limited yet.** Order numbers run in sequence, so the email is the only secret. Key
+  `order-lookup` into the 032 rate limit when item 17 is built.
+- Still open in Phase 4: 26 (legal pages, needs Alan and a solicitor; the Privacy draft still
+  has the "keep you signed in" cookie line and a marketing preference), 28 (stock display, needs
+  D3).
+
+## NEEDS THE USER for Phase 4
+
+1. Deploy the new function: `npx supabase functions deploy order-lookup` (its `verify_jwt =
+   false` is in `config.toml`). No migration.
+2. Optional, Cloudflare Pages env var `VITE_SITE_URL` only if the site is served somewhere other
+   than `https://strikearms.ie` (for example while on `pages.dev`).
+3. Test: look up a real paid order on `/account` with its number and email; a wrong email
+   should say it could not find the order.
+
 ## Item 17 plan (not started)
 
 - `_shared/turnstile.ts` ported from All Blooms, fail-closed (missing secret means refuse,
@@ -162,7 +191,8 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
   (all-collect, all-delivery, mixed). Needs A1.3 first.
 - **C11 bot protection** on `create-checkout-session`: Phase 2 item 17, planned above.
 - **E3 transactional email / C5.x notifications.** Deferred, never chosen.
-- **B1-B4 customer accounts.** B1.2 email verification needs real SMTP.
+- **B1-B4 customer accounts.** Not in v1 (D1, guest lookup instead). When built, narrow the
+  `authenticated` grants in the same migration.
 - **Search ranking:** a name match scores 6 and a tag match 2, so a scope can outrank a rifle for
   "rifle". Needs a decision on desired ordering before a migration.
 - **Content clusters, later:** the guides (10 pages + GuidesHub), then the bespoke pages
@@ -206,5 +236,7 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 
 ## Suggested next step
 
-The user runs the Phase 2 dashboard steps above. Then item 17 once the Turnstile keys exist,
-then Phase 3 (email). One item at a time, back end before front end.
+The user deploys `order-lookup` and works through the NEEDS THE USER lists. Then item 17
+and 23 once the Turnstile keys exist (and key `order-lookup` into the rate limit), then the
+remaining Phase 4 items as Alan answers D3 and the legal questions. One item at a time, back end
+before front end.

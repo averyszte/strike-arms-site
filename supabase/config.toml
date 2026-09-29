@@ -66,6 +66,12 @@ verify_jwt = false
 [functions.checkout-status]
 verify_jwt = false
 
+# Guest order lookup for /account. Called by anon shoppers with an order
+# number and email; it checks both itself and returns no contact details
+# (see the function).
+[functions.order-lookup]
+verify_jwt = false
+
 # The refund endpoint is called by an admin in a browser, so the gateway
 # checks the JWT and the function then requires is_admin_aal2() on top -- a
 # valid customer session gets past the gateway and no further.

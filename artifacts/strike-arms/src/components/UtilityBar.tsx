@@ -4,8 +4,7 @@ const utilityLinks = [
   { name: "Find a Store", href: "/contact" },
   { name: "Help", href: "/contact" },
   { name: "Airsoft Law", href: "/airsoft-law" },
-  { name: "Join Us", href: "/account" },
-  { name: "Sign In", href: "/account" },
+  { name: "Track an Order", href: "/account" },
 ];
 
 export function UtilityBar() {

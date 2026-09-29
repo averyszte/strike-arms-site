@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Redirect, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,13 +15,9 @@ import Jumble from "@/pages/Jumble";
 import SafetyEquipment from "@/pages/SafetyEquipment";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
-import Login from "@/pages/auth/Login";
-import Signup from "@/pages/auth/Signup";
 import Privacy from "@/pages/Privacy";
-import { RequireAuth } from "@/components/RequireAuth";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
-import { AuthProvider } from "@/lib/auth-context";
 import { CartProvider } from "@/lib/cart-context";
 import Cart from "@/pages/Cart";
 import CheckoutSuccess from "@/pages/CheckoutSuccess";
@@ -77,13 +73,14 @@ function Router() {
       <Route path="/jumble" component={Jumble} />
       <Route path="/safety-equipment" component={SafetyEquipment} />
       <Route path="/gift-cards" component={GiftCards} />
-      <Route path="/account">
-        <RequireAuth>
-          <Account />
-        </RequireAuth>
+      <Route path="/account" component={Account} />
+      {/* No customer accounts in v1 (decision D1): the old sign-in pages lead to order lookup. */}
+      <Route path="/login">
+        <Redirect to="/account" replace />
       </Route>
-      <Route path="/login" component={Login} />
-      <Route path="/signup" component={Signup} />
+      <Route path="/signup">
+        <Redirect to="/account" replace />
+      </Route>
       <Route path="/privacy" component={Privacy} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
@@ -159,18 +156,16 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <AuthProvider>
-            <AdminAuthProvider>
-              <CartProvider>
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                  <AppErrorBoundary>
-                    <Router />
-                  </AppErrorBoundary>
-                </WouterRouter>
-                <Toaster />
-              </CartProvider>
-            </AdminAuthProvider>
-          </AuthProvider>
+          <AdminAuthProvider>
+            <CartProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <AppErrorBoundary>
+                  <Router />
+                </AppErrorBoundary>
+              </WouterRouter>
+              <Toaster />
+            </CartProvider>
+          </AdminAuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

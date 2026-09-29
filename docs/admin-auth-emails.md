@@ -57,7 +57,8 @@ before sending. If only the dashboard changes, the forms accept a password
 that Supabase then rejects. The rejection still shows as an error, but the
 hint will be wrong.
 
-Customer accounts are not in Supabase Auth yet; they are local placeholders.
+There are no customer accounts in v1 (decision D1); `/account` is a guest
+order lookup.
 When real customer accounts arrive, this policy and the recovery template
 apply to them too. The recovery template points at `/admin/reset-password`,
 so it will need a customer version at that point.

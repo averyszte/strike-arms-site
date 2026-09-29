@@ -14,8 +14,8 @@ import type { CartBasics, CartLine } from '@/types/cart';
 /**
  * The basket, held in the browser and persisted to localStorage.
  *
- * This is the same deliberate exception as auth-context.tsx: a React context
- * lives in lib/ because it is app-wide state rather than a component or a
+ * This is the same deliberate exception as admin-auth-context.tsx: a React
+ * context lives in lib/ because it is app-wide state rather than a component or a
  * data-fetching hook.
  */
 

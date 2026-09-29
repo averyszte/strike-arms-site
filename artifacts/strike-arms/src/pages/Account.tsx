@@ -1,216 +1,79 @@
-import { useState, type FormEvent } from 'react';
-import { useLocation } from 'wouter';
+import type { ReactNode } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Download, LogOut, Trash2 } from 'lucide-react';
+import { Link } from 'wouter';
+import { AlertTriangle } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
+import { OrderLookupForm } from '@/components/order-lookup/OrderLookupForm';
+import { LookedUpOrderCard } from '@/components/order-lookup/LookedUpOrderCard';
+import { useOrderLookup } from '@/hooks/use-order-lookup';
 import { SITE_URL } from '@/lib/site-config';
-import {
-  CARD_TITLE,
-  CTA_PRIMARY_SM,
-  CTA_SECONDARY_SM,
-  PAGE_WIDTHS,
-  PANEL,
-} from '@/lib/storefront-styles';
+import { PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
+import type { OrderLookupResult } from '@/types/order-lookup';
 
-function downloadJson(data: unknown, filename: string) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
+/**
+ * Guest order lookup (decision D1). There are no customer accounts in v1: the
+ * order number and the email used at checkout are enough to see where an
+ * order is. Kept at /account so old links still land somewhere useful.
+ */
 export default function Account() {
-  const { user, signOut } = useAuth();
-  const [, navigate] = useLocation();
-  if (!user) return null;
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
+  const lookup = useOrderLookup();
 
   return (
     <SiteLayout>
       <Helmet>
-        <title>My account | Strike Arms Airsoft Dublin</title>
+        <title>Track your order | Strike Arms Airsoft Dublin</title>
         <meta name="robots" content="noindex,follow" />
         <link rel="canonical" href={`${SITE_URL}/account`} />
       </Helmet>
       <PageHero
-        crumbs={[{ label: 'Account' }]}
-        eyebrow="Your account"
-        title="My account"
-        intro={`Signed in as ${user.email}`}
+        crumbs={[{ label: 'Track your order' }]}
+        eyebrow="Your order"
+        title="Track your order"
+        intro="No account needed. Enter your order number and the email you used at checkout."
         width="narrow"
         isCompact
-      >
-        <Button variant="outline" size="sm" className={CTA_SECONDARY_SM} onClick={handleSignOut}>
-          <LogOut className="h-4 w-4" /> Sign out
-        </Button>
-      </PageHero>
+      />
 
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
         <div className="space-y-6">
-          <ProfileSection />
-          <PreferencesSection />
-          <DataSection />
+          <OrderLookupForm isPending={lookup.isPending} onSubmit={(input) => lookup.mutate(input)} />
+          {lookup.isError && <LookupFailed />}
+          {lookup.data && <LookupAnswer result={lookup.data} />}
         </div>
       </div>
     </SiteLayout>
   );
 }
 
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+function LookupAnswer({ result }: { result: OrderLookupResult }) {
+  if (result.found) return <LookedUpOrderCard order={result.order} />;
   return (
-    <section className={`${PANEL} p-6`}>
-      <h2 className={`${CARD_TITLE} text-lg`}>{title}</h2>
-      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-      <div className="mt-4">{children}</div>
-    </section>
+    <Notice>
+      We could not find an order with that number and email. Check both against your confirmation
+      email, or{' '}
+      <Link href="/contact" className={TEXT_LINK}>
+        contact the shop
+      </Link>
+      .
+    </Notice>
   );
 }
 
-function ProfileSection() {
-  const { user, updateProfile } = useAuth();
-  const { toast } = useToast();
-  const [fullName, setFullName] = useState(user?.fullName ?? '');
-  const [phone, setPhone] = useState(user?.phone ?? '');
-  const [saving, setSaving] = useState(false);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    const result = await updateProfile({ fullName, phone });
-    setSaving(false);
-    toast(result.ok ? { title: 'Profile saved' } : { title: 'Could not save', description: result.error });
-  };
-
+function LookupFailed() {
   return (
-    <Section title="Profile">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="fullName">Full name</Label>
-          <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="phone">Phone (optional)</Label>
-          <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="acc-email">Email</Label>
-          <Input id="acc-email" value={user?.email ?? ''} disabled />
-        </div>
-        <Button type="submit" className={CTA_PRIMARY_SM} disabled={saving}>
-          {saving ? 'Saving…' : 'Save changes'}
-        </Button>
-      </form>
-    </Section>
+    <Notice>
+      Something went wrong looking up your order. Check your connection and try again.
+    </Notice>
   );
 }
 
-function PreferencesSection() {
-  const { user, updateProfile } = useAuth();
-  const { toast } = useToast();
-
-  const handleToggle = async (checked: boolean) => {
-    const result = await updateProfile({ marketingOptIn: checked });
-    if (result.ok) {
-      toast({ title: checked ? 'Subscribed to emails' : 'Unsubscribed' });
-    }
-  };
-
+function Notice({ children }: { children: ReactNode }) {
   return (
-    <Section title="Email preferences" description="Manage marketing emails. You can opt out at any time.">
-      <label className="flex items-start gap-2.5 text-sm text-foreground">
-        <Checkbox
-          checked={user?.marketingOptIn ?? false}
-          onCheckedChange={(v) => handleToggle(v === true)}
-          className="mt-0.5"
-          aria-label="Marketing emails"
-        />
-        <span>Email me offers and airsoft news.</span>
-      </label>
-    </Section>
-  );
-}
-
-function DataSection() {
-  const { user, exportData, deleteAccount } = useAuth();
-  const { toast } = useToast();
-  const [, navigate] = useLocation();
-  const [busy, setBusy] = useState(false);
-
-  const handleExport = async () => {
-    const data = await exportData();
-    if (data) downloadJson(data, `strike-arms-my-data-${user?.id}.json`);
-  };
-
-  const handleDelete = async () => {
-    setBusy(true);
-    await deleteAccount();
-    toast({ title: 'Account deleted', description: 'Your personal data has been removed.' });
-    navigate('/');
-  };
-
-  return (
-    <Section
-      title="Your data"
-      description="Under GDPR you can download a copy of your data or delete your account at any time."
-    >
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Button variant="outline" className={CTA_SECONDARY_SM} onClick={handleExport}>
-          <Download className="h-4 w-4" /> Download my data
-        </Button>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="outline"
-              className={`${CTA_SECONDARY_SM} text-destructive hover:border-destructive hover:text-destructive`}
-            >
-              <Trash2 className="h-4 w-4" /> Delete my account
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This removes your personal details and closes your account. Records we are legally
-                required to keep (such as completed orders, for tax purposes) are retained in an
-                anonymised form. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} disabled={busy}>
-                {busy ? 'Deleting…' : 'Delete account'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </Section>
+    <div role="alert" className={`${PANEL} flex gap-3 p-4 text-sm text-muted-foreground`}>
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      <p>{children}</p>
+    </div>
   );
 }
