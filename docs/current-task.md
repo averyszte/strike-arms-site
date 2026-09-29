@@ -30,15 +30,15 @@ Push only when the user asks, with `git push origin HEAD:main`.
 
 ## NEEDS THE USER for Phase 2 (in this order)
 
-1. `echo y | npx supabase db push` for **029**, then re-run `supabase/verify-rls.sql`
+1. DONE 2026-09-28 (push; verify-rls re-run not confirmed). `echo y | npx supabase db push` for **029**, then re-run `supabase/verify-rls.sql`
    (`payment_alerts` is new and should show no review rows).
-2. Deploy the three changed functions: `stripe-webhook`, `create-checkout-session`,
+2. DONE 2026-09-28. Deploy the three changed functions: `stripe-webhook`, `create-checkout-session`,
    and the new `checkout-status`.
 3. **Still to do (user deferring it).** Stripe dashboard, webhook endpoint: tick `checkout.session.async_payment_succeeded` and
    `checkout.session.async_payment_failed`.
 4. DONE 2026-09-28. Stripe dashboard, payment methods: leave only instant methods on (cards, Apple Pay,
    Google Pay). D4.
-5. One test payment end to end: the success page should show the order number within a few
+5. **Still to do.** One test payment end to end: the success page should show the order number within a few
    seconds and the cart should empty only then.
 
 ## Item 17 plan (not started)
