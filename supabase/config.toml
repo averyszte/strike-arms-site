@@ -77,3 +77,8 @@ verify_jwt = true
 # service role on top. Nothing a browser holds gets past either check.
 [functions.sweep-orphan-images]
 verify_jwt = true
+
+# The notification worker is maintenance in the same way: pg_cron calls it
+# with the service role key from Vault (030), and nothing else may.
+[functions.notification-worker]
+verify_jwt = true

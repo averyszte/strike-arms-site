@@ -1,5 +1,5 @@
 import { webhookCorsHeaders, jsonResponse } from "../_shared/cors.ts";
-import { requireEnv } from "../_shared/env.ts";
+import { isServiceRoleCaller } from "../_shared/service-role-caller.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
 
 /**
@@ -28,25 +28,6 @@ const BATCH_SIZE = 100;
 // specifically, and a queue that retries it every run never reaches the rows
 // behind it. The row stays for inspection rather than being dropped.
 const MAX_ATTEMPTS = 5;
-
-/**
- * Constant-time-ish comparison. The service-role key is a bearer secret, and
- * an early-exit compare on a secret is a side channel, even if a remote timing
- * attack over an Edge Function is a stretch.
- */
-function secretsMatch(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-function isServiceRoleCaller(req: Request): boolean {
-  const header = req.headers.get("authorization") ?? "";
-  const token = header.replace(/^Bearer\s+/i, "").trim();
-  if (!token) return false;
-  return secretsMatch(token, requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
-}
 
 Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {

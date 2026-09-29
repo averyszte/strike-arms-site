@@ -97,10 +97,18 @@ export type InquiryRow = {
   consent: boolean; source_page: string | null; created_at: string;
 };
 
+export type NotificationEventType =
+  | 'customer.order_confirmed' | 'owner.order_paid'
+  | 'customer.status_changed' | 'customer.refunded';
+
+// 030: the email outbox. Written by a trigger on orders, drained by the
+// notification-worker function. recipient is an address, or 'owner'.
 export type NotificationJobRow = {
-  id: string; type: string; payload: Json;
+  id: string; event_type: NotificationEventType; order_id: string;
+  recipient: string; payload: Json;
   status: NotificationStatus; attempt_count: number;
-  next_attempt_at: string; last_error: string | null; created_at: string;
+  next_attempt_at: string; last_error: string | null;
+  sent_at: string | null; created_at: string;
 };
 
 export type SubcategoryRow = {
