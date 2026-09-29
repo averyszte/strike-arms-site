@@ -23,7 +23,7 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
 - **17 (Turnstile and rate limit) is planned, not coded.** It needs keys from the Cloudflare
   dashboard. See "Item 17 plan" below.
 
-Migrations renumbered again: 029 `webhook_alerts`, 030 rate limit, 031 notifications,
+Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 rate limit,
 032 inquiries lockdown, 033 indexes, 034 housekeeping.
 
 Push only when the user asks, with `git push origin HEAD:main`.
@@ -47,7 +47,7 @@ Push only when the user asks, with `git push origin HEAD:main`.
   `ALLOW_INSECURE_NO_CAPTCHA=true` only for local), with a `SITE_HOSTNAME` check.
 - The Turnstile widget on the checkout form; the token goes in the create-checkout-session body.
 - Length caps in `readString`/`readOptionalString` in `parse-request.ts`.
-- Migration 030 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
+- Migration 031 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
   before reserving stock.
 - CSP: `challenges.cloudflare.com` in `script-src` and `frame-src` in `public/_headers`.
 - The inquiry form has no function to verify a token in yet. It gets Turnstile with item 23

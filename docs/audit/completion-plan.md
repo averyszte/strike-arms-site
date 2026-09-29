@@ -161,7 +161,7 @@ taking real money.
     - Port `_shared/turnstile.ts`, failing closed, onto checkout and the inquiry
       form.
     - Add length caps in `readString`.
-    - Migration 030 adds a rate limit per IP and attempt.
+    - Migration 031 adds a rate limit per IP and attempt.
     - Add `challenges.cloudflare.com` to the CSP.
     - Set the site key and secret key in the same deploy.
 18. **Cart freshness** (S). Re-read price and `is_shippable` when the cart opens,
@@ -173,7 +173,7 @@ taking real money.
     Resend with SPF/DKIM/DMARC, plus the matching Supabase Auth SMTP settings.
 20. **Port All Blooms' `_shared/resend.ts`** (S). Keep its idempotency key and
     make `escapeHtml` null-safe from day one (`00d82e6`).
-21. **Migration 031, the notification producer** (M):
+21. **Migration 030, the notification producer** (M):
     - `confirm_order_paid` enqueues `notification_jobs` in the same transaction;
     - a claim function using `for update skip locked`;
     - a `pg_cron` schedule for the worker.
@@ -274,8 +274,8 @@ taking real money.
 | 027 | `admin_invite_fix` | 024's trigger also fires on the update that sets `invited_at`; backfill invited users | 1 |
 | 028 | `checkout_integrity` | summed lines; re-check in `confirm_order_paid`; abandon instead of delete | 2 |
 | 029 | `webhook_alerts` | `expire_order` sets `expired`; `flag_order`; `payment_alerts` for money with no order | 2 |
-| 030 | `checkout_rate_limit` | per-IP and per-attempt throttle | 2 |
-| 031 | `notification_producer` | enqueue in `confirm_order_paid`; skip-locked claim; cron | 3 |
+| 030 | `notification_producer` | outbox filled by triggers on orders; skip-locked claim; cron that calls the worker only when a job is due | 3 |
+| 031 | `checkout_rate_limit` | per-IP and per-attempt throttle (written after 030, so numbered after it) | 2 |
 | 032 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
 | 033 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
 | 034 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
