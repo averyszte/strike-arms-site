@@ -54,14 +54,30 @@ Push only when the user asks, with `git push origin HEAD:main`.
   and a Resend button per email on the order sheet (a fresh copy to the current address).
 - 19 (DNS) is the user's. 23 (`submit-inquiry`) waits for the Turnstile keys, like item 17.
 
-## NEEDS THE USER for Phase 3 (in this order)
+## NEEDS THE USER for Phase 3
 
-1. Item 19: verify the sending domain in Resend (SPF, DKIM, DMARC records at the DNS host).
-2. `echo y | npx supabase db push` for **030 and 031**, then re-run `supabase/verify-rls.sql`.
+Done 2026-09-28: 030 and 031 pushed, `verify-rls.sql` re-run. Its one fail row
+(`resend_notification` callable from the browser) came from an older copy of the script; the
+committed one allow-lists it, since it is the order sheet's Resend button and checks aal2 itself.
+The other row (`anon-insert-inquiries`, review) stays until item 23.
+
+Emails are queuing from now on (every paid order, status change, refund, low-stock drop) and
+wait harmlessly until the worker is scheduled.
+
+**Now:**
+
+1. Deploy `sweep-orphan-images` (its service-role check moved to `_shared`) and
+   `notification-worker`. Safe without the secrets: nothing calls the worker until step 5.
+
+**Later, in this order. Do not do step 5 before step 3:** a scheduled worker without secrets
+fails every queued email five times over about 30 minutes and marks them Failed, and each one
+then needs Resend on the order sheet.
+
+2. Item 19: verify the sending domain in Resend (SPF, DKIM, DMARC records at the DNS host).
 3. Function secrets: `RESEND_API_KEY`, `EMAIL_FROM` (an address on the verified domain) and
    `OWNER_EMAIL` (where Alan's alerts go). `SITE_URL` is already set for checkout.
-4. Deploy `notification-worker` (new) and `sweep-orphan-images` (its service-role check moved
-   to `_shared`).
+4. Optional: if the backlog is old, drop it so weeks-old confirmations do not go out at once:
+   `delete from public.notification_jobs where status = 'pending';`
 5. In the SQL editor: make sure Vault has a secret named `service_role_key` (Project Settings,
    API, service_role key), then run
    `select public.schedule_notification_worker('https://cxnhkgndvzgyqhiwsvrr.supabase.co');`
