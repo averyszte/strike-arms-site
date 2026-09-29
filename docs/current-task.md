@@ -34,9 +34,9 @@ Push only when the user asks, with `git push origin HEAD:main`.
    (`payment_alerts` is new and should show no review rows).
 2. Deploy the three changed functions: `stripe-webhook`, `create-checkout-session`,
    and the new `checkout-status`.
-3. Stripe dashboard, webhook endpoint: tick `checkout.session.async_payment_succeeded` and
+3. **Still to do (user deferring it).** Stripe dashboard, webhook endpoint: tick `checkout.session.async_payment_succeeded` and
    `checkout.session.async_payment_failed`.
-4. Stripe dashboard, payment methods: leave only instant methods on (cards, Apple Pay,
+4. DONE 2026-09-28. Stripe dashboard, payment methods: leave only instant methods on (cards, Apple Pay,
    Google Pay). D4.
 5. One test payment end to end: the success page should show the order number within a few
    seconds and the cart should empty only then.
