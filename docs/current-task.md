@@ -66,7 +66,7 @@ wait harmlessly until the worker is scheduled.
 
 **Now:**
 
-1. Deploy `sweep-orphan-images` (its service-role check moved to `_shared`) and
+1. DONE 2026-09-28. Deploy `sweep-orphan-images` (its service-role check moved to `_shared`) and
    `notification-worker`. Safe without the secrets: nothing calls the worker until step 5.
 
 **Later, in this order. Do not do step 5 before step 3:** a scheduled worker without secrets
