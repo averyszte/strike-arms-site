@@ -213,12 +213,13 @@ items under "NEEDS THE USER (aal2 admin session)".
 2. Supabase function secrets: `TURNSTILE_SECRET_KEY` (the secret key) and `SITE_HOSTNAME` =
    `strike-arms-site.pages.dev,strikearms.ie`.
 3. `supabase db push` (035).
-4. Cloudflare Pages env var `VITE_TURNSTILE_SITE_KEY` (the site key), and the same in
-   `.env.local`. Push to main so Pages rebuilds with it.
+4. Cloudflare Pages env var `VITE_TURNSTILE_SITE_KEY` (the site key). Push to main so Pages
+   rebuilds with it. Not in `.env.local`: the user chose to test on pages.dev, not localhost.
 5. Then deploy `create-checkout-session` and `order-lookup`. Once they are live, a build
    without the site key cannot check out, so step 4 comes first.
-6. Local dev talks to the hosted functions, so it needs the real site key and `localhost` on the
-   widget and in `SITE_HOSTNAME`. If Cloudflare will not take `localhost`, test on pages.dev.
+6. Local dev has no site key, so once the functions are deployed, local checkout and order
+   lookup are refused. Test those on pages.dev. For local testing later: add the key to
+   `.env.local` and `localhost` to the widget and `SITE_HOSTNAME`, then remove both at launch.
 7. Check the browser console on the live cart and `/account` for CSP errors.
 
 ## What landed in Phase 1
