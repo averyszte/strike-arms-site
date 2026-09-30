@@ -87,8 +87,8 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
     ? 'flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 w-full'
     : `flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
         isFocused
-          ? 'bg-card border-accent/60 w-44'
-          : 'bg-card border-border/60 w-28 hover:border-border'
+          ? 'bg-card border-accent/60 w-44 xl:w-52'
+          : 'bg-card border-border/60 w-28 xl:w-40 hover:border-border'
       }`;
 
   return (
