@@ -17,6 +17,12 @@ const EIRCODE_PATTERN = /^[A-Z]\d{2}\s?[A-Z0-9]{4}$/i;
 const MAX_LINES = 50;
 const MAX_QUANTITY_PER_LINE = 20;
 
+// Length caps. Nothing legitimate comes near them; they keep an oversized
+// body out of the orders table and out of Stripe.
+const MAX_TEXT_LENGTH = 200;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_TOKEN_LENGTH = 2048;
+
 export type CheckoutLine = { productId: string; quantity: number };
 
 export type ShippingAddress = {
@@ -37,6 +43,8 @@ export type CheckoutRequest = {
   wantsDelivery: boolean;
   shipping: ShippingAddress | null;
   lines: CheckoutLine[];
+  /** From the Turnstile widget; checked in guard.ts, not here. */
+  turnstileToken: string | null;
 };
 
 export class CheckoutRequestError extends Error {}
@@ -45,20 +53,30 @@ function fail(message: string): never {
   throw new CheckoutRequestError(message);
 }
 
-function readString(source: Record<string, unknown>, key: string): string {
+function capped(key: string, value: string, maxLength: number): string {
+  if (value.length > maxLength) fail(`${key} is too long`);
+  return value;
+}
+
+function readString(
+  source: Record<string, unknown>,
+  key: string,
+  maxLength = MAX_TEXT_LENGTH,
+): string {
   const value = source[key];
   if (typeof value !== "string" || value.trim() === "") fail(`${key} is required`);
-  return (value as string).trim();
+  return capped(key, (value as string).trim(), maxLength);
 }
 
 function readOptionalString(
   source: Record<string, unknown>,
   key: string,
+  maxLength = MAX_TEXT_LENGTH,
 ): string | null {
   const value = source[key];
   if (value === undefined || value === null || value === "") return null;
   if (typeof value !== "string") fail(`${key} must be text`);
-  return value.trim();
+  return capped(key, value.trim(), maxLength);
 }
 
 function asRecord(value: unknown, label: string): Record<string, unknown> {
@@ -111,7 +129,7 @@ export function parseCheckoutRequest(raw: unknown): CheckoutRequest {
   const attemptId = readString(body, "attemptId");
   if (!UUID_PATTERN.test(attemptId)) fail("attemptId is not an id");
 
-  const customerEmail = readString(body, "customerEmail");
+  const customerEmail = readString(body, "customerEmail", MAX_EMAIL_LENGTH);
   if (!EMAIL_PATTERN.test(customerEmail)) fail("customerEmail is not a valid address");
 
   // Shop policy is 18+ for card purchases. Checked again here rather than only
@@ -129,5 +147,6 @@ export function parseCheckoutRequest(raw: unknown): CheckoutRequest {
     wantsDelivery,
     shipping: wantsDelivery ? parseShipping(body.shipping) : null,
     lines: parseLines(body.lines),
+    turnstileToken: readOptionalString(body, "turnstileToken", MAX_TOKEN_LENGTH),
   };
 }

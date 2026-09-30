@@ -38,4 +38,9 @@ export type LookedUpOrder = {
 
 export type OrderLookupResult = { found: false } | { found: true; order: LookedUpOrder };
 
-export type OrderLookupInput = { orderNumber: string; email: string };
+export type OrderLookupInput = {
+  orderNumber: string;
+  email: string;
+  /** From the Turnstile widget; null when the site has no key (local). */
+  turnstileToken: string | null;
+};

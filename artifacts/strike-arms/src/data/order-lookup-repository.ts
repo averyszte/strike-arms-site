@@ -1,3 +1,4 @@
+import { functionErrorMessage } from '@/data/function-error-message';
 import { supabase } from '@/lib/supabase';
 import type {
   FulfillmentMethod,
@@ -85,12 +86,17 @@ export function toLookedUpOrder(value: unknown): LookedUpOrder {
   };
 }
 
+/** An error whose message came from the server and is safe to show. */
+export class OrderLookupError extends Error {}
+
 export async function lookUpOrder(input: OrderLookupInput): Promise<OrderLookupResult> {
   const { data, error } = await supabase.functions.invoke<unknown>('order-lookup', {
     body: input,
   });
 
-  if (error) throw new Error('Could not look up the order');
+  // A refusal (bot check, too many tries) carries a message for the person.
+  // Anything else has none, and the hook shows its generic one.
+  if (error) throw new OrderLookupError(await functionErrorMessage(error, ''));
 
   const body = (data ?? {}) as { found?: unknown; order?: unknown };
   if (body.found !== true) return { found: false };

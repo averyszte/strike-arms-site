@@ -1,3 +1,4 @@
+import { functionErrorMessage } from '@/data/function-error-message';
 import { supabase } from '@/lib/supabase';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
@@ -19,7 +20,14 @@ export class CheckoutError extends Error {}
 
 type CheckoutResponse = { url?: string | null; orderId?: string; error?: string };
 
-function buildBody(lines: CartLine[], details: CheckoutDetails, attemptId: string) {
+const UNAVAILABLE = 'Checkout is temporarily unavailable. Please try again.';
+
+function buildBody(
+  lines: CartLine[],
+  details: CheckoutDetails,
+  attemptId: string,
+  turnstileToken: string | null,
+) {
   const wantsDelivery = details.wantsDelivery && lines.some((line) => line.isShippable);
 
   return {
@@ -43,6 +51,7 @@ function buildBody(lines: CartLine[], details: CheckoutDetails, attemptId: strin
       productId: line.productId,
       quantity: line.quantity,
     })),
+    turnstileToken,
   };
 }
 
@@ -50,39 +59,17 @@ export async function createCheckoutSession(
   lines: CartLine[],
   details: CheckoutDetails,
   attemptId: string,
+  turnstileToken: string | null,
 ): Promise<CheckoutSession> {
   const { data, error } = await supabase.functions.invoke<CheckoutResponse>(
     'create-checkout-session',
-    { body: buildBody(lines, details, attemptId) },
+    { body: buildBody(lines, details, attemptId, turnstileToken) },
   );
 
   // A non-2xx response arrives as an error with the body attached, so the
   // server's own message is what the shopper reads when there is one.
-  if (error) {
-    const message = await readErrorMessage(error);
-    throw new CheckoutError(message);
-  }
-
-  if (!data?.url || !data.orderId) {
-    throw new CheckoutError('Checkout is temporarily unavailable. Please try again.');
-  }
+  if (error) throw new CheckoutError(await functionErrorMessage(error, UNAVAILABLE));
+  if (!data?.url || !data.orderId) throw new CheckoutError(UNAVAILABLE);
 
   return { url: data.url, orderId: data.orderId };
-}
-
-async function readErrorMessage(error: unknown): Promise<string> {
-  const fallback = 'Checkout is temporarily unavailable. Please try again.';
-  const context = (error as { context?: unknown })?.context;
-
-  if (context instanceof Response) {
-    try {
-      const body: unknown = await context.json();
-      const message = (body as { error?: unknown })?.error;
-      if (typeof message === 'string' && message.length > 0) return message;
-    } catch {
-      return fallback;
-    }
-  }
-
-  return fallback;
 }

@@ -77,8 +77,9 @@ Work:
   upper, lower, digit), not "no composition rules". Leaked-password protection is on for both.
 - Confirmation and reset emails carry a 6-digit code and a `token_hash` link; either works.
   One recovery template serves admins and customers through `{{ .RedirectTo }}`.
-- Turnstile is deferred to item 17. Switching on Supabase's CAPTCHA would also need the widget
-  on the admin login, so it goes in with the checkout widget.
+- Item 17 put Turnstile on checkout and order lookup only. Supabase's CAPTCHA (sign-up,
+  sign-in, reset) is still off: it would also need the widget on the admin login and a token on
+  the server-side password re-checks in `delete-account` and the password change.
 - Follow-up, not built: pre-fill the checkout email for a signed-in customer.
 
 ### Security groundwork (one migration, before sign-up is switched on)

@@ -55,6 +55,11 @@ export default function Privacy() {
               </li>
               <li>Your marketing-email preference.</li>
               <li>Limited technical data (e.g. essential cookies to keep you signed in).</li>
+              <li>
+                When you check out or look up an order: your IP address and browser signals, used
+                by the bot check and to limit repeated attempts. The address is not stored in the
+                clear.
+              </li>
             </ul>
             <p className="mt-2">
               Payments are handled by Stripe. We do not store your card details on our systems.
@@ -67,6 +72,7 @@ export default function Privacy() {
               <li>To fulfil your orders (performance of a contract).</li>
               <li>To run your account, if you create one, and show you your orders (performance of a contract).</li>
               <li>To meet legal obligations, such as keeping tax and accounting records.</li>
+              <li>To protect checkout and order lookup from bots and abuse (legitimate interests).</li>
               <li>To send marketing emails only where you have opted in (consent), which you can withdraw at any time.</li>
             </ul>
           </section>
@@ -113,7 +119,8 @@ export default function Privacy() {
             <p>
               We share data only with the service providers needed to run the shop — for example our
               payments provider (Stripe), our hosting and database provider (Supabase) and our email
-              provider (Resend) — and where required by law.
+              provider (Resend), and Cloudflare, which hosts the site and runs the bot check
+              (Turnstile) on checkout and order lookup — and where required by law.
             </p>
           </section>
         </div>

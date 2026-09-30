@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react';
 import { Search } from 'lucide-react';
 
+import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { CARD_TITLE, CTA_PRIMARY_SM, PANEL } from '@/lib/storefront-styles';
 import type { OrderLookupInput } from '@/types/order-lookup';
 
@@ -17,10 +19,19 @@ type OrderLookupFormProps = {
 export function OrderLookupForm({ isPending, initialOrderNumber = '', onSubmit }: OrderLookupFormProps) {
   const [orderNumber, setOrderNumber] = useState(initialOrderNumber);
   const [email, setEmail] = useState('');
+  const turnstile = useTurnstile('order-lookup');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    onSubmit({ orderNumber: orderNumber.trim(), email: email.trim() });
+    if (isWaitingForBotCheck) return;
+    onSubmit({
+      orderNumber: orderNumber.trim(),
+      email: email.trim(),
+      turnstileToken: turnstile.token,
+    });
+    // Single-use: a fresh token for the next lookup.
+    turnstile.reset();
   };
 
   return (
@@ -54,7 +65,16 @@ export function OrderLookupForm({ isPending, initialOrderNumber = '', onSubmit }
             required
           />
         </div>
-        <Button type="submit" className={CTA_PRIMARY_SM} disabled={isPending}>
+        <BotCheck
+        containerRef={turnstile.ref}
+        isEnabled={turnstile.isEnabled}
+        hasFailed={turnstile.hasFailed}
+      />
+        <Button
+          type="submit"
+          className={CTA_PRIMARY_SM}
+          disabled={isPending || isWaitingForBotCheck}
+        >
           <Search className="h-4 w-4" aria-hidden="true" />
           {isPending ? 'Looking up' : 'Find order'}
         </Button>

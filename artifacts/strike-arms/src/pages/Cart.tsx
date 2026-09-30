@@ -74,7 +74,7 @@ export default function Cart() {
                   wantsDelivery={wantsDelivery && basics.hasShippableItems}
                   isSubmitting={isSubmitting}
                   submitError={error}
-                  onSubmit={(details) => startCheckout(lines, details)}
+                  onSubmit={(details, turnstileToken) => startCheckout(lines, details, turnstileToken)}
                 />
               </div>
             </div>

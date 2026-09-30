@@ -17,12 +17,17 @@ export function useCheckout() {
   const [error, setError] = useState<string | null>(null);
 
   const startCheckout = useCallback(
-    async (lines: CartLine[], details: CheckoutDetails) => {
+    async (lines: CartLine[], details: CheckoutDetails, turnstileToken: string | null) => {
       setIsSubmitting(true);
       setError(null);
 
       try {
-        const session = await createCheckoutSession(lines, details, getCheckoutAttemptId());
+        const session = await createCheckoutSession(
+          lines,
+          details,
+          getCheckoutAttemptId(),
+          turnstileToken,
+        );
         // A full navigation, not a router push: Stripe Checkout is hosted.
         window.location.href = session.url;
       } catch (cause) {

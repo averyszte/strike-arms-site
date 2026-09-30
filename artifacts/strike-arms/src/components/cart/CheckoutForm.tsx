@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { AlertCircle, Lock } from 'lucide-react';
 
+import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { DeliveryAddressFields } from '@/components/cart/DeliveryAddressFields';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import {
   EMPTY_CHECKOUT_DETAILS,
   validateCheckoutDetails,
@@ -18,7 +20,7 @@ type CheckoutFormProps = {
   wantsDelivery: boolean;
   isSubmitting: boolean;
   submitError: string | null;
-  onSubmit: (details: CheckoutDetails) => void;
+  onSubmit: (details: CheckoutDetails, turnstileToken: string | null) => void;
 };
 
 export function CheckoutForm({
@@ -29,6 +31,8 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   const [details, setDetails] = useState<CheckoutDetails>(EMPTY_CHECKOUT_DETAILS);
   const [errors, setErrors] = useState<CheckoutFieldErrors>({});
+  const turnstile = useTurnstile('checkout');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
 
   const patch = (update: Partial<CheckoutDetails>) =>
     setDetails((current) => ({ ...current, ...update }));
@@ -40,7 +44,12 @@ export function CheckoutForm({
     const found = validateCheckoutDetails(submitted);
     setErrors(found);
 
-    if (Object.keys(found).length === 0) onSubmit(submitted);
+    if (Object.keys(found).length > 0 || isWaitingForBotCheck) return;
+
+    // Tokens are single-use: this one goes with the request, and the widget
+    // starts on a fresh one in case the shopper has to try again.
+    onSubmit(submitted, turnstile.token);
+    turnstile.reset();
   };
 
   return (
@@ -102,6 +111,12 @@ export function CheckoutForm({
         )}
       </div>
 
+      <BotCheck
+        containerRef={turnstile.ref}
+        isEnabled={turnstile.isEnabled}
+        hasFailed={turnstile.hasFailed}
+      />
+
       {submitError && (
         <p className="flex items-start gap-2 rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -109,7 +124,12 @@ export function CheckoutForm({
         </p>
       )}
 
-      <Button type="submit" size="lg" className={`${CTA_PRIMARY} w-full`} disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className={`${CTA_PRIMARY} w-full`}
+        disabled={isSubmitting || isWaitingForBotCheck}
+      >
         <Lock className="h-4 w-4" aria-hidden="true" />
         {isSubmitting ? 'Taking you to payment…' : 'Continue to payment'}
       </Button>

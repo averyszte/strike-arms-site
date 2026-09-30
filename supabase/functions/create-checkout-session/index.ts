@@ -7,6 +7,7 @@ import { CheckoutRequestError, parseCheckoutRequest } from "./parse-request.ts";
 import { priceBasket, type PricedBasket } from "./order-lines.ts";
 import { buildOrderInsert, buildStripeLineItems } from "./build-order.ts";
 import { signedInCustomerId } from "./signed-in-customer.ts";
+import { guardCheckout } from "./guard.ts";
 
 /**
  * Creates the pending order, holds the stock, and hands back a Stripe Checkout
@@ -85,6 +86,9 @@ async function abandonStaleAttempt(admin: SupabaseClient, attemptId: string): Pr
 async function handle(req: Request, cors: Record<string, string>): Promise<Response> {
   const request = parseCheckoutRequest(await req.json());
   const admin = createAdminClient();
+
+  const refusal = await guardCheckout(admin, req, request.attemptId, request.turnstileToken);
+  if (refusal) return jsonResponse({ error: refusal.error }, refusal.status, cors);
 
   await abandonStaleAttempt(admin, request.attemptId);
 

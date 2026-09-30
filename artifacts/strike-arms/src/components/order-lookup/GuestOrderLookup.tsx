@@ -23,9 +23,7 @@ export function GuestOrderLookup({ initialOrderNumber }: { initialOrderNumber: s
         initialOrderNumber={initialOrderNumber}
         onSubmit={(input) => lookup.mutate(input)}
       />
-      {lookup.isError && (
-        <Notice>Something went wrong looking up your order. Check your connection and try again.</Notice>
-      )}
+      {lookup.isError && <Notice>{lookup.errorMessage}</Notice>}
       {lookup.data && <LookupAnswer result={lookup.data} />}
     </>
   );

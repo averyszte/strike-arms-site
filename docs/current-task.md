@@ -20,8 +20,8 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
   sessionStorage, so a retry after Stripe's cancel link reuses it.
 - 18: the cart re-reads price and postability when it opens and says what changed. It is
   cleared only on a confirmed payment.
-- **17 (Turnstile and rate limit) is planned, not coded.** It needs keys from the Cloudflare
-  dashboard. See "Item 17 plan" below.
+- **17 (Turnstile and rate limit) is done in code, not live.** It needs keys from the Cloudflare
+  dashboard. See "Item 17" below.
 
 Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
 032 service_role grants, 033 order tracking, 034 customer accounts, 035 rate limit, 036 inquiries
@@ -99,8 +99,8 @@ then needs Resend on the order sheet.
   same as a missing order. `/login` and `/signup` redirect to `/account`. The header and utility
   bar say "Track an Order". Real accounts come later, in the same migration that narrows the
   `authenticated` grants (FV-D2).
-- **Not rate limited yet.** Order numbers run in sequence, so the email is the only secret. Key
-  `order-lookup` into the 035 rate limit when item 17 is built.
+- Rate limited and behind Turnstile since item 17 (10 per address per 10 minutes, 10 per order
+  number per hour), so the email cannot be brute-forced.
 - Still open in Phase 4: 26 (legal pages, needs Alan and a solicitor; the Privacy draft still
   has the "keep you signed in" cookie line and a marketing preference), 28 (stock display, needs
   D3).
@@ -140,7 +140,31 @@ Plan and as-built notes: `docs/customer-accounts-plan.md`. Dashboard steps:
 - New function `delete-account`: re-checks the password, refuses admins, deletes the user;
   orders stay with `user_id` null.
 - Privacy page: account data, Supabase and Resend as processors, retention on deletion.
-- Not built: checkout email pre-fill for signed-in customers; Turnstile (item 17).
+- Not built: checkout email pre-fill for signed-in customers; Supabase's own CAPTCHA on
+  sign-up, sign-in and reset (see Item 17).
+
+## PARKED by the user (2026-09-29), do later
+
+Done on 2026-09-29: 033 and 034 pushed; order-lookup, notification-worker,
+create-checkout-session and delete-account deployed; code on main; recovery and
+confirmation templates pasted; Site URL `https://strike-arms-site.pages.dev` with
+`/account/**` and `/admin/reset-password` on the redirect list; leaked-password protection
+and Confirm email on. "Require current password when updating" stays OFF (it would break
+password reset; see the follow-up in `docs/customer-accounts-plan.md`).
+
+Waiting on access to Alan's domain, so parked:
+
+1. Resend: verify the domain (SPF, DKIM, DMARC), create a sending-only API key.
+2. Function secrets `RESEND_API_KEY`, `EMAIL_FROM`, `OWNER_EMAIL`.
+3. Supabase Auth custom SMTP: `smtp.resend.com`, port 465, user `resend`, the API key.
+4. Clear the old backlog (`delete from public.notification_jobs where status = 'pending';`),
+   then schedule the worker (Phase 3 list, step 5). Never schedule it before step 2.
+5. Allow new sign-ups. Until then the sign-up page says accounts are not open yet.
+6. Test: sign up, confirm by code, see orders, reset password, download data, delete.
+
+Also parked: re-run `supabase/verify-rls.sql` after 034 (not confirmed), the Stripe
+webhook's two async events, one end-to-end test payment, catalogue batch 2 and the admin
+items under "NEEDS THE USER (aal2 admin session)".
 
 ## NEEDS THE USER for customer accounts (in this order)
 
@@ -160,20 +184,42 @@ Plan and as-built notes: `docs/customer-accounts-plan.md`. Dashboard steps:
 8. Test: sign up, confirm by code, see an earlier guest order with that email appear, reset the
    password, download data, delete the account.
 
-## Item 17 plan (not started)
+## Item 17 (done in code 2026-09-29, not live)
 
-- `_shared/turnstile.ts` ported from All Blooms, fail-closed (missing secret means refuse,
-  `ALLOW_INSECURE_NO_CAPTCHA=true` only for local), with a `SITE_HOSTNAME` check.
-- The Turnstile widget on the checkout form; the token goes in the create-checkout-session body.
-- Length caps in `readString`/`readOptionalString` in `parse-request.ts`.
-- Migration 035 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
-  before reserving stock.
-- CSP: `challenges.cloudflare.com` in `script-src` and `frame-src` in `public/_headers`.
-- The inquiry form has no function to verify a token in yet. It gets Turnstile with item 23
-  (`submit-inquiry`) and migration 036, not here.
-- Needs the user: a Turnstile site in Cloudflare, `VITE_TURNSTILE_SITE_KEY` in `.env.local` and
-  Pages, and `TURNSTILE_SECRET_KEY` plus `SITE_HOSTNAME` as Supabase function secrets, all in
-  the same deploy as the code.
+- `_shared/turnstile.ts`: fail-closed (no `TURNSTILE_SECRET_KEY` means refuse;
+  `ALLOW_INSECURE_NO_CAPTCHA=true` is for the local stack only). Checks the action
+  (`checkout`, `order-lookup`) and `SITE_HOSTNAME`, a comma list where each entry also covers
+  its subdomains.
+- `_shared/rate-limit.ts` plus migration 035 `rate_limit_hits` and `hit_rate_limit()`
+  (service role only), purged daily by pg_cron. Keys are HMAC-hashed, so no IP is stored.
+- create-checkout-session (`guard.ts`): 5 per attempt per 10 minutes, 20 per address per hour,
+  200 shop-wide per hour; checked after parsing and before any stock is held. Length caps in
+  `parse-request.ts`.
+- order-lookup: 10 per address per 10 minutes, 10 per order number per hour.
+- Front end: `useTurnstile` loads the script only on those two forms; `BotCheck` draws it.
+  Submit waits for a token; each token is sent once, then the widget resets. With no
+  `VITE_TURNSTILE_SITE_KEY` there is no widget.
+- CSP: `challenges.cloudflare.com` in `script-src`, `frame-src` and `connect-src`. Privacy page
+  names Cloudflare and Turnstile.
+- Not covered: the inquiry form (item 23, `submit-inquiry`, migration 036), and Supabase's own
+  CAPTCHA on sign-up, sign-in, reset and the admin login. Switching that on means a token on
+  every `signInWithPassword`, including the re-checks in `delete-account` and the password
+  change, so it is its own piece of work.
+
+### NEEDS THE USER for item 17 (in this order)
+
+1. Cloudflare > Turnstile > Add widget. Hostnames: `strike-arms-site.pages.dev` and
+   `strikearms.ie`. Mode: Managed. Copy the site key and the secret key.
+2. Supabase function secrets: `TURNSTILE_SECRET_KEY` (the secret key) and `SITE_HOSTNAME` =
+   `strike-arms-site.pages.dev,strikearms.ie`.
+3. `supabase db push` (035).
+4. Cloudflare Pages env var `VITE_TURNSTILE_SITE_KEY` (the site key), and the same in
+   `.env.local`. Push to main so Pages rebuilds with it.
+5. Then deploy `create-checkout-session` and `order-lookup`. Once they are live, a build
+   without the site key cannot check out, so step 4 comes first.
+6. Local dev talks to the hosted functions, so it needs the real site key and `localhost` on the
+   widget and in `SITE_HOSTNAME`. If Cloudflare will not take `localhost`, test on pages.dev.
+7. Check the browser console on the live cart and `/account` for CSP errors.
 
 ## What landed in Phase 1
 
@@ -236,7 +282,7 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 - **G1 Cloudflare Pages** project: env vars, build command, `_redirects`.
 - **C3 / C3.1 / C3.2 / C4 are DEPLOYED-UNTESTED.** One real test payment per basket shape
   (all-collect, all-delivery, mixed). Needs A1.3 first.
-- **C11 bot protection** on `create-checkout-session`: Phase 2 item 17, planned above.
+- **C11 bot protection** on `create-checkout-session`: Phase 2 item 17, done in code above.
 - **E3 transactional email / C5.x notifications.** Deferred, never chosen.
 - **B1-B4 customer accounts.** Done in code (034 and the account pages); D1 reversed on
   2026-09-29. Needs the list above.
