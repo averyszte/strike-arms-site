@@ -161,7 +161,7 @@ taking real money.
     - Port `_shared/turnstile.ts`, failing closed, onto checkout and the inquiry
       form.
     - Add length caps in `readString`.
-    - Migration 033 adds a rate limit per IP and attempt.
+    - Migration 035 adds a rate limit per IP and attempt.
     - Add `challenges.cloudflare.com` to the CSP.
     - Set the site key and secret key in the same deploy.
 18. **Cart freshness** (S). Re-read price and `is_shippable` when the cart opens,
@@ -184,7 +184,7 @@ taking real money.
     - ready-for-collection and dispatched status emails;
     - a refund notice.
 23. **`submit-inquiry` function plus Turnstile** (M). It emails Alan. Migration
-    034 then drops the anon insert on `inquiries` and adds length limits.
+    036 then drops the anon insert on `inquiries` and adds length limits.
 24. **Low-stock alert, and a "resend email" action on the order sheet** (S).
 
 ### Phase 4: storefront and legal (in parallel, gated on owner answers)
@@ -241,7 +241,7 @@ taking real money.
   - QueryClient `staleTime`.
 - **Dashboard query** (M). Bound it by date and aggregate on the server
   (FV-A8). It currently pulls every order with items.
-- **Migration 035, query indexes** (S). The full list is in section 4.
+- **Migration 037, query indexes** (S). The full list is in section 4.
 - **Shipping logic, deduplicated or asserted** (S). Add three tests around the
   free-shipping threshold (FV-D13).
 - **Build meta** (M). Generate the sitemap in `build`, and add prerender or edge
@@ -277,11 +277,12 @@ taking real money.
 | 030 | `notification_producer` | outbox filled by triggers on orders; skip-locked claim; cron that calls the worker only when a job is due | 3 |
 | 031 | `notification_extras` | low-stock alert to the owner; `resend_notification` for the order sheet (item 24) | 3 |
 | 032 | `service_role_grants` | schema, table, sequence and function grants for service_role, which 004 left out; every Edge Function 500'd on its first table read | **push now** |
-| 033 | `checkout_rate_limit` | per-IP and per-attempt throttle (written after 032, so numbered after it) | 2 |
-| 034 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
-| 035 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
-| 036 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
-| later | `customer_accounts` | profiles, order link, age record, **plus narrowed `authenticated` grants in the same file** | later |
+| 033 | `order_tracking` | `orders.tracking_number`; a customer email on every forward fulfilment step (`is_status_email_due`) | tracker |
+| 034 | `customer_accounts` | profiles, `orders.user_id`, customer read policies, **narrowed `authenticated` grants** (see `docs/customer-accounts-plan.md`) | accounts |
+| 035 | `checkout_rate_limit` | per-IP and per-attempt throttle (written after 032, so numbered after it) | 2 |
+| 036 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
+| 037 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
+| 038 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
 
 Also in Phase 1: `config.toml`, covering `site_url`, a password policy, an MFA
 section and SMTP.

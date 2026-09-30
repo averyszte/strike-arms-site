@@ -27,6 +27,7 @@ export type EmailOrder = {
   refundCents: number;
   address: string[];
   notes: string | null;
+  trackingNumber: string | null;
   needsAttention: boolean;
   items: EmailOrderItem[];
 };
@@ -84,6 +85,7 @@ export async function loadEmailOrder(
     refundCents: row.refund_cents,
     address: addressLines(row),
     notes: row.notes,
+    trackingNumber: row.tracking_number ?? null,
     needsAttention: row.attention_reason !== null,
     items,
   };

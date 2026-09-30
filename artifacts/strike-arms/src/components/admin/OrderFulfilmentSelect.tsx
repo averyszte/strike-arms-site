@@ -16,7 +16,8 @@ interface Props {
 /**
  * The fulfilment status picker on the table and the detail sheet. Moves the
  * database would refuse (migration 025) are shown but disabled, so the admin
- * can see the state exists without being able to pick it.
+ * can see the state exists without being able to pick it. Steps that email
+ * the customer say so, so a mis-click is not a surprise.
  */
 export function OrderFulfilmentSelect({ order, onChange }: Props) {
   return (
@@ -24,7 +25,7 @@ export function OrderFulfilmentSelect({ order, onChange }: Props) {
       value={order.fulfillmentStatus}
       onValueChange={(value) => onChange(value as FulfillmentStatus)}
     >
-      <SelectTrigger className="h-7 w-44 text-xs">
+      <SelectTrigger className="h-7 w-48 text-xs">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -36,6 +37,9 @@ export function OrderFulfilmentSelect({ order, onChange }: Props) {
             className="text-xs"
           >
             {choice.label}
+            {choice.isEmailed && choice.isAllowed && (
+              <span className="ml-1.5 text-muted-foreground">(emails customer)</span>
+            )}
           </SelectItem>
         ))}
       </SelectContent>

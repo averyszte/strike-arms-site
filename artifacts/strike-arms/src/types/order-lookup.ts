@@ -17,6 +17,9 @@ export type LookedUpOrderItem = {
   fulfillmentMethod: ItemFulfillmentMethod;
 };
 
+/** One fulfilment step and when it happened, from order_status_log. */
+export type OrderStatusEvent = { status: FulfillmentStatus; at: string };
+
 export type LookedUpOrder = {
   orderNumber: string;
   placedAt: string;
@@ -26,7 +29,11 @@ export type LookedUpOrder = {
   totalCents: number;
   shippingCents: number;
   refundCents: number;
+  /** An Post number for posted items, when the shop has added one. */
+  trackingNumber: string | null;
   items: LookedUpOrderItem[];
+  /** Oldest first. */
+  history: OrderStatusEvent[];
 };
 
 export type OrderLookupResult = { found: false } | { found: true; order: LookedUpOrder };

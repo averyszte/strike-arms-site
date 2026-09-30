@@ -24,7 +24,8 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
   dashboard. See "Item 17 plan" below.
 
 Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
-032 service_role grants, 033 rate limit, 034 inquiries lockdown, 035 indexes, 036 housekeeping. `db push` refuses a
+032 service_role grants, 033 order tracking, 034 customer accounts, 035 rate limit, 036 inquiries
+lockdown, 037 indexes, 038 housekeeping. `db push` refuses a
 file numbered below one already on the remote, so numbers follow the order they are written.
 
 Push only when the user asks, with `git push origin HEAD:main`.
@@ -99,7 +100,7 @@ then needs Resend on the order sheet.
   bar say "Track an Order". Real accounts come later, in the same migration that narrows the
   `authenticated` grants (FV-D2).
 - **Not rate limited yet.** Order numbers run in sequence, so the email is the only secret. Key
-  `order-lookup` into the 033 rate limit when item 17 is built.
+  `order-lookup` into the 035 rate limit when item 17 is built.
 - Still open in Phase 4: 26 (legal pages, needs Alan and a solicitor; the Privacy draft still
   has the "keep you signed in" cookie line and a marketing preference), 28 (stock display, needs
   D3).
@@ -115,6 +116,10 @@ then needs Resend on the order sheet.
    than `https://strikearms.ie` (for example while on `pages.dev`).
 3. Test: look up a real paid order on `/account` with its number and email; a wrong email
    should say it could not find the order.
+4. **Order tracker (plan Part 1, done in code).** `npx supabase db push` for **033
+   `order_tracking`**, THEN redeploy `order-lookup` and `notification-worker` (both read the new
+   `tracking_number` column, so deploying them first breaks the lookup). Every forward step now
+   emails the customer once Resend is set up; the admin status picker marks which ones.
 
 ## Item 17 plan (not started)
 
@@ -122,11 +127,11 @@ then needs Resend on the order sheet.
   `ALLOW_INSECURE_NO_CAPTCHA=true` only for local), with a `SITE_HOSTNAME` check.
 - The Turnstile widget on the checkout form; the token goes in the create-checkout-session body.
 - Length caps in `readString`/`readOptionalString` in `parse-request.ts`.
-- Migration 033 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
+- Migration 035 `checkout_rate_limit`: a per-IP and per-attempt counter the function checks
   before reserving stock.
 - CSP: `challenges.cloudflare.com` in `script-src` and `frame-src` in `public/_headers`.
 - The inquiry form has no function to verify a token in yet. It gets Turnstile with item 23
-  (`submit-inquiry`) and migration 034, not here.
+  (`submit-inquiry`) and migration 036, not here.
 - Needs the user: a Turnstile site in Cloudflare, `VITE_TURNSTILE_SITE_KEY` in `.env.local` and
   Pages, and `TURNSTILE_SECRET_KEY` plus `SITE_HOSTNAME` as Supabase function secrets, all in
   the same deploy as the code.

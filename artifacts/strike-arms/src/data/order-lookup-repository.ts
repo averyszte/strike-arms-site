@@ -10,6 +10,7 @@ import type {
   LookedUpOrderItem,
   OrderLookupInput,
   OrderLookupResult,
+  OrderStatusEvent,
 } from '@/types/order-lookup';
 
 /**
@@ -57,6 +58,15 @@ function toItem(value: unknown): LookedUpOrderItem {
   };
 }
 
+function toEvent(value: unknown): OrderStatusEvent {
+  const row = (value ?? {}) as Record<string, unknown>;
+  return { status: oneOf(FULFILLMENT_STATUSES, row.status), at: text(row.at) };
+}
+
+function optionalText(value: unknown): string | null {
+  return value === null || value === undefined ? null : text(value);
+}
+
 function toOrder(value: unknown): LookedUpOrder {
   const row = (value ?? {}) as Record<string, unknown>;
   return {
@@ -68,7 +78,9 @@ function toOrder(value: unknown): LookedUpOrder {
     totalCents: cents(row.totalCents),
     shippingCents: cents(row.shippingCents),
     refundCents: cents(row.refundCents),
+    trackingNumber: optionalText(row.trackingNumber),
     items: Array.isArray(row.items) ? row.items.map(toItem) : [],
+    history: Array.isArray(row.history) ? row.history.map(toEvent) : [],
   };
 }
 

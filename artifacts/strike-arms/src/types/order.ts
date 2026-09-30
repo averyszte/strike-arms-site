@@ -86,6 +86,8 @@ export type Order = {
   stockTakenAt: string | null;
   ageVerified: boolean;
   notes: string | null;
+  // An Post number for posted items (033). Shown to the customer as a link.
+  trackingNumber: string | null;
   isArchived: boolean;
   items?: OrderItem[];
   createdAt: string;

@@ -5,6 +5,7 @@ import {
   getOrder,
   listAllOrdersWithItems,
   setOrderArchived,
+  setOrderTrackingNumber,
   setOrdersArchived,
   updateOrdersFulfillment,
 } from '@/data/orders-repository';
@@ -40,6 +41,18 @@ export function useUpdateFulfillmentStatus() {
   return useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: FulfillmentStatus }) =>
       updateOrderFulfillment(orderId, status),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'order'] });
+    },
+  });
+}
+
+export function useSetTrackingNumber() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ orderId, trackingNumber }: { orderId: string; trackingNumber: string | null }) =>
+      setOrderTrackingNumber(orderId, trackingNumber),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
       qc.invalidateQueries({ queryKey: ['admin', 'order'] });

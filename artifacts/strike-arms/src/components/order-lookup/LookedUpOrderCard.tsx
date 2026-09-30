@@ -1,13 +1,19 @@
 import { Link } from 'wouter';
+import { ExternalLink } from 'lucide-react';
+
+import { OrderTimeline } from '@/components/order-lookup/OrderTimeline';
 
 import { formatPrice } from '@/lib/format-price';
 import { formatOrderDate, hasPartialRefund, orderProgress } from '@/lib/order-lookup-display';
+import { orderTimeline } from '@/lib/order-timeline';
+import { anPostTrackingUrl } from '@/lib/tracking-number';
 import { CARD_TITLE, EYEBROW, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 import type { LookedUpOrder, LookedUpOrderItem } from '@/types/order-lookup';
 
 export function LookedUpOrderCard({ order }: { order: LookedUpOrder }) {
   const progress = orderProgress(order);
   const placed = formatOrderDate(order.placedAt);
+  const steps = orderTimeline(order);
 
   return (
     <section className={`${PANEL} p-6`} aria-live="polite">
@@ -15,6 +21,13 @@ export function LookedUpOrderCard({ order }: { order: LookedUpOrder }) {
       <h2 className={`${CARD_TITLE} mt-2 text-2xl`}>{progress.label}</h2>
       <p className="mt-1 text-sm text-muted-foreground">{progress.detail}</p>
       {placed && <p className="mt-1 text-xs text-muted-foreground">Placed on {placed}</p>}
+
+      {steps && (
+        <div className="mt-6">
+          <OrderTimeline steps={steps} />
+        </div>
+      )}
+      {order.trackingNumber && <PostTrackingLink trackingNumber={order.trackingNumber} />}
 
       <ul className="mt-6 divide-y divide-border/60 border-y border-border/60">
         {order.items.map((item) => (
@@ -66,5 +79,22 @@ function OrderItemRow({ item }: { item: LookedUpOrderItem }) {
       </div>
       <span className="shrink-0 text-foreground">{formatPrice(item.subtotalCents)}</span>
     </li>
+  );
+}
+
+function PostTrackingLink({ trackingNumber }: { trackingNumber: string }) {
+  return (
+    <p className="mt-6 text-sm text-muted-foreground">
+      An Post tracking number {trackingNumber}.{' '}
+      <a
+        href={anPostTrackingUrl(trackingNumber)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${TEXT_LINK} inline-flex items-center gap-1`}
+      >
+        Track with An Post
+        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+      </a>
+    </p>
   );
 }

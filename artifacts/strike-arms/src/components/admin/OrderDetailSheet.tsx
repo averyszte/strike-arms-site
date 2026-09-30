@@ -13,6 +13,7 @@ import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { OrderLinesSummary } from '@/components/admin/OrderLinesSummary';
 import { OrderRefundSection } from '@/components/admin/OrderRefundSection';
+import { OrderTrackingNumberField } from '@/components/admin/OrderTrackingNumberField';
 import { PrintActions } from '@/components/admin/print/print-actions';
 import { loadErrorMessage } from '@/lib/load-error-message';
 import {
@@ -157,6 +158,10 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
                 />
               </div>
             </section>
+
+            {order.fulfillmentMethod !== 'pickup' && (
+              <OrderTrackingNumberField key={`${order.id}-${order.trackingNumber ?? ''}`} order={order} />
+            )}
 
             <OrderLinesSummary order={order} />
 

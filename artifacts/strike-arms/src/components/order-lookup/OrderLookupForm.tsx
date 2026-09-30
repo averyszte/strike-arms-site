@@ -9,11 +9,13 @@ import type { OrderLookupInput } from '@/types/order-lookup';
 
 type OrderLookupFormProps = {
   isPending: boolean;
+  /** From a "See your order" email link. The email is still typed by hand. */
+  initialOrderNumber?: string;
   onSubmit: (input: OrderLookupInput) => void;
 };
 
-export function OrderLookupForm({ isPending, onSubmit }: OrderLookupFormProps) {
-  const [orderNumber, setOrderNumber] = useState('');
+export function OrderLookupForm({ isPending, initialOrderNumber = '', onSubmit }: OrderLookupFormProps) {
+  const [orderNumber, setOrderNumber] = useState(initialOrderNumber);
   const [email, setEmail] = useState('');
 
   const handleSubmit = (event: FormEvent) => {

@@ -5,7 +5,8 @@ order flow, and Supabase / OWASP / GDPR guidance (sources at the end). This reve
 decision D1 (guest lookup only in v1). Guest checkout and guest lookup stay; accounts sit on
 top of them.
 
-Nothing here is built yet. Decisions marked **[Phil]** need an answer first.
+Part 1 (the tracker) is built: migration 033, not yet pushed. Part 2 is next. Phil's answers
+(2026-09-29): every step emails, the project is on Supabase Pro, build both back to back.
 
 ## What we found
 
@@ -56,13 +57,13 @@ Work:
 3. `order-lookup` function returns the status history (dates only, no staff names).
 4. Status emails get a "Track your order" link to `/account?order=SA-...`. The lookup form
    pre-fills the number; the email still has to be typed, so the link leaks nothing.
-5. **[Phil]** Which steps email the customer. Proposed: confirmed (exists), ready to collect
-   (exists), posted (exists), cancelled (new). Not packed, collected or delivered: Alan will
-   often mark those in bulk after the fact, and an email then is noise.
-6. **[Phil]** "Delivered" for posted orders: Alan only knows if he checks An Post. Proposed:
-   keep the step, no email, and an optional An Post tracking number field on posted orders
-   that shows as a link in the tracker and the posted email.
-7. Admin: the status select says "This emails the customer" on the steps that do.
+5. **Decided: every step emails the customer** (packed, posted, delivered, ready to collect,
+   collected, cancelled). 033 `is_status_email_due()`: forward moves only, paid orders only
+   (cancelled: was paid), never a counter sale, and each status at most once per order.
+6. **Decided: "Delivered" stays a step Alan ticks.** Posted orders get an optional An Post
+   tracking number (`orders.tracking_number`, set on the order sheet) that shows as a link in
+   the tracker and in the posted and delivered emails.
+7. Admin: the status select says "(emails customer)" on the steps that do.
 
 ## Part 2: customer accounts
 
@@ -83,8 +84,7 @@ Work:
 
 ### Auth
 - Email and password, email confirmation on. Minimum 12 characters (the admin policy), no
-  composition rules for customers, leaked password protection if the plan allows it
-  **[Phil: is the Supabase project on Pro?]**.
+  composition rules for customers, leaked password protection on (the project is on Pro; Phil switches it on in Auth settings).
 - Password reset by a 6-digit code in the email, not a link (mail scanners burn links, and
   PKCE links fail in a different browser).
 - Turnstile on sign-up, sign-in and reset (Supabase supports it natively). Same keys as item 17.
@@ -133,7 +133,8 @@ Work:
 
 ## Order of work
 
-1. Part 1, the tracker and email links. Useful now, no new risk.
+1. DONE in code: Part 1, the tracker and email links. Push 033, then redeploy order-lookup and
+   notification-worker.
 2. Accounts migration (groundwork above), with verify-rls updated. Phil pushes.
 3. Auth pages, account pages, admin provider scoped to `/admin`.
 4. Checkout link and guest-order claim.

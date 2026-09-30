@@ -54,6 +54,7 @@ export function rowToOrder(row: OrderRow, items?: OrderItemRow[]): Order {
     stockTakenAt: row.stock_taken_at,
     ageVerified: row.age_verified,
     notes: row.notes,
+    trackingNumber: row.tracking_number ?? null,
     isArchived: row.is_archived,
     items: items?.map(rowToOrderItem),
     createdAt: row.created_at,

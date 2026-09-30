@@ -105,6 +105,15 @@ export async function updateOrderFulfillment(
   return rowToOrder(data);
 }
 
+/** Null clears it. The database checks the format (033). */
+export async function setOrderTrackingNumber(id: string, trackingNumber: string | null): Promise<void> {
+  const { error } = await supabase
+    .from('orders')
+    .update({ tracking_number: trackingNumber })
+    .eq('id', id);
+  if (error) throw error;
+}
+
 export async function addOrderNote(id: string, note: string): Promise<void> {
   const { error } = await supabase.from('orders').update({ notes: note }).eq('id', id);
   if (error) throw error;

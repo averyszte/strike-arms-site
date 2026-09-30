@@ -25,6 +25,11 @@ export function paragraph(text: string): string {
   return `<p style="margin:0 0 14px;font-size:15px;line-height:1.5;color:#222;">${escapeHtml(text)}</p>`;
 }
 
+/** A text link on its own line. The URL is escaped like any other text. */
+export function linkParagraph(label: string, url: string): string {
+  return `<p style="margin:0 0 14px;font-size:15px;line-height:1.5;"><a href="${escapeHtml(url)}" style="color:#111;font-weight:bold;">${escapeHtml(label)}</a></p>`;
+}
+
 export function layout(heading: string, bodyHtml: string): string {
   return `<!doctype html>
 <html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">

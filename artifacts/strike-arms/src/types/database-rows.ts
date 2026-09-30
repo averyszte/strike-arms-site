@@ -58,7 +58,7 @@ export type OrderRow = {
   total_cents: number; vat_cents: number; refund_cents: number; shipping_cents: number;
   shipping_name: string | null; shipping_line1: string | null; shipping_line2: string | null;
   shipping_city: string | null; shipping_county: string | null; shipping_eircode: string | null;
-  age_verified: boolean; notes: string | null; is_archived: boolean;
+  age_verified: boolean; notes: string | null; tracking_number: string | null; is_archived: boolean;
   paid_at: string | null; refunded_at: string | null;
   // 028: set when a paid order needs a human (e.g. its stock had gone), and
   // when confirm_order_paid actually took stock. Cancelling restocks only if

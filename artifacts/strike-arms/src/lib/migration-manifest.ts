@@ -43,4 +43,6 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '029', name: 'webhook_alerts', file: '029_webhook_alerts.sql' },
   { version: '030', name: 'notification_producer', file: '030_notification_producer.sql' },
   { version: '031', name: 'notification_extras', file: '031_notification_extras.sql' },
+  { version: '032', name: 'service_role_grants', file: '032_service_role_grants.sql' },
+  { version: '033', name: 'order_tracking', file: '033_order_tracking.sql' },
 ];

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'wouter';
+import { Link, useSearch } from 'wouter';
 import { AlertTriangle } from 'lucide-react';
 
 import { SiteLayout } from '@/components/SiteLayout';
@@ -8,17 +8,19 @@ import { PageHero } from '@/components/PageHero';
 import { OrderLookupForm } from '@/components/order-lookup/OrderLookupForm';
 import { LookedUpOrderCard } from '@/components/order-lookup/LookedUpOrderCard';
 import { useOrderLookup } from '@/hooks/use-order-lookup';
+import { orderNumberFromSearch } from '@/lib/order-timeline';
 import { SITE_URL } from '@/lib/site-config';
 import { PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 import type { OrderLookupResult } from '@/types/order-lookup';
 
 /**
- * Guest order lookup (decision D1). There are no customer accounts in v1: the
- * order number and the email used at checkout are enough to see where an
- * order is. Kept at /account so old links still land somewhere useful.
+ * Guest order lookup: the order number and the email used at checkout are
+ * enough to see where an order is. Status emails link here with ?order= so
+ * the number is filled in; the email never goes in the link.
  */
 export default function Account() {
   const lookup = useOrderLookup();
+  const initialOrderNumber = orderNumberFromSearch(useSearch());
 
   return (
     <SiteLayout>
@@ -38,7 +40,11 @@ export default function Account() {
 
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
         <div className="space-y-6">
-          <OrderLookupForm isPending={lookup.isPending} onSubmit={(input) => lookup.mutate(input)} />
+          <OrderLookupForm
+            isPending={lookup.isPending}
+            initialOrderNumber={initialOrderNumber}
+            onSubmit={(input) => lookup.mutate(input)}
+          />
           {lookup.isError && <LookupFailed />}
           {lookup.data && <LookupAnswer result={lookup.data} />}
         </div>

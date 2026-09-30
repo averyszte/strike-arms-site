@@ -2,7 +2,8 @@ import { corsHeadersFor, jsonResponse } from "../_shared/cors.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
 
 /**
- * Guest order lookup, for /account (decision D1: no customer accounts in v1).
+ * Guest order lookup, for /account. Stays when customer accounts land: it is
+ * how a guest, or anyone following the link in a status email, sees an order.
  *
  * Orders are not readable by anon, and this does not change that. The caller
  * must hold the order number and the email it was placed with, and gets back
@@ -58,13 +59,44 @@ function toItem(row: ItemRow) {
   };
 }
 
+type HistoryRow = { to_status: string; created_at: string };
+
+async function loadItems(admin: ReturnType<typeof createAdminClient>, orderId: string) {
+  const { data, error } = await admin
+    .from("order_items")
+    .select(
+      "product_slug, product_name, brand, unit_price_cents, quantity, subtotal_cents, fulfillment_method",
+    )
+    .eq("order_id", orderId)
+    .order("product_name");
+
+  if (error) throw new Error(`Could not read the order items: ${error.message}`);
+  return ((data ?? []) as ItemRow[]).map(toItem);
+}
+
+/**
+ * When each fulfilment step happened, for the tracker. The status and the
+ * time only: who made the change and any note stay staff-side.
+ */
+async function loadHistory(admin: ReturnType<typeof createAdminClient>, orderId: string) {
+  const { data, error } = await admin
+    .from("order_status_log")
+    .select("to_status, created_at")
+    .eq("order_id", orderId)
+    .eq("field", "fulfillment_status")
+    .order("created_at");
+
+  if (error) throw new Error(`Could not read the order history: ${error.message}`);
+  return ((data ?? []) as HistoryRow[]).map((row) => ({ status: row.to_status, at: row.created_at }));
+}
+
 async function lookUp({ orderNumber, email }: LookupRequest) {
   const admin = createAdminClient();
   const { data: order, error } = await admin
     .from("orders")
     .select(
       "id, order_number, customer_email, payment_status, fulfillment_status, " +
-        "fulfillment_method, total_cents, shipping_cents, refund_cents, paid_at, created_at",
+        "fulfillment_method, total_cents, shipping_cents, refund_cents, tracking_number, paid_at, created_at",
     )
     .eq("order_number", orderNumber)
     .maybeSingle();
@@ -76,15 +108,8 @@ async function lookUp({ orderNumber, email }: LookupRequest) {
   const stored = typeof row.customer_email === "string" ? row.customer_email : "";
   if (stored.trim().toLowerCase() !== email) return NOT_FOUND;
 
-  const { data: items, error: itemsError } = await admin
-    .from("order_items")
-    .select(
-      "product_slug, product_name, brand, unit_price_cents, quantity, subtotal_cents, fulfillment_method",
-    )
-    .eq("order_id", row.id as string)
-    .order("product_name");
-
-  if (itemsError) throw new Error(`Could not read the order items: ${itemsError.message}`);
+  const orderId = row.id as string;
+  const [items, history] = await Promise.all([loadItems(admin, orderId), loadHistory(admin, orderId)]);
 
   return {
     found: true,
@@ -97,7 +122,9 @@ async function lookUp({ orderNumber, email }: LookupRequest) {
       totalCents: row.total_cents,
       shippingCents: row.shipping_cents,
       refundCents: row.refund_cents,
-      items: ((items ?? []) as ItemRow[]).map(toItem),
+      trackingNumber: row.tracking_number ?? null,
+      items,
+      history,
     },
   };
 }

@@ -41,7 +41,7 @@ function orderEmail(job: NotificationJob, order: EmailOrder, siteUrl: string): J
       // Reply goes to the customer.
       return { ...ownerOrderPaidEmail(order, `${siteUrl}/admin/orders`), replyTo: order.customerEmail ?? undefined };
     case "customer.status_changed":
-      return statusChangedEmail(order, stringField(job.payload, "status"));
+      return statusChangedEmail(order, stringField(job.payload, "status"), siteUrl);
     case "customer.refunded":
       return refundedEmail(order, numberField(job.payload, "refunded_now_cents"));
     default:
