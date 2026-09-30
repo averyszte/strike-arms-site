@@ -1,12 +1,12 @@
 <h2>Reset your Strike Arms password</h2>
 
-<p>Someone asked to reset the password for this account. Enter this code on the reset page:</p>
-
-<p style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">{{ .Token }}</p>
-
-<p>Or follow this link to choose a new one:</p>
+<p>Someone asked to reset the password for this account. Follow this link to choose a new one:</p>
 
 <p><a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">Choose a new password</a></p>
+
+<p>Or, if the reset page asks for a code, enter this one:</p>
+
+<p style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">{{ .Token }}</p>
 
 <p>If two-factor authentication is set up on the account, you will be asked for a code from your authenticator app first.</p>
 
