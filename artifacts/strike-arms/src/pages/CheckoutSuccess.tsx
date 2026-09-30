@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { AlertTriangle, ArrowRight, CheckCircle2, Loader2, Phone, Store } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Loader2, Mail, Phone, Store } from 'lucide-react';
 
 import { CreateAccountNudge } from '@/components/account/CreateAccountNudge';
 import { SiteLayout } from '@/components/SiteLayout';
@@ -109,6 +109,18 @@ export default function CheckoutSuccess() {
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
         <div className={`${PANEL} space-y-4 p-6`} aria-live="polite">
           <StatusLine state={state} orderNumber={orderNumber} />
+
+          {state === 'paid' && (
+            <p className="flex items-start gap-3 text-sm text-muted-foreground">
+              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+              <span>
+                <strong className="text-foreground">Check your inbox.</strong> We have emailed your
+                order confirmation. If it is not there in a few minutes, check your spam folder.
+                Make sure your name, phone and any delivery address in it are right, and contact us
+                straight away if anything is wrong.
+              </span>
+            </p>
+          )}
 
           {state === 'paid' && (
             <p className="flex items-start gap-3 text-sm text-muted-foreground">
