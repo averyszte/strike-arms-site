@@ -6,6 +6,7 @@ import { createAdminClient } from "../_shared/supabase-admin.ts";
 import { CheckoutRequestError, parseCheckoutRequest } from "./parse-request.ts";
 import { priceBasket, type PricedBasket } from "./order-lines.ts";
 import { buildOrderInsert, buildStripeLineItems } from "./build-order.ts";
+import { signedInCustomerId } from "./signed-in-customer.ts";
 
 /**
  * Creates the pending order, holds the stock, and hands back a Stripe Checkout
@@ -87,11 +88,14 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
 
   await abandonStaleAttempt(admin, request.attemptId);
 
-  const basket = await priceBasket(admin, request.lines, request.wantsDelivery);
+  const [basket, userId] = await Promise.all([
+    priceBasket(admin, request.lines, request.wantsDelivery),
+    signedInCustomerId(admin, req),
+  ]);
 
   const { data: order, error: orderError } = await admin
     .from("orders")
-    .insert(buildOrderInsert(request, basket))
+    .insert(buildOrderInsert(request, basket, userId))
     .select("id")
     .single();
 

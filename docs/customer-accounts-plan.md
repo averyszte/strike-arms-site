@@ -67,6 +67,20 @@ Work:
 
 ## Part 2: customer accounts
 
+**Done in code (2026-09-29), not pushed.** As built, differences from the plan below:
+
+- Customers read orders through security-definer functions, not table policies:
+  `my_orders()`, `claim_my_guest_orders()` and `set_marketing_opt_in()` in 034. There are no
+  customer policies on `orders`, `order_items` or `order_status_log`; the narrowed grants plus
+  the existing aal2 admin policies keep customers out of the tables.
+- Password policy is project-wide in Supabase, so customers get the admin rule (12 characters,
+  upper, lower, digit), not "no composition rules". Leaked-password protection is on for both.
+- Confirmation and reset emails carry a 6-digit code and a `token_hash` link; either works.
+  One recovery template serves admins and customers through `{{ .RedirectTo }}`.
+- Turnstile is deferred to item 17. Switching on Supabase's CAPTCHA would also need the widget
+  on the admin login, so it goes in with the checkout widget.
+- Follow-up, not built: pre-fill the checkout email for a signed-in customer.
+
 ### Security groundwork (one migration, before sign-up is switched on)
 - `customer_profiles (user_id pk -> auth.users on delete cascade, full_name, phone,
   marketing_opt_in bool default false, marketing_opt_in_at, created_at)`.
@@ -135,11 +149,12 @@ Work:
 
 1. DONE in code: Part 1, the tracker and email links. Push 033, then redeploy order-lookup and
    notification-worker.
-2. Accounts migration (groundwork above), with verify-rls updated. Phil pushes.
-3. Auth pages, account pages, admin provider scoped to `/admin`.
-4. Checkout link and guest-order claim.
-5. Delete and export, privacy copy.
-6. Switch sign-up on after 2-5 and the SMTP blocker are done.
+2. DONE in code: accounts migration 034, with verify-rls updated. Phil pushes.
+3. DONE in code: auth pages, account pages, admin provider scoped to `/admin`.
+4. DONE in code: checkout link and guest-order claim.
+5. DONE in code: delete and export, privacy copy.
+6. Phil: switch sign-up on after 2-5 and the SMTP blocker are done. Steps in
+   `docs/admin-auth-emails.md` and `docs/current-task.md`.
 
 ## Sources
 

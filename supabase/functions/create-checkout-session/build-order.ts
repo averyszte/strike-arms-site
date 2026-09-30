@@ -9,12 +9,19 @@ import type { CheckoutRequest } from "./parse-request.ts";
  */
 
 /**
+ * userId is the signed-in customer from the verified session (see
+ * signed-in-customer.ts), or null for a guest.
+ *
  * A delivery address is stored only on an order that is actually being
  * delivered. A basket of collect-only guns is a pickup order even if the
  * shopper filled in the address form, and the schema rejects shipping data on
  * a pickup order.
  */
-export function buildOrderInsert(request: CheckoutRequest, basket: PricedBasket) {
+export function buildOrderInsert(
+  request: CheckoutRequest,
+  basket: PricedBasket,
+  userId: string | null,
+) {
   const isDelivered = basket.fulfillmentMethod !== "pickup";
   const address = isDelivered ? request.shipping : null;
 
@@ -36,6 +43,7 @@ export function buildOrderInsert(request: CheckoutRequest, basket: PricedBasket)
     shipping_eircode: address?.eircode ?? null,
     age_verified: request.ageConfirmed,
     checkout_attempt_id: request.attemptId,
+    user_id: userId,
   };
 }
 

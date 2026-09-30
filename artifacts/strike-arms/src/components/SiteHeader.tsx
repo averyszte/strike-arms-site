@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { Search, Package, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, ChevronDown, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchDropdown } from "@/components/SearchDropdown";
 import { useCart } from "@/hooks/use-cart";
@@ -107,6 +107,9 @@ export function SiteHeader() {
             >
               <Search className="w-5 h-5" />
             </button>
+            <Link href="/account" className="hover:text-accent transition-colors" aria-label="Your account">
+              <User className="w-5 h-5" />
+            </Link>
             <Link
               href="/cart"
               className="relative hover:text-accent transition-colors"
@@ -259,8 +262,8 @@ export function SiteHeader() {
             {/* Mobile footer */}
             <div className="border-t border-border px-4 py-4 flex items-center justify-between">
               <Link href="/account" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(false)}>
-                <Package className="w-4 h-4" />
-                Track an Order
+                <User className="w-4 h-4" />
+                Your Account
               </Link>
               <Link href="/cart" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(false)}>
                 <ShoppingCart className="w-4 h-4" />

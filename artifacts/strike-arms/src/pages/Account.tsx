@@ -1,85 +1,87 @@
-import type { ReactNode } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useSearch } from 'wouter';
-import { AlertTriangle } from 'lucide-react';
+import { Loader2, LogIn, Settings, UserPlus } from 'lucide-react';
 
-import { SiteLayout } from '@/components/SiteLayout';
-import { PageHero } from '@/components/PageHero';
-import { OrderLookupForm } from '@/components/order-lookup/OrderLookupForm';
-import { LookedUpOrderCard } from '@/components/order-lookup/LookedUpOrderCard';
-import { useOrderLookup } from '@/hooks/use-order-lookup';
+import { AccountPageFrame } from '@/components/account/AccountPageFrame';
+import { MyOrders } from '@/components/account/MyOrders';
+import { GuestOrderLookup } from '@/components/order-lookup/GuestOrderLookup';
+import { useCustomerSession } from '@/hooks/use-customer-session';
 import { orderNumberFromSearch } from '@/lib/order-timeline';
-import { SITE_URL } from '@/lib/site-config';
-import { PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
-import type { OrderLookupResult } from '@/types/order-lookup';
+import { CARD_TITLE, CTA_PRIMARY_SM, CTA_SECONDARY_SM, PANEL } from '@/lib/storefront-styles';
 
 /**
- * Guest order lookup: the order number and the email used at checkout are
- * enough to see where an order is. Status emails link here with ?order= so
- * the number is filled in; the email never goes in the link.
+ * /account. Signed in: every order on the account with its tracker.
+ * Signed out: sign in, or look up one order with its number and email (no
+ * account needed). Status emails link here with ?order=, which fills in the
+ * lookup; a signed-in customer finds the same order in their list.
  */
 export default function Account() {
-  const lookup = useOrderLookup();
+  const { user, isLoading } = useCustomerSession();
   const initialOrderNumber = orderNumberFromSearch(useSearch());
 
-  return (
-    <SiteLayout>
-      <Helmet>
-        <title>Track your order | Strike Arms Airsoft Dublin</title>
-        <meta name="robots" content="noindex,follow" />
-        <link rel="canonical" href={`${SITE_URL}/account`} />
-      </Helmet>
-      <PageHero
-        crumbs={[{ label: 'Track your order' }]}
-        eyebrow="Your order"
-        title="Track your order"
-        intro="No account needed. Enter your order number and the email you used at checkout."
-        width="narrow"
-        isCompact
-      />
+  if (isLoading) {
+    return (
+      <AccountPageFrame pageTitle="Your account" path="/account" crumbs={[{ label: 'Your account' }]} title="Your account">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin text-accent" aria-hidden="true" />
+          Loading
+        </p>
+      </AccountPageFrame>
+    );
+  }
 
-      <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
-        <div className="space-y-6">
-          <OrderLookupForm
-            isPending={lookup.isPending}
-            initialOrderNumber={initialOrderNumber}
-            onSubmit={(input) => lookup.mutate(input)}
-          />
-          {lookup.isError && <LookupFailed />}
-          {lookup.data && <LookupAnswer result={lookup.data} />}
+  if (user) {
+    return (
+      <AccountPageFrame
+        pageTitle="Your orders"
+        path="/account"
+        crumbs={[{ label: 'Your account' }]}
+        title="Your orders"
+        intro={`Signed in as ${user.email ?? ''}.`}
+      >
+        <div className="flex flex-wrap gap-3">
+          <Link href="/account/details" className={CTA_SECONDARY_SM}>
+            <Settings className="h-4 w-4" aria-hidden="true" />
+            Account details
+          </Link>
         </div>
+        <MyOrders userId={user.id} />
+        <h2 className={`${CARD_TITLE} pt-6 text-lg`}>Looking for another order?</h2>
+        <GuestOrderLookup initialOrderNumber={initialOrderNumber} />
+      </AccountPageFrame>
+    );
+  }
+
+  return (
+    <AccountPageFrame
+      pageTitle="Track your order"
+      path="/account"
+      crumbs={[{ label: 'Your account' }]}
+      title="Track your order"
+      intro="Sign in to see all your orders, or enter an order number and the email you used at checkout. No account needed."
+    >
+      <SignInPrompt />
+      <GuestOrderLookup initialOrderNumber={initialOrderNumber} />
+    </AccountPageFrame>
+  );
+}
+
+function SignInPrompt() {
+  return (
+    <section className={`${PANEL} p-6`}>
+      <h2 className={`${CARD_TITLE} text-lg`}>Have an account?</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Every order in one place, with where each one is.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link href="/account/sign-in" className={CTA_PRIMARY_SM}>
+          <LogIn className="h-4 w-4" aria-hidden="true" />
+          Sign in
+        </Link>
+        <Link href="/account/sign-up" className={CTA_SECONDARY_SM}>
+          <UserPlus className="h-4 w-4" aria-hidden="true" />
+          Create an account
+        </Link>
       </div>
-    </SiteLayout>
-  );
-}
-
-function LookupAnswer({ result }: { result: OrderLookupResult }) {
-  if (result.found) return <LookedUpOrderCard order={result.order} />;
-  return (
-    <Notice>
-      We could not find an order with that number and email. Check both against your confirmation
-      email, or{' '}
-      <Link href="/contact" className={TEXT_LINK}>
-        contact the shop
-      </Link>
-      .
-    </Notice>
-  );
-}
-
-function LookupFailed() {
-  return (
-    <Notice>
-      Something went wrong looking up your order. Check your connection and try again.
-    </Notice>
-  );
-}
-
-function Notice({ children }: { children: ReactNode }) {
-  return (
-    <div role="alert" className={`${PANEL} flex gap-3 p-4 text-sm text-muted-foreground`}>
-      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-      <p>{children}</p>
-    </div>
+    </section>
   );
 }

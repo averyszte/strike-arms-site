@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
 import { AlertTriangle, ArrowRight, CheckCircle2, Loader2, Phone, Store } from 'lucide-react';
 
+import { CreateAccountNudge } from '@/components/account/CreateAccountNudge';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { useCheckoutConfirmation } from '@/hooks/use-checkout-confirmation';
@@ -124,6 +125,8 @@ export default function CheckoutSuccess() {
             </p>
           )}
         </div>
+
+        {state === 'paid' && <CreateAccountNudge />}
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href={state === 'unconfirmed' ? '/cart' : '/store'} className={CTA_PRIMARY_SM}>

@@ -67,7 +67,8 @@ function optionalText(value: unknown): string | null {
   return value === null || value === undefined ? null : text(value);
 }
 
-function toOrder(value: unknown): LookedUpOrder {
+/** Also reads my_orders() (customer-account-repository), which returns the same shape. */
+export function toLookedUpOrder(value: unknown): LookedUpOrder {
   const row = (value ?? {}) as Record<string, unknown>;
   return {
     orderNumber: text(row.orderNumber),
@@ -93,5 +94,5 @@ export async function lookUpOrder(input: OrderLookupInput): Promise<OrderLookupR
 
   const body = (data ?? {}) as { found?: unknown; order?: unknown };
   if (body.found !== true) return { found: false };
-  return { found: true, order: toOrder(body.order) };
+  return { found: true, order: toLookedUpOrder(body.order) };
 }

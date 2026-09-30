@@ -40,6 +40,16 @@ function errorCode(error: unknown): string {
   return '';
 }
 
+/** Leaked-password protection answers weak_password with the reason "pwned". */
+export function isBreachedPassword(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null || !('reasons' in error)) return false;
+  const reasons = (error as { reasons: unknown }).reasons;
+  return Array.isArray(reasons) && reasons.includes('pwned');
+}
+
+export const BREACHED_PASSWORD_MESSAGE =
+  'That password has appeared in a known data breach. Choose a different one.';
+
 /**
  * Turn a Supabase password-update error into something the admin can act on.
  * The codes are the ones Supabase Auth returns; anything else keeps its own
@@ -48,6 +58,7 @@ function errorCode(error: unknown): string {
 export function passwordUpdateError(error: unknown): string {
   switch (errorCode(error)) {
     case 'weak_password':
+      if (isBreachedPassword(error)) return BREACHED_PASSWORD_MESSAGE;
       return `That password does not meet the rules. ${PASSWORD_HINT}`;
     case 'same_password':
       return 'The new password must be different from the current one.';

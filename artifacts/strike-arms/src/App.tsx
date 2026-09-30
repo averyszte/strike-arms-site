@@ -15,6 +15,11 @@ import Jumble from "@/pages/Jumble";
 import SafetyEquipment from "@/pages/SafetyEquipment";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
+import AccountConfirm from "@/pages/AccountConfirm";
+import AccountDetails from "@/pages/AccountDetails";
+import AccountReset from "@/pages/AccountReset";
+import AccountSignIn from "@/pages/AccountSignIn";
+import AccountSignUp from "@/pages/AccountSignUp";
 import Privacy from "@/pages/Privacy";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
@@ -38,13 +43,9 @@ import MaintenanceGuide from "@/pages/guides/MaintenanceGuide";
 import ShopPage from "@/pages/ShopPage";
 import ProductDetail from "@/pages/ProductDetail";
 import { lazy, Suspense } from "react";
-import { AdminAuthProvider } from "@/lib/admin-auth-context";
 
 // Admin is lazy-loaded so the dashboard never weighs down the public bundle.
-const AdminLoginPage = lazy(() => import("@/pages/admin/LoginPage"));
-const AcceptInvitePage = lazy(() => import("@/pages/admin/AcceptInvitePage"));
-const AdminResetPasswordPage = lazy(() => import("@/pages/admin/ResetPasswordPage"));
-const AdminRoot = lazy(() => import("@/pages/admin/AdminRoot"));
+const AdminArea = lazy(() => import("@/pages/admin/AdminArea"));
 import ServicesHub from "@/pages/services/ServicesHub";
 import RepairsServicePage from "@/pages/services/Repairs";
 import UpgradesServicePage from "@/pages/services/Upgrades";
@@ -74,12 +75,17 @@ function Router() {
       <Route path="/safety-equipment" component={SafetyEquipment} />
       <Route path="/gift-cards" component={GiftCards} />
       <Route path="/account" component={Account} />
-      {/* No customer accounts in v1 (decision D1): the old sign-in pages lead to order lookup. */}
+      <Route path="/account/sign-in" component={AccountSignIn} />
+      <Route path="/account/sign-up" component={AccountSignUp} />
+      <Route path="/account/confirm" component={AccountConfirm} />
+      <Route path="/account/reset" component={AccountReset} />
+      <Route path="/account/details" component={AccountDetails} />
+      {/* The old site's sign-in pages. */}
       <Route path="/login">
-        <Redirect to="/account" replace />
+        <Redirect to="/account/sign-in" replace />
       </Route>
       <Route path="/signup">
-        <Redirect to="/account" replace />
+        <Redirect to="/account/sign-up" replace />
       </Route>
       <Route path="/privacy" component={Privacy} />
       <Route path="/cart" component={Cart} />
@@ -111,30 +117,15 @@ function Router() {
       <Route path="/services" component={ServicesHub} />
       <Route path="/about" component={About} />
 
-      {/* Admin — login, invite-accept and password reset are public, the rest is behind AuthGuard */}
-      <Route path="/admin/login">
-        <Suspense fallback={null}>
-          <AdminLoginPage />
-        </Suspense>
-      </Route>
+      {/* Admin, with its own auth context (see AdminArea) */}
       <Route path="/auth/confirm">
         <Suspense fallback={null}>
-          <AcceptInvitePage />
+          <AdminArea />
         </Suspense>
       </Route>
-      <Route path="/admin/reset-password">
+      <Route path="/admin/*?">
         <Suspense fallback={null}>
-          <AdminResetPasswordPage />
-        </Suspense>
-      </Route>
-      <Route path="/admin">
-        <Suspense fallback={null}>
-          <AdminRoot />
-        </Suspense>
-      </Route>
-      <Route path="/admin/:rest*">
-        <Suspense fallback={null}>
-          <AdminRoot />
+          <AdminArea />
         </Suspense>
       </Route>
 
@@ -156,16 +147,14 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <AdminAuthProvider>
-            <CartProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <AppErrorBoundary>
-                  <Router />
-                </AppErrorBoundary>
-              </WouterRouter>
-              <Toaster />
-            </CartProvider>
-          </AdminAuthProvider>
+          <CartProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <AppErrorBoundary>
+                <Router />
+              </AppErrorBoundary>
+            </WouterRouter>
+            <Toaster />
+          </CartProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

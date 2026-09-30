@@ -18,13 +18,15 @@ with
 pii_tables(name) as (values
   ('orders'), ('order_items'), ('order_status_log'), ('inquiries'),
   ('checkout_reservations'), ('notification_jobs'), ('stripe_event_log'), ('admins'),
-  ('payment_alerts')
+  ('payment_alerts'), ('customer_profiles')
 ),
 -- SECURITY DEFINER functions the browser is meant to call. Each one checks
 -- the caller itself (or, for the two helpers, only answers about the caller).
 browser_definers(name) as (values
   ('is_admin'), ('is_admin_aal2'), ('adjust_stock'), ('create_counter_order'),
-  ('applied_migrations'), ('resend_notification')
+  ('applied_migrations'), ('resend_notification'),
+  -- customer accounts (034): each acts only on auth.uid()'s own rows
+  ('my_orders'), ('claim_my_guest_orders'), ('set_marketing_opt_in')
 ),
 policies as (
   select tablename, policyname, cmd, roles,
@@ -66,6 +68,9 @@ findings(severity, rule, object, detail) as (
   where cmd in ('INSERT', 'UPDATE', 'DELETE', 'ALL')
     and expr not like '%is_admin_aal2()%'
     and not (tablename = 'inquiries' and policyname = 'anon insert inquiries')
+    -- A customer edits their own name and phone (034). The grant allows
+    -- only those two columns; rule 14 checks that.
+    and not (tablename = 'customer_profiles' and policyname = 'customer update own profile')
 
   union all
   -- 5. Nothing on a customer-data table is readable by anon.
@@ -104,6 +109,7 @@ findings(severity, rule, object, detail) as (
   from policies
   where cmd = 'SELECT' and tablename in (select name from pii_tables)
     and expr not like '%is_admin_aal2()%'
+    and not (tablename = 'customer_profiles' and policyname = 'customer read own profile')
 
   union all
   -- 9. Policies with no TO clause are also evaluated for anon (023).
@@ -138,6 +144,31 @@ findings(severity, rule, object, detail) as (
   where g.table_schema = 'public' and g.table_name = 'products'
     and g.grantee in ('anon', 'authenticated')
     and g.privilege_type in ('DELETE', 'TRUNCATE')
+
+  union all
+  -- 13. Orders and their lines are created by checkout and counter-sale
+  --     definer functions only, and never deleted from the browser (034).
+  select 'fail', 'orders-writable-from-browser', g.table_name,
+         g.grantee || ' has ' || g.privilege_type
+  from information_schema.role_table_grants g
+  where g.table_schema = 'public' and g.table_name in ('orders', 'order_items')
+    and g.grantee in ('anon', 'authenticated')
+    and (g.privilege_type in ('INSERT', 'DELETE', 'TRUNCATE')
+      or (g.table_name = 'order_items' and g.privilege_type = 'UPDATE'))
+
+  union all
+  -- 14. Column-level updates stay on the agreed columns (034). A table-level
+  --     UPDATE grant shows up here as every column.
+  select 'fail', 'update-column-not-allowed', c.table_name || '.' || c.column_name,
+         c.grantee || ' can update it'
+  from information_schema.column_privileges c
+  where c.table_schema = 'public' and c.privilege_type = 'UPDATE'
+    and c.grantee in ('anon', 'authenticated')
+    and (
+      (c.table_name = 'orders'
+        and c.column_name not in ('fulfillment_status', 'notes', 'is_archived', 'tracking_number'))
+      or (c.table_name = 'customer_profiles' and c.column_name not in ('full_name', 'phone'))
+    )
 )
 select severity, rule, object, detail
 from findings

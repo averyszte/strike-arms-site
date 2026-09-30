@@ -45,4 +45,5 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '031', name: 'notification_extras', file: '031_notification_extras.sql' },
   { version: '032', name: 'service_role_grants', file: '032_service_role_grants.sql' },
   { version: '033', name: 'order_tracking', file: '033_order_tracking.sql' },
+  { version: '034', name: 'customer_accounts', file: '034_customer_accounts.sql' },
 ];

@@ -1,0 +1,15 @@
+<h2>Confirm your Strike Arms account</h2>
+
+<p>Thanks for creating an account. Enter this code on the page you signed up on:</p>
+
+<p style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">{{ .Token }}</p>
+
+<p>Or follow this link:</p>
+
+<p><a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">Confirm my email</a></p>
+
+<p>Orders you placed as a guest with this email are added to your account once it is confirmed.</p>
+
+<p>The code and link work once and expire within an hour.</p>
+
+<p>If you did not create an account, you can ignore this email. Nothing happens unless it is confirmed.</p>

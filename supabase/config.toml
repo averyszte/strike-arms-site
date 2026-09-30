@@ -18,9 +18,14 @@ major_version = 15
 [auth]
 enabled = true
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["https://cxnhkgndvzgyqhiwsvrr.supabase.co"]
+additional_redirect_urls = [
+  "https://cxnhkgndvzgyqhiwsvrr.supabase.co",
+  "http://localhost:5173/account/**",
+  "http://localhost:5173/admin/reset-password",
+]
 jwt_expiry = 3600
-enable_signup = false
+# Customer accounts (034). Admins are still invited, never signed up.
+enable_signup = true
 # Mirrored in src/lib/password-policy.ts so the forms can say what is wrong
 # before Supabase refuses. This file sets it for the local stack only: on the
 # hosted project it is Authentication > Sign In / Providers > Email, and
@@ -28,17 +33,28 @@ enable_signup = false
 minimum_password_length = 12
 password_requirements = "lower_upper_letters_digits"
 
-# Both links carry a token_hash that the site redeems itself, rather than
+# A new account must confirm its email before it can sign in, and before
+# claim_my_guest_orders() will link any guest orders to it.
+[auth.email]
+enable_confirmations = true
+
+# Every link carries a token_hash that the site redeems itself, rather than
 # Supabase's default link, which signs the user in on whatever page the Site
-# URL points at. Local stack only, like the policy above; the hosted project
-# needs the same HTML pasted in -- see docs/admin-auth-emails.md.
+# URL points at. Reset and confirm also carry a 6-digit code, and link to the
+# page the request came from ({{ .RedirectTo }}), which must be on the
+# redirect allow-list. Local stack only, like the policy above; the hosted
+# project needs the same HTML pasted in -- see docs/admin-auth-emails.md.
 [auth.email.template.invite]
 subject = "Your Strike Arms admin invite"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.recovery]
-subject = "Reset your Strike Arms admin password"
+subject = "Reset your Strike Arms password"
 content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your Strike Arms account"
+content_path = "./supabase/templates/confirmation.html"
 
 # Product images live in the product-images bucket created by migration 011.
 # The per-file cap here is the local API's ceiling; the bucket sets its own
@@ -82,6 +98,11 @@ verify_jwt = true
 # endpoint, so the gateway checks the JWT and the function then requires the
 # service role on top. Nothing a browser holds gets past either check.
 [functions.sweep-orphan-images]
+verify_jwt = true
+
+# A customer deleting their own account. The gateway checks the JWT; the
+# function then checks the password again and refuses admin accounts.
+[functions.delete-account]
 verify_jwt = true
 
 # The notification worker is maintenance in the same way: pg_cron calls it

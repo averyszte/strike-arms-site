@@ -1,6 +1,6 @@
 # Current Task
 
-Last updated: 2026-09-28 (Phase 4 in progress, branch `claude/phase-2-money-path`). Replaces
+Last updated: 2026-09-29 (Phase 4 and customer accounts in progress, branch `claude/phase-2-money-path`). Replaces
 the end-of-Phase-1 revision.
 
 ## Where the project is right now
@@ -121,6 +121,45 @@ then needs Resend on the order sheet.
    `tracking_number` column, so deploying them first breaks the lookup). Every forward step now
    emails the customer once Resend is set up; the admin status picker marks which ones.
 
+## Customer accounts (plan Part 2, done in code, reverses D1)
+
+Plan and as-built notes: `docs/customer-accounts-plan.md`. Dashboard steps:
+`docs/admin-auth-emails.md`.
+
+- 034 `customer_accounts`: `customer_profiles`, `orders.user_id`, narrowed `authenticated`
+  grants on the order tables, `my_orders()`, `claim_my_guest_orders()`,
+  `set_marketing_opt_in()`. `verify-rls.sql` checks a customer JWT.
+- Pages: `/account` (signed in: your orders with the tracker, plus guest lookup; signed out:
+  sign-in prompt plus guest lookup), `/account/sign-in`, `/sign-up`, `/confirm`, `/reset`,
+  `/details` (profile, marketing opt-in, email and password change, data download, delete).
+  `/login` and `/signup` redirect to them. Header has a "Your account" icon.
+- `AdminAuthProvider` now lives in the lazy `AdminArea`, so storefront pages never run the
+  admin checks and the admin code is out of the storefront bundle.
+- Checkout sets `orders.user_id` from the caller's JWT. The success page offers "Create an
+  account" to guests.
+- New function `delete-account`: re-checks the password, refuses admins, deletes the user;
+  orders stay with `user_id` null.
+- Privacy page: account data, Supabase and Resend as processors, retention on deletion.
+- Not built: checkout email pre-fill for signed-in customers; Turnstile (item 17).
+
+## NEEDS THE USER for customer accounts (in this order)
+
+1. `echo y | npx supabase db push` for **033**, then redeploy `order-lookup` and
+   `notification-worker` (Part 1, above), if not already done.
+2. `echo y | npx supabase db push` for **034**, then re-run `supabase/verify-rls.sql`.
+3. Redeploy `create-checkout-session` (it now reads the JWT for `user_id`) and deploy the new
+   `delete-account`.
+4. Resend: domain, function secrets and worker schedule (Phase 3 list above), then Supabase
+   Auth custom SMTP through Resend.
+5. Auth > Emails: paste `recovery.html` (new subject) and `confirmation.html`.
+6. Auth > URL Configuration: Site URL, and add `/account/**` and `/admin/reset-password` for
+   localhost, the live domain and `*.strike-arms-site.pages.dev`. Without these, email links
+   land on the home page.
+7. Auth > Sign In / Providers: leaked-password protection on; Confirm email on; then, last,
+   allow new sign-ups.
+8. Test: sign up, confirm by code, see an earlier guest order with that email appear, reset the
+   password, download data, delete the account.
+
 ## Item 17 plan (not started)
 
 - `_shared/turnstile.ts` ported from All Blooms, fail-closed (missing secret means refuse,
@@ -199,8 +238,8 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
   (all-collect, all-delivery, mixed). Needs A1.3 first.
 - **C11 bot protection** on `create-checkout-session`: Phase 2 item 17, planned above.
 - **E3 transactional email / C5.x notifications.** Deferred, never chosen.
-- **B1-B4 customer accounts.** Not in v1 (D1, guest lookup instead). When built, narrow the
-  `authenticated` grants in the same migration.
+- **B1-B4 customer accounts.** Done in code (034 and the account pages); D1 reversed on
+  2026-09-29. Needs the list above.
 - **Search ranking:** a name match scores 6 and a tag match 2, so a scope can outrank a rifle for
   "rifle". Needs a decision on desired ordering before a migration.
 - **Content clusters, later:** the guides (10 pages + GuidesHub), then the bespoke pages

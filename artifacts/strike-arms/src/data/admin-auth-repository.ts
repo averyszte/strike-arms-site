@@ -58,14 +58,18 @@ export async function updatePassword(password: string): Promise<void> {
 }
 
 /**
- * Send a password reset email. The link in it is built by the recovery
- * template (supabase/templates/recovery.html), not by a redirect URL here.
+ * Send a password reset email. The recovery template
+ * (supabase/templates/recovery.html) is shared with customers and links to
+ * the redirect URL, so this names the admin reset page. It must be on the
+ * Supabase redirect allow-list.
  *
  * Supabase answers the same way whether or not the address has an account,
  * so this cannot be used to find out who the admins are.
  */
 export async function requestPasswordReset(email: string): Promise<void> {
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/admin/reset-password`,
+  });
   if (error) throw error;
 }
 

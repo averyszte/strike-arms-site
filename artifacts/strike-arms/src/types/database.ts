@@ -24,6 +24,7 @@ import type {
   SubcategoryRow,
 } from '@/types/database-rows';
 import type { ServerFunctions } from '@/types/database-server-functions';
+import type { CustomerFunctions, CustomerTables } from '@/types/database-customer';
 
 export type { Json } from '@/types/database-rows';
 
@@ -33,7 +34,7 @@ export type { Json } from '@/types/database-rows';
 
 export type Database = {
   public: {
-    Tables: {
+    Tables: CustomerTables & {
       products: {
         Row: ProductRow;
         Insert: Omit<
@@ -150,7 +151,7 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: ServerFunctions & {
+    Functions: ServerFunctions & CustomerFunctions & {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin_aal2: { Args: Record<PropertyKey, never>; Returns: boolean };
       adjust_stock: {

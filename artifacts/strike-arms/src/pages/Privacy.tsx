@@ -49,6 +49,10 @@ export default function Privacy() {
             <ul>
               <li>Your name, email address and phone number when you place an order.</li>
               <li>Order and delivery details when you buy from us.</li>
+              <li>
+                If you create an account: your email, name, optional phone number and a password,
+                which is stored only as a secure hash.
+              </li>
               <li>Your marketing-email preference.</li>
               <li>Limited technical data (e.g. essential cookies to keep you signed in).</li>
             </ul>
@@ -61,6 +65,7 @@ export default function Privacy() {
             <h2>Why we use it and our lawful basis</h2>
             <ul>
               <li>To fulfil your orders (performance of a contract).</li>
+              <li>To run your account, if you create one, and show you your orders (performance of a contract).</li>
               <li>To meet legal obligations, such as keeping tax and accounting records.</li>
               <li>To send marketing emails only where you have opted in (consent), which you can withdraw at any time.</li>
             </ul>
@@ -71,6 +76,11 @@ export default function Privacy() {
             <p>
               Where the law requires us to retain records (for example, order and accounting records for tax purposes), we keep
               those for the required period, after which they are deleted or anonymised.
+            </p>
+            <p className="mt-2">
+              An account is kept until you delete it. Deleting it removes your sign-in and account
+              details straight away; your past orders stay as sales records but are no longer linked
+              to you by an account.
             </p>
           </section>
 
@@ -84,7 +94,8 @@ export default function Privacy() {
               <li>Object to, or withdraw consent for, marketing at any time.</li>
             </ul>
             <p className="mt-2">
-              To use any of these rights, contact us. You also have the right to
+              If you have an account, you can download your data and delete your account yourself
+              from Account details. To use any of these rights, contact us. You also have the right to
               lodge a complaint with the Irish Data Protection Commission (dataprotection.ie).
             </p>
           </section>
@@ -101,7 +112,8 @@ export default function Privacy() {
             <h2>Who we share it with</h2>
             <p>
               We share data only with the service providers needed to run the shop — for example our
-              payments provider (Stripe) and hosting/database provider — and where required by law.
+              payments provider (Stripe), our hosting and database provider (Supabase) and our email
+              provider (Resend) — and where required by law.
             </p>
           </section>
         </div>
