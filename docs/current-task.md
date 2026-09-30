@@ -140,7 +140,8 @@ Plan and as-built notes: `docs/customer-accounts-plan.md`. Dashboard steps:
 - New function `delete-account`: re-checks the password, refuses admins, deletes the user;
   orders stay with `user_id` null.
 - Privacy page: account data, Supabase and Resend as processors, retention on deletion.
-- Not built: checkout email pre-fill for signed-in customers; Supabase's own CAPTCHA on
+- Checkout fills name, email and phone from the account when signed in (empty fields only).
+- Not built: Supabase's own CAPTCHA on
   sign-up, sign-in and reset (see Item 17).
 
 ## PARKED by the user (2026-09-29), do later

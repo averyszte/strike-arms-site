@@ -63,3 +63,6 @@ export type CheckoutDetails = {
   shippingCounty: string;
   shippingEircode: string;
 };
+
+/** What a signed-in customer's account can fill in on the checkout form. */
+export type CheckoutPrefill = Pick<CheckoutDetails, 'customerName' | 'customerEmail' | 'customerPhone'>;

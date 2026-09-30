@@ -7,7 +7,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { DeliveryAddressFields } from '@/components/cart/DeliveryAddressFields';
+import { useCheckoutPrefill } from '@/hooks/use-checkout-prefill';
 import { useTurnstile } from '@/hooks/use-turnstile';
+import { applyCheckoutPrefill } from '@/lib/checkout-prefill';
 import {
   EMPTY_CHECKOUT_DETAILS,
   validateCheckoutDetails,
@@ -31,8 +33,17 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   const [details, setDetails] = useState<CheckoutDetails>(EMPTY_CHECKOUT_DETAILS);
   const [errors, setErrors] = useState<CheckoutFieldErrors>({});
+  const prefill = useCheckoutPrefill();
+  const [hasPrefilled, setHasPrefilled] = useState(false);
   const turnstile = useTurnstile('checkout');
   const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
+
+  // A signed-in customer's details arrive after the first render. Fill them in
+  // once, during render (React's pattern for state that follows a prop).
+  if (prefill && !hasPrefilled) {
+    setHasPrefilled(true);
+    setDetails((current) => applyCheckoutPrefill(current, prefill));
+  }
 
   const patch = (update: Partial<CheckoutDetails>) =>
     setDetails((current) => ({ ...current, ...update }));
