@@ -204,8 +204,9 @@ Still missing, roughly in order:
      `verify-rls.sql` now fails any browser insert, delete or truncate on `inquiries`.
    - DONE 2026-09-30: `submit-inquiry` deployed (answers anon calls), 036 pushed,
      `verify-rls.sql` re-run with no rows (a full pass).
-   - **Still NEEDS THE USER:** send a test message from `/contact` and a service page, then check both in the admin enquiries
-     screen.
+   - DONE 2026-09-30: live on `main` (ccd6447). Turnstile shows and the contact form files
+     into the admin enquiries screen. The service quote form uses the same path; not
+     separately tested.
 3. **Ask Alan about sizes.** All Blooms has product sizes and colours; Strike Arms has none.
    If Gear sells sized items (clothing, gloves), each size is a separate product today.
 4. **Supabase function secret `SITE_URL`** must be `https://strike-arms-site.pages.dev`
