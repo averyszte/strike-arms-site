@@ -1,5 +1,10 @@
 import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createInquiry, listInquiries, updateInquiryStatus } from '@/data/inquiries-repository';
+import {
+  createInquiry,
+  InquiryError,
+  listInquiries,
+  updateInquiryStatus,
+} from '@/data/inquiries-repository';
 import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import type { CreateInquiryInput, InquiryStatus } from '@/types/inquiry';
 
@@ -13,9 +18,17 @@ export function useInquiries(status?: InquiryStatus, limit = INQUIRIES_PAGE_SIZE
 }
 
 export function useSubmitInquiry() {
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (input: CreateInquiryInput) => createInquiry(input),
   });
+
+  const { error } = mutation;
+  const errorMessage =
+    error instanceof InquiryError && error.message
+      ? error.message
+      : 'That did not send. Please try again.';
+
+  return { ...mutation, errorMessage };
 }
 
 export function useUpdateInquiryStatus() {

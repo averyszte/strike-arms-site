@@ -1,3 +1,4 @@
+import { functionErrorMessage } from '@/data/function-error-message';
 import { supabase } from '@/lib/supabase';
 import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import type { Database } from '@/types/database';
@@ -20,26 +21,22 @@ function rowToInquiry(row: InquiryRow): Inquiry {
   };
 }
 
+/** An error whose message came from the server and is safe to show. */
+export class InquiryError extends Error {}
+
 /**
- * Files a contact-form message.
- *
- * Returns nothing on purpose. Anon is granted insert and nothing else, and
- * reading the row back would run the select policy, which only an admin
- * passes — so asking for the inserted row would fail for every real visitor
- * while working perfectly for whoever was logged in to test it.
+ * Files a contact-form or quote-form message, through the submit-inquiry Edge
+ * Function. The browser cannot write to the table itself (036); the function
+ * checks the bot token, the rate limits and the field lengths first.
  */
 export async function createInquiry(input: CreateInquiryInput): Promise<void> {
-  const { error } = await supabase.from('inquiries').insert({
-    name: input.name,
-    email: input.email,
-    phone: input.phone ?? null,
-    subject: input.subject ?? null,
-    message: input.message,
-    consent: input.consent,
-    source_page: input.sourcePage ?? null,
+  const { error } = await supabase.functions.invoke<unknown>('submit-inquiry', {
+    body: input,
   });
 
-  if (error) throw error;
+  // A refusal (bot check, too many tries, a field too long) carries a message
+  // for the person. Anything else has none, and the form shows its own.
+  if (error) throw new InquiryError(await functionErrorMessage(error, ''));
 }
 
 /**

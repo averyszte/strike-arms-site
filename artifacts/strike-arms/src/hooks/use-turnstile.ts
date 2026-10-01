@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TurnstileAction, TurnstileApi } from '@/types/turnstile';
 
 /**
- * Cloudflare Turnstile, the bot check on checkout and order lookup.
+ * Cloudflare Turnstile, the bot check on checkout, order lookup and the contact forms.
  *
  * The script loads only when a form that needs it is on screen, so the rest
  * of the site never talks to Cloudflare. Tokens are single-use: the form

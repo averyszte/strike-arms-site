@@ -67,7 +67,6 @@ findings(severity, rule, object, detail) as (
   from policies
   where cmd in ('INSERT', 'UPDATE', 'DELETE', 'ALL')
     and expr not like '%is_admin_aal2()%'
-    and not (tablename = 'inquiries' and policyname = 'anon insert inquiries')
     -- A customer edits their own name and phone (034). The grant allows
     -- only those two columns; rule 14 checks that.
     and not (tablename = 'customer_profiles' and policyname = 'customer update own profile')
@@ -81,13 +80,12 @@ findings(severity, rule, object, detail) as (
   where g.grantee = 'anon' and g.privilege_type in ('SELECT', 'UPDATE', 'DELETE')
 
   union all
-  -- 6. anon writes nothing except the public inquiry form (until the
-  --    submit-inquiry function replaces it).
+  -- 6. anon writes nothing. The contact forms go through the submit-inquiry
+  --    function since 036.
   select 'fail', 'anon-write-grant', g.table_name, 'anon has ' || g.privilege_type
   from information_schema.role_table_grants g
   where g.table_schema = 'public' and g.grantee = 'anon'
     and g.privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')
-    and not (g.table_name = 'inquiries' and g.privilege_type = 'INSERT')
 
   union all
   -- 7. The browser can execute no SECURITY DEFINER function except the ones
@@ -119,12 +117,14 @@ findings(severity, rule, object, detail) as (
   where roles = '{public}'
 
   union all
-  -- 10. The one intentional anon write, listed so it is not forgotten (033, inquiries_lockdown).
-  select 'review', 'anon-insert-inquiries', 'inquiries',
-         'open anon insert; replace with the submit-inquiry function'
+  -- 10. Inquiries are filed by the submit-inquiry function only, and never
+  --     deleted from the browser (036).
+  select 'fail', 'inquiries-writable-from-browser', 'inquiries',
+         g.grantee || ' has ' || g.privilege_type
   from information_schema.role_table_grants g
   where g.table_schema = 'public' and g.table_name = 'inquiries'
-    and g.grantee = 'anon' and g.privilege_type = 'INSERT'
+    and g.grantee in ('anon', 'authenticated')
+    and g.privilege_type in ('INSERT', 'DELETE', 'TRUNCATE')
 
   union all
   -- 11. The stock ledger is written only by definer functions, never edited (025).
@@ -157,7 +157,7 @@ findings(severity, rule, object, detail) as (
       or (g.table_name = 'order_items' and g.privilege_type = 'UPDATE'))
 
   union all
-  -- 14. Column-level updates stay on the agreed columns (034). A table-level
+  -- 14. Column-level updates stay on the agreed columns (034, 036). A table-level
   --     UPDATE grant shows up here as every column.
   select 'fail', 'update-column-not-allowed', c.table_name || '.' || c.column_name,
          c.grantee || ' can update it'
@@ -168,6 +168,7 @@ findings(severity, rule, object, detail) as (
       (c.table_name = 'orders'
         and c.column_name not in ('fulfillment_status', 'notes', 'is_archived', 'tracking_number'))
       or (c.table_name = 'customer_profiles' and c.column_name not in ('full_name', 'phone'))
+      or (c.table_name = 'inquiries' and c.column_name <> 'status')
     )
 )
 select severity, rule, object, detail

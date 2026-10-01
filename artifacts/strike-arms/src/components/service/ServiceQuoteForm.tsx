@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 
+import { BotCheck } from '@/components/BotCheck';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { HoneypotField } from '@/components/contact/honeypot-field';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useSubmitInquiry } from '@/hooks/use-inquiries';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { looksAutomated } from '@/lib/inquiry-validation';
 import {
   EMPTY_SERVICE_QUOTE_FORM,
@@ -38,6 +40,8 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
   const [openedAt] = useState(() => Date.now());
 
   const submit = useSubmitInquiry();
+  const turnstile = useTurnstile('inquiry');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
 
   const patch = (update: Partial<QuoteForm>) => setForm((current) => ({ ...current, ...update }));
 
@@ -46,7 +50,7 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
 
     const found = validateServiceQuote(form);
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0 || isWaitingForBotCheck) return;
 
     // Answered exactly like a real submission, and quietly dropped.
     if (looksAutomated(form, Date.now() - openedAt)) {
@@ -63,9 +67,12 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         message: composeQuoteMessage(serviceTitle, form),
         consent: form.consent,
         sourcePage: window.location.pathname,
+        turnstileToken: turnstile.token,
       },
       { onSuccess: () => setIsSent(true) },
     );
+    // Single-use: a fresh token in case the message has to be sent again.
+    turnstile.reset();
   }
 
   if (isSent) return <QuoteSent />;
@@ -162,14 +169,25 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         )}
       </div>
 
+      <BotCheck
+        containerRef={turnstile.ref}
+        isEnabled={turnstile.isEnabled}
+        hasFailed={turnstile.hasFailed}
+      />
+
       {submit.isError && (
         <p className="flex items-start gap-2 rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          That did not send. Please try again, or ring the shop on {BUSINESS.telephone}.
+          {submit.errorMessage} You can also ring the shop on {BUSINESS.telephone}.
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={submit.isPending} className={CTA_PRIMARY}>
+      <Button
+        type="submit"
+        size="lg"
+        disabled={submit.isPending || isWaitingForBotCheck}
+        className={CTA_PRIMARY}
+      >
         <Send className="h-4 w-4" aria-hidden="true" />
         {submit.isPending ? 'Sending…' : 'Request a quote'}
       </Button>

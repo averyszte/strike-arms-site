@@ -3,7 +3,7 @@
  *
  * Like the checkout's, these are for fast field-level feedback and are not a
  * security boundary — anything checked only in the browser is not checked at
- * all. The table's own constraints are what actually hold.
+ * all. The submit-inquiry function's checks are what actually hold.
  */
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

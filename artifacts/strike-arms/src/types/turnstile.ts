@@ -4,7 +4,7 @@
  */
 
 /** Must match the action the Edge Function checks for. */
-export type TurnstileAction = 'checkout' | 'order-lookup';
+export type TurnstileAction = 'checkout' | 'order-lookup' | 'inquiry';
 
 export type TurnstileRenderOptions = {
   sitekey: string;

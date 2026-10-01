@@ -88,6 +88,11 @@ verify_jwt = false
 [functions.order-lookup]
 verify_jwt = false
 
+# The contact and service quote forms. Called by anon visitors; guarded by
+# Turnstile and rate limits instead (see the function).
+[functions.submit-inquiry]
+verify_jwt = false
+
 # The refund endpoint is called by an admin in a browser, so the gateway
 # checks the JWT and the function then requires is_admin_aal2() on top -- a
 # valid customer session gets past the gateway and no further.

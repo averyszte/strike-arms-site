@@ -21,4 +21,6 @@ export type CreateInquiryInput = {
   message: string;
   consent: boolean;
   sourcePage?: string;
+  /** Null when Turnstile is not set up (local development). */
+  turnstileToken: string | null;
 };

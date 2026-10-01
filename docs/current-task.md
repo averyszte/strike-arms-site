@@ -197,6 +197,15 @@ Still missing, roughly in order:
 2. **Item 23, `submit-inquiry`.** The contact and service-quote forms still insert straight
    into `inquiries` with no bot check. Port the All Blooms function: Turnstile (keys exist now),
    rate limit via 035, length caps, then migration 036 drops the anon insert.
+   - **Done in code 2026-09-30:** `supabase/functions/submit-inquiry` (Turnstile action
+     `inquiry`; 5 per 10 min per IP, 5 per hour per email; name 200, email 254, phone 30,
+     subject 200, message 5000), both forms send through it with a `BotCheck`, migration 036
+     drops the anon insert and narrows `authenticated` to select plus update of `status`, and
+     `verify-rls.sql` now fails any browser insert, delete or truncate on `inquiries`.
+   - DONE 2026-09-30: `submit-inquiry` deployed (answers anon calls), 036 pushed.
+   - **Still NEEDS THE USER:** re-run `verify-rls.sql` (expect no inquiries rows), and send a
+     test message from `/contact` and a service page, then check both in the admin enquiries
+     screen.
 3. **Ask Alan about sizes.** All Blooms has product sizes and colours; Strike Arms has none.
    If Gear sells sized items (clothing, gloves), each size is a separate product today.
 4. **Supabase function secret `SITE_URL`** must be `https://strike-arms-site.pages.dev`
