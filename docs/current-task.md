@@ -213,6 +213,8 @@ Still missing, roughly in order:
 4. **Supabase function secret `SITE_URL`** must be `https://strike-arms-site.pages.dev`
    (it was localhost, so Stripe returned shoppers to localhost and the cart never cleared).
    Change it to `https://strikearms.ie` at launch. It also builds the links in order emails.
+   - DONE 2026-09-30 (user): set to `https://strike-arms-site.pages.dev`. Still to do at
+     launch: switch it to `https://strikearms.ie`.
 
 Not needed from All Blooms: the gallery and add-on cards (florist-only) and a separate
 order-cancelled page (Strike Arms' cancel goes back to `/cart`).
