@@ -209,6 +209,7 @@ Still missing, roughly in order:
      separately tested.
 3. **Ask Alan about sizes.** All Blooms has product sizes and colours; Strike Arms has none.
    If Gear sells sized items (clothing, gloves), each size is a separate product today.
+   Logged as D15 in `docs/audit/completion-plan.md`, section 6.
 4. **Supabase function secret `SITE_URL`** must be `https://strike-arms-site.pages.dev`
    (it was localhost, so Stripe returned shoppers to localhost and the cart never cleared).
    Change it to `https://strikearms.ie` at launch. It also builds the links in order emails.

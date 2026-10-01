@@ -337,6 +337,7 @@ section and SMTP.
 | D12 | Analytics tool, if any (drives the cookie banner). | Privacy page |
 | D13 | `/brands/unbranded`, and the 22 unbranded rows. | Catalogue |
 | D14 | Who gets alerts when a webhook or email fails? | Ops |
+| D15 | Does Gear sell anything in sizes or colours (clothing, gloves)? Today each size would be a separate product. (Added 2026-09-30.) | Product variants |
 
 ---
 
