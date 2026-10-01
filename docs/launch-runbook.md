@@ -22,6 +22,16 @@ environment variables and secrets.
 - [ ] **Recheck the password policy** is still 12 characters with lowercase,
       uppercase and digits, matching `src/lib/password-policy.ts`.
 
+## Supabase Edge Function secrets (dashboard > Edge Functions > Secrets)
+
+- [ ] **`SITE_URL` to the live domain.** `https://strike-arms-site.pages.dev`
+      becomes `https://strikearms.ie`. Stripe sends shoppers back to it after
+      paying, and the order emails build their links from it.
+- [ ] **`SITE_HOSTNAME` includes the live domain**, e.g.
+      `strikearms.ie,strike-arms-site.pages.dev`. Turnstile tokens solved on
+      any other host are refused, so without it checkout, order lookup and the
+      contact forms all fail the bot check on the new domain.
+
 ## Done already
 
 Kept here so nobody redoes or second-guesses them. Details in
@@ -34,3 +44,5 @@ Kept here so nobody redoes or second-guesses them. Details in
 | 2026-09-28 | Site URL set to `http://localhost:5173` for testing |
 | 2026-09-28 | Password policy set: minimum 12, lowercase, uppercase and digits |
 | 2026-09-28 | Migration 027 pushed; an invited admin accepted, set a password, enrolled TOTP and signed in |
+| 2026-09-30 | Migration 036 pushed and `submit-inquiry` deployed; `verify-rls.sql` fully clean; Turnstile and the contact form confirmed live |
+| 2026-09-30 | `SITE_URL` secret set to `https://strike-arms-site.pages.dev` |
