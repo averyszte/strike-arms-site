@@ -21,6 +21,9 @@ import AccountReset from "@/pages/AccountReset";
 import AccountSignIn from "@/pages/AccountSignIn";
 import AccountSignUp from "@/pages/AccountSignUp";
 import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
+import Returns from "@/pages/Returns";
+import Delivery from "@/pages/Delivery";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
 import { CartProvider } from "@/lib/cart-context";
@@ -88,6 +91,9 @@ function Router() {
         <Redirect to="/account/sign-up" replace />
       </Route>
       <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/returns" component={Returns} />
+      <Route path="/delivery" component={Delivery} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/airsoft-law" component={AirsoftLaw} />

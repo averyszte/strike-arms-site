@@ -1,5 +1,12 @@
 import { Link } from "wouter";
 
+const LEGAL_LINKS = [
+  { href: "/terms", label: "Terms of Sale" },
+  { href: "/returns", label: "Returns" },
+  { href: "/delivery", label: "Delivery" },
+  { href: "/privacy", label: "Privacy Policy" },
+];
+
 export function SiteFooter() {
   return (
     <footer className="bg-[#080808] pt-16 pb-8 border-t border-border/60">
@@ -77,10 +84,13 @@ export function SiteFooter() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Strike Arms Airsoft. All rights reserved.
           </p>
-          <div className="flex gap-4">
-            <span className="text-xs text-muted-foreground/50">Terms of Service</span>
-            <span className="text-xs text-muted-foreground/50">Privacy Policy</span>
-          </div>
+          <nav aria-label="Legal" className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+            {LEGAL_LINKS.map((link) => (
+              <Link key={link.href} href={link.href} className="text-xs text-muted-foreground hover:text-accent transition-colors">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

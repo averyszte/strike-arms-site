@@ -187,6 +187,13 @@ Still missing, roughly in order:
      added), the EU ODR link (platform closed July 2025), an accessibility statement
      (microenterprise exemption; confirm headcount and turnover with Alan).
    - Have a solicitor read the final wording.
+   - **Done in code 2026-09-30 (drafts):** `/terms`, `/returns` (with the model cancellation
+     form), `/delivery` (reads the live rates from `store_settings`), real footer links, a
+     terms and returns line under the checkout 18+ tick, and the Privacy cookie line fixed (no
+     cookies; basket and sign-in live in browser storage). Every legal page shows
+     `LegalDraftNotice` with its open questions for Alan, the accountant or the solicitor.
+     Remove the notice page by page once each page is signed off. Business details in the footer
+     are still waiting on Alan.
 2. **Item 23, `submit-inquiry`.** The contact and service-quote forms still insert straight
    into `inquiries` with no bot check. Port the All Blooms function: Turnstile (keys exist now),
    rate limit via 035, length caps, then migration 036 drops the anon insert.

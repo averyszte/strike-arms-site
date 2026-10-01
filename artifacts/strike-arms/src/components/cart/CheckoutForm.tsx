@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, Lock } from 'lucide-react';
+import { Link } from 'wouter';
 
 import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import {
   validateCheckoutDetails,
   type CheckoutFieldErrors,
 } from '@/lib/checkout-validation';
-import { CTA_PRIMARY } from '@/lib/storefront-styles';
+import { CTA_PRIMARY, TEXT_LINK } from '@/lib/storefront-styles';
 import type { CheckoutDetails } from '@/types/cart';
 
 type CheckoutFormProps = {
@@ -66,7 +67,9 @@ export function CheckoutForm({
   return (
     <form className="space-y-6" onSubmit={handleSubmit} noValidate>
       <fieldset className="space-y-4">
-        <legend className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Your details</legend>
+        <legend className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+          Your details
+        </legend>
 
         <CheckoutField
           id="customer-name"
@@ -120,6 +123,17 @@ export function CheckoutForm({
             {errors.ageConfirmed}
           </p>
         )}
+        <p className="mt-3 text-sm text-muted-foreground">
+          By placing your order you agree to our{' '}
+          <Link href="/terms" className={TEXT_LINK}>
+            terms of sale
+          </Link>
+          . Most online orders can be cancelled within 14 days: see{' '}
+          <Link href="/returns" className={TEXT_LINK}>
+            returns
+          </Link>
+          .
+        </p>
       </div>
 
       <BotCheck

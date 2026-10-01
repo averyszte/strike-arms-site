@@ -23,6 +23,7 @@ export const BUSINESS = {
   postalCode: 'K67 T9H9',
   addressCountry: 'IE',
   telephone: '+353 87 273 6351',
+  email: 'info@strikearms.ie',
   openingHours: [
     {
       days: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

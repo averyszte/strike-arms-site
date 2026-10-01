@@ -3,10 +3,16 @@ import { Link } from 'wouter';
 
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
+import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
-import { ARTICLE_PROSE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
+import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
-const UPDATED = 'July 2026';
+const UPDATED = 'September 2026';
+
+const OPEN_POINTS = [
+  'How long order and accounting records are kept, in years (accountant).',
+  "Whether Cloudflare's bot check sets cookies of its own, and whether that needs naming (solicitor).",
+];
 
 export default function Privacy() {
   return (
@@ -28,10 +34,7 @@ export default function Privacy() {
       />
 
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.narrow}`}>
-        <div className={`${PANEL} border-l-2 border-l-accent p-4 text-sm text-muted-foreground`}>
-          Draft — this policy should be reviewed by a solicitor or against Data Protection Commission
-          guidance before the site goes live.
-        </div>
+        <LegalDraftNotice openPoints={OPEN_POINTS} />
 
         <div className={`mt-6 ${ARTICLE_PROSE} [&>section:first-child>h2]:mt-8`}>
           <section>
@@ -54,7 +57,6 @@ export default function Privacy() {
                 which is stored only as a secure hash.
               </li>
               <li>Your marketing-email preference.</li>
-              <li>Limited technical data (e.g. essential cookies to keep you signed in).</li>
               <li>
                 When you check out or look up an order: your IP address and browser signals, used
                 by the bot check and to limit repeated attempts. The address is not stored in the
@@ -107,10 +109,12 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2>Cookies</h2>
+            <h2>Cookies and browser storage</h2>
             <p>
-              We use essential cookies needed to run the site (for example, to keep you signed in).
-              Any non-essential cookies (such as analytics) are only used with your consent.
+              We do not use analytics, advertising or tracking cookies. The site keeps your basket,
+              and your sign-in if you have an account, in your own browser&apos;s storage so they
+              survive a page reload. Signing out or clearing your browser data removes them. If we
+              ever add analytics, we will ask for your consent first.
             </p>
           </section>
 
