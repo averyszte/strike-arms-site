@@ -167,6 +167,38 @@ Also parked: re-run `supabase/verify-rls.sql` after 034 (not confirmed), the Str
 webhook's two async events, one end-to-end test payment, catalogue batch 2 and the admin
 items under "NEEDS THE USER (aal2 admin session)".
 
+## TO DO (added 2026-09-30, from the All Blooms comparison)
+
+Strike Arms now covers everything All Blooms does for checkout, email, admin and security.
+Still missing, roughly in order:
+
+1. **Legal pages (launch blocker).** Privacy (`/privacy`) exists and needs a final read only.
+   New pages, linked from the footer and from the checkout form next to the 18+ tick:
+   - `/terms`: terms of sale and site use. Seller identity, prices and VAT, payment, the 18+
+     rule and photo ID at collection, statutory rights for faulty goods (Consumer Rights Act
+     2022), complaints.
+   - `/returns`: the 14-day right to cancel online orders, who pays return postage, refund
+     within 14 days, the model cancellation form.
+   - `/delivery`: zones, cost, timing, collect-in-store. Blocked on Alan (delivery pricing,
+     see the BLOCKED list).
+   - Business details (legal name, geographic address, email, VAT number, company number if
+     a company) in the footer or `/about`, per the E-Commerce Regulations. Blocked on Alan.
+   - Not needed: a cookie banner (no analytics or tracking; add one if GA or a pixel is ever
+     added), the EU ODR link (platform closed July 2025), an accessibility statement
+     (microenterprise exemption; confirm headcount and turnover with Alan).
+   - Have a solicitor read the final wording.
+2. **Item 23, `submit-inquiry`.** The contact and service-quote forms still insert straight
+   into `inquiries` with no bot check. Port the All Blooms function: Turnstile (keys exist now),
+   rate limit via 035, length caps, then migration 036 drops the anon insert.
+3. **Ask Alan about sizes.** All Blooms has product sizes and colours; Strike Arms has none.
+   If Gear sells sized items (clothing, gloves), each size is a separate product today.
+4. **Supabase function secret `SITE_URL`** must be `https://strike-arms-site.pages.dev`
+   (it was localhost, so Stripe returned shoppers to localhost and the cart never cleared).
+   Change it to `https://strikearms.ie` at launch. It also builds the links in order emails.
+
+Not needed from All Blooms: the gallery and add-on cards (florist-only) and a separate
+order-cancelled page (Strike Arms' cancel goes back to `/cart`).
+
 ## NEEDS THE USER for customer accounts (in this order)
 
 1. `echo y | npx supabase db push` for **033**, then redeploy `order-lookup` and
