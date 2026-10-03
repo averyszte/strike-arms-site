@@ -27,7 +27,7 @@ export function CartLineRow({
         <img
           src={line.image ?? '/images/placeholder-product.png'}
           alt={line.name}
-          className="h-20 w-20 border border-border/60 object-cover bg-muted"
+          className="h-20 w-20 border border-border/60 object-contain p-1 bg-white"
           loading="lazy"
         />
       </Link>

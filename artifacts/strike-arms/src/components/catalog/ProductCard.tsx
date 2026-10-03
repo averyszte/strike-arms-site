@@ -21,12 +21,12 @@ export function ProductCard({ product }: ProductCardProps) {
       tabIndex={0}
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-white">
         <img
           src={displayImage}
           alt={name}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          className="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.03]"
         />
 
         {/* Badge row — top-left */}
@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
               secondhand rifle can also be -- printing both would put the word
               NEW on a used gun. Condition wins. */}
           {preLoved && (
-            <Badge className="text-[10px] px-1.5 py-0.5 bg-foreground text-background uppercase tracking-wide">
+            <Badge className="text-[10px] px-1.5 py-0.5 bg-background text-foreground uppercase tracking-wide">
               Pre-loved
             </Badge>
           )}
@@ -55,7 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Badge>
           )}
           {!inStock && (
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 uppercase tracking-wide">
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 bg-background text-foreground uppercase tracking-wide">
               Out of stock
             </Badge>
           )}

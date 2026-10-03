@@ -8,11 +8,11 @@ export function ProductGallery({ product }: { product: Product }) {
 
   return (
     <div>
-      <div className="aspect-square overflow-hidden border border-border/60 bg-muted">
+      <div className="aspect-square overflow-hidden border border-border/60 bg-white">
         <img
           src={images[active]}
           alt={product.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain p-4"
           fetchPriority="high"
         />
       </div>
@@ -24,9 +24,9 @@ export function ProductGallery({ product }: { product: Product }) {
               type="button"
               onClick={() => setActive(index)}
               aria-label={`View image ${index + 1}`}
-              className={`h-16 w-16 overflow-hidden border-2 transition-colors ${index === active ? 'border-accent' : 'border-border/60 hover:border-foreground'}`}
+              className={`h-16 w-16 overflow-hidden border-2 bg-white transition-colors ${index === active ? 'border-accent' : 'border-border/60 hover:border-foreground'}`}
             >
-              <img src={image} alt="" className="h-full w-full object-cover" loading="lazy" />
+              <img src={image} alt="" className="h-full w-full object-contain p-1" loading="lazy" />
             </button>
           ))}
         </div>

@@ -31,9 +31,9 @@ export function SearchResultRow({ product, isActive, onSelect, onHover }: Props)
         onMouseDown={onSelect}
         onMouseEnter={onHover}
       >
-        <div className="w-9 h-9 bg-muted rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
+        <div className="w-9 h-9 bg-white rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
           {product.images[0] ? (
-            <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+            <img src={product.images[0]} alt="" className="w-full h-full object-contain p-0.5" />
           ) : (
             <Search className="w-3.5 h-3.5 text-muted-foreground" />
           )}
