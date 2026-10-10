@@ -39,7 +39,7 @@ export type Database = {
         Row: ProductRow;
         Insert: Omit<
           ProductRow,
-          'id' | 'in_stock' | 'effective_price_cents' | 'search_text' | 'sellable_count' |
+          'id' | 'in_stock' | 'effective_price_cents' | 'type_rank' | 'search_text' | 'sellable_count' |
           'is_archived' | 'archived_at' | 'created_at' | 'updated_at' |
           'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
           'is_shippable' | 'ship_weight_g' | 'condition'
@@ -54,7 +54,10 @@ export type Database = {
           is_archived?: boolean; archived_at?: string | null;
         };
         Update: Partial<
-          Omit<ProductRow, 'in_stock' | 'effective_price_cents' | 'search_text' | 'sellable_count'>
+          Omit<
+            ProductRow,
+            'in_stock' | 'effective_price_cents' | 'type_rank' | 'search_text' | 'sellable_count'
+          >
         >;
         Relationships: [];
       };

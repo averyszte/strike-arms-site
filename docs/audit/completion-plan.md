@@ -241,7 +241,7 @@ taking real money.
   - QueryClient `staleTime`.
 - **Dashboard query** (M). Bound it by date and aggregate on the server
   (FV-A8). It currently pulls every order with items.
-- **Migration 037, query indexes** (S). The full list is in section 4.
+- **Migration 038, query indexes** (S). The full list is in section 4.
 - **Shipping logic, deduplicated or asserted** (S). Add three tests around the
   free-shipping threshold (FV-D13).
 - **Build meta** (M). Generate the sitemap in `build`, and add prerender or edge
@@ -281,8 +281,9 @@ taking real money.
 | 034 | `customer_accounts` | profiles, `orders.user_id`, customer read policies, **narrowed `authenticated` grants** (see `docs/customer-accounts-plan.md`) | accounts |
 | 035 | `checkout_rate_limit` | per-IP and per-attempt throttle (written after 032, so numbered after it) | 2 |
 | 036 | `inquiries_lockdown` | length limits; drop the anon insert (after `submit-inquiry` is deployed) | 3 |
-| 037 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
-| 038 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
+| 037 | `product_type_rank` | `products.type_rank`, a generated demand rank by subcategory; the storefront's default sort uses it after `is_featured` | catalogue order |
+| 038 | `query_indexes` | orders `(is_archived, created_at)`, payment and fulfilment status; `order_items(product_id)`; `order_status_log(order_id, created_at)`; `inventory_adjustments(product_id, created_at)`; `checkout_reservations(product_id)`; `inquiries(status, created_at)`; products `(is_published, is_featured, created_at)` and `(is_published, category, subcategory)` | after launch |
+| 039 | `housekeeping_cron` | stale attempts, old event log rows, orphan sweep schedule | after launch |
 
 Also in Phase 1: `config.toml`, covering `site_url`, a password policy, an MFA
 section and SMTP.

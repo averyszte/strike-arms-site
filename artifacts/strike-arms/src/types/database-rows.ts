@@ -27,6 +27,8 @@ export type ProductRow = {
   // Generated: coalesce(sale_price_cents, price_cents). Read-only — the shop
   // sorts on it because PostgREST cannot order by an expression.
   effective_price_cents: number;
+  // Generated: demand rank by subcategory (037), lower first. Read-only.
+  type_rank: number;
   images: string[]; short_description: string; description: string;
   is_new: boolean; is_featured: boolean; is_published: boolean;
   stock_count: number; reserved_count: number; low_stock_threshold: number;

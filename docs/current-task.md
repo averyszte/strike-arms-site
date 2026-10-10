@@ -25,7 +25,7 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
 
 Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
 032 service_role grants, 033 order tracking, 034 customer accounts, 035 rate limit, 036 inquiries
-lockdown, 037 indexes, 038 housekeeping. `db push` refuses a
+lockdown, 037 product type rank, 038 indexes, 039 housekeeping. `db push` refuses a
 file numbered below one already on the remote, so numbers follow the order they are written.
 
 Push only when the user asks, with `git push origin HEAD:main`.

@@ -37,6 +37,7 @@ function applySort(query: ProductQuery, sort: NonNullable<ProductFilters['sort']
     case 'featured':
       return query
         .order('is_featured', { ascending: false })
+        .order('type_rank', { ascending: true })
         .order('created_at', { ascending: false })
         .order('id', { ascending: true });
     case 'newest':
