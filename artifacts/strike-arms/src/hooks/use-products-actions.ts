@@ -35,6 +35,17 @@ export function useProductsActions(onDone: () => void) {
     }
   }
 
+  // One row's switch: no selection to clear, and the toast names the product.
+  async function toggleStock(product: Product) {
+    const inStock = !product.inStock;
+    try {
+      await bulkUpdate.mutateAsync({ ids: [product.id], patch: { inStock } });
+      toast({ title: `${product.name} marked ${inStock ? 'in stock' : 'out of stock'}` });
+    } catch (error) {
+      failed('Stock was not changed', error);
+    }
+  }
+
   async function archive(ids: string[], isArchived: boolean) {
     try {
       await setArchived.mutateAsync({ ids, isArchived });
@@ -50,6 +61,7 @@ export function useProductsActions(onDone: () => void) {
     patch: (ids: string[], change: ProductBulkPatch) => void patch(ids, change),
     archive: (ids: string[]) => void archive(ids, true),
     restore: (ids: string[]) => void archive(ids, false),
+    toggleStockOne: (product: Product) => void toggleStock(product),
     archiveOne: (product: Product) => void archive([product.id], true),
     restoreOne: (product: Product) => void archive([product.id], false),
   };

@@ -33,7 +33,7 @@ export function OrderRefundSection({ order }: { order: Order }) {
             Refund up to €{(eligibility.refundableCents / 100).toFixed(2)}
           </Button>
           <p className="mt-2 text-xs text-muted-foreground">
-            Sends the money back through Stripe. Stock is not returned.
+            Sends the money back through Stripe.
           </p>
           {/* Keyed on the amount so closing and reopening builds a fresh
               dialog -- and therefore a fresh idempotency key, which is what

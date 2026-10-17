@@ -104,8 +104,8 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose }: P
             <DialogTitle>Refund this order</DialogTitle>
             <DialogDescription>
               Up to €{(refundableCents / 100).toFixed(2)} can still be refunded. The money goes back
-              to the card it was taken from. Stock is not returned — do that separately if the item
-              came back saleable.
+              to the card it was taken from. If the item came back saleable, mark it in stock again
+              in Products.
             </DialogDescription>
           </DialogHeader>
 

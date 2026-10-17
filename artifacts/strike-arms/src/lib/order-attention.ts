@@ -3,8 +3,8 @@ import type { FulfillmentStatus, Order, PaymentStatus } from '@/types/order';
 /**
  * Whether a flagged order still needs someone.
  *
- * confirm_order_paid (migration 028) sets attention_reason when a customer
- * paid for stock that had already gone. Nothing clears it: the flag is the
+ * attention_reason is set when a paid order needs a human, e.g. a payment
+ * that did not match its order (029). Nothing clears it: the flag is the
  * record of what happened. What settles it is the money or the goods, so the
  * flag counts as open only while the customer is still out of pocket and
  * nothing has been handed over.

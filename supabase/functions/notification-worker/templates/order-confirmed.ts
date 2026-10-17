@@ -21,7 +21,7 @@ export function orderConfirmedEmail(order: EmailOrder): RenderedEmail {
     next.push(COLLECTION_NOTE);
   }
   if (hasPosting(order)) next.push("We will email you when the posted items are on their way.");
-  // Paid for stock that had gone (028). The reason is for the shop, not the
+  // Flagged when it was paid (029). The reason is for the shop, not the
   // customer; this only says someone will be in touch.
   if (order.needsAttention) {
     next.push(`One of your items needs checking. We will contact you shortly; you can also call us on ${SHOP.phone}.`);

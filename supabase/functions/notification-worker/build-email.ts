@@ -1,8 +1,6 @@
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { loadEmailOrder, type EmailOrder } from "./load-order.ts";
-import { loadEmailProduct } from "./load-product.ts";
 import type { RenderedEmail } from "./templates/layout.ts";
-import { lowStockEmail } from "./templates/low-stock.ts";
 import { orderConfirmedEmail } from "./templates/order-confirmed.ts";
 import { ownerOrderPaidEmail } from "./templates/owner-order-paid.ts";
 import { refundedEmail } from "./templates/refunded.ts";
@@ -58,9 +56,6 @@ export async function renderJob(
   job: NotificationJob,
   siteUrl: string,
 ): Promise<JobEmail> {
-  if (job.event_type === "owner.low_stock" && job.product_id) {
-    return lowStockEmail(await loadEmailProduct(admin, job.product_id), `${siteUrl}/admin/products`);
-  }
   if (job.order_id) {
     return orderEmail(job, await loadEmailOrder(admin, job.order_id), siteUrl);
   }

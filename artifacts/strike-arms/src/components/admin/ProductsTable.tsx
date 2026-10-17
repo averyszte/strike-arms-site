@@ -18,7 +18,7 @@ import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 
 /**
  * The products list: one server-side page at a time, filtered by search,
- * stock level and archived. Export and import read the whole catalogue
+ * in or out of stock, and archived. Export and import read the whole catalogue
  * separately, whatever page is on screen.
  */
 
@@ -91,7 +91,7 @@ export function ProductsTable() {
         onToggleSelect={selection.toggle}
         onToggleGroup={selection.toggleMany}
         onEdit={dialogs.edit}
-        onAdjustStock={dialogs.adjustStock}
+        onStockToggle={actions.toggleStockOne}
         onArchiveToggle={(product) =>
           product.isArchived ? actions.restoreOne(product) : actions.archiveOne(product)
         }

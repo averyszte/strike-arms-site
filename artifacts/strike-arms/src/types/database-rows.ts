@@ -31,11 +31,8 @@ export type ProductRow = {
   type_rank: number;
   images: string[]; short_description: string; description: string;
   is_new: boolean; is_featured: boolean; is_published: boolean;
-  stock_count: number; reserved_count: number; low_stock_threshold: number;
+  // Set by the admin since 038; no longer generated from a stock count.
   in_stock: boolean; tags: string[];
-  // Generated: stock_count - reserved_count (026). Read-only -- the admin
-  // list filters on it because PostgREST cannot filter on an expression.
-  sellable_count: number;
   // An archived product is never published (026), and stands in for delete.
   is_archived: boolean; archived_at: string | null;
   // Generated: name, brand, short description and tags, lowercased and
@@ -62,11 +59,9 @@ export type OrderRow = {
   shipping_city: string | null; shipping_county: string | null; shipping_eircode: string | null;
   age_verified: boolean; notes: string | null; tracking_number: string | null; is_archived: boolean;
   paid_at: string | null; refunded_at: string | null;
-  // 028: set when a paid order needs a human (e.g. its stock had gone), and
-  // when confirm_order_paid actually took stock. Cancelling restocks only if
-  // stock_taken_at is set.
+  // 028: set when a paid order needs a human (e.g. a payment that did not
+  // match its order, 029).
   attention_reason: string | null; attention_raised_at: string | null;
-  stock_taken_at: string | null;
   created_at: string; updated_at: string;
 };
 
@@ -83,16 +78,6 @@ export type OrderStatusLogRow = {
   changed_by: string | null; note: string | null; created_at: string;
 };
 
-export type InventoryAdjustmentRow = {
-  id: string; product_id: string; adjustment: number;
-  reason: string; adjusted_by: string | null; created_at: string;
-};
-
-export type CheckoutReservationRow = {
-  id: string; product_id: string; quantity: number; order_id: string | null;
-  session_key: string; expires_at: string; created_at: string;
-};
-
 export type InquiryRow = {
   id: string; name: string; email: string; phone: string | null;
   subject: string | null; message: string; status: InquiryStatus;
@@ -102,6 +87,7 @@ export type InquiryRow = {
 export type NotificationEventType =
   | 'customer.order_confirmed' | 'owner.order_paid'
   | 'customer.status_changed' | 'customer.refunded'
+  // 031; no longer queued since 038, kept for the jobs already sent.
   | 'owner.low_stock';
 
 // 030: the email outbox. Written by triggers on orders and (031) products,

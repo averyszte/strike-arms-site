@@ -43,25 +43,12 @@ export function counterUnitPriceCents(product: Product): number {
   return sale != null && sale < product.price ? sale : product.price;
 }
 
-/**
- * What can still be sold. Stock held by a checkout in flight has already been
- * promised to somebody, so counting it here would let the counter sell it a
- * second time.
- */
-export function availableStock(product: Product): number {
-  return (product.stockCount ?? 0) - (product.reservedCount ?? 0);
-}
-
+// No stock check: nothing is counted since 038, and whatever is on the
+// counter is there to be sold, whatever the website says.
 function lineProblem(product: Product, line: CounterOrderLine): string | null {
   if (line.fulfillmentMethod === 'delivery' && !product.isShippable) {
     return 'Collection only — cannot be posted.';
   }
-
-  const available = availableStock(product);
-  if (line.quantity > available) {
-    return available > 0 ? `Only ${available} available.` : 'None available.';
-  }
-
   return null;
 }
 

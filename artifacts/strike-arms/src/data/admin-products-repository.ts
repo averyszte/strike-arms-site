@@ -15,13 +15,9 @@ import { chunkArray } from '@/lib/chunk-array';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import { rowToProduct } from '@/lib/product-mappers';
-import { OPENING_STOCK_FORM_REASON } from '@/lib/stock-adjustment';
-import { LOW_STOCK_THRESHOLD } from '@/lib/stock-levels';
-import { adjustStock } from '@/data/inventory-repository';
 import { ID_CHUNK, pageAll } from '@/data/orders-bulk-reads';
 import type {
   AdminProductListFilters,
-  CreatedProduct,
   NewProduct,
   Product,
   ProductBulkPatch,
@@ -52,8 +48,8 @@ export async function listAllProducts(): Promise<Product[]> {
  *
  * Sorted by category, subcategory and name so the page splits into the same
  * category groups the table shows, and id last so a page boundary never falls
- * between two rows that sort equal. The stock filters mirror
- * lib/stock-levels.ts, on the generated sellable_count (026).
+ * between two rows that sort equal. The stock filter mirrors
+ * lib/stock-levels.ts.
  */
 export async function listProducts(
   filters: AdminProductListFilters = {},
@@ -66,14 +62,8 @@ export async function listProducts(
     .select('*', { count: 'exact' })
     .eq('is_archived', filters.isArchived ?? false);
 
-  if (filters.stock === 'low') {
-    query = query
-      .eq('is_published', true)
-      .gt('sellable_count', 0)
-      .lte('sellable_count', LOW_STOCK_THRESHOLD);
-  } else if (filters.stock === 'out') {
-    query = query.eq('is_published', true).lte('sellable_count', 0);
-  }
+  if (filters.stock === 'in') query = query.eq('in_stock', true);
+  else if (filters.stock === 'out') query = query.eq('in_stock', false);
 
   // Escaped for the same reason as the orders search: .or() is a
   // comma-separated list, and a raw comma would become another clause.
@@ -91,15 +81,7 @@ export async function listProducts(
   return { items: (data ?? []).map(rowToProduct), total: count ?? 0 };
 }
 
-/**
- * Inserts the row with no stock, then books the opening stock through
- * adjust_stock like the CSV import does, so the ledger has a first entry that
- * says who put the units there.
- */
-export async function createProduct(
-  input: NewProduct,
-  openingStock: number,
-): Promise<CreatedProduct> {
+export async function createProduct(input: NewProduct): Promise<Product> {
   const { data, error } = await supabase
     .from('products')
     .insert({
@@ -115,7 +97,7 @@ export async function createProduct(
       short_description: input.shortDescription,
       description: input.description ?? '',
       is_published: input.isPublished ?? false,
-      stock_count: 0,
+      in_stock: input.inStock,
       is_new: input.isNew ?? false,
       is_featured: input.isFeatured ?? false,
       is_shippable: input.isShippable,
@@ -125,16 +107,22 @@ export async function createProduct(
     .single();
 
   if (error) throw error;
-  const product = rowToProduct(data);
-  if (openingStock <= 0) return { product };
+  return rowToProduct(data);
+}
 
-  try {
-    await adjustStock(product.id, openingStock, OPENING_STOCK_FORM_REASON);
-    return { product };
-  } catch (cause) {
-    const detail = cause instanceof Error ? cause.message : 'the stock change was refused';
-    return { product, stockError: detail };
-  }
+type ProductFlags = Partial<
+  Pick<Product, 'isPublished' | 'inStock' | 'isNew' | 'isFeatured' | 'isShippable'>
+>;
+
+/** The on/off columns, shared by the single and the bulk update. */
+function flagColumns(patch: ProductFlags) {
+  return {
+    ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
+    ...(patch.inStock !== undefined && { in_stock: patch.inStock }),
+    ...(patch.isNew !== undefined && { is_new: patch.isNew }),
+    ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
+    ...(patch.isShippable !== undefined && { is_shippable: patch.isShippable }),
+  };
 }
 
 export async function updateProduct(id: string, patch: ProductPatch): Promise<Product> {
@@ -154,10 +142,7 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
       // !== undefined, not != null: clearing the description is a real edit.
       // No description is stored as the empty string the column wants.
       ...(patch.description !== undefined && { description: patch.description ?? '' }),
-      ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
-      ...(patch.isNew !== undefined && { is_new: patch.isNew }),
-      ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
-      ...(patch.isShippable !== undefined && { is_shippable: patch.isShippable }),
+      ...flagColumns(patch),
       ...(patch.tags !== undefined && { tags: patch.tags }),
     })
     .eq('id', id)
@@ -172,7 +157,7 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
 
 /**
  * Archives or restores products. There is no delete (026): archiving keeps the
- * stock ledger and the order links that a delete would cascade away.
+ * order links that a delete would break.
  *
  * Archiving also unpublishes and unfeatures, because an archived product may
  * not be live (the database refuses it) and a featured flag left behind would
@@ -201,11 +186,7 @@ export async function setProductsArchived(ids: string[], isArchived: boolean): P
 /** Applies the same patch to many products. See ProductBulkPatch for why it is narrow. */
 export async function bulkUpdateProducts(ids: string[], patch: ProductBulkPatch): Promise<void> {
   if (ids.length === 0) return;
-  const row = {
-    ...(patch.isPublished !== undefined && { is_published: patch.isPublished }),
-    ...(patch.isFeatured !== undefined && { is_featured: patch.isFeatured }),
-    ...(patch.isNew !== undefined && { is_new: patch.isNew }),
-  };
+  const row = flagColumns(patch);
   if (Object.keys(row).length === 0) return;
 
   for (const batch of chunkArray(ids, ID_CHUNK)) {

@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Archive, ArchiveRestore, Eye, EyeOff, Star, StarOff, X } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  Eye,
+  EyeOff,
+  PackageCheck,
+  PackageX,
+  Star,
+  StarOff,
+  X,
+} from 'lucide-react';
 
 import {
   AlertDialog,
@@ -18,7 +28,7 @@ import type { Product, ProductBulkPatch } from '@/types/product';
 /**
  * What you can do to a selection of products.
  *
- * Publishing and featuring are one click, because the button that undoes each
+ * Publishing, featuring and stock are one click, because the button that undoes each
  * of them is sitting right beside it. Archiving asks first, because restoring
  * brings products back as unfeatured drafts rather than as they were, and
  * publishing asks when the selection contains something that would go on the
@@ -127,6 +137,26 @@ export function ProductsBulkBar({
           size="sm"
           variant="outline"
           disabled={isPending}
+          onClick={() => onPatch({ inStock: true })}
+        >
+          <PackageCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
+          In stock
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={isPending}
+          onClick={() => onPatch({ inStock: false })}
+        >
+          <PackageX className="mr-1.5 h-4 w-4" aria-hidden="true" />
+          Out of stock
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={isPending}
           onClick={() => setConfirming('archive')}
         >
           <Archive className="mr-1.5 h-4 w-4" aria-hidden="true" />
@@ -175,8 +205,7 @@ export function ProductsBulkBar({
               Archive {count} {word}?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              They come off the shop and out of this list. Their stock history and past orders are
-              kept, and they can be restored from Archived as unfeatured drafts, to be checked
+              They come off the shop and out of this list. Their past orders are kept, and they can be restored from Archived as unfeatured drafts, to be checked
               before they go live again.
             </AlertDialogDescription>
           </AlertDialogHeader>

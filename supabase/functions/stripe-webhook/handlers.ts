@@ -8,7 +8,7 @@ import { mismatchReasons, paymentIntentOf, recordUnmatchedPayment } from "./paym
  * Every handler is written to be safely repeatable: Stripe retries, and the
  * same event can legitimately arrive twice. The database functions these call
  * are all guarded on the order's current status, so a second delivery is a
- * no-op rather than a double stock decrement.
+ * no-op rather than a second order number or email.
  */
 
 type OrderRow = {
@@ -39,7 +39,7 @@ async function findOrderForSession(
 }
 
 /**
- * Marks the order paid and turns its stock reservations into a real sale.
+ * Marks the order paid and gives it its order number.
  *
  * Also the handler for checkout.session.async_payment_succeeded, which carries
  * the same session once a delayed method settles. v1 is meant to run on
@@ -105,7 +105,7 @@ export async function handleCheckoutCompleted(
 }
 
 /**
- * Releases the held stock when a shopper walks away from a session, or when a
+ * Closes the order when a shopper walks away from a session, or when a
  * delayed payment method fails (checkout.session.async_payment_failed). Both
  * leave the order 'expired': no money arrived, and nothing needs Alan.
  */
@@ -123,8 +123,7 @@ export async function handleCheckoutExpired(
 }
 
 /**
- * Records money going back out. Stock is deliberately not returned: a refunded
- * item may have been damaged, kept, or never collected, so restocking is a
+ * Records money going back out. Whether the product is back in stock is a
  * decision for the shop, made in the admin.
  */
 export async function handleChargeRefunded(

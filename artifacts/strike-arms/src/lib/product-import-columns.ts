@@ -38,7 +38,7 @@ export type ColumnKey =
   | 'isFeatured'
   | 'isNew'
   | 'isShippable'
-  | 'stock';
+  | 'inStock';
 
 const COLUMN_KEYS: Record<string, ColumnKey> = {
   slug: 'slug',
@@ -57,7 +57,7 @@ const COLUMN_KEYS: Record<string, ColumnKey> = {
   featured: 'isFeatured',
   new: 'isNew',
   'can be posted': 'isShippable',
-  stock: 'stock',
+  'in stock': 'inStock',
 };
 
 /** Everything a row can set. Absent keys are columns the file did not carry. */
@@ -78,6 +78,7 @@ export type ParsedFields = Partial<
     | 'isFeatured'
     | 'isNew'
     | 'isShippable'
+    | 'inStock'
   >
 > & { salePrice?: number | null };
 
@@ -107,6 +108,7 @@ export const FIELD_LABELS: Record<string, string> = {
   isFeatured: 'Featured',
   isNew: 'New',
   isShippable: 'Can be posted',
+  inStock: 'In stock',
 };
 
 export type HeaderMap = {
@@ -127,7 +129,7 @@ export function mapHeader(header: string[]): HeaderMap {
       if (trimmed !== '') unknownColumns.push(trimmed);
       return;
     }
-    if ((IMPORT_IGNORED_COLUMNS as readonly string[]).includes(trimmed)) {
+    if (IMPORT_IGNORED_COLUMNS.includes(trimmed)) {
       ignoredColumns.push(trimmed);
     }
     positions.set(key, index);
@@ -180,6 +182,7 @@ export function parseFields(read: CellReader): { fields: ParsedFields; messages:
     (r) => parseBoolean('Can be posted', r),
     (v) => void (fields.isShippable = v),
   );
+  when('inStock', (r) => parseBoolean('In stock', r), (v) => void (fields.inStock = v));
 
   return { fields, messages };
 }

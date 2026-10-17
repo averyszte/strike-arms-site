@@ -14,9 +14,7 @@ import type { Product } from '@/types/product';
  * changing a slug in the spreadsheet does not rename a product -- it creates a
  * second one. The importer says so in the preview.
  *
- * Stock is exported because it is the number you want to see when you open the
- * file, and ignored on import because stock moves through adjust_stock, which
- * records who changed it and why. A spreadsheet cannot say why.
+ * In stock is a Yes/No like Published: there are no counts to export.
  */
 
 export const PRODUCT_CSV_COLUMNS = [
@@ -36,11 +34,11 @@ export const PRODUCT_CSV_COLUMNS = [
   'Featured',
   'New',
   'Can be posted',
-  'Stock',
+  'In stock',
 ] as const;
 
-/** Columns the importer reads. Stock is exported but never written back. */
-export const IMPORT_IGNORED_COLUMNS = ['Stock'] as const;
+/** Columns exported but never written back. None since stock became Yes/No (038). */
+export const IMPORT_IGNORED_COLUMNS: readonly string[] = [];
 
 /** Multi-value cells use a semicolon, so a comma in a tag cannot split it. */
 export const LIST_SEPARATOR = ';';
@@ -69,7 +67,7 @@ function productRow(product: Product): string[] {
     yesNo(product.isFeatured),
     yesNo(product.isNew),
     yesNo(product.isShippable),
-    String(product.stockCount ?? 0),
+    yesNo(product.inStock),
   ];
 }
 

@@ -78,12 +78,9 @@ export type Order = {
   shippingAddress: ShippingAddress | null;
   paidAt: string | null;
   refundedAt: string | null;
-  // Set by confirm_order_paid when the customer paid for stock that had gone
-  // (028). Whether it is still open is needsAttention() in lib/order-attention.
+  // Set by flag_order when a payment did not match its order (029). Whether it is still open is needsAttention() in lib/order-attention.
   attentionReason: string | null;
   attentionRaisedAt: string | null;
-  // Null when no stock was taken for this order, so cancelling it restocks nothing.
-  stockTakenAt: string | null;
   ageVerified: boolean;
   notes: string | null;
   // An Post number for posted items (033). Shown to the customer as a link.

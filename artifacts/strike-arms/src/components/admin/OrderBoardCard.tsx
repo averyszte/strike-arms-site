@@ -73,8 +73,7 @@ export function OrderBoardCard({
               {order.paymentStatus.replace(/_/g, ' ')}
             </Badge>
           )}
-          {/* Paid, but the stock had gone: moving it forward would hand over
-              something the shop does not have. */}
+          {/* Paid, but flagged: check it before moving it forward. */}
           {needsAttention(order) && (
             <Badge variant="destructive" className="text-[10px]">
               Needs attention

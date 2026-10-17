@@ -127,6 +127,11 @@ Alan confirmed (23 July) the repair tech needs no login. Admin auth is a single 
 
 ## 4. Site — small fixes & data gaps
 
+- [ ] **Delivery price** — **[alan]** the flat delivery charge and free-delivery threshold
+  are still placeholders. Both the `/delivery` page and the amount charged at checkout read
+  the same `store_settings` row, so set the real figures once in Admin → Settings (Store
+  rates) and both update. Then drop the placeholder note at the top of
+  `src/pages/Delivery.tsx` and check the page wording still fits (added 2026-10-17)
 - [ ] Footer email `info@strikearms.ie` — **[alan]** confirm or remove
 - [ ] Lat/long for LocalBusiness `geo` schema — **[alan]**
 - [ ] Confirm NAP in `site-config.ts` still current — **[alan]**

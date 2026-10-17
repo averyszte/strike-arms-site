@@ -149,8 +149,7 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
         <SheetHeader>
           <SheetTitle>New counter sale</SheetTitle>
           <SheetDescription>
-            Records a sale already paid for in the shop or over the phone, and takes the
-            stock for it.
+            Records a sale already paid for in the shop or over the phone.
           </SheetDescription>
         </SheetHeader>
 

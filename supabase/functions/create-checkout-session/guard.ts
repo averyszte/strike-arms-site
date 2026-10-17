@@ -4,9 +4,9 @@ import { RATE_LIMITED_MESSAGE, type RateLimit, withinRateLimits } from "../_shar
 import { verifyTurnstile } from "../_shared/turnstile.ts";
 
 /**
- * Bot protection for checkout (Phase 2 item 17). Every call holds stock for
- * 35 minutes, so unchecked calls could hold the whole shop without anyone
- * paying. Runs after the body is parsed and before anything is reserved.
+ * Bot protection for checkout (Phase 2 item 17). Every call writes a pending
+ * order and opens a Stripe session, so unchecked calls could flood both.
+ * Runs after the body is parsed and before the order is created.
  *
  * The limits are generous for a person: a shopper who retries a few times,
  * or a household behind one address, stays well inside them.

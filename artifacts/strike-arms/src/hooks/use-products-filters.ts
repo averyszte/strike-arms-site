@@ -2,18 +2,17 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { useUrlParams } from '@/hooks/use-url-params';
 import { ADMIN_PAGE_SIZE, readPageParam } from '@/lib/page-bounds';
+import { STOCK_FILTERS } from '@/lib/stock-levels';
 import type { AdminProductListFilters, ProductStockFilter } from '@/types/product';
 
 /**
  * What the products list is showing, kept in the query string like the orders
- * list, so the dashboard's stock alerts can link straight to
- * /admin/products?stock=low and a reload lands on the same page.
+ * list, so the dashboard's out-of-stock alert can link straight to
+ * /admin/products?stock=out and a reload lands on the same page.
  *
  * Archived is not in the URL, for the same reason as on orders: it is a mode
  * you are in, not a view anyone links to.
  */
-
-const STOCK_FILTERS: ProductStockFilter[] = ['all', 'low', 'out'];
 
 function readStock(params: URLSearchParams): ProductStockFilter {
   const value = params.get('stock');

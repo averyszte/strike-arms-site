@@ -2,7 +2,7 @@
  * Admin two-factor authentication (TOTP).
  *
  * Every admin write policy in 002_rls.sql checks is_admin_aal2(), and
- * adjust_stock() raises 42501 for the same reason. A password-only session is
+ * create_counter_order() raises 42501 for the same reason. A password-only session is
  * aal1, so without the flow in this file an admin can sign in, see everything,
  * and be refused by the database on every single save. Enrolment is therefore
  * mandatory, not optional — see AuthGuard.

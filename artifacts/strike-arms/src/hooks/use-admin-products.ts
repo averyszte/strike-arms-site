@@ -51,15 +51,10 @@ function useProductInvalidation() {
 }
 
 export function useCreateProduct() {
-  const qc = useQueryClient();
   const invalidate = useProductInvalidation();
   return useMutation({
-    mutationFn: ({ input, openingStock }: { input: NewProduct; openingStock: number }) =>
-      createProduct(input, openingStock),
-    onSuccess: ({ product }) => {
-      invalidate();
-      void qc.invalidateQueries({ queryKey: ['admin', 'inventory', product.id] });
-    },
+    mutationFn: (input: NewProduct) => createProduct(input),
+    onSuccess: invalidate,
   });
 }
 

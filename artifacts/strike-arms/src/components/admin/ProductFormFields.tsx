@@ -23,9 +23,11 @@ const CATEGORIES = [
 ] as const;
 
 type BooleanFieldName = keyof ProductFormValues &
-  ('isPublished' | 'isNew' | 'isFeatured' | 'isShippable');
+  ('inStock' | 'isPublished' | 'isNew' | 'isFeatured' | 'isShippable');
 
 const BOOLEAN_FIELDS: [BooleanFieldName, string][] = [
+  // Set by hand: nothing counts stock, and a sale leaves it ticked.
+  ['inStock', 'In stock'],
   ['isPublished', 'Published'],
   ['isNew', 'New'],
   ['isFeatured', 'Featured'],
@@ -42,11 +44,9 @@ function FieldError({ message }: { message?: string }) {
 interface Props {
   /** Owned by ProductFormSheet, which also has to discard on cancel. */
   upload: ProductImageUpload;
-  /** Set when editing. Stock is then shown, not edited: Adjust stock owns it. */
-  stockOnShelf?: number;
 }
 
-export function ProductFormFields({ upload, stockOnShelf }: Props) {
+export function ProductFormFields({ upload }: Props) {
   const {
     register,
     control,
@@ -180,19 +180,6 @@ export function ProductFormFields({ upload, stockOnShelf }: Props) {
           <FieldError message={errors.salePriceEuros?.message} />
         </div>
       </div>
-
-      {stockOnShelf === undefined ? (
-        <div className="space-y-1">
-          <Label htmlFor="openingStock">Opening stock</Label>
-          <Input id="openingStock" type="number" min={0} {...register('openingStock')} />
-          <FieldError message={errors.openingStock?.message} />
-        </div>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          {stockOnShelf} on the shelf. To change it, use Adjust stock in the products
-          list, so the inventory history records who and why.
-        </p>
-      )}
 
       <ProductImagesField upload={upload} />
 

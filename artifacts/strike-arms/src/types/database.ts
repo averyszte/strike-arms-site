@@ -4,10 +4,8 @@
 // Regenerate with: supabase gen types typescript --local > src/types/database.ts
 
 import type {
-  CheckoutReservationRow,
   InquiryRow,
   InquiryStatus,
-  InventoryAdjustmentRow,
   Json,
   NotificationJobRow,
   NotificationStatus,
@@ -39,9 +37,9 @@ export type Database = {
         Row: ProductRow;
         Insert: Omit<
           ProductRow,
-          'id' | 'in_stock' | 'effective_price_cents' | 'type_rank' | 'search_text' | 'sellable_count' |
+          'id' | 'in_stock' | 'effective_price_cents' | 'type_rank' | 'search_text' |
           'is_archived' | 'archived_at' | 'created_at' | 'updated_at' |
-          'description' | 'is_published' | 'stock_count' | 'reserved_count' | 'low_stock_threshold' |
+          'description' | 'is_published' |
           'is_shippable' | 'ship_weight_g' | 'condition'
         > & {
           id?: string; created_at?: string; updated_at?: string;
@@ -49,14 +47,15 @@ export type Database = {
           // Defaults to 'new' in the database (018), so an insert may leave it
           // out -- but anything secondhand has to say so.
           condition?: ProductCondition;
-          stock_count?: number; reserved_count?: number; low_stock_threshold?: number;
+          // Defaults to true (038).
+          in_stock?: boolean;
           is_shippable?: boolean; ship_weight_g?: number;
           is_archived?: boolean; archived_at?: string | null;
         };
         Update: Partial<
           Omit<
             ProductRow,
-            'in_stock' | 'effective_price_cents' | 'type_rank' | 'search_text' | 'sellable_count'
+            'effective_price_cents' | 'type_rank' | 'search_text'
           >
         >;
         Relationships: [];
@@ -80,18 +79,6 @@ export type Database = {
         Row: OrderStatusLogRow;
         Insert: Omit<OrderStatusLogRow, 'id' | 'created_at'> & { id?: string };
         Update: Partial<Omit<OrderStatusLogRow, 'id'>>;
-        Relationships: [];
-      };
-      inventory_adjustments: {
-        Row: InventoryAdjustmentRow;
-        Insert: Omit<InventoryAdjustmentRow, 'id' | 'created_at'> & { id?: string };
-        Update: Partial<Omit<InventoryAdjustmentRow, 'id'>>;
-        Relationships: [];
-      };
-      checkout_reservations: {
-        Row: CheckoutReservationRow;
-        Insert: Omit<CheckoutReservationRow, 'id' | 'created_at'> & { id?: string };
-        Update: Partial<Omit<CheckoutReservationRow, 'id'>>;
         Relationships: [];
       };
       inquiries: {
@@ -157,14 +144,6 @@ export type Database = {
     Functions: ServerFunctions & CustomerFunctions & {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin_aal2: { Args: Record<PropertyKey, never>; Returns: boolean };
-      adjust_stock: {
-        Args: {
-          p_product_id: string;
-          p_adjustment: number;
-          p_reason: string;
-        };
-        Returns: undefined;
-      };
       // Deployment metadata (migration 016). Admin-only; the Settings screen
       // compares the result against the migrations in the repo.
       applied_migrations: {
@@ -176,15 +155,6 @@ export type Database = {
       search_products: {
         Args: { p_query: string; p_limit?: number };
         Returns: ProductRow[];
-      };
-      reserve_stock: {
-        Args: {
-          p_product_id: string;
-          p_quantity: number;
-          p_session_key: string;
-          p_expires_at: string;
-        };
-        Returns: boolean;
       };
       // Counter and phone sales (migration 013). The only route to creating an
       // order from the browser: there are deliberately no INSERT policies on

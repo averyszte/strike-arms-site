@@ -20,7 +20,7 @@ type ProductsGroupsProps = {
   onToggleSelect: (id: string) => void;
   onToggleGroup: (ids: string[]) => void;
   onEdit: (product: Product) => void;
-  onAdjustStock: (product: Product) => void;
+  onStockToggle: (product: Product) => void;
   onArchiveToggle: (product: Product) => void;
 };
 
@@ -49,7 +49,7 @@ export function ProductsGroups({ groups, emptyMessage, groupState, ...rest }: Pr
           onToggleSelect={rest.onToggleSelect}
           onToggleGroup={rest.onToggleGroup}
           onEdit={rest.onEdit}
-          onAdjustStock={rest.onAdjustStock}
+          onStockToggle={rest.onStockToggle}
           onArchiveToggle={rest.onArchiveToggle}
         />
       ))}

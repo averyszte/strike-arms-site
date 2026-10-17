@@ -10,12 +10,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { useProductsFilters } from '@/hooks/use-products-filters';
-import { STOCK_FILTER_LABELS } from '@/lib/stock-levels';
+import { STOCK_FILTER_LABELS, STOCK_FILTERS } from '@/lib/stock-levels';
 import type { ProductStockFilter } from '@/types/product';
 
 /** The controls above the products list. Holds no state of its own. */
 
-const STOCK_FILTERS: ProductStockFilter[] = ['all', 'low', 'out'];
 
 type ProductsToolbarProps = {
   total: number;
@@ -70,10 +69,10 @@ export function ProductsToolbar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {/* Addressable, so the dashboard's stock alerts land on exactly the
-            products they count. */}
+        {/* Addressable, so the dashboard's stock alert lands on exactly the
+            products it counts. */}
         <Select value={stock} onValueChange={(value) => filters.setStock(value as ProductStockFilter)}>
-          <SelectTrigger className="h-9 w-52 text-xs" aria-label="Stock">
+          <SelectTrigger className="h-9 w-40 text-xs" aria-label="Stock">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -95,8 +94,8 @@ export function ProductsToolbar({
 
       {showArchived && (
         <p className="mt-3 text-xs text-muted-foreground">
-          Archived products are off the shop and out of the counter sale picker. Their stock
-          history and past orders are kept. Restoring one brings it back as a draft.
+          Archived products are off the shop and out of the counter sale picker. Their past
+          orders are kept. Restoring one brings it back as a draft.
         </p>
       )}
     </div>

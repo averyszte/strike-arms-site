@@ -3,7 +3,7 @@ import { Plus, Search } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { availableStock, counterUnitPriceCents } from '@/lib/counter-order-totals';
+import { counterUnitPriceCents } from '@/lib/counter-order-totals';
 import { formatPrice } from '@/lib/format-price';
 import { searchProducts } from '@/lib/search-products';
 import type { Product } from '@/types/product';
@@ -68,36 +68,32 @@ export function CounterOrderProductPicker({
 
       {matches.length > 0 && (
         <ul className="mt-2 divide-y divide-border rounded-md border border-border">
-          {matches.map((product) => {
-            const available = availableStock(product);
-
-            return (
-              <li key={product.id}>
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-muted/40 disabled:opacity-50"
-                  disabled={addedIds.has(product.id)}
-                  onClick={() => {
-                    onAdd(product);
-                    setQuery('');
-                  }}
-                >
-                  <Plus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-foreground">{product.name}</span>
-                    <span className="block text-xs text-muted-foreground">
-                      {available} available
-                      {product.isShippable ? '' : ' · collection only'}
-                      {product.isPublished ? '' : ' · not on the website'}
-                    </span>
+          {matches.map((product) => (
+            <li key={product.id}>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-muted/40 disabled:opacity-50"
+                disabled={addedIds.has(product.id)}
+                onClick={() => {
+                  onAdd(product);
+                  setQuery('');
+                }}
+              >
+                <Plus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm text-foreground">{product.name}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {product.inStock ? 'In stock' : 'Marked out of stock'}
+                    {product.isShippable ? '' : ' · collection only'}
+                    {product.isPublished ? '' : ' · not on the website'}
                   </span>
-                  <span className="shrink-0 text-sm font-medium text-foreground">
-                    {formatPrice(counterUnitPriceCents(product))}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
+                </span>
+                <span className="shrink-0 text-sm font-medium text-foreground">
+                  {formatPrice(counterUnitPriceCents(product))}
+                </span>
+              </button>
+            </li>
+          ))}
         </ul>
       )}
     </div>

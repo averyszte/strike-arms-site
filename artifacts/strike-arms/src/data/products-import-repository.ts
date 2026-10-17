@@ -15,13 +15,11 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { OPENING_STOCK_REASON } from '@/lib/product-import';
 import type { ImportCreate, ImportPlan, ImportUpdate } from '@/lib/product-import';
 import type { ParsedFields } from '@/lib/product-import-columns';
 import type { ImportOutcome } from '@/types/product-import';
 import type { ProductCondition } from '@/types/product';
 import { updateProduct } from '@/data/admin-products-repository';
-import { adjustStock } from '@/data/inventory-repository';
 
 /** Insert batch size. Keeps one request from carrying a whole catalogue. */
 const INSERT_CHUNK = 50;
@@ -39,7 +37,7 @@ type InsertRow = {
   short_description: string;
   description: string;
   is_published: boolean;
-  stock_count: number;
+  in_stock: boolean;
   is_new: boolean;
   is_featured: boolean;
   is_shippable: boolean;
@@ -71,11 +69,9 @@ function toInsertRow(slug: string, fields: ParsedFields): InsertRow | null {
     images: fields.images ?? [],
     short_description: shortDescription,
     description: fields.description ?? '',
-    // New products start unpublished and empty unless the file says otherwise.
-    // Stock is never set from a spreadsheet: it moves through adjust_stock, so
-    // the inventory ledger can say who changed it and why.
+    // New products start unpublished, and in stock, unless the file says otherwise.
     is_published: fields.isPublished ?? false,
-    stock_count: 0,
+    in_stock: fields.inStock ?? true,
     is_new: fields.isNew ?? false,
     is_featured: fields.isFeatured ?? false,
     is_shippable: fields.isShippable ?? false,
@@ -116,37 +112,6 @@ async function runCreates(creates: ImportCreate[], outcome: ImportOutcome): Prom
   }
 }
 
-/**
- * Books opening stock for rows that were just created. The insert wrote 0; the
- * units go through adjust_stock so the ledger holds them like any delivery. A
- * failure here leaves the product in place at 0 and says so.
- */
-async function runOpeningStock(creates: ImportCreate[], outcome: ImportOutcome): Promise<void> {
-  const failed = new Set(outcome.failures.map((failure) => failure.slug));
-  const wanted = creates.filter((c) => c.openingStock > 0 && !failed.has(c.slug));
-  if (wanted.length === 0) return;
-
-  const { data, error } = await supabase
-    .from('products')
-    .select('id, slug')
-    .in('slug', wanted.map((c) => c.slug));
-  const idBySlug = new Map((data ?? []).map((row) => [row.slug, row.id]));
-
-  for (const create of wanted) {
-    const id = idBySlug.get(create.slug);
-    try {
-      if (error || !id) throw error ?? new Error('The new row could not be found.');
-      await adjustStock(id, create.openingStock, OPENING_STOCK_REASON);
-    } catch (cause) {
-      const detail = cause instanceof Error ? cause.message : 'the stock change was refused';
-      outcome.failures.push({
-        slug: create.slug,
-        message: `Created, but opening stock was not set (${detail}). Use Adjust stock.`,
-      });
-    }
-  }
-}
-
 async function runUpdates(updates: ImportUpdate[], outcome: ImportOutcome): Promise<void> {
   for (const update of updates) {
     try {
@@ -164,7 +129,6 @@ async function runUpdates(updates: ImportUpdate[], outcome: ImportOutcome): Prom
 export async function applyProductImport(plan: ImportPlan): Promise<ImportOutcome> {
   const outcome: ImportOutcome = { created: 0, updated: 0, failures: [] };
   await runCreates(plan.creates, outcome);
-  await runOpeningStock(plan.creates, outcome);
   await runUpdates(plan.updates, outcome);
   return outcome;
 }

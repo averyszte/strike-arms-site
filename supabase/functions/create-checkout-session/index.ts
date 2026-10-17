@@ -10,17 +10,14 @@ import { signedInCustomerId } from "./signed-in-customer.ts";
 import { guardCheckout } from "./guard.ts";
 
 /**
- * Creates the pending order, holds the stock, and hands back a Stripe Checkout
- * URL. The order exists before the session so the amount charged can be
- * checked against a total we calculated and stored, rather than trusted.
+ * Creates the pending order, checks every item is in stock, and hands back a
+ * Stripe Checkout URL. The order exists before the session so the amount
+ * charged can be checked against a total we calculated and stored, rather
+ * than trusted.
  */
 
-// Stripe's session lifetime, and how long stock is held for it. The hold must
-// outlive the session: if the reservation expired first, a shopper could pay
-// for stock that had already been sold to someone else. Stripe requires a
-// session expiry of at least 30 minutes.
+// Stripe's session lifetime. Stripe requires at least 30 minutes.
 const SESSION_MINUTES = 30;
-const RESERVATION_MINUTES = 35;
 
 // Pinned explicitly so that upgrading the SDK and moving the API version stay
 // two separate, reviewable decisions.
@@ -29,11 +26,15 @@ const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
-async function reserveOrFail(
+/**
+ * Refuses the basket if any product is marked out of stock. Nothing is held:
+ * the shop does not count stock (038). The function keeps its 028 name and
+ * arguments so the database and this function can be deployed in any order.
+ */
+async function requireInStock(
   admin: SupabaseClient,
   orderId: string,
   basket: PricedBasket,
-  expiresAt: Date,
 ): Promise<void> {
   const { data: unavailableId, error } = await admin.rpc("reserve_order_stock", {
     p_order_id: orderId,
@@ -41,27 +42,27 @@ async function reserveOrFail(
       product_id: line.productId,
       quantity: line.quantity,
     })),
-    p_expires_at: expiresAt.toISOString(),
+    p_expires_at: new Date().toISOString(),
   });
 
-  if (error) throw new Error(`Could not reserve stock: ${error.message}`);
+  if (error) throw new Error(`Could not check stock: ${error.message}`);
   if (!unavailableId) return;
 
   const soldOut = basket.lines.find((line) => line.productId === unavailableId);
   throw new CheckoutRequestError(
-    `${soldOut?.productName ?? "An item in your basket"} is no longer available ` +
-      `in that quantity. Please adjust your basket and try again.`,
+    `${soldOut?.productName ?? "An item in your basket"} is out of stock. ` +
+      `Please remove it from your basket and try again.`,
   );
 }
 
 /**
  * A retry of the same attempt would otherwise leave the first attempt's order
- * holding stock until its reservation lapsed. The old order is abandoned, not
+ * pending with a live Stripe session. The old order is abandoned, not
  * deleted, so a payment still in flight on it finds its order; its Stripe
  * session is expired so that payment cannot start from here on.
  *
- * Neither step blocks the new checkout. If the abandon fails the old holds
- * lapse through the sweeper; if an expire fails the session was already
+ * Neither step blocks the new checkout. If the abandon fails the old order
+ * stays pending until Stripe expires its session; if an expire fails it was already
  * complete or expired, or times out on its own within 30 minutes.
  */
 async function abandonStaleAttempt(admin: SupabaseClient, attemptId: string): Promise<void> {
@@ -110,12 +111,7 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
   const orderId = order.id as string;
 
   try {
-    await reserveOrFail(
-      admin,
-      orderId,
-      basket,
-      new Date(Date.now() + RESERVATION_MINUTES * 60_000),
-    );
+    await requireInStock(admin, orderId, basket);
 
     const { error: itemsError } = await admin.from("order_items").insert(
       basket.lines.map((line) => ({

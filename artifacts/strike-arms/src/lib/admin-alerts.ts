@@ -1,6 +1,6 @@
 import { needsAttention } from '@/lib/order-attention';
 import { migrationAlerts, type MigrationAlertInput } from '@/lib/migration-alerts';
-import { LOW_STOCK_THRESHOLD, matchesStockFilter } from '@/lib/stock-levels';
+import { matchesStockFilter } from '@/lib/stock-levels';
 import type { AlertSeverity, OperationalAlert } from '@/types/admin-alert';
 import type { Order } from '@/types/order';
 import type { Product } from '@/types/product';
@@ -39,8 +39,9 @@ function plural(count: number, one: string, many: string): string {
 }
 
 /**
- * Paid for stock that had gone (028). The customer is out of pocket until
- * Alan refunds or sources the item, so this is critical.
+ * A paid order flagged for a human (028), such as a payment that did not
+ * match its order (029). The customer may be out of pocket until Alan sorts
+ * it, so this is critical.
  */
 function attentionAlerts(orders: Order[]): OperationalAlert[] {
   const flagged = orders.filter(needsAttention);
@@ -48,11 +49,11 @@ function attentionAlerts(orders: Order[]): OperationalAlert[] {
 
   return [
     {
-      id: 'paid-stock-gone',
+      id: 'paid-needs-attention',
       severity: 'critical',
       count: flagged.length,
-      title: `${flagged.length} paid ${plural(flagged.length, 'order', 'orders')} for stock that had already gone`,
-      action: 'Refund or source the item',
+      title: `${flagged.length} paid ${plural(flagged.length, 'order needs', 'orders need')} attention`,
+      action: 'Check the order and refund if needed',
       href: '/admin/orders?attention=1',
     },
   ];
@@ -140,20 +141,8 @@ function stockAlerts(products: Product[]): OperationalAlert[] {
       severity: 'warning',
       count: soldOut.length,
       title: `${soldOut.length} live ${plural(soldOut.length, 'product is', 'products are')} out of stock`,
-      action: 'Restock or unpublish',
+      action: 'Mark back in stock or unpublish',
       href: '/admin/products?stock=out',
-    });
-  }
-
-  const low = products.filter((p) => matchesStockFilter(p, 'low'));
-  if (low.length > 0) {
-    alerts.push({
-      id: 'low-stock',
-      severity: 'warning',
-      count: low.length,
-      title: `${low.length} live ${plural(low.length, 'product is', 'products are')} down to ${LOW_STOCK_THRESHOLD} or fewer`,
-      action: 'Reorder',
-      href: '/admin/products?stock=low',
     });
   }
 

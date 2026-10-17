@@ -16,10 +16,13 @@ export type ServerFunctions = {
     Args: { p_event_id: string };
     Returns: undefined;
   };
+  // 038: only checks every product is in stock; nothing is held. The name and
+  // arguments are kept from 028 so deploys can land in either order.
   reserve_order_stock: {
     Args: { p_order_id: string; p_lines: Json; p_expires_at: string };
     Returns: string | null;
   };
+  // A no-op since 038, still called by abandon_order and expire_order.
   release_order_reservations: {
     Args: { p_order_id: string };
     Returns: undefined;
@@ -33,10 +36,6 @@ export type ServerFunctions = {
   abandon_order: {
     Args: { p_order_id: string };
     Returns: boolean;
-  };
-  order_stock_shortfall: {
-    Args: { p_order_id: string };
-    Returns: string | null;
   };
   confirm_order_paid: {
     Args: {

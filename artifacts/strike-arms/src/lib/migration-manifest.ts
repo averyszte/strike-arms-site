@@ -47,4 +47,7 @@ export const MIGRATION_MANIFEST: MigrationFile[] = [
   { version: '033', name: 'order_tracking', file: '033_order_tracking.sql' },
   { version: '034', name: 'customer_accounts', file: '034_customer_accounts.sql' },
   { version: '035', name: 'rate_limit', file: '035_rate_limit.sql' },
+  { version: '036', name: 'inquiries_lockdown', file: '036_inquiries_lockdown.sql' },
+  { version: '037', name: 'product_type_rank', file: '037_product_type_rank.sql' },
+  { version: '038', name: 'simple_stock', file: '038_simple_stock.sql' },
 ];

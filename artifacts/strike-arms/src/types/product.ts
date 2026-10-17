@@ -31,20 +31,16 @@ export type Product = {
   images: string[];           // relative paths for now, absolute URLs later
   shortDescription: string;
   description?: string | null;
+  // Set by hand in the admin (038). A sale does not change it.
   inStock: boolean;
   // Guns are collect-in-store only. False is the safe default: an item is
   // never posted unless someone has explicitly said it may be.
   isShippable: boolean;
   isPublished?: boolean;
-  stockCount?: number;
-  // Held by checkouts in flight. What is actually sellable is
-  // stockCount - reservedCount: someone mid-payment has already been promised
-  // the difference.
-  reservedCount?: number;
   isNew?: boolean;
   isFeatured?: boolean;
   // Archived stands in for delete (026): off the shop and out of the admin
-  // list, but its stock history and order links are kept.
+  // list, but its order links are kept.
   isArchived?: boolean;
   tags?: string[];
   createdAt: string;          // ISO date — used for sort-by-newest
@@ -78,14 +74,8 @@ export type ProductListResult = {
 /**
  * The fields a bulk action may change.
  *
- * Deliberately narrow: the flags a shopkeeper flips across a range at once.
- * Prices and names are not here because a bulk edit of them is a CSV import
- * with a preview, not a button. Stock is not here because writing stock_count
- * straight would step around adjust_stock and leave the inventory ledger
- * claiming a number the shelf does not have.
- */
-/** The products list's stock filter. See lib/stock-levels.ts for what each means. */
-export type ProductStockFilter = 'all' | 'low' | 'out';
+/** The products list's stock filter. */
+export type ProductStockFilter = 'all' | 'in' | 'out';
 
 export type AdminProductListFilters = {
   search?: string;
@@ -96,8 +86,16 @@ export type AdminProductListFilters = {
   pageSize?: number;
 };
 
+/**
+ * The fields a bulk action may change.
+ *
+ * Deliberately narrow: the flags a shopkeeper flips across a range at once.
+ * Prices and names are not here because a bulk edit of them is a CSV import
+ * with a preview, not a button.
+ */
 export type ProductBulkPatch = {
   isPublished?: boolean;
+  inStock?: boolean;
   isFeatured?: boolean;
   isNew?: boolean;
 };
@@ -109,23 +107,10 @@ export type ProductBulkPatch = {
  * means "the caller said nothing about it", null means "take the sale off".
  * Product itself keeps the narrower optional number, because a product either
  * has a sale price or has none.
- *
- * Stock is not here, for the same reason as ProductBulkPatch: it moves only
- * through adjust_stock, so the inventory ledger always agrees with the shelf.
  */
-export type ProductPatch = Partial<Omit<Product, 'salePrice' | 'isArchived' | StockField>> & {
+export type ProductPatch = Partial<Omit<Product, 'salePrice' | 'isArchived'>> & {
   salePrice?: number | null;
 };
 
-/** Fields the database owns: stock_count and reserved_count move through RPCs. */
-type StockField = 'inStock' | 'stockCount' | 'reservedCount';
-
-/** What the product form sends to create a row. Stock follows via adjust_stock. */
-export type NewProduct = Omit<Product, 'id' | 'createdAt' | StockField>;
-
-/**
- * A created product, and why its opening stock was not booked if it was not.
- * The row exists either way, so a failed stock step is a warning, not an error:
- * throwing would invite a second Create that the unique slug then refuses.
- */
-export type CreatedProduct = { product: Product; stockError?: string };
+/** What the product form sends to create a row. */
+export type NewProduct = Omit<Product, 'id' | 'createdAt'>;

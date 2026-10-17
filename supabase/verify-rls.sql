@@ -17,13 +17,13 @@ with
 -- Tables that hold customer data. Nothing here may be readable by anon.
 pii_tables(name) as (values
   ('orders'), ('order_items'), ('order_status_log'), ('inquiries'),
-  ('checkout_reservations'), ('notification_jobs'), ('stripe_event_log'), ('admins'),
+  ('notification_jobs'), ('stripe_event_log'), ('admins'),
   ('payment_alerts'), ('customer_profiles')
 ),
 -- SECURITY DEFINER functions the browser is meant to call. Each one checks
 -- the caller itself (or, for the two helpers, only answers about the caller).
 browser_definers(name) as (values
-  ('is_admin'), ('is_admin_aal2'), ('adjust_stock'), ('create_counter_order'),
+  ('is_admin'), ('is_admin_aal2'), ('create_counter_order'),
   ('applied_migrations'), ('resend_notification'),
   -- customer accounts (034): each acts only on auth.uid()'s own rows
   ('my_orders'), ('claim_my_guest_orders'), ('set_marketing_opt_in')
@@ -127,17 +127,7 @@ findings(severity, rule, object, detail) as (
     and g.privilege_type in ('INSERT', 'DELETE', 'TRUNCATE')
 
   union all
-  -- 11. The stock ledger is written only by definer functions, never edited (025).
-  select 'fail', 'ledger-writable-from-browser', 'inventory_adjustments',
-         g.grantee || ' has ' || g.privilege_type
-  from information_schema.role_table_grants g
-  where g.table_schema = 'public' and g.table_name = 'inventory_adjustments'
-    and g.grantee in ('anon', 'authenticated')
-    and g.privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')
-
-  union all
-  -- 12. Products are archived, never deleted: a delete cascades away the
-  --     stock history (026).
+  -- 11. Products are archived, never deleted (026).
   select 'fail', 'products-deletable-from-browser', 'products',
          g.grantee || ' has ' || g.privilege_type
   from information_schema.role_table_grants g
@@ -146,7 +136,7 @@ findings(severity, rule, object, detail) as (
     and g.privilege_type in ('DELETE', 'TRUNCATE')
 
   union all
-  -- 13. Orders and their lines are created by checkout and counter-sale
+  -- 12. Orders and their lines are created by checkout and counter-sale
   --     definer functions only, and never deleted from the browser (034).
   select 'fail', 'orders-writable-from-browser', g.table_name,
          g.grantee || ' has ' || g.privilege_type
@@ -157,7 +147,7 @@ findings(severity, rule, object, detail) as (
       or (g.table_name = 'order_items' and g.privilege_type = 'UPDATE'))
 
   union all
-  -- 14. Column-level updates stay on the agreed columns (034, 036). A table-level
+  -- 13. Column-level updates stay on the agreed columns (034, 036). A table-level
   --     UPDATE grant shows up here as every column.
   select 'fail', 'update-column-not-allowed', c.table_name || '.' || c.column_name,
          c.grantee || ' can update it'

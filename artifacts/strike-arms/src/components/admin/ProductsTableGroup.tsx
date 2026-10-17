@@ -27,7 +27,7 @@ type ProductsTableGroupProps = {
   onToggleSelect: (id: string) => void;
   onToggleGroup: (ids: string[]) => void;
   onEdit: (product: Product) => void;
-  onAdjustStock: (product: Product) => void;
+  onStockToggle: (product: Product) => void;
   onArchiveToggle: (product: Product) => void;
 };
 
@@ -40,7 +40,7 @@ export function ProductsTableGroup({
   onToggleSelect,
   onToggleGroup,
   onEdit,
-  onAdjustStock,
+  onStockToggle,
   onArchiveToggle,
 }: ProductsTableGroupProps) {
   return (
@@ -95,7 +95,7 @@ export function ProductsTableGroup({
                   isSelected={isSelected(product.id)}
                   onToggleSelect={onToggleSelect}
                   onEdit={onEdit}
-                  onAdjustStock={onAdjustStock}
+                  onStockToggle={onStockToggle}
                   onArchiveToggle={onArchiveToggle}
                 />
               ))}

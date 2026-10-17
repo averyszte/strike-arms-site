@@ -8,7 +8,6 @@ import { PRODUCT_CONDITIONS } from '@/lib/product-condition';
 const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/;
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 const MAX_DESCRIPTION = 20000;
-const MAX_OPENING_STOCK = 100000;
 
 function euros(value: string): number {
   return Number.parseFloat(value);
@@ -41,14 +40,7 @@ export const productFormSchema = z
     isNew: z.boolean(),
     isFeatured: z.boolean(),
     isShippable: z.boolean(),
-    // Used on create only. An existing product's stock changes through Adjust
-    // stock, never this form, so saving an edit cannot overwrite a sale that
-    // happened while the sheet was open.
-    openingStock: z.coerce
-      .number()
-      .int('Whole numbers only')
-      .min(0, 'Must be 0 or more')
-      .max(MAX_OPENING_STOCK, 'Too many to be right'),
+    inStock: z.boolean(),
     tags: z.string(),
     // Public URLs, in display order — the first is the card image. Written by
     // ProductImagesField after upload rather than typed, so there is no format

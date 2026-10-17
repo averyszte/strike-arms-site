@@ -164,7 +164,7 @@ export function OrdersToolbar({
           </SelectContent>
         </Select>
 
-        {/* The dashboard's "paid for stock that had gone" alert lands here. */}
+        {/* The dashboard's "paid orders need attention" alert lands here. */}
         <Button
           type="button"
           size="sm"

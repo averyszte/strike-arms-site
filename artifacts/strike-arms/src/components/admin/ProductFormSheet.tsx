@@ -31,7 +31,7 @@ function toFormValues(product: Product): ProductFormValues {
     isNew: product.isNew ?? false,
     isFeatured: product.isFeatured ?? false,
     isShippable: product.isShippable,
-    openingStock: 0,
+    inStock: product.inStock,
     tags: (product.tags ?? []).join(', '),
     images: product.images,
   };
@@ -53,7 +53,7 @@ const DEFAULT_VALUES: ProductFormValues = {
   isNew: false,
   isFeatured: false,
   isShippable: false,
-  openingStock: 0,
+  inStock: true,
   tags: '',
   images: [],
 };
@@ -76,6 +76,7 @@ function toProductInput(values: ProductFormValues): NewProduct {
     isNew: values.isNew,
     isFeatured: values.isFeatured,
     isShippable: values.isShippable,
+    inStock: values.inStock,
     tags: values.tags
       .split(',')
       .map(t => t.trim())
@@ -118,22 +119,15 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   async function onSubmit(values: ProductFormValues) {
     try {
       const input = toProductInput(values);
-      let stockError: string | undefined;
       if (isEdit && product) {
         await update.mutateAsync({ id: product.id, patch: input });
       } else {
-        ({ stockError } = await create.mutateAsync({ input, openingStock: values.openingStock }));
+        await create.mutateAsync(input);
       }
       // The product row owns the images now; the trigger in migration 011 is
       // what cleans them up from here on.
       upload.commit();
-      toast(stockError
-        ? {
-            title: 'Product created, but opening stock was not set',
-            description: `${stockError}. Use Adjust stock.`,
-            variant: 'destructive',
-          }
-        : { title: isEdit ? 'Product updated' : 'Product created' });
+      toast({ title: isEdit ? 'Product updated' : 'Product created' });
       onClose();
     } catch (err: unknown) {
       toast({
@@ -156,7 +150,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
         </SheetHeader>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
-            <ProductFormFields upload={upload} stockOnShelf={isEdit ? product?.stockCount ?? 0 : undefined} />
+            <ProductFormFields upload={upload} />
             <div className="flex gap-2 pt-2 border-t border-border sticky bottom-0 bg-background pb-2">
               <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
                 Cancel
