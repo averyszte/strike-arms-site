@@ -132,7 +132,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2>Repairs</h2>
+            <h2>Repairs and upgrades</h2>
             <p>
               Workshop services are quoted and agreed separately, in person or through our{' '}
               <Link href="/services">services pages</Link>. These terms cover goods bought on this

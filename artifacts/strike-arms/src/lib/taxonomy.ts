@@ -276,7 +276,7 @@ export function isValidCategorySlug(slug: string): slug is CategorySlug {
  */
 export const CATEGORY_INTROS: Record<CategorySlug, string> = {
   rifles:
-    'Airsoft rifles are the backbone of any skirmish loadout. Electric AEGs suit most players and are the usual first buy, gas blowback rifles add realism, and bolt-action springers cover the sniper role. We stock trusted brands including Specna Arms, G&G, Krytac and ICS, and back every gun with in-house repairs. Not sure which to pick? Our team will match a rifle to how and where you play. Ships across Ireland.',
+    'Airsoft rifles are the backbone of any skirmish loadout. Electric AEGs suit most players and are the usual first buy, gas blowback rifles add realism, and bolt-action springers cover the sniper role. We stock trusted brands including Specna Arms, G&G, Krytac and ICS, and back every gun with in-house repairs and upgrades. Not sure which to pick? Our team will match a rifle to how and where you play. Ships across Ireland.',
   pistols:
     'An airsoft pistol makes a reliable sidearm and a great backup for CQB or sniper loadouts. Gas blowback models give realistic recoil, while electric and spring pistols keep things simple and affordable. We stock Tokyo Marui, ASG, WE and more, with advice on the right gas and magazines for the Irish climate. In-house servicing keeps your pistol running. Ships across Ireland.',
   consumables:
@@ -295,4 +295,4 @@ export function getCategoryIntro(slug: string): string | undefined {
 
 /** Intro copy for the /store root (all products) page. */
 export const STORE_INTRO =
-  'Browse the full Strike Arms range: airsoft rifles and pistols, BBs, gas and batteries, tactical gear, accessories and internals. We stock the brands players trust and back every purchase with in-house advice and repairs from our shop in Swords, Co. Dublin. Ships across Ireland.';
+  'Browse the full Strike Arms range: airsoft rifles and pistols, BBs, gas and batteries, tactical gear, accessories and internals. We stock the brands players trust and back every purchase with in-house advice, repairs and upgrades from our shop in Swords, Co. Dublin. Ships across Ireland.';

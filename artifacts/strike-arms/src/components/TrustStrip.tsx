@@ -27,7 +27,7 @@ const items = [
   },
   {
     icon: Wrench,
-    title: "Repairs",
+    title: "Repairs & Upgrades",
     sub: "Support for maintenance & repairs",
     filled: false,
   },

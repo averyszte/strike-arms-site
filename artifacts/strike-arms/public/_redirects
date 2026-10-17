@@ -24,6 +24,3 @@
 # build, Pages already serves index.html for any path that is not a file,
 # which is the SPA fallback we want. Do not add a /* rule back, and do not add
 # a 404.html without adding the fallback another way.
-
-# The upgrades service page became a guide (Strike Arms does repairs, not upgrades).
-/services/upgrades          /guides/airsoft-upgrades  301

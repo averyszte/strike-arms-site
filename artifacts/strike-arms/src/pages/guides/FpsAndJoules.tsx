@@ -130,8 +130,9 @@ export default function FpsAndJoules() {
         its factory power setting as something to verify rather than trust.
       </p>
       <p>
-        Before changing anything to bring a gun within a limit, read the{' '}
-        <Link href="/guides/airsoft-upgrades">upgrades guide</Link> for the order to do it in.
+        If you need a gun brought within a limit, our{' '}
+        <Link href="/services/upgrades">in-house workshop</Link> can help, and the{' '}
+        <Link href="/guides/airsoft-upgrades">upgrades guide</Link> covers the order to do it in.
       </p>
     </ArticleLayout>
   );

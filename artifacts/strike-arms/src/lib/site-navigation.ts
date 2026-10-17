@@ -185,7 +185,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Repairs",
+    name: "Upgrades & Repairs",
     href: "/services",
     mega: [
       {

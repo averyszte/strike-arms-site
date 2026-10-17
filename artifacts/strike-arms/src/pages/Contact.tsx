@@ -7,6 +7,7 @@ import { ContactForm } from '@/components/contact/contact-form';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { ADDRESS_LINES, MAPS_SEARCH_URL } from '@/lib/shop-location';
 import { buildLocalBusinessSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 import {
   CARD_TITLE,
@@ -21,16 +22,6 @@ const TITLE = 'Contact & Store — Airsoft Shop in Swords, Co. Dublin | Strike A
 const DESCRIPTION =
   'Visit Strike Arms, a walk-in airsoft shop in Swords, Co. Dublin. Find our address, phone number and opening hours, and get directions. We ship across Ireland.';
 
-const ADDRESS_LINES = [
-  BUSINESS.streetAddress,
-  `${BUSINESS.addressLocality}, ${BUSINESS.addressRegion}`,
-  BUSINESS.postalCode,
-];
-
-const MAPS_QUERY = encodeURIComponent(
-  `Strike Arms Airsoft, ${BUSINESS.streetAddress}, ${BUSINESS.addressLocality}, ${BUSINESS.postalCode}`,
-);
-const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
 const TEL_HREF = phoneHref(BUSINESS.telephone);
 
 export default function Contact() {
@@ -56,7 +47,7 @@ export default function Contact() {
         crumbs={[{ label: 'Contact' }]}
         eyebrow="Visit the shop"
         title="Contact & Store Info"
-        intro="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repair. Prefer to shop from home? We ship across Ireland, Republic and Northern Ireland."
+        intro="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repairs and upgrades. Prefer to shop from home? We ship across Ireland, Republic and Northern Ireland."
         width="medium"
       />
 
@@ -71,7 +62,7 @@ export default function Contact() {
               ))}
             </address>
             <a
-              href={MAPS_URL}
+              href={MAPS_SEARCH_URL}
               target="_blank"
               rel="noopener noreferrer"
               className={`mt-3 inline-flex items-center text-sm ${TEXT_LINK}`}
@@ -108,9 +99,9 @@ export default function Contact() {
             </dl>
           </InfoCard>
 
-          <InfoCard icon={<Wrench className="h-5 w-5 text-accent" />} heading="Repairs">
+          <InfoCard icon={<Wrench className="h-5 w-5 text-accent" />} heading="Repairs &amp; upgrades">
             <p className="text-muted-foreground leading-relaxed">
-              Our in-house workshop handles servicing, repairs and gearbox rebuilds.
+              Our in-house workshop handles servicing, gearbox rebuilds and upgrades.
             </p>
             <Link
               href="/services/repairs"

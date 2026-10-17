@@ -104,7 +104,10 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'etu',
     definition:
       'Electronic Trigger Unit. Replaces mechanical trigger contacts with electronics for a crisper trigger, burst modes and trigger protection. Often paired with a MOSFET.',
-    seeAlso: [{ label: 'Upgrades guide', href: '/guides/airsoft-upgrades' }],
+    seeAlso: [
+      { label: 'Upgrades', href: '/services/upgrades' },
+      { label: 'Upgrades guide', href: '/guides/airsoft-upgrades' },
+    ],
   },
   {
     term: 'FPS',
@@ -211,7 +214,10 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'mosfet',
     definition:
       'An electronic switch fitted to an AEG’s wiring that protects the trigger contacts from arcing, allows higher-output setups and can add features like active braking.',
-    seeAlso: [{ label: 'Upgrades guide', href: '/guides/airsoft-upgrades' }],
+    seeAlso: [
+      { label: 'Upgrades', href: '/services/upgrades' },
+      { label: 'Upgrades guide', href: '/guides/airsoft-upgrades' },
+    ],
   },
   {
     term: 'NiMH',

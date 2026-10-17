@@ -17,6 +17,7 @@ import { Lineup } from "@/components/demo/combined/lineup";
 import { WhyStrikeArms } from "@/components/demo/combined/why-strike-arms";
 import { ReviewsFeature } from "@/components/demo/combined/reviews-feature";
 import { FinalCta } from "@/components/demo/combined/final-cta";
+import { VisitShop } from "@/components/demo/combined/visit-shop";
 
 const DESCRIPTION =
   "Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.";
@@ -61,6 +62,7 @@ export default function Home() {
         <WhyStrikeArms />
         <Lineup />
         <ReviewsFeature />
+        <VisitShop />
         <FAQSection />
         <FinalCta />
       </SiteLayout>

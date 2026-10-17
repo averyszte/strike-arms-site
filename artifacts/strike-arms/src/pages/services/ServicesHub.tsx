@@ -21,9 +21,9 @@ import {
 } from '@/lib/storefront-styles';
 import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/structured-data';
 
-const TITLE = 'Airsoft Repairs Dublin | Strike Arms';
+const TITLE = 'Airsoft Repairs & Upgrades Dublin | Strike Arms';
 const DESCRIPTION =
-  'In-house airsoft workshop in Swords, Co. Dublin: repairs, hop-up tuning, gearbox rebuilds, custom builds and chrono testing. We diagnose before we quote.';
+  'In-house airsoft workshop in Swords, Co. Dublin: repairs, upgrades, hop-up tuning, gearbox rebuilds, custom builds and chrono testing. We diagnose before we quote.';
 
 const ICONS: Record<ServiceIcon, LucideIcon> = {
   wrench: Wrench,
@@ -67,7 +67,7 @@ export default function ServicesHub() {
       <PageHero
         crumbs={[{ label: 'Services' }]}
         eyebrow="The workshop"
-        title="Airsoft Repairs"
+        title="Airsoft Repairs & Upgrades"
         intro="Our workshop is in Swords, Co. Dublin — not in another country. We diagnose a gun before we price the job, we replace what is worn rather than everything we stock, and we will tell you when a repair is not worth paying for."
         width="medium"
       >

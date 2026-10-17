@@ -60,7 +60,7 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
     ],
   },
   {
-    title: "Repairs",
+    title: "Upgrades & Repairs",
     links: [
       ...SERVICE_LINKS,
       { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },

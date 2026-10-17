@@ -49,6 +49,11 @@ export default function UpgradesGuide() {
         cannot measure was not an upgrade. If you cannot say what is wrong with the gun now, no part
         will fix it.
       </p>
+      <p>
+        Strike Arms does not sell upgrade parts, but our workshop will fit the ones you buy. If you
+        are not sure what to buy, ask before you spend anything — see our{' '}
+        <Link href="/services/upgrades">upgrades service</Link>.
+      </p>
 
       <h2>Where the money actually makes a difference</h2>
       <p>In rough order of what you will notice on the field:</p>
@@ -131,7 +136,8 @@ export default function UpgradesGuide() {
       </p>
       <p>
         If something has stopped working, bring it in for a{' '}
-        <Link href="/services/repairs">repair</Link>. We diagnose what was changed before quoting,
+        <Link href="/services/repairs">repair</Link>, or bring the parts and have the{' '}
+        <Link href="/services/upgrades">upgrade fitted</Link> properly. We diagnose what was changed before quoting,
         because the secondary damage is often larger than the fault that prompted the work.
       </p>
     </ArticleLayout>

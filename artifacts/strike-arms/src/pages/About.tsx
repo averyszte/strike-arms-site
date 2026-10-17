@@ -25,7 +25,7 @@ const PILLARS: Pillar[] = [
   {
     icon: Wrench,
     heading: 'A workshop behind the counter',
-    body: 'Repairs, rebuilds and tuning happen here rather than being posted somewhere. If something goes wrong with a gun we sold you, the people who fix it are the people who sold it.',
+    body: 'Repairs, upgrades, rebuilds and tuning happen here rather than being posted somewhere. If something goes wrong with a gun we sold you, the people who fix it are the people who sold it.',
   },
   {
     icon: MessageSquare,

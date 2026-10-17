@@ -80,6 +80,7 @@ const STATIC_PATHS = [
   '/guides/airsoft-upgrades',
   '/services',
   '/services/repairs',
+  '/services/upgrades',
   '/services/hop-up-tuning',
   '/services/gearbox-rebuilds',
   '/services/custom-builds',

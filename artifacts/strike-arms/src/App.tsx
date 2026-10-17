@@ -44,6 +44,7 @@ import LoadoutCqb from "@/pages/guides/LoadoutCqb";
 import LoadoutWoodland from "@/pages/guides/LoadoutWoodland";
 import MaintenanceGuide from "@/pages/guides/MaintenanceGuide";
 import UpgradesGuide from "@/pages/guides/UpgradesGuide";
+import UpgradesServicePage from "@/pages/services/Upgrades";
 import ShopPage from "@/pages/ShopPage";
 import ProductDetail from "@/pages/ProductDetail";
 import { lazy, Suspense } from "react";
@@ -116,9 +117,7 @@ function Router() {
 
       {/* Services hub — more-specific routes first */}
       <Route path="/services/repairs" component={RepairsServicePage} />
-      <Route path="/services/upgrades">
-        <Redirect to="/guides/airsoft-upgrades" replace />
-      </Route>
+      <Route path="/services/upgrades" component={UpgradesServicePage} />
       <Route path="/services/hop-up-tuning" component={HopUpTuningPage} />
       <Route path="/services/gearbox-rebuilds" component={GearboxRebuildsPage} />
       <Route path="/services/custom-builds" component={CustomBuildsPage} />

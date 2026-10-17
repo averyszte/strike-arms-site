@@ -22,6 +22,14 @@ export const SERVICES: ServiceSummary[] = [
     icon: 'wrench',
   },
   {
+    title: 'Airsoft Upgrades',
+    navLabel: 'Upgrades',
+    path: '/services/upgrades',
+    summary:
+      'We fit the parts you bring in, and tell you what is worth buying. We do not sell upgrade parts.',
+    icon: 'zap',
+  },
+  {
     title: 'Hop-Up Tuning',
     navLabel: 'Hop-Up Tuning',
     path: '/services/hop-up-tuning',

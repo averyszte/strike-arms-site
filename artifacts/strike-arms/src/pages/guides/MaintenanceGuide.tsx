@@ -154,7 +154,7 @@ export default function MaintenanceGuide() {
         lubricate the hop rubber unless you know exactly what you are doing.
       </p>
       <p>
-        Our <Link href="/services/repairs">in-house workshop</Link> handles repairs, rebuilds and
+        Our <Link href="/services/repairs">in-house workshop</Link> handles rebuilds, upgrades and
         diagnostics if your gun needs more than a clean.
       </p>
     </ArticleLayout>

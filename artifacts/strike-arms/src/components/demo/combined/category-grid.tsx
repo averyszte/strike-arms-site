@@ -12,7 +12,7 @@ const CATEGORIES = [
   { name: "Consumables", image: "/images/category-bbs.png", href: "/store/consumables" },
   { name: "Accessories", image: "/images/category-accessories.png", href: "/store/accessories" },
   { name: "Gear", image: "/images/category-gear.png", href: "/store/gear" },
-  { name: "Repairs", image: "/images/category-repairs.png", href: "/services" },
+  { name: "Repairs & Upgrades", image: "/images/category-repairs.png", href: "/services" },
 ];
 
 export function CategoryGrid() {
