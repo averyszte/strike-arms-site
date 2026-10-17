@@ -41,7 +41,7 @@ export default function FpsAndJoules() {
       updatedISO="2026-07-20"
       updatedLabel="July 2026"
       intro="Airsoft power gets talked about in FPS, but sites often set limits in joules. Here is what each one actually measures, why the difference matters, and how it affects staying within a site's limit."
-      cta={{ label: 'Shop chronographs', href: '/store/more/chronographs' }}
+      cta={{ label: 'Chrono testing', href: '/services/chrono-service' }}
       faq={FAQ}
     >
       <h2>FPS: how fast the BB travels</h2>
@@ -130,8 +130,8 @@ export default function FpsAndJoules() {
         its factory power setting as something to verify rather than trust.
       </p>
       <p>
-        If you need a gun brought within a limit, our{' '}
-        <Link href="/services/upgrades">in-house workshop</Link> can help.
+        Before changing anything to bring a gun within a limit, read the{' '}
+        <Link href="/guides/airsoft-upgrades">upgrades guide</Link> for the order to do it in.
       </p>
     </ArticleLayout>
   );

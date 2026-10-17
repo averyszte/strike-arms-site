@@ -169,7 +169,7 @@ function ShopPageInner({
               without dragging the grid, and stops at its ends instead of
               handing the wheel on to the page. */}
           <aside className="hidden md:block w-[240px] shrink-0">
-            <div className="sticky top-[calc(var(--header-height,90px)+1rem)] max-h-[calc(100dvh-var(--header-height,90px)-2rem)] overflow-y-auto overscroll-contain pr-3 [scrollbar-width:thin] [scrollbar-gutter:stable]">
+            <div className="sticky top-[calc(var(--header-height,90px)+1rem)] max-h-[calc(100dvh-var(--header-height,90px)-2rem)] overflow-y-auto overscroll-contain pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <FilterSidebarContent
                 activeCategorySlug={categorySlug}
                 activeSubcategorySlug={rawSubcategory}

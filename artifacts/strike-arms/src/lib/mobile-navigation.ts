@@ -60,7 +60,7 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
     ],
   },
   {
-    title: "Upgrades & Repairs",
+    title: "Repairs",
     links: [
       ...SERVICE_LINKS,
       { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
@@ -86,7 +86,6 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
       { label: "New Arrivals", href: "/new" },
       { label: "Sale", href: "/sale" },
       { label: "Brands", href: "/brands" },
-      { label: "Chronographs", href: "/store/more/chronographs" },
       { label: "Gift Cards", href: "/gift-cards" },
       { label: "Contact / Store Info", href: "/contact" },
     ],

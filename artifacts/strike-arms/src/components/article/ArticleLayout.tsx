@@ -71,7 +71,7 @@ export function ArticleLayout(props: ArticleLayoutProps) {
       <CtaBand
         eyebrow="Not sure what is right for you?"
         title="Ask the people who play."
-        text="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin with in-house advice, repairs and upgrades. We ship across Ireland."
+        text="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin with in-house advice and repairs. We ship across Ireland."
         cta={cta ?? { label: 'Browse the shop', href: '/store' }}
       />
     </SiteLayout>

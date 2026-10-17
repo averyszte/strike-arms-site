@@ -14,8 +14,8 @@ import type { CategorySlug } from '@/lib/taxonomy';
 import type { ProductFilters } from '@/types/product';
 
 /**
- * Shelves first, then the quick yes/no switches, then price, brand and
- * condition. Every count is live against the other filters (see
+ * New or pre-loved first, then shelves, the quick yes/no switches, price
+ * and brand. Every count is live against the other filters (see
  * use-catalog-facets), so an option that would empty the grid says 0 or
  * is not offered at all.
  */
@@ -73,6 +73,16 @@ export function FilterSidebarContent({
 
   return (
     <div className="space-y-6">
+      <Section title="Condition">
+        <ConditionFilter
+          selected={filters.condition}
+          counts={facets?.conditionCounts}
+          onFilterChange={onFilterChange}
+        />
+      </Section>
+
+      <Separator className="bg-border/60" />
+
       <Section title="Browse">
         <CategoryTree
           activeCategorySlug={activeCategorySlug}
@@ -134,15 +144,6 @@ export function FilterSidebarContent({
         </>
       )}
 
-      <Separator className="bg-border/60" />
-
-      <Section title="Condition">
-        <ConditionFilter
-          selected={filters.condition}
-          counts={facets?.conditionCounts}
-          onFilterChange={onFilterChange}
-        />
-      </Section>
     </div>
   );
 }

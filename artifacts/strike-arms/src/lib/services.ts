@@ -22,14 +22,6 @@ export const SERVICES: ServiceSummary[] = [
     icon: 'wrench',
   },
   {
-    title: 'Airsoft Upgrades',
-    navLabel: 'Upgrades',
-    path: '/services/upgrades',
-    summary:
-      'Upgrades that solve a measured problem, not a shopping list. Honest advice on what will not help.',
-    icon: 'zap',
-  },
-  {
     title: 'Hop-Up Tuning',
     navLabel: 'Hop-Up Tuning',
     path: '/services/hop-up-tuning',

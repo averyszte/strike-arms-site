@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
+import { isAppRoute } from "@/lib/is-app-route";
 import { ShoppingCart, X, ChevronDown, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/hooks/use-cart";
@@ -73,16 +74,27 @@ export function SiteHeaderMobileDrawer({ isOpen, onClose }: SiteHeaderMobileDraw
                     className="overflow-hidden"
                   >
                     <div className="px-4 pb-4 flex flex-col gap-3">
-                      {group.links.map((link) => (
-                        <Link
-                          key={link.label}
-                          href={link.href}
-                          onClick={() => onClose()}
-                          className="text-sm text-muted-foreground hover:text-accent transition-colors"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
+                      {group.links.map((link) =>
+                        isAppRoute(link.href) ? (
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => onClose()}
+                            className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                          >
+                            {link.label}
+                          </Link>
+                        ) : (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => onClose()}
+                            className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                          >
+                            {link.label}
+                          </a>
+                        ),
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -96,7 +108,7 @@ export function SiteHeaderMobileDrawer({ isOpen, onClose }: SiteHeaderMobileDraw
               Airsoft Law
             </Link>
             <Link href="/contact" onClick={() => onClose()} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Find a Store
+              Find Us
             </Link>
             <Link href="/account" onClick={() => onClose()} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Track an Order

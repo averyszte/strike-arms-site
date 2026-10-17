@@ -40,7 +40,7 @@ export function MobileFilterSheet({
         <SheetHeader className="border-b border-border px-6 py-5">
           <SheetTitle className="font-black uppercase tracking-tight">Filters</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <FilterSidebarContent
             idPrefix="mobile-filter"
             activeCategorySlug={activeCategorySlug}

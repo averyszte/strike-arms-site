@@ -56,7 +56,7 @@ export default function Contact() {
         crumbs={[{ label: 'Contact' }]}
         eyebrow="Visit the shop"
         title="Contact & Store Info"
-        intro="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repairs and upgrades. Prefer to shop from home? We ship across Ireland, Republic and Northern Ireland."
+        intro="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repair. Prefer to shop from home? We ship across Ireland, Republic and Northern Ireland."
         width="medium"
       />
 
@@ -108,9 +108,9 @@ export default function Contact() {
             </dl>
           </InfoCard>
 
-          <InfoCard icon={<Wrench className="h-5 w-5 text-accent" />} heading="Repairs &amp; upgrades">
+          <InfoCard icon={<Wrench className="h-5 w-5 text-accent" />} heading="Repairs">
             <p className="text-muted-foreground leading-relaxed">
-              Our in-house workshop handles servicing, gearbox rebuilds and upgrades.
+              Our in-house workshop handles servicing, repairs and gearbox rebuilds.
             </p>
             <Link
               href="/services/repairs"

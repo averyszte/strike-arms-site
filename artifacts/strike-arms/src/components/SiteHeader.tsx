@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
+import { isAppRoute } from "@/lib/is-app-route";
 import { Search, ShoppingCart, Menu, ChevronDown, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchDropdown } from "@/components/SearchDropdown";
@@ -169,13 +170,23 @@ export function SiteHeader() {
                     <ul className="space-y-2.5">
                       {col.links.map((link) => (
                         <li key={link.label}>
-                          <Link
-                            href={link.href}
-                            onClick={() => setActiveMenu(null)}
-                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {link.label}
-                          </Link>
+                          {isAppRoute(link.href) ? (
+                            <Link
+                              href={link.href}
+                              onClick={() => setActiveMenu(null)}
+                              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              {link.label}
+                            </Link>
+                          ) : (
+                            <a
+                              href={link.href}
+                              onClick={() => setActiveMenu(null)}
+                              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              {link.label}
+                            </a>
+                          )}
                         </li>
                       ))}
                     </ul>

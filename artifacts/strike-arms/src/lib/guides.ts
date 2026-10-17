@@ -91,6 +91,13 @@ export const GUIDES: GuideSummary[] = [
     summary: 'Simple upkeep that keeps a gun accurate and reliable, and what to leave to a tech.',
     group: 'Care & maintenance',
   },
+  {
+    title: 'Airsoft Upgrades: What Is Worth Doing',
+    navLabel: 'Upgrades Guide',
+    path: '/guides/airsoft-upgrades',
+    summary: 'Which upgrades actually improve a gun, the order to do them in, and what to skip.',
+    group: 'Care & maintenance',
+  },
 ];
 
 export const GUIDE_GROUP_ORDER: GuideGroup[] = [

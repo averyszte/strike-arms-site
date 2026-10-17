@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 
 const utilityLinks = [
-  { name: "Find a Store", href: "/contact" },
+  { name: "Find Us", href: "/contact" },
   { name: "Help", href: "/contact" },
   { name: "Airsoft Law", href: "/airsoft-law" },
   { name: "Track an Order", href: "/account" },

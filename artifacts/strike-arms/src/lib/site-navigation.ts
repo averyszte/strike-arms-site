@@ -105,7 +105,6 @@ export const navItems: NavItem[] = [
           { label: "Magazines", href: "/store/consumables" },
           { label: "Lubricants", href: "/store/consumables/lubricants" },
           { label: "Maintenance Essentials", href: "/store/consumables/maintenance" },
-          { label: "Targets", href: "/store/more/targets" },
         ],
       },
     ],
@@ -186,7 +185,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Upgrades & Repairs",
+    name: "Repairs",
     href: "/services",
     mega: [
       {
@@ -241,9 +240,6 @@ export const navItems: NavItem[] = [
       {
         title: "Equipment & Tools",
         links: [
-          { label: "Chronographs", href: "/store/more/chronographs" },
-          { label: "Targets", href: "/store/more/targets" },
-          { label: "Tools", href: "/store/more/tools" },
           { label: "Maintenance Kits", href: "/store/more/maintenance-kits" },
         ],
       },

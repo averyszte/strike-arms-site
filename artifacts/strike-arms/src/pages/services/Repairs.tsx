@@ -151,8 +151,9 @@ const SECTIONS: ServiceSection[] = [
           For a gun used around twice a month, an inspection or service every{' '}
           <strong>6 to 12 months</strong> is sensible, or sooner if symptoms appear. If the problem
           is performance rather than failure,{' '}
-          <Link href="/services/hop-up-tuning">hop-up tuning</Link> or{' '}
-          <Link href="/services/upgrades">an upgrade</Link> may be the better conversation.
+          <Link href="/services/hop-up-tuning">hop-up tuning</Link> may be the better conversation,
+          and the <Link href="/guides/airsoft-upgrades">upgrades guide</Link> covers what is worth
+          changing.
         </p>
       </>
     ),

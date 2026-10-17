@@ -43,6 +43,7 @@ import GasTypesGuide from "@/pages/guides/GasTypesGuide";
 import LoadoutCqb from "@/pages/guides/LoadoutCqb";
 import LoadoutWoodland from "@/pages/guides/LoadoutWoodland";
 import MaintenanceGuide from "@/pages/guides/MaintenanceGuide";
+import UpgradesGuide from "@/pages/guides/UpgradesGuide";
 import ShopPage from "@/pages/ShopPage";
 import ProductDetail from "@/pages/ProductDetail";
 import { lazy, Suspense } from "react";
@@ -51,7 +52,6 @@ import { lazy, Suspense } from "react";
 const AdminArea = lazy(() => import("@/pages/admin/AdminArea"));
 import ServicesHub from "@/pages/services/ServicesHub";
 import RepairsServicePage from "@/pages/services/Repairs";
-import UpgradesServicePage from "@/pages/services/Upgrades";
 import HopUpTuningPage from "@/pages/services/HopUpTuning";
 import GearboxRebuildsPage from "@/pages/services/GearboxRebuilds";
 import CustomBuildsPage from "@/pages/services/CustomBuilds";
@@ -112,10 +112,13 @@ function Router() {
       <Route path="/guides/loadout-cqb" component={LoadoutCqb} />
       <Route path="/guides/loadout-woodland" component={LoadoutWoodland} />
       <Route path="/guides/airsoft-maintenance" component={MaintenanceGuide} />
+      <Route path="/guides/airsoft-upgrades" component={UpgradesGuide} />
 
       {/* Services hub — more-specific routes first */}
       <Route path="/services/repairs" component={RepairsServicePage} />
-      <Route path="/services/upgrades" component={UpgradesServicePage} />
+      <Route path="/services/upgrades">
+        <Redirect to="/guides/airsoft-upgrades" replace />
+      </Route>
       <Route path="/services/hop-up-tuning" component={HopUpTuningPage} />
       <Route path="/services/gearbox-rebuilds" component={GearboxRebuildsPage} />
       <Route path="/services/custom-builds" component={CustomBuildsPage} />

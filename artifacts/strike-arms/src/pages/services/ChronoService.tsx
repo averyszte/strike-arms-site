@@ -108,8 +108,8 @@ const SECTIONS: ServiceSection[] = [
     body: (
       <p>
         We tell you by how much, and what it would take to bring it within limit. That is usually an
-        air-seal, hop-up or spring conversation rather than anything dramatic — see{' '}
-        <Link href="/services/upgrades">upgrades</Link> for the order we work in. Chasing the number
+        air-seal, hop-up or spring question rather than anything dramatic — the{' '}
+        <Link href="/guides/airsoft-upgrades">upgrades guide</Link> covers the order. Chasing the number
         without fixing consistency is how guns end up stressed and still failing chrono.
       </p>
     ),

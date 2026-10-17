@@ -115,8 +115,9 @@ const SECTIONS: ServiceSection[] = [
         </p>
         <p>
           Equally, tuning will not make a gun more powerful, and it is not meant to. If you need the
-          gun brought to a specific figure, that is an <Link href="/services/upgrades">upgrade</Link>{' '}
-          conversation and it starts at the <Link href="/services/chrono-service">chrono</Link>.
+          gun brought to a specific figure, start at the{' '}
+          <Link href="/services/chrono-service">chrono</Link> and read the{' '}
+          <Link href="/guides/airsoft-upgrades">upgrades guide</Link>.
         </p>
       </>
     ),

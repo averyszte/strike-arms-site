@@ -77,7 +77,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'chronograph',
     definition:
       'A device that measures BB velocity in feet per second (FPS) or metres per second, used to confirm a gun shoots within a site limit. Sites chrono guns before play.',
-    seeAlso: [{ label: 'Shop chronographs', href: '/store/more/chronographs' }],
+    seeAlso: [{ label: 'Chrono testing', href: '/services/chrono-service' }],
   },
   {
     term: 'CO2',
@@ -104,14 +104,14 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'etu',
     definition:
       'Electronic Trigger Unit. Replaces mechanical trigger contacts with electronics for a crisper trigger, burst modes and trigger protection. Often paired with a MOSFET.',
-    seeAlso: [{ label: 'Upgrades', href: '/services/upgrades' }],
+    seeAlso: [{ label: 'Upgrades guide', href: '/guides/airsoft-upgrades' }],
   },
   {
     term: 'FPS',
     slug: 'fps',
     definition:
       'Feet Per Second, the speed a BB leaves the barrel. FPS depends on the BB weight used to measure it, which is why sites also express limits in joules of energy.',
-    seeAlso: [{ label: 'Shop chronographs', href: '/store/more/chronographs' }],
+    seeAlso: [{ label: 'Chrono testing', href: '/services/chrono-service' }],
   },
   {
     term: 'Full-auto',
@@ -211,7 +211,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'mosfet',
     definition:
       'An electronic switch fitted to an AEG’s wiring that protects the trigger contacts from arcing, allows higher-output setups and can add features like active braking.',
-    seeAlso: [{ label: 'Upgrades', href: '/services/upgrades' }],
+    seeAlso: [{ label: 'Upgrades guide', href: '/guides/airsoft-upgrades' }],
   },
   {
     term: 'NiMH',

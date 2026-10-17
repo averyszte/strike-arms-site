@@ -96,7 +96,7 @@ export function ProductInfo({ product }: { product: Product }) {
           )}
         </li>
         <li className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 shrink-0 text-accent" /> In-house repairs &amp; upgrades
+          <Wrench className="h-4 w-4 shrink-0 text-accent" /> In-house repairs
         </li>
       </ul>
 
