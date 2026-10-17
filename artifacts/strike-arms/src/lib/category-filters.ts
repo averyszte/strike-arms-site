@@ -1,6 +1,15 @@
 import { toProductCondition } from '@/lib/product-condition';
 import type { Category, ProductFilters } from '@/types/product';
 
+/** `brand=a,b` (and the older single `brand=a`) into a sorted list, or undefined. */
+function parseBrands(raw: string | null): string[] | undefined {
+  const brands = (raw ?? '')
+    .split(',')
+    .map((b) => b.trim())
+    .filter(Boolean);
+  return brands.length ? Array.from(new Set(brands)).sort() : undefined;
+}
+
 const VALID_SORTS = ['featured', 'newest', 'price-asc', 'price-desc', 'name-asc'] as const;
 
 /**
@@ -25,17 +34,18 @@ export function parseFiltersFromSearch(
     category,
     subcategory,
     q: params.get('q')?.trim() || undefined,
-    brand: params.get('brand') ?? undefined,
+    brands: parseBrands(params.get('brand')),
     minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
     maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
     inStockOnly: params.get('inStockOnly') === '1',
     onSaleOnly: params.get('onSaleOnly') === '1',
     // Narrowed rather than cast: ?condition=anything must not reach the query
     // builder and come back as an empty shop with no explanation.
-    condition: condition ? toProductCondition(condition) ?? undefined : undefined,
-    sort: sort && (VALID_SORTS as readonly string[]).includes(sort)
-      ? (sort as ProductFilters['sort'])
-      : undefined,
+    condition: condition ? (toProductCondition(condition) ?? undefined) : undefined,
+    sort:
+      sort && (VALID_SORTS as readonly string[]).includes(sort)
+        ? (sort as ProductFilters['sort'])
+        : undefined,
     page: page ? Math.max(1, parseInt(page, 10)) : 1,
     pageSize: 24,
   };
@@ -49,7 +59,7 @@ export function filtersToSearchParams(filters: ProductFilters): URLSearchParams 
   const params = new URLSearchParams();
 
   if (filters.q) params.set('q', filters.q);
-  if (filters.brand) params.set('brand', filters.brand);
+  if (filters.brands?.length) params.set('brand', filters.brands.join(','));
   if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
   if (filters.inStockOnly) params.set('inStockOnly', '1');
@@ -68,7 +78,7 @@ export function filtersToSearchParams(filters: ProductFilters): URLSearchParams 
  */
 export function hasActiveFilters(filters: ProductFilters): boolean {
   return !!(
-    filters.brand ||
+    filters.brands?.length ||
     filters.minPrice !== undefined ||
     filters.maxPrice !== undefined ||
     filters.inStockOnly ||

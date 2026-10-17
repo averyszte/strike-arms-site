@@ -2,24 +2,16 @@ import { useState, useCallback } from 'react';
 import { useParams, useSearch, useLocation } from 'wouter';
 import { Helmet } from 'react-helmet-async';
 import { SITE_URL } from '@/lib/site-config';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { ResultsHeader } from '@/components/catalog/ResultsHeader';
 import { FilterSidebarContent } from '@/components/catalog/FilterSidebar';
+import { ActiveFilterChips } from '@/components/catalog/active-filter-chips';
+import { MobileFilterSheet } from '@/components/catalog/mobile-filter-sheet';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
 import { Pagination } from '@/components/catalog/Pagination';
 import { useProducts } from '@/hooks/useProducts';
-import {
-  parseFiltersFromSearch,
-  filtersToSearchParams,
-  hasActiveFilters,
-} from '@/lib/category-filters';
+import { parseFiltersFromSearch, filtersToSearchParams } from '@/lib/category-filters';
 import { isValidCategorySlug, getSubcategory } from '@/lib/taxonomy';
 import { deriveShopPageMeta } from '@/lib/shop-page-meta';
 import { buildShopHeading } from '@/lib/shop-heading';
@@ -173,8 +165,11 @@ function ShopPageInner({
 
         <div className="mt-6 flex gap-8">
           {/* Desktop sidebar */}
+          {/* Its own scroll: a long brand list scrolls inside the sidebar
+              without dragging the grid, and stops at its ends instead of
+              handing the wheel on to the page. */}
           <aside className="hidden md:block w-[240px] shrink-0">
-            <div className="sticky top-[var(--header-height,120px)]">
+            <div className="sticky top-[calc(var(--header-height,90px)+1rem)] max-h-[calc(100dvh-var(--header-height,90px)-2rem)] overflow-y-auto overscroll-contain pr-3 [scrollbar-width:thin] [scrollbar-gutter:stable]">
               <FilterSidebarContent
                 activeCategorySlug={categorySlug}
                 activeSubcategorySlug={rawSubcategory}
@@ -186,6 +181,7 @@ function ShopPageInner({
 
           {/* Main content */}
           <div className="flex-1 min-w-0">
+            <ActiveFilterChips filters={filters} onFilterChange={handleFilterChange} />
             <ProductGrid
               products={items}
               isLoading={isLoading}
@@ -205,26 +201,16 @@ function ShopPageInner({
         </div>
       </div>
 
-      {/* Mobile filter Sheet */}
-      <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-        <SheetContent side="left" className="w-[300px] overflow-y-auto">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="font-black uppercase tracking-tight">Filters</SheetTitle>
-          </SheetHeader>
-          <FilterSidebarContent
-            activeCategorySlug={categorySlug}
-            activeSubcategorySlug={rawSubcategory}
-            filters={filters}
-            onFilterChange={(patch) => {
-              handleFilterChange(patch);
-              if (!hasActiveFilters({ ...filters, ...patch })) {
-                setMobileFiltersOpen(false);
-              }
-            }}
-            onNavigate={() => setMobileFiltersOpen(false)}
-          />
-        </SheetContent>
-      </Sheet>
+      <MobileFilterSheet
+        isOpen={mobileFiltersOpen}
+        onOpenChange={setMobileFiltersOpen}
+        total={total}
+        isFetching={isFetching}
+        activeCategorySlug={categorySlug}
+        activeSubcategorySlug={rawSubcategory}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
     </SiteLayout>
   );
 }

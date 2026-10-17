@@ -13,7 +13,7 @@
 import { supabase } from '@/lib/supabase';
 import { rowToProduct } from '@/lib/product-mappers';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
-import { BRAND_NAMES } from '@/lib/brands';
+import { BRAND_NAMES, isListedBrand } from '@/lib/brands';
 import type { CrossSellTarget } from '@/lib/cross-sell';
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
 
@@ -78,7 +78,7 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
 
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.subcategory) query = query.eq('subcategory', filters.subcategory);
-  if (filters.brand) query = query.eq('brand', filters.brand);
+  if (filters.brands?.length) query = query.in('brand', filters.brands);
   // Price filters compare against the list price, matching the price shown on
   // the filter control itself.
   if (filters.minPrice !== undefined) query = query.gte('price_cents', filters.minPrice);
@@ -196,6 +196,7 @@ export async function listBrands(
 
   const counts = new Map<string, number>();
   for (const row of data ?? []) {
+    if (!isListedBrand(row.brand)) continue;
     counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
   }
 

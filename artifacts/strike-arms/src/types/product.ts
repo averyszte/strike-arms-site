@@ -53,7 +53,7 @@ export type Product = {
 export type ProductFilters = {
   category?: Category;
   subcategory?: string;
-  brand?: string;
+  brands?: string[];          // OR within the facet; URL `brand=a,b`
   q?: string;                 // free-text search query (store search results)
   minPrice?: number;
   maxPrice?: number;

@@ -75,7 +75,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
   const [page, setPage] = useState(1);
 
   const { data, isLoading, isError, isFetching, refetch } = useProducts({
-    brand: slug,
+    brands: [slug],
     sort: 'featured',
     page,
     pageSize: PAGE_SIZE,
