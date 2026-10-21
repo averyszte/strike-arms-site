@@ -34,7 +34,7 @@ function stringField(payload: NotificationJob["payload"], key: string): string {
 function orderEmail(job: NotificationJob, order: EmailOrder, siteUrl: string): JobEmail {
   switch (job.event_type) {
     case "customer.order_confirmed":
-      return orderConfirmedEmail(order);
+      return orderConfirmedEmail(order, siteUrl);
     case "owner.order_paid":
       // Reply goes to the customer.
       return { ...ownerOrderPaidEmail(order, `${siteUrl}/admin/orders`), replyTo: order.customerEmail ?? undefined };

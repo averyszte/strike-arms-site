@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paste into Supabase</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f2f0ed;color:#33302c;margin:0;padding:24px 16px}
+main{max-width:760px;margin:0 auto}
+h1{color:#0d0d0d;margin:0 0 8px}
+ol.steps{line-height:1.6;padding-left:20px}
+a{color:#0d0d0d}
+section{background:#fff;border-left:4px solid #ff5a1f;padding:16px 20px;margin:20px 0}
+h2{margin:0 0 12px;font-size:18px;color:#0d0d0d}
+.row{display:flex;gap:8px;align-items:flex-start;margin:0 0 10px}
+.label{width:64px;flex:none;padding-top:8px;font-size:12px;font-weight:bold;text-transform:uppercase;color:#77716a}
+textarea{flex:1;min-width:0;font:12px monospace;border:1px solid #e6e2dc;padding:6px;resize:vertical}
+button{flex:none;width:120px;background:#ff5a1f;color:#0d0d0d;border:0;padding:9px 0;font-weight:bold;cursor:pointer}
+button.done{background:#0d0d0d;color:#fff}
+iframe{width:100%;height:560px;border:1px solid #e6e2dc;margin-top:8px}
+</style></head><body><main>
+<h1>Paste the sign-in emails into Supabase</h1>
+<ol class="steps">
+<li>Open <a href="https://supabase.com/dashboard/project/cxnhkgndvzgyqhiwsvrr/auth/templates" target="_blank" rel="noopener">Supabase &gt; Authentication &gt; Emails</a>.</li>
+<li>For each email below, click its name in Supabase.</li>
+<li>Copy the subject here, paste it into Subject heading. Copy the body, select everything in the Supabase body box, paste over it.</li>
+<li>Click Save, then move to the next one.</li>
+</ol>
+<section>
+<h2>1. Confirm sign up</h2>
+<div class="row"><span class="label">Subject</span><textarea id="subject-0" rows="1" readonly>Confirm your Strike Arms account</textarea><button data-copy="subject-0">Copy subject</button></div>
+<div class="row"><span class="label">Body</span><textarea id="body-0" rows="4" readonly>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;&lt;meta name="color-scheme" content="light"&gt;&lt;title&gt;Confirm your email&lt;/title&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f2f0ed;"&gt;
+&lt;div style="display:none;max-height:0;overflow:hidden;opacity:0;"&gt;Your code is {{ .Token }}. It works once and expires within an hour.&lt;/div&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f0ed;"&gt;&lt;tr&gt;&lt;td align="center" style="padding:24px 12px 0;"&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;"&gt;
+&lt;tr&gt;&lt;td style="background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;"&gt;STRIKE &lt;span style="color:#ff5a1f;"&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="background:#ffffff;padding:32px 28px 16px;"&gt;
+&lt;h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;"&gt;Confirm your email&lt;/h1&gt;
+&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Thanks for creating an account. Enter this code on the page you signed up on:&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 20px;"&gt;&lt;tr&gt;
+&lt;td style="background:#f7f5f2;border:1px solid #e6e2dc;border-radius:4px;padding:14px 22px;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:bold;letter-spacing:6px;color:#0d0d0d;"&gt;{{ .Token }}&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Or confirm with one click:&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"&gt;&lt;tr&gt;
+&lt;td style="background:#ff5a1f;border-radius:4px;"&gt;
+&lt;a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;amp;type=email" style="display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;"&gt;Confirm my email&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Once it is confirmed, any orders you placed as a guest with this email are added to your account.&lt;/p&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;"&gt;The code and button work once and expire within an hour. If you did not create an account, ignore this email. Nothing happens unless it is confirmed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;"&gt;
+&lt;strong style="color:#33302c;"&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</textarea><button data-copy="body-0">Copy body</button></div>
+<details><summary>Preview</summary><iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;&lt;title&gt;Confirm your email&lt;/title&gt;&lt;/head&gt;
+&lt;body style=&quot;margin:0;padding:0;background:#f2f0ed;&quot;&gt;
+&lt;div style=&quot;display:none;max-height:0;overflow:hidden;opacity:0;&quot;&gt;Your code is {{ .Token }}. It works once and expires within an hour.&lt;/div&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background:#f2f0ed;&quot;&gt;&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding:24px 12px 0;&quot;&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;max-width:600px;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;&quot;&gt;STRIKE &lt;span style=&quot;color:#ff5a1f;&quot;&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#ffffff;padding:32px 28px 16px;&quot;&gt;
+&lt;h1 style=&quot;margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;&quot;&gt;Confirm your email&lt;/h1&gt;
+&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Thanks for creating an account. Enter this code on the page you signed up on:&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:4px 0 20px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#f7f5f2;border:1px solid #e6e2dc;border-radius:4px;padding:14px 22px;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:bold;letter-spacing:6px;color:#0d0d0d;&quot;&gt;{{ .Token }}&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Or confirm with one click:&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:8px 0 24px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#ff5a1f;border-radius:4px;&quot;&gt;
+&lt;a href=&quot;{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;amp;type=email&quot; style=&quot;display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;&quot;&gt;Confirm my email&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Once it is confirmed, any orders you placed as a guest with this email are added to your account.&lt;/p&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;&quot;&gt;The code and button work once and expire within an hour. If you did not create an account, ignore this email. Nothing happens unless it is confirmed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;&quot;&gt;
+&lt;strong style=&quot;color:#33302c;&quot;&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;"></iframe></details>
+</section>
+<section>
+<h2>2. Reset password</h2>
+<div class="row"><span class="label">Subject</span><textarea id="subject-1" rows="1" readonly>Reset your Strike Arms password</textarea><button data-copy="subject-1">Copy subject</button></div>
+<div class="row"><span class="label">Body</span><textarea id="body-1" rows="4" readonly>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;&lt;meta name="color-scheme" content="light"&gt;&lt;title&gt;Reset your password&lt;/title&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f2f0ed;"&gt;
+&lt;div style="display:none;max-height:0;overflow:hidden;opacity:0;"&gt;Choose a new password. The link expires within an hour.&lt;/div&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f0ed;"&gt;&lt;tr&gt;&lt;td align="center" style="padding:24px 12px 0;"&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;"&gt;
+&lt;tr&gt;&lt;td style="background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;"&gt;STRIKE &lt;span style="color:#ff5a1f;"&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="background:#ffffff;padding:32px 28px 16px;"&gt;
+&lt;h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;"&gt;Reset your password&lt;/h1&gt;
+&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Someone asked to reset the password for this account. Choose a new one here:&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"&gt;&lt;tr&gt;
+&lt;td style="background:#ff5a1f;border-radius:4px;"&gt;
+&lt;a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;amp;type=recovery" style="display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;"&gt;Choose a new password&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;If the reset page asks for a code, enter this one:&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 20px;"&gt;&lt;tr&gt;
+&lt;td style="background:#f7f5f2;border:1px solid #e6e2dc;border-radius:4px;padding:14px 22px;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:bold;letter-spacing:6px;color:#0d0d0d;"&gt;{{ .Token }}&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;If two-factor authentication is set up on the account, you will be asked for a code from your authenticator app first.&lt;/p&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;"&gt;The code and link work once and expire within an hour. If they have expired, ask for another from the sign-in page. If you did not ask for this, ignore it: your password has not changed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;"&gt;
+&lt;strong style="color:#33302c;"&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</textarea><button data-copy="body-1">Copy body</button></div>
+<details><summary>Preview</summary><iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;&lt;title&gt;Reset your password&lt;/title&gt;&lt;/head&gt;
+&lt;body style=&quot;margin:0;padding:0;background:#f2f0ed;&quot;&gt;
+&lt;div style=&quot;display:none;max-height:0;overflow:hidden;opacity:0;&quot;&gt;Choose a new password. The link expires within an hour.&lt;/div&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background:#f2f0ed;&quot;&gt;&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding:24px 12px 0;&quot;&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;max-width:600px;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;&quot;&gt;STRIKE &lt;span style=&quot;color:#ff5a1f;&quot;&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#ffffff;padding:32px 28px 16px;&quot;&gt;
+&lt;h1 style=&quot;margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;&quot;&gt;Reset your password&lt;/h1&gt;
+&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Someone asked to reset the password for this account. Choose a new one here:&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:8px 0 24px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#ff5a1f;border-radius:4px;&quot;&gt;
+&lt;a href=&quot;{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;amp;type=recovery&quot; style=&quot;display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;&quot;&gt;Choose a new password&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;If the reset page asks for a code, enter this one:&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:4px 0 20px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#f7f5f2;border:1px solid #e6e2dc;border-radius:4px;padding:14px 22px;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:bold;letter-spacing:6px;color:#0d0d0d;&quot;&gt;{{ .Token }}&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;If two-factor authentication is set up on the account, you will be asked for a code from your authenticator app first.&lt;/p&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;&quot;&gt;The code and link work once and expire within an hour. If they have expired, ask for another from the sign-in page. If you did not ask for this, ignore it: your password has not changed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;&quot;&gt;
+&lt;strong style=&quot;color:#33302c;&quot;&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;"></iframe></details>
+</section>
+<section>
+<h2>3. Invite user</h2>
+<div class="row"><span class="label">Subject</span><textarea id="subject-2" rows="1" readonly>Your Strike Arms admin invite</textarea><button data-copy="subject-2">Copy subject</button></div>
+<div class="row"><span class="label">Body</span><textarea id="body-2" rows="4" readonly>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;&lt;meta name="color-scheme" content="light"&gt;&lt;title&gt;You have been invited to the Strike Arms admin&lt;/title&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f2f0ed;"&gt;
+&lt;div style="display:none;max-height:0;overflow:hidden;opacity:0;"&gt;Set your password to start managing orders, products and stock.&lt;/div&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f0ed;"&gt;&lt;tr&gt;&lt;td align="center" style="padding:24px 12px 0;"&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;"&gt;
+&lt;tr&gt;&lt;td style="background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;"&gt;STRIKE &lt;span style="color:#ff5a1f;"&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="background:#ffffff;padding:32px 28px 16px;"&gt;
+&lt;div style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#ff5a1f;"&gt;Admin access&lt;/div&gt;&lt;h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;"&gt;You have been invited to the Strike Arms admin&lt;/h1&gt;
+&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;You have been given access to the shop&amp;#x27;s admin, where orders, products and stock are managed.&lt;/p&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Set your password first. You will then set up two-factor authentication with an authenticator app on your phone, such as Google Authenticator or Microsoft Authenticator.&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"&gt;&lt;tr&gt;
+&lt;td style="background:#ff5a1f;border-radius:4px;"&gt;
+&lt;a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;amp;type=invite" style="display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;"&gt;Set your password&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;"&gt;The link works once and expires, so use it soon. If it has expired, ask for a new invite. If you were not expecting this, ignore it.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;"&gt;
+&lt;strong style="color:#33302c;"&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</textarea><button data-copy="body-2">Copy body</button></div>
+<details><summary>Preview</summary><iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;&lt;title&gt;You have been invited to the Strike Arms admin&lt;/title&gt;&lt;/head&gt;
+&lt;body style=&quot;margin:0;padding:0;background:#f2f0ed;&quot;&gt;
+&lt;div style=&quot;display:none;max-height:0;overflow:hidden;opacity:0;&quot;&gt;Set your password to start managing orders, products and stock.&lt;/div&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background:#f2f0ed;&quot;&gt;&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding:24px 12px 0;&quot;&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;max-width:600px;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;&quot;&gt;STRIKE &lt;span style=&quot;color:#ff5a1f;&quot;&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#ffffff;padding:32px 28px 16px;&quot;&gt;
+&lt;div style=&quot;margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#ff5a1f;&quot;&gt;Admin access&lt;/div&gt;&lt;h1 style=&quot;margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;&quot;&gt;You have been invited to the Strike Arms admin&lt;/h1&gt;
+&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;You have been given access to the shop&amp;#x27;s admin, where orders, products and stock are managed.&lt;/p&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Set your password first. You will then set up two-factor authentication with an authenticator app on your phone, such as Google Authenticator or Microsoft Authenticator.&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:8px 0 24px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#ff5a1f;border-radius:4px;&quot;&gt;
+&lt;a href=&quot;{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;amp;type=invite&quot; style=&quot;display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;&quot;&gt;Set your password&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;&quot;&gt;The link works once and expires, so use it soon. If it has expired, ask for a new invite. If you were not expecting this, ignore it.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;&quot;&gt;
+&lt;strong style=&quot;color:#33302c;&quot;&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;"></iframe></details>
+</section>
+<section>
+<h2>4. Change email address</h2>
+<div class="row"><span class="label">Subject</span><textarea id="subject-3" rows="1" readonly>Confirm your new Strike Arms email</textarea><button data-copy="subject-3">Copy subject</button></div>
+<div class="row"><span class="label">Body</span><textarea id="body-3" rows="4" readonly>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;&lt;meta name="color-scheme" content="light"&gt;&lt;title&gt;Confirm your email change&lt;/title&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f2f0ed;"&gt;
+&lt;div style="display:none;max-height:0;overflow:hidden;opacity:0;"&gt;Confirm the change to the email on your Strike Arms account.&lt;/div&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f0ed;"&gt;&lt;tr&gt;&lt;td align="center" style="padding:24px 12px 0;"&gt;
+&lt;table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;"&gt;
+&lt;tr&gt;&lt;td style="background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;"&gt;STRIKE &lt;span style="color:#ff5a1f;"&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="background:#ffffff;padding:32px 28px 16px;"&gt;
+&lt;h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;"&gt;Confirm your email change&lt;/h1&gt;
+&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;Someone asked to change the email on your Strike Arms account from {{ .Email }} to {{ .NewEmail }}.&lt;/p&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;"&gt;We send this to both addresses. The change goes through once it is confirmed from both.&lt;/p&gt;&lt;table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"&gt;&lt;tr&gt;
+&lt;td style="background:#ff5a1f;border-radius:4px;"&gt;
+&lt;a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;"&gt;Confirm the change&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;"&gt;If you did not ask for this, do not confirm it, and change your password from your account page.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;"&gt;
+&lt;strong style="color:#33302c;"&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</textarea><button data-copy="body-3">Copy body</button></div>
+<details><summary>Preview</summary><iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;&lt;title&gt;Confirm your email change&lt;/title&gt;&lt;/head&gt;
+&lt;body style=&quot;margin:0;padding:0;background:#f2f0ed;&quot;&gt;
+&lt;div style=&quot;display:none;max-height:0;overflow:hidden;opacity:0;&quot;&gt;Confirm the change to the email on your Strike Arms account.&lt;/div&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background:#f2f0ed;&quot;&gt;&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding:24px 12px 0;&quot;&gt;
+&lt;table role=&quot;presentation&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;max-width:600px;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;&quot;&gt;STRIKE &lt;span style=&quot;color:#ff5a1f;&quot;&gt;ARMS&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;background:#ffffff;padding:32px 28px 16px;&quot;&gt;
+&lt;h1 style=&quot;margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;&quot;&gt;Confirm your email change&lt;/h1&gt;
+&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;Someone asked to change the email on your Strike Arms account from {{ .Email }} to {{ .NewEmail }}.&lt;/p&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;&quot;&gt;We send this to both addresses. The change goes through once it is confirmed from both.&lt;/p&gt;&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;margin:8px 0 24px;&quot;&gt;&lt;tr&gt;
+&lt;td style=&quot;background:#ff5a1f;border-radius:4px;&quot;&gt;
+&lt;a href=&quot;{{ .ConfirmationURL }}&quot; style=&quot;display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;&quot;&gt;Confirm the change&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p style=&quot;margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;&quot;&gt;If you did not ask for this, do not confirm it, and change your password from your account page.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;&quot;&gt;
+&lt;strong style=&quot;color:#33302c;&quot;&gt;Strike Arms&lt;/strong&gt;&lt;br&gt;
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9&lt;br&gt;
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;"></iframe></details>
+</section>
+</main>
+<script>
+document.querySelectorAll("button[data-copy]").forEach(function (button) {
+  button.addEventListener("click", function () {
+    var field = document.getElementById(button.dataset.copy);
+    field.select();
+    document.execCommand("copy");
+    var label = button.textContent;
+    button.textContent = "Copied";
+    button.classList.add("done");
+    setTimeout(function () { button.textContent = label; button.classList.remove("done"); }, 1500);
+  });
+});
+</script>
+</body></html>

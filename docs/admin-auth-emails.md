@@ -39,7 +39,9 @@ so the admin reset page asks for a code first. Customers have no MFA in v1.
 
 ## 1. Email templates
 
-Dashboard > Authentication > Emails.
+Dashboard > Authentication > Emails. The easy way: open
+`supabase/templates/paste-into-supabase.html` in a browser. It lists the four
+templates below with a copy button for each subject and body.
 
 - **Invite user**: subject `Your Strike Arms admin invite`. Body: paste
   `supabase/templates/invite.html`.
@@ -48,9 +50,17 @@ Dashboard > Authentication > Emails.
   customers.
 - **Confirm sign up**: subject `Confirm your Strike Arms account`. Body: paste
   `supabase/templates/confirmation.html`.
-- **Change email address**: leave Supabase's default. It is sent to both the
+- **Change email address**: subject `Confirm your new Strike Arms email`.
+  Body: paste `supabase/templates/email-change.html`. It is sent to both the
   old and the new address, and the change goes through once both are
   confirmed ("Secure email change", on by default).
+
+The HTML files are generated, in the same design as the order emails. Edit
+`supabase/templates/auth-emails.ts` (or the shared layout in
+`supabase/functions/notification-worker/templates/layout.ts`), then run
+`node supabase/templates/render.ts` and paste the files again. Add
+`--preview <folder>` to also write every order email with sample orders, plus
+an index page, for looking over the whole set.
 
 Until these are pasted, the hosted project sends Supabase's default emails,
 and their links do not reach the pages above.

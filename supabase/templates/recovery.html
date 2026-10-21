@@ -1,15 +1,24 @@
-<h2>Reset your Strike Arms password</h2>
-
-<p>Someone asked to reset the password for this account. Follow this link to choose a new one:</p>
-
-<p><a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">Choose a new password</a></p>
-
-<p>Or, if the reset page asks for a code, enter this one:</p>
-
-<p style="font-size: 24px; font-weight: bold; letter-spacing: 4px;">{{ .Token }}</p>
-
-<p>If two-factor authentication is set up on the account, you will be asked for a code from your authenticator app first.</p>
-
-<p>The code and link work once and expire within an hour. If they have expired, ask for another from the sign-in page.</p>
-
-<p>If you did not ask for this, you can ignore it. Your password has not changed.</p>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Reset your password</title></head>
+<body style="margin:0;padding:0;background:#f2f0ed;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Choose a new password. The link expires within an hour.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f0ed;"><tr><td align="center" style="padding:24px 12px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
+<tr><td style="background:#0d0d0d;border-bottom:3px solid #ff5a1f;padding:18px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;letter-spacing:4px;color:#ffffff;">STRIKE <span style="color:#ff5a1f;">ARMS</span></td></tr>
+<tr><td style="background:#ffffff;padding:32px 28px 16px;">
+<h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1.25;color:#0d0d0d;">Reset your password</h1>
+<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;">Someone asked to reset the password for this account. Choose a new one here:</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>
+<td style="background:#ff5a1f;border-radius:4px;">
+<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=recovery" style="display:inline-block;padding:14px 26px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#0d0d0d;text-decoration:none;">Choose a new password</a>
+</td></tr></table><p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;">If the reset page asks for a code, enter this one:</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 20px;"><tr>
+<td style="background:#f7f5f2;border:1px solid #e6e2dc;border-radius:4px;padding:14px 22px;font-family:'Courier New',Courier,monospace;font-size:28px;font-weight:bold;letter-spacing:6px;color:#0d0d0d;">{{ .Token }}</td>
+</tr></table><p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#33302c;">If two-factor authentication is set up on the account, you will be asked for a code from your authenticator app first.</p><p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#77716a;">The code and link work once and expire within an hour. If they have expired, ask for another from the sign-in page. If you did not ask for this, ignore it: your password has not changed.</p>
+</td></tr>
+<tr><td style="padding:20px 8px 32px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#77716a;text-align:center;">
+<strong style="color:#33302c;">Strike Arms</strong><br>
+Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9<br>
++353 87 273 6351 · Tuesday to Sunday, 11:00 to 18:00
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>

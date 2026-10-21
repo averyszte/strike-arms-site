@@ -1,5 +1,5 @@
 import { jsonResponse, webhookCorsHeaders } from "../_shared/cors.ts";
-import { requireEnv } from "../_shared/env.ts";
+import { optionalEnv, requireEnv } from "../_shared/env.ts";
 import { sendEmail } from "../_shared/resend.ts";
 import { isServiceRoleCaller } from "../_shared/service-role-caller.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
@@ -33,7 +33,9 @@ async function sendJob(admin: SupabaseAdmin, job: NotificationJob): Promise<void
     subject: email.subject,
     html: email.html,
     text: email.text,
-    replyTo: email.replyTo,
+    // The sending subdomain has no inbox, so without REPLY_TO a customer's
+    // reply bounces. Owner alerts keep their own reply-to (the customer).
+    replyTo: email.replyTo ?? optionalEnv("REPLY_TO"),
     idempotencyKey: job.id,
   });
 }

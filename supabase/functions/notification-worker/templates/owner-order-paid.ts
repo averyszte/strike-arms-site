@@ -1,13 +1,6 @@
 import type { EmailOrder } from "../load-order.ts";
-import {
-  addressHtml,
-  hasPosting,
-  itemsTable,
-  itemsText,
-  layout,
-  paragraph,
-  type RenderedEmail,
-} from "./layout.ts";
+import { button, layout, panel, paragraph, type RenderedEmail } from "./layout.ts";
+import { itemsTable, itemsText, postingAddress } from "./order-blocks.ts";
 
 const METHOD_LABELS: Record<EmailOrder["fulfillmentMethod"], string> = {
   pickup: "Collect in store",
@@ -19,32 +12,34 @@ const METHOD_LABELS: Record<EmailOrder["fulfillmentMethod"], string> = {
 export function ownerOrderPaidEmail(order: EmailOrder, adminUrl: string): RenderedEmail {
   const contact = [order.customerName, order.customerEmail, order.customerPhone]
     .filter((part): part is string => Boolean(part));
-  const warning = order.needsAttention
-    ? paragraph("NEEDS ATTENTION: this order was flagged when it was paid. See the order in the admin.")
-    : "";
-  const posting = hasPosting(order) && order.address.length > 0
-    ? `${paragraph("Post to:")}${addressHtml(order.address)}`
-    : "";
-  const notes = order.notes ? paragraph(`Notes: ${order.notes}`) : "";
+  const address = postingAddress(order);
+  const warning = "Needs attention: this order was flagged when it was paid. Check it in the admin before packing.";
+  const method = METHOD_LABELS[order.fulfillmentMethod];
+
+  const html = layout({
+    preheader: `${order.customerName}, ${method.toLowerCase()}. Reply to this email to reach the customer.`,
+    eyebrow: order.needsAttention ? "Needs attention" : "New web order",
+    heading: `Order ${order.orderNumber}`,
+    body:
+      (order.needsAttention ? panel("Before you pack", [warning]) : "") +
+      panel("Customer", contact) +
+      panel("How it goes out", [method]) +
+      itemsTable(order) +
+      (address.length > 0 ? panel("Post to", address) : "") +
+      (order.notes ? panel("Customer notes", [order.notes]) : "") +
+      button("Open in the admin", adminUrl) +
+      paragraph("Reply to this email to reach the customer."),
+  });
 
   return {
     subject: `${order.needsAttention ? "[Needs attention] " : ""}New order ${order.orderNumber} from ${order.customerName}`,
-    html: layout(
-      `New order ${order.orderNumber}`,
-      warning +
-        paragraph(contact.join(" · ")) +
-        paragraph(METHOD_LABELS[order.fulfillmentMethod]) +
-        itemsTable(order) +
-        posting +
-        notes +
-        paragraph(`Open it in the admin: ${adminUrl}`),
-    ),
+    html,
     text: [
-      order.needsAttention ? "NEEDS ATTENTION: this order was flagged when it was paid." : "",
+      order.needsAttention ? warning : "",
       contact.join(" / "),
-      METHOD_LABELS[order.fulfillmentMethod],
+      method,
       itemsText(order),
-      hasPosting(order) && order.address.length > 0 ? `Post to:\n${order.address.join("\n")}` : "",
+      address.length > 0 ? `Post to:\n${address.join("\n")}` : "",
       order.notes ? `Notes: ${order.notes}` : "",
       `Admin: ${adminUrl}`,
     ].filter(Boolean).join("\n\n"),
