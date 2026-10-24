@@ -6,9 +6,11 @@
  * The emails carry a 6-digit code as well as a link (supabase/templates),
  * so a customer who opens the email on another device can type the code.
  *
- * Each function throws on failure. Supabase answers sign-up and reset the
- * same way whether or not the address has an account, and the forms keep
- * it that way, so neither can be used to find out who shops here.
+ * Each function throws on failure. Reset answers the same way whether or
+ * not the address has an account. Sign-up does not: Phil chose to tell a
+ * customer outright when their email is already registered (see
+ * docs/customer-accounts-plan.md), since Supabase would otherwise show the
+ * code screen and send nothing.
  */
 import { supabase } from '@/lib/supabase';
 import type { CustomerLinkType, SignUpInput } from '@/types/customer-account';
@@ -33,8 +35,12 @@ export function onCustomerAuthChange(
   return () => subscription.unsubscribe();
 }
 
+/**
+ * Supabase answers an email that already has a confirmed account with a
+ * user that has no identities, and sends nothing. Turn that into an error.
+ */
 export async function signUpCustomer({ fullName, email, password }: SignUpInput): Promise<void> {
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -43,6 +49,9 @@ export async function signUpCustomer({ fullName, email, password }: SignUpInput)
     },
   });
   if (error) throw error;
+  if (data.user?.identities?.length === 0) {
+    throw Object.assign(new Error('Account already exists'), { code: 'user_already_exists' });
+  }
 }
 
 export async function resendSignUpCode(email: string): Promise<void> {

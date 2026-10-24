@@ -14,9 +14,9 @@ const CRUMBS = [{ label: 'Your account', href: '/account' }, { label: 'Create an
  * Sign-up, then the emailed code. Confirming signs the customer in, and
  * /account then links any guest orders placed with the same email.
  *
- * Supabase answers an email that already has an account exactly like a new
- * one (and sends that address nothing to confirm), so this page cannot be
- * used to find out who has an account.
+ * An email that already has an account is refused on the form with a
+ * message saying so, rather than reaching the code step for an email that
+ * will never come.
  */
 export default function AccountSignUp() {
   const session = useCustomerSession();

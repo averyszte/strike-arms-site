@@ -104,7 +104,9 @@ Work:
   PKCE links fail in a different browser).
 - Turnstile on sign-up, sign-in and reset (Supabase supports it natively). Same keys as item 17.
 - Enumeration-safe copy: "Invalid email or password", "If an account exists, we've sent a
-  code".
+  code". Exception, Phil's call (2026-10-24): sign-up says outright when an email already has
+  an account, because otherwise the customer waits on a code that never comes. This does let
+  anyone check whether an address has an account.
 - Admin separation: `AdminAuthProvider` moves inside `/admin` only; a customer signing in at
   `/admin/login` is still signed out. Customer MFA: not in v1.
 - Separate auth email templates for customers (sign-up confirmation, reset code); the existing
