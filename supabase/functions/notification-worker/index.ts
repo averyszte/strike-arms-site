@@ -6,7 +6,8 @@ import { createAdminClient } from "../_shared/supabase-admin.ts";
 import { renderJob, type NotificationJob } from "./build-email.ts";
 
 /**
- * Sends the emails queued by migration 030 (orders).
+ * Sends the emails queued by migrations 030 (orders) and 039 (contact and
+ * quote forms).
  *
  * The trigger on orders writes a job in the same transaction as the change
  * that caused it, so an email is never promised for a change that rolled

@@ -1,17 +1,20 @@
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
+import { loadEmailInquiry } from "./load-inquiry.ts";
 import { loadEmailOrder, type EmailOrder } from "./load-order.ts";
 import type { RenderedEmail } from "./templates/layout.ts";
 import { orderConfirmedEmail } from "./templates/order-confirmed.ts";
+import { ownerNewInquiryEmail } from "./templates/owner-new-inquiry.ts";
 import { ownerOrderPaidEmail } from "./templates/owner-order-paid.ts";
 import { refundedEmail } from "./templates/refunded.ts";
 import { statusChangedEmail } from "./templates/status-changed.ts";
 
-/** A claimed row of notification_jobs (030, 031). Exactly one id is set. */
+/** A claimed row of notification_jobs (030, 031, 039). Exactly one id is set. */
 export type NotificationJob = {
   id: string;
   event_type: string;
   order_id: string | null;
   product_id: string | null;
+  inquiry_id: string | null;
   recipient: string;
   payload: Record<string, unknown> | null;
   attempt_count: number;
@@ -58,6 +61,11 @@ export async function renderJob(
 ): Promise<JobEmail> {
   if (job.order_id) {
     return orderEmail(job, await loadEmailOrder(admin, job.order_id), siteUrl);
+  }
+  if (job.inquiry_id && job.event_type === "owner.new_inquiry") {
+    const inquiry = await loadEmailInquiry(admin, job.inquiry_id);
+    // Reply goes to whoever sent the form.
+    return { ...ownerNewInquiryEmail(inquiry, `${siteUrl}/admin/inquiries`), replyTo: inquiry.email };
   }
   throw new Error(`Job ${job.id} (${job.event_type}) has nothing to send about`);
 }

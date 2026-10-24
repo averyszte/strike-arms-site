@@ -7,6 +7,7 @@ export const ORDER_EMAIL_LABELS: Record<NotificationEventType, string> = {
   'customer.status_changed': 'Status update',
   'customer.refunded': 'Refund notice',
   'owner.low_stock': 'Low stock alert',
+  'owner.new_inquiry': 'New enquiry alert',
 };
 
 export const ORDER_EMAIL_STATUS_LABELS: Record<NotificationStatus, string> = {
