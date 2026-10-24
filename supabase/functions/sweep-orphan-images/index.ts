@@ -36,7 +36,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405, webhookCorsHeaders);
   }
-  if (!isServiceRoleCaller(req)) {
+  if (!(await isServiceRoleCaller(req))) {
     return jsonResponse({ error: "Forbidden" }, 403, webhookCorsHeaders);
   }
 
