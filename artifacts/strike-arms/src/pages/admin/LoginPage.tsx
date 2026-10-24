@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAdminAuth } from '@/lib/admin-auth-context';
+import { PASSWORD_HINT } from '@/lib/password-policy';
 
 export default function LoginPage() {
   const { user, isAdmin, isLoading, signIn } = useAdminAuth();
@@ -72,6 +73,7 @@ export default function LoginPage() {
             autoComplete="current-password"
             required
           />
+          <p className="text-xs text-muted-foreground">{PASSWORD_HINT}</p>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}

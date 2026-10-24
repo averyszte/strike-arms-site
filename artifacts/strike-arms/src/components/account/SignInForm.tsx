@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { signInSchema, type SignInFormInput } from '@/lib/customer-account-validation';
+import { PASSWORD_HINT } from '@/lib/password-policy';
 import { CARD_TITLE, CTA_PRIMARY_SM, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 
 type SignInFormProps = {
@@ -68,7 +69,9 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
             aria-invalid={errors.password ? true : undefined}
             {...register('password')}
           />
-          {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+          <p className={`text-xs ${errors.password ? 'text-destructive' : 'text-muted-foreground'}`}>
+            {errors.password?.message ?? PASSWORD_HINT}
+          </p>
         </div>
 
         <FormError message={submitError} />
