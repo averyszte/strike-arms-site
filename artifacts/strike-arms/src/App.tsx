@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
+import ComingSoon from "@/pages/ComingSoon";
 import Brands from "@/pages/Brands";
 import BrandPage from "@/pages/BrandPage";
 import NewArrivals from "@/pages/NewArrivals";
@@ -25,6 +26,7 @@ import Terms from "@/pages/Terms";
 import Returns from "@/pages/Returns";
 import Delivery from "@/pages/Delivery";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import { useComingSoon } from "@/hooks/use-coming-soon";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
 import { CartProvider } from "@/lib/cart-context";
 import Cart from "@/pages/Cart";
@@ -63,6 +65,10 @@ const queryClient = new QueryClient();
 
 function Router() {
   useScrollToTop();
+  const isComingSoon = useComingSoon();
+
+  // Holding page on the live domain until launch (lib/coming-soon-gate.ts).
+  if (isComingSoon) return <ComingSoon />;
 
   return (
     <Switch>
