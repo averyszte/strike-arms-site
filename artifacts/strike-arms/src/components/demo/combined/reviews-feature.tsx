@@ -1,48 +1,50 @@
-import { Star, Quote } from "lucide-react";
+import { useReviewSample } from "@/hooks/use-review-sample";
+import { RatingLine, ReviewButtons, ReviewCard, SampleNotice } from "@/components/demo/combined/review-parts";
 
 /**
- * Combined homepage — reviews as pull-quotes. Real review text reused from the
- * live ReviewsSection (not invented). The hardcoded "90 Google Reviews" count
- * is dropped per the validation report — rating and source only.
+ * Combined homepage — Google reviews as two rows drifting opposite ways, with
+ * the "4.7 on Google" line and read/leave buttons. Reviews come from the bank
+ * (lib/review-bank.ts), a random pick per visit. Pauses on hover; still for
+ * reduced motion. Picked from /drafts/sections.
  */
-const REVIEWS = [
-  { text: "Best airsoft shop in Dublin, hands down. Fair prices and the advice is worth the visit alone.", author: "Conor M." },
-  { text: "Alan spent 20 minutes explaining setups. Couldn't ask for better service.", author: "Jamie L." },
-  { text: "Fixed my rifle fast and cheaply. Wouldn't go anywhere else for repairs.", author: "David K." },
-];
+function MarqueeRow({ isReversed }: { isReversed: boolean }) {
+  const reviews = useReviewSample(4);
+  // The marquee keyframe moves a third of the track, so it needs three copies.
+  const loop = [...reviews, ...reviews, ...reviews];
+  return (
+    <div className="overflow-hidden group">
+      <div
+        className="flex w-max gap-4 animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none"
+        style={{ animationDuration: "70s", animationDirection: isReversed ? "reverse" : "normal" }}
+      >
+        {loop.map((r, i) => (
+          <div key={i} className="w-[22rem] shrink-0" aria-hidden={i >= reviews.length}>
+            <ReviewCard review={r} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function ReviewsFeature() {
   return (
-    <section className="py-16 md:py-24 bg-card border-b border-border/60">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center gap-3 mb-10 md:mb-14">
-          <span className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-6 h-6 ${i < 4 ? "fill-accent text-accent" : "text-border"}`}
-              />
-            ))}
-          </span>
-          <span className="text-xl md:text-2xl font-black uppercase tracking-tight text-foreground">
-            4.7 / 5 · Google
-          </span>
+    <section className="py-16 md:py-24 bg-card border-b border-border/60 overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-3">Reviews</p>
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[0.9] mb-6">
+            Heard at <span className="text-accent">the counter</span>
+          </h2>
+          <RatingLine />
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-          {REVIEWS.map((r) => (
-            <figure key={r.author} className="flex flex-col">
-              <Quote className="w-8 h-8 text-accent mb-4" />
-              <blockquote className="text-2xl md:text-3xl font-black leading-[1.05] tracking-tight text-foreground flex-1">
-                {r.text}
-              </blockquote>
-              <figcaption className="mt-6 text-sm font-black uppercase tracking-wider text-muted-foreground">
-                {r.author}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <ReviewButtons />
       </div>
+      <div className="flex flex-col gap-4">
+        <MarqueeRow isReversed={false} />
+        <MarqueeRow isReversed />
+      </div>
+      <div className="container mx-auto px-4 md:px-6 mt-6"><SampleNotice /></div>
     </section>
   );
 }

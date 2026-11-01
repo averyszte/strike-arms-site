@@ -11,7 +11,7 @@ import {
   ReviewCard,
   SampleNotice,
   Stars,
-} from "@/components/demo/drafts/review-parts";
+} from "@/components/demo/combined/review-parts";
 
 /** A: a Google summary panel on the left, three random review cards beside it. */
 export function ReviewsSummaryCards() {
