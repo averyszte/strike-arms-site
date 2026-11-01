@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useReviewSample } from "@/hooks/use-review-sample";
 import { useRotatingIndex } from "@/hooks/use-rotating-index";
-import { GOOGLE_RATING } from "@/lib/review-bank";
+import { GOOGLE_RATING, RANKED_REVIEWS } from "@/lib/review-bank";
 import { Eyebrow } from "@/components/demo/drafts/why-drafts-a";
 import {
   GoogleG,
   RatingLine,
   ReviewButtons,
   ReviewCard,
-  SampleNotice,
   Stars,
 } from "@/components/demo/combined/review-parts";
 
-/** A: a Google summary panel on the left, three random review cards beside it. */
+/** A: a Google summary panel on the left, the top three review cards beside it. */
 export function ReviewsSummaryCards() {
-  const reviews = useReviewSample(3);
+  const reviews = RANKED_REVIEWS.slice(0, 3);
   return (
     <section className="py-16 md:py-24 bg-card">
       <div className="container mx-auto px-4 md:px-6 grid lg:grid-cols-[minmax(0,22rem)_1fr] gap-8 lg:gap-10">
@@ -26,7 +24,6 @@ export function ReviewsSummaryCards() {
           </h2>
           <RatingLine />
           <ReviewButtons />
-          <SampleNotice />
         </div>
         <div className="grid md:grid-cols-3 gap-4">
           {reviews.map((r, i) => <ReviewCard key={i} review={r} />)}
@@ -38,7 +35,7 @@ export function ReviewsSummaryCards() {
 
 /** B: the one orange band on the page carries the rating, cards sit under it. */
 export function ReviewsOrangeBand() {
-  const reviews = useReviewSample(3);
+  const reviews = RANKED_REVIEWS.slice(0, 3);
   return (
     <section className="bg-background">
       <div className="bg-accent text-accent-foreground">
@@ -59,15 +56,14 @@ export function ReviewsOrangeBand() {
         <div className="grid md:grid-cols-3 gap-4">
           {reviews.map((r, i) => <ReviewCard key={i} review={r} />)}
         </div>
-        <div className="mt-6"><SampleNotice /></div>
       </div>
     </section>
   );
 }
 
-/** C: one huge quote at a time, cycling through a random three, with a counter. */
+/** C: one huge quote at a time, cycling through the top three, with a counter. */
 export function ReviewsBigQuote() {
-  const reviews = useReviewSample(3);
+  const reviews = RANKED_REVIEWS.slice(0, 3);
   const [isPaused, setIsPaused] = useState(false);
   const { index, setIndex } = useRotatingIndex(reviews.length, 7000, isPaused);
   const review = reviews[index];
@@ -112,7 +108,7 @@ export function ReviewsBigQuote() {
 }
 
 function MarqueeRow({ isReversed }: { isReversed: boolean }) {
-  const reviews = useReviewSample(4);
+  const reviews = RANKED_REVIEWS.slice(0, 4);
   const loop = [...reviews, ...reviews, ...reviews];
   return (
     <div className="overflow-hidden group">
@@ -148,7 +144,6 @@ export function ReviewsMarquee() {
         <MarqueeRow isReversed={false} />
         <MarqueeRow isReversed />
       </div>
-      <div className="container mx-auto px-4 md:px-6 mt-6"><SampleNotice /></div>
     </section>
   );
 }

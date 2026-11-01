@@ -15,7 +15,6 @@ import {
  * Hidden drafts page for the homepage "Why Strike Arms" and reviews sections.
  * Each combo shows Why, the guides section, then Reviews, in homepage order,
  * so the background rhythm can be judged as well as the sections themselves.
- * Reviews are placeholders until Alan's real Google reviews are in the bank.
  */
 const COMBOS: { id: string; name: string; notes: string; why: ReactNode; reviews: ReactNode }[] = [
   {
@@ -78,7 +77,7 @@ export default function SectionDrafts() {
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight">Section drafts</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             "Why Strike Arms" and reviews, mixed and matched. Each combo runs Why, then guides, then reviews,
-            like the homepage. Refresh to see a different random three reviews. Review text is placeholder.
+            like the homepage. Reviews are the top of the real Google bank.
           </p>
           <nav className="mt-6 flex flex-wrap gap-2">
             {COMBOS.map((c) => (

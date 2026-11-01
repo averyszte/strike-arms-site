@@ -69,11 +69,11 @@ export function ReviewButtons({ tone = "dark" }: { tone?: "dark" | "accent" }) {
 export function ReviewCard({ review }: { review: Review }) {
   return (
     <figure className="flex flex-col h-full bg-background border border-border/60 p-6 md:p-7">
-      <div className="flex items-center justify-between mb-5">
-        <Stars rating={review.rating} />
-        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-accent">{review.tag}</span>
-      </div>
-      <blockquote className="flex-1 text-lg leading-snug text-foreground">{review.text}</blockquote>
+      <Stars rating={review.rating} className={review.text ? "w-4 h-4" : "w-6 h-6"} />
+      {/* Long reviews are cut at six lines; the full text is in the title. */}
+      <blockquote className="flex-1 mt-5 text-lg leading-snug text-foreground line-clamp-6" title={review.text || undefined}>
+        {review.text}
+      </blockquote>
       <figcaption className="mt-6 pt-5 border-t border-border/60 flex items-center gap-3">
         <span className="w-10 h-10 shrink-0 bg-muted border border-border flex items-center justify-center text-sm font-black">
           {initials(review.author)}
@@ -85,13 +85,5 @@ export function ReviewCard({ review }: { review: Review }) {
         <GoogleG className="w-5 h-5" />
       </figcaption>
     </figure>
-  );
-}
-
-export function SampleNotice() {
-  return (
-    <p className="text-xs text-muted-foreground">
-      A random selection of reviews from our Google Business Profile, shown with permission.
-    </p>
   );
 }
