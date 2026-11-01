@@ -23,10 +23,10 @@ export type Review = {
 /** "4.7 on Google". Google asks for an "as of" date beside it. */
 export const GOOGLE_RATING = { value: "4.7", asOf: "October 2026" };
 
-// Not known yet: the profile's place ID unlocks the direct "write a review"
-// link (https://search.google.com/local/writereview?placeid=...). Until then
-// both buttons open the Maps listing.
-export const GOOGLE_PLACE_ID: string | null = null;
+// The profile's place ID, read off Google's reviews panel (Nov 2026). It
+// unlocks the direct "write a review" link; set it to null to fall back to
+// the Maps listing.
+export const GOOGLE_PLACE_ID: string | null = "ChIJAdXwW1gQZ0gRF4HsOc7rAU0";
 
 export const REVIEW_BANK: Review[] = [
   { author: "Sample reviewer", date: "Sample date", rating: 5, tag: "Shop", isSample: true,
