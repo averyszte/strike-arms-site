@@ -14,7 +14,6 @@ import { TrustMarquee } from "@/components/demo/combined/trust-marquee";
 import { CategoryGrid } from "@/components/demo/combined/category-grid";
 import { LoadoutShowcase } from "@/components/demo/combined/loadout-showcase";
 import { Lineup } from "@/components/demo/combined/lineup";
-import { WhyStrikeArms } from "@/components/demo/combined/why-strike-arms";
 import { ReviewsFeature } from "@/components/demo/combined/reviews-feature";
 import { FinalCta } from "@/components/demo/combined/final-cta";
 import { VisitShop } from "@/components/demo/combined/visit-shop";
@@ -59,7 +58,6 @@ export default function Home() {
         </div>
         <CategoryGrid />
         <LoadoutShowcase />
-        <WhyStrikeArms />
         <Lineup />
         <ReviewsFeature />
         <VisitShop />
