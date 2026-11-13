@@ -6,13 +6,11 @@ import { GUIDES, type GuideSummary } from "@/lib/guides";
  * Combined homepage — the guides, as Drop's big numbered photo cards on the
  * site's dark tokens with an asymmetric middle card. Titles, summaries and
  * links come from the guides registry, so they always match /guides.
- *
- * Images are stand-ins until the guide photography arrives.
  */
 const FEATURED: { path: string; img: string }[] = [
-  { path: "/guides/beginners-guide", img: "/images/loadout-beginner.png" },
-  { path: "/guides/first-airsoft-gun", img: "/images/loadout-cqb.png" },
-  { path: "/guides/airsoft-maintenance", img: "/images/loadout-outdoor.png" },
+  { path: "/guides/beginners-guide", img: "/images/guides/beginners-guide.webp" },
+  { path: "/guides/first-airsoft-gun", img: "/images/guides/choosing-your-first-gun.webp" },
+  { path: "/guides/airsoft-maintenance", img: "/images/guides/maintenance-guide.webp" },
 ];
 
 const CARDS = FEATURED.flatMap(({ path, img }) => {
