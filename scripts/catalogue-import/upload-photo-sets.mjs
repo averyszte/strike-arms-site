@@ -15,8 +15,9 @@
  * and it prints what would change. Nothing is uploaded or updated.
  *
  * Paths match src/data/storage-repository.ts (products/<year>/<uuid>.webp).
- * Uploaded URLs are recorded in photo-set-urls.json, so a run that dies half way
- * re-uses what it already uploaded instead of orphaning it.
+ * Uploaded URLs are recorded in photo-set-urls.json against a hash of each
+ * file, so a run that dies half way re-uses what it already uploaded instead of
+ * orphaning it, and a re-processed photo is always uploaded fresh.
  *
  * Credentials come from read-credentials.mjs: paste the service role key into
  * service-role-key.txt in this folder first. Neither value is ever printed.
@@ -26,6 +27,7 @@
  *         add --dir=reframed to upload images/reframed instead
  */
 
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -96,9 +98,10 @@ async function uploadFile(file) {
 async function uploadSet(slug, photos, uploaded) {
   const urls = [];
   for (const photo of photos) {
-    // Folder-qualified outside the default, so a reframed 01.webp never
-    // re-uses the URL recorded for a processed 01.webp of the same name.
-    const recordKey = DIR_NAME === 'processed' ? `${slug}/${photo.file}` : `${DIR_NAME}/${slug}/${photo.file}`;
+    // Keyed by folder, file and a hash of its bytes, so a re-processed photo
+    // with the same name is uploaded again instead of re-using the old URL.
+    const hash = createHash('sha256').update(readFileSync(join(PROCESSED_DIR, photo.file))).digest('hex');
+    const recordKey = `${DIR_NAME}/${photo.file}#${hash.slice(0, 16)}`;
     uploaded[recordKey] ??= await uploadFile(photo.file);
     writeFileSync(URLS_FILE, `${JSON.stringify(uploaded, null, 2)}\n`, 'utf8');
     urls.push(uploaded[recordKey]);

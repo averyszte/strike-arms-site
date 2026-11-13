@@ -88,8 +88,8 @@ For replacing a product's images with a set of better photos, not for the first 
    `node scripts/catalogue-import/upload-photo-sets.mjs` checks every slug against the live
    catalogue and prints the change. Add `--write` to upload and replace. The old images are
    queued for deletion by the migration 011 trigger and removed by `sweep-orphan-images`.
-4. If you re-process after uploading, delete `photo-set-urls.json` first, or the old uploads are
-   re-used.
+4. Re-processing after uploading is safe: `photo-set-urls.json` records each upload against a
+   hash of the file, so a changed photo is uploaded again and an unchanged one is re-used.
 
 ## Re-framing photos already on the shop
 
@@ -107,8 +107,7 @@ site's white box, or an item sitting small in a landscape strip.
    `SHEET_KEPT`, which keeps the lighting fix but skips the fade, so the plastic is not erased.
    Another shop's watermark is painted white first by listing its corner in `ERASE_REGIONS`.
 3. `node scripts/catalogue-import/upload-photo-sets.mjs --dir=reframed` checks, and adding
-   `--write` uploads and replaces, exactly as for photo sets. Uploads are recorded under
-   `reframed/` in `photo-set-urls.json`, separate from the photo-set ones.
+   `--write` uploads and replaces, exactly as for photo sets.
 
 ## Decisions taken, and why
 
