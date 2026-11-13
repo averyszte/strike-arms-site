@@ -30,7 +30,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
 import sharp from 'sharp';
 
-import { collectPhotoSets } from './photo-sets.mjs';
+import { collectPhotoSets, eraseRegionsFor } from './photo-sets.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SOURCE_DIR = process.argv[2] ?? join(HERE, 'images', 'sets');
@@ -115,8 +115,23 @@ function cropCloseUp(image) {
   return rawImage(image).resize({ width: side, height: side, fit: 'cover', position: 'centre' });
 }
 
+/** Paints the given fractional rectangles white, in place. */
+function eraseRegions(image, regions) {
+  for (const region of regions) {
+    const x0 = Math.floor(region.left * image.width);
+    const y0 = Math.floor(region.top * image.height);
+    const x1 = Math.min(image.width, Math.ceil((region.left + region.width) * image.width));
+    const y1 = Math.min(image.height, Math.ceil((region.top + region.height) * image.height));
+    for (let y = y0; y < y1; y += 1) {
+      image.data.fill(255, (y * image.width + x0) * 3, (y * image.width + x1) * 3);
+    }
+  }
+  return image;
+}
+
 async function processPhoto(path, outPath) {
-  const shaved = await shave(await loadFlat(path));
+  const flat = eraseRegions(await loadFlat(path), eraseRegionsFor(path));
+  const shaved = await shave(flat);
   const isStudio = whiteRingShare(shaved) >= STUDIO_RING_SHARE;
   const pipeline = isStudio ? await frameStudioShot(shaved) : cropCloseUp(shaved);
   const info = await pipeline.webp(WEBP).toFile(outPath);

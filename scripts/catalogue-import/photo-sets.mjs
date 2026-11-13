@@ -54,6 +54,21 @@ export const PHOTO_SET_SLUGS = {
   'tokyo-marui-aa-12': 'pre-loved-tm-aa12-shotgun',
 };
 
+/**
+ * Areas painted white before processing, as fractions of the source photo.
+ * Keyed by normalised file name. For other shops' watermarks on supplier
+ * photos, which must not appear on ours.
+ */
+export const ERASE_REGIONS = {
+  // airsofteire.com logo, bottom left
+  'asg 715 chrome 1': [{ left: 0, top: 0.92, width: 0.23, height: 0.08 }],
+};
+
+/** Regions to white out for this file, or an empty list. */
+export function eraseRegionsFor(filename) {
+  return ERASE_REGIONS[normalise(filename)] ?? [];
+}
+
 const IMAGE_EXTENSIONS = new Set(['.webp', '.jpg', '.jpeg', '.png']);
 const PREFIXES = Object.keys(PHOTO_SET_SLUGS).sort((a, b) => b.length - a.length);
 
