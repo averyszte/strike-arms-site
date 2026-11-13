@@ -120,30 +120,34 @@ for (const slug of slugs) {
   process.stderr.write(`  ${slug.padEnd(40)} ${before.padEnd(16)} -> ${manifest[slug].length}\n`);
 }
 
+/** Uploads and replaces every set. Returns the number that failed. */
+async function writeAll() {
+  const uploaded = existsSync(URLS_FILE) ? JSON.parse(readFileSync(URLS_FILE, 'utf8')) : {};
+  let failures = 0;
+  process.stderr.write('\n');
+  for (const slug of slugs) {
+    try {
+      await setImages(slug, await uploadSet(slug, manifest[slug], uploaded));
+      process.stderr.write(`  ok   ${slug}\n`);
+    } catch (error) {
+      failures += 1;
+      process.stderr.write(`  FAIL ${slug}: ${error.message}\n`);
+    }
+  }
+  process.stderr.write(
+    `\n${slugs.length - failures} products updated, ${failures} failures.` +
+      (failures ? ' Re-run with --write; uploaded files are re-used.\n' : '\n'),
+  );
+  return failures;
+}
+
+// exitCode rather than process.exit(): exiting while fetch sockets are still
+// closing trips a libuv assertion on Windows and hides the real status.
 if (missing.length) {
   process.stderr.write(`\n${missing.length} slugs are not in the live catalogue. Nothing done.\n`);
-  process.exit(1);
-}
-if (!IS_WRITE) {
+  process.exitCode = 1;
+} else if (!IS_WRITE) {
   process.stderr.write('\nCheck only. Run again with --write to upload and replace.\n');
-  process.exit(0);
+} else {
+  process.exitCode = (await writeAll()) ? 1 : 0;
 }
-
-const uploaded = existsSync(URLS_FILE) ? JSON.parse(readFileSync(URLS_FILE, 'utf8')) : {};
-let failures = 0;
-process.stderr.write('\n');
-for (const slug of slugs) {
-  try {
-    await setImages(slug, await uploadSet(slug, manifest[slug], uploaded));
-    process.stderr.write(`  ok   ${slug}\n`);
-  } catch (error) {
-    failures += 1;
-    process.stderr.write(`  FAIL ${slug}: ${error.message}\n`);
-  }
-}
-
-process.stderr.write(
-  `\n${slugs.length - failures} products updated, ${failures} failures.` +
-    (failures ? ' Re-run with --write; uploaded files are re-used.\n' : '\n'),
-);
-process.exit(failures ? 1 : 0);
