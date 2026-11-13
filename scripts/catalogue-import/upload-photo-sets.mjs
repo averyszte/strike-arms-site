@@ -46,7 +46,12 @@ if (!existsSync(MANIFEST_FILE)) {
 
 const manifest = JSON.parse(readFileSync(MANIFEST_FILE, 'utf8'));
 const { url, key } = readCredentials();
-const AUTH = { authorization: `Bearer ${key}`, apikey: key };
+// A legacy service_role key is a JWT and goes in both headers. A new-style
+// secret key (sb_secret_...) is not a JWT: it goes in apikey only, and the
+// gateway runs the request as service_role.
+const AUTH = key.startsWith('sb_secret_')
+  ? { apikey: key }
+  : { authorization: `Bearer ${key}`, apikey: key };
 
 async function request(path, init = {}) {
   const response = await fetch(`${url}${path}`, {
