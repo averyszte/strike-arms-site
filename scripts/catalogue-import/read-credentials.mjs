@@ -59,3 +59,18 @@ export function readCredentials() {
 
   return { url: url.replace(/\/+$/, ''), key };
 }
+
+/**
+ * The project URL and the public anon key, for read-only scripts. Both are
+ * already shipped to every browser, but they are still not printed.
+ */
+export function readPublicCredentials() {
+  const url = readProjectUrl();
+  const env = existsSync(ENV_LOCAL) ? readFileSync(ENV_LOCAL, 'utf8') : '';
+  const key = env.match(/^VITE_SUPABASE_ANON_KEY=(\S+)/m)?.[1];
+  if (!url || !key) {
+    process.stderr.write(`Expected VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in ${ENV_LOCAL}\n`);
+    process.exit(1);
+  }
+  return { url: url.replace(/\/+$/, ''), key };
+}

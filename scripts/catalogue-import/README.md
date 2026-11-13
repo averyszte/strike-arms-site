@@ -28,7 +28,11 @@ admin importer accepts, with his photographs already in the `product-images` buc
 - `build-safety-tags.mjs` — writes `safety-tags.csv`, a Slug and Tags only file that moves the
   live masks and goggles onto Safety Equipment without touching anything else about them.
 - `upload-images.mjs` — pushes the photographs to the bucket, writes `image-urls.json`.
-- `read-credentials.mjs` — finds the project URL and the service role key.
+- `read-credentials.mjs` — finds the project URL and the service role key, or the public anon key
+  for read-only scripts.
+- `photo-framing.mjs` · `background-cleanup.mjs` — the shared image steps: trim, centre on white,
+  WebP, and the white-sheet clean-up.
+- `reframe-live-photos.mjs` — finds and re-frames badly lit photos already on the shop.
 - `images/` — the photographs, extracted from the emails. Git-ignored: they are source material,
   not source code, and they are 9.4 MB.
 
@@ -86,6 +90,24 @@ For replacing a product's images with a set of better photos, not for the first 
    queued for deletion by the migration 011 trigger and removed by `sweep-orphan-images`.
 4. If you re-process after uploading, delete `photo-set-urls.json` first, or the old uploads are
    re-used.
+
+## Re-framing photos already on the shop
+
+For live photos shot on a white sheet under poor light: a grey, patchy background inside the
+site's white box, or an item sitting small in a landscape strip.
+
+1. `node scripts/catalogue-import/reframe-live-photos.mjs --find` lists every product whose main
+   image has a border that is not pure white, or is not square. It prints the slugs on the last
+   line. Read-only, using the public anon key.
+2. `node scripts/catalogue-import/reframe-live-photos.mjs <slug> <slug> ...` downloads each of
+   those products' images and writes cleaned copies to `images/reframed/`. A grey border is
+   evened out towards white and the sheet and shadows are faded to pure white
+   (`background-cleanup.mjs`); every photo is then trimmed and centred on a white square, never
+   cropped. Products with clear packaging or a visor touching the sheet are listed in
+   `SHEET_KEPT`, which keeps the lighting fix but skips the fade, so the plastic is not erased.
+3. `node scripts/catalogue-import/upload-photo-sets.mjs --dir=reframed` checks, and adding
+   `--write` uploads and replaces, exactly as for photo sets. Uploads are recorded under
+   `reframed/` in `photo-set-urls.json`, separate from the photo-set ones.
 
 ## Decisions taken, and why
 

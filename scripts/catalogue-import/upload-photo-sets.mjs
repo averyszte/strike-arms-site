@@ -1,7 +1,8 @@
 /**
  * Replaces each product's images with its processed photo set.
  *
- * Reads images/processed/manifest.json (written by process-photo-sets.mjs),
+ * Reads images/<dir>/manifest.json: processed by default (written by
+ * process-photo-sets.mjs), or reframed (written by reframe-live-photos.mjs),
  * uploads every file to the product-images bucket and then sets the product's
  * `images` array to the new URLs in photo order. Photo 1 is the main image.
  *
@@ -22,6 +23,7 @@
  *
  * Usage:  node scripts/catalogue-import/upload-photo-sets.mjs           (check)
  *         node scripts/catalogue-import/upload-photo-sets.mjs --write   (do it)
+ *         add --dir=reframed to upload images/reframed instead
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -31,7 +33,10 @@ import { dirname, join } from 'node:path';
 import { readCredentials } from './read-credentials.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const PROCESSED_DIR = join(HERE, 'images', 'processed');
+const DIR_ARG = process.argv.find((arg) => arg.startsWith('--dir='));
+const DIR_NAME = DIR_ARG ? DIR_ARG.slice('--dir='.length) : 'processed';
+if (!/^[a-z-]+$/.test(DIR_NAME)) throw new Error(`bad --dir: ${DIR_NAME}`);
+const PROCESSED_DIR = join(HERE, 'images', DIR_NAME);
 const MANIFEST_FILE = join(PROCESSED_DIR, 'manifest.json');
 const URLS_FILE = join(HERE, 'photo-set-urls.json');
 
@@ -40,7 +45,7 @@ const CACHE_CONTROL = '31536000';
 const IS_WRITE = process.argv.includes('--write');
 
 if (!existsSync(MANIFEST_FILE)) {
-  process.stderr.write('No manifest. Run process-photo-sets.mjs first.\n');
+  process.stderr.write(`No manifest in images/${DIR_NAME}. Run the matching script first.\n`);
   process.exit(1);
 }
 
@@ -91,7 +96,9 @@ async function uploadFile(file) {
 async function uploadSet(slug, photos, uploaded) {
   const urls = [];
   for (const photo of photos) {
-    const recordKey = `${slug}/${photo.file}`;
+    // Folder-qualified outside the default, so a reframed 01.webp never
+    // re-uses the URL recorded for a processed 01.webp of the same name.
+    const recordKey = DIR_NAME === 'processed' ? `${slug}/${photo.file}` : `${DIR_NAME}/${slug}/${photo.file}`;
     uploaded[recordKey] ??= await uploadFile(photo.file);
     writeFileSync(URLS_FILE, `${JSON.stringify(uploaded, null, 2)}\n`, 'utf8');
     urls.push(uploaded[recordKey]);

@@ -21,6 +21,8 @@
  * Output: images/processed/<slug>/<nn>.webp and images/processed/manifest.json,
  * which upload-photo-sets.mjs reads. Nothing here touches the network.
  *
+ * The steps live in photo-framing.mjs.
+ *
  * Usage:  node scripts/catalogue-import/process-photo-sets.mjs [source-folder]
  *         (default source: scripts/catalogue-import/images/sets)
  */
@@ -28,115 +30,13 @@
 import { mkdirSync, rmSync, writeFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
-import sharp from 'sharp';
 
 import { collectPhotoSets, eraseRegionsFor } from './photo-sets.mjs';
+import { processPhoto } from './photo-framing.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SOURCE_DIR = process.argv[2] ?? join(HERE, 'images', 'sets');
 const OUT_DIR = join(HERE, 'images', 'processed');
-
-const MAX_SIDE = 1600;
-/** Fraction of each edge shaved off before anything else. */
-const SHAVE = 0.02;
-/** Fraction of the square left empty on each side of a studio shot. */
-const MARGIN = 0.05;
-/** A channel at or above this counts as white. */
-const WHITE_LEVEL = 235;
-/** Share of the outer ring that must be white for a studio shot. */
-const STUDIO_RING_SHARE = 0.85;
-const TRIM_THRESHOLD = 25;
-const WEBP = { quality: 82, effort: 6 };
-const WHITE = { r: 255, g: 255, b: 255, alpha: 1 };
-
-/** Decodes to flat RGB, applying EXIF rotation and dropping transparency. */
-async function loadFlat(path) {
-  const { data, info } = await sharp(path)
-    .rotate()
-    .flatten({ background: WHITE })
-    .removeAlpha()
-    .toColourspace('srgb')
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  return { data, width: info.width, height: info.height };
-}
-
-function rawImage({ data, width, height }) {
-  return sharp(data, { raw: { width, height, channels: 3 } });
-}
-
-async function shave(image) {
-  const dx = Math.round(image.width * SHAVE);
-  const dy = Math.round(image.height * SHAVE);
-  const width = image.width - 2 * dx;
-  const height = image.height - 2 * dy;
-  const { data } = await rawImage(image)
-    .extract({ left: dx, top: dy, width, height })
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  return { data, width, height };
-}
-
-/** Share of near-white pixels in a ring 2% of the short side deep. */
-function whiteRingShare({ data, width, height }) {
-  const depth = Math.max(1, Math.round(Math.min(width, height) * 0.02));
-  let white = 0;
-  let total = 0;
-  for (let y = 0; y < height; y += 1) {
-    const isEdgeRow = y < depth || y >= height - depth;
-    for (let x = 0; x < width; x += 1) {
-      if (!isEdgeRow && x >= depth && x < width - depth) continue;
-      const i = (y * width + x) * 3;
-      total += 1;
-      if (data[i] >= WHITE_LEVEL && data[i + 1] >= WHITE_LEVEL && data[i + 2] >= WHITE_LEVEL) white += 1;
-    }
-  }
-  return total ? white / total : 0;
-}
-
-async function frameStudioShot(image) {
-  const { data, info } = await rawImage(image)
-    .trim({ background: '#ffffff', threshold: TRIM_THRESHOLD })
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const trimmed = { data, width: info.width, height: info.height };
-
-  const natural = Math.round(Math.max(trimmed.width, trimmed.height) / (1 - 2 * MARGIN));
-  const side = Math.min(natural, MAX_SIDE);
-  const pad = Math.round(side * MARGIN);
-  const inner = side - 2 * pad;
-  return rawImage(trimmed)
-    .resize({ width: inner, height: inner, fit: 'contain', background: WHITE })
-    .extend({ top: pad, bottom: pad, left: pad, right: pad, background: WHITE });
-}
-
-function cropCloseUp(image) {
-  const side = Math.min(image.width, image.height, MAX_SIDE);
-  return rawImage(image).resize({ width: side, height: side, fit: 'cover', position: 'centre' });
-}
-
-/** Paints the given fractional rectangles white, in place. */
-function eraseRegions(image, regions) {
-  for (const region of regions) {
-    const x0 = Math.floor(region.left * image.width);
-    const y0 = Math.floor(region.top * image.height);
-    const x1 = Math.min(image.width, Math.ceil((region.left + region.width) * image.width));
-    const y1 = Math.min(image.height, Math.ceil((region.top + region.height) * image.height));
-    for (let y = y0; y < y1; y += 1) {
-      image.data.fill(255, (y * image.width + x0) * 3, (y * image.width + x1) * 3);
-    }
-  }
-  return image;
-}
-
-async function processPhoto(path, outPath) {
-  const flat = eraseRegions(await loadFlat(path), eraseRegionsFor(path));
-  const shaved = await shave(flat);
-  const isStudio = whiteRingShare(shaved) >= STUDIO_RING_SHARE;
-  const pipeline = isStudio ? await frameStudioShot(shaved) : cropCloseUp(shaved);
-  const info = await pipeline.webp(WEBP).toFile(outPath);
-  return { mode: isStudio ? 'studio' : 'close-up', side: info.width, kb: Math.round(info.size / 1024) };
-}
 
 const sets = collectPhotoSets(SOURCE_DIR);
 rmSync(OUT_DIR, { recursive: true, force: true });
@@ -148,7 +48,9 @@ for (const [slug, photos] of [...sets].sort(([a], [b]) => a.localeCompare(b))) {
   manifest[slug] = [];
   for (const [index, photo] of photos.entries()) {
     const file = `${slug}/${String(index + 1).padStart(2, '0')}.webp`;
-    const result = await processPhoto(photo.path, join(OUT_DIR, file));
+    const result = await processPhoto(photo.path, join(OUT_DIR, file), {
+      eraseRegions: eraseRegionsFor(photo.path),
+    });
     const sourceKb = Math.round(statSync(photo.path).size / 1024);
     manifest[slug].push({ file, source: relative(SOURCE_DIR, photo.path), ...result });
     process.stderr.write(
