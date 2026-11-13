@@ -12,6 +12,7 @@ import { MASKS, JUMBLE } from './catalogue-gear.mjs';
 import { MAGAZINES } from './catalogue-magazines.mjs';
 import { SAFETY_GLOVES, WALLHANGERS } from './catalogue-props-safety.mjs';
 import { JUMBLE_BATCH_2 } from './catalogue-jumble-batch-2.mjs';
+import { EVOLUTION } from './catalogue-evolution.mjs';
 
 /** Nothing goes live until Alan has seen it in the admin. */
 export const IMPORT_PUBLISHED = false;
@@ -40,6 +41,7 @@ export const PAGES = [
   { label: 'Safety equipment gloves', batch: 2, items: SAFETY_GLOVES },
   { label: 'Wallhangers and props', batch: 2, items: WALLHANGERS },
   { label: 'Jumble, second batch', batch: 2, items: JUMBLE_BATCH_2 },
+  { label: 'Evolution range', batch: 3, items: EVOLUTION },
 ];
 
 export const CATALOGUE = PAGES.flatMap((page) => page.items);

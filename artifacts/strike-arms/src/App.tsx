@@ -14,6 +14,7 @@ import NewArrivals from "@/pages/NewArrivals";
 import Sale from "@/pages/Sale";
 import PreLoved from "@/pages/PreLoved";
 import Jumble from "@/pages/Jumble";
+import Evolution from "@/pages/Evolution";
 import SafetyEquipment from "@/pages/SafetyEquipment";
 import GiftCards from "@/pages/GiftCards";
 import Account from "@/pages/Account";
@@ -84,6 +85,7 @@ function Router() {
       <Route path="/sale" component={Sale} />
       <Route path="/pre-loved" component={PreLoved} />
       <Route path="/jumble" component={Jumble} />
+      <Route path="/evolution" component={Evolution} />
       <Route path="/safety-equipment" component={SafetyEquipment} />
       <Route path="/gift-cards" component={GiftCards} />
       <Route path="/account" component={Account} />

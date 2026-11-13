@@ -22,6 +22,8 @@ admin importer accepts, with his photographs already in the `product-images` buc
 - `catalogue-magazines.mjs` · `catalogue-props-safety.mjs` · `catalogue-jumble-batch-2.mjs` —
   batch 2 (emails of 19 and 27 Sep 2026). Together these are Alan's stock, transcribed. **This is the source of truth, not the CSV.**
   When Alan answers a question, fix it here and rebuild.
+- `catalogue-evolution.mjs` — batch 3, Alan's Evolution range (email of 13 Nov 2026). Specs are
+  from evolutioninternational.it, in our own words, as Alan asked.
 - `catalogue.mjs` — assembles the pages and holds the two import defaults.
 - `build-csv.mjs` — validates, then writes `products.csv`, or `products-batch-N.csv` with
   `--batch=N`.
@@ -125,6 +127,9 @@ site's white box, or an item sitting small in a landscape strip.
   `/pre-loved`); gloves and masks carry `safety` (`/safety-equipment`); wallhangers sit in
   `more/wallhangers-props` with the `wallhanger` tag and Alan's non-firing wording as the page
   intro. Jumble items Alan calls used or pre-owned import as pre-loved; the rest as new.
+- **Batch 3 shelf:** the seven Evolution rifles carry `evolution-range`, shown on `/evolution`
+  (linked from the Rifles menu and More, Store). Not built from the brand, which would also pull
+  in the Matrix magazines. They import as new, at stock 0: Alan gave no quantities.
 - **Gloves are one product per size,** because the shop has no size picker: the customer pays for
   the size they chose and stock is counted per size.
 - **Pre-loved products keep their real category** (`rifles/aeg-rifles` and so on), carry the
@@ -153,3 +158,7 @@ be forwarded to Alan as it stands. Batch 2 flags print when `build-csv.mjs --bat
 questions were answered on 27 Sep 2026. Still open: no photos came for the 12 wallhangers, and
 Books & Manuals is still to come. Alan said "75 extra items" but listed 73 (no C9); we list what
 was sent.
+
+Batch 3: no photos yet (Phil is sourcing them; they go on through the photo-set pipeline). Three
+rows carry a flag, printed by `build-csv.mjs --batch=3`: the two black Recons, whose codes Alan
+wrote against the other length, and the E-104, which he lists as Steel Hybrid.

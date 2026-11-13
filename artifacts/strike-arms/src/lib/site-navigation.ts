@@ -18,6 +18,7 @@ export const navItems: NavItem[] = [
       {
         title: "Electric (AEG)",
         links: [
+          { label: "Evolution Range", href: "/evolution" },
           { label: "AEG Rifles", href: "/store/rifles/aeg-rifles" },
           { label: "SMGs", href: "/store/rifles/smgs" },
           { label: "Support Guns / LMGs", href: "/store/rifles/lmgs" },
@@ -255,6 +256,7 @@ export const navItems: NavItem[] = [
         links: [
           { label: "New Arrivals", href: "/new" },
           { label: "Pre-Loved", href: "/pre-loved" },
+          { label: "Evolution Range", href: "/evolution" },
           { label: "Jumble", href: "/jumble" },
           { label: "Wallhangers & Props", href: "/store/more/wallhangers-props" },
           { label: "Sale", href: "/sale" },
