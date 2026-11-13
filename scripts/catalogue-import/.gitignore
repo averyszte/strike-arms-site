@@ -4,6 +4,7 @@ products.csv
 products-batch-*.csv
 safety-tags.csv
 image-urls.json
+photo-set-urls.json
 
 # Never commit this. It bypasses RLS.
 service-role-key.txt

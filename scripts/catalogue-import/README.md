@@ -70,6 +70,23 @@ node scripts/catalogue-import/build-csv.mjs
 
 5. When the import is done, delete `service-role-key.txt`.
 
+## Photo sets (multiple images per product)
+
+For replacing a product's images with a set of better photos, not for the first import.
+
+1. Put the photos in `images/sets/` (any subfolders), named after the product with a number for
+   the order: `Specna Arms Half Tan 3.webp`, `AKSU 74 (2).webp`. `photo-sets.mjs` maps names to
+   slugs; add a line there for a new product. Photo 1 becomes the main image.
+2. `node scripts/catalogue-import/process-photo-sets.mjs` trims, centres each photo on a white
+   square (close-ups are centre-cropped instead), caps it at 1600px and writes WebP to
+   `images/processed/`. Look at those before going on.
+3. With the service role key pasted in as above,
+   `node scripts/catalogue-import/upload-photo-sets.mjs` checks every slug against the live
+   catalogue and prints the change. Add `--write` to upload and replace. The old images are
+   queued for deletion by the migration 011 trigger and removed by `sweep-orphan-images`.
+4. If you re-process after uploading, delete `photo-set-urls.json` first, or the old uploads are
+   re-used.
+
 ## Decisions taken, and why
 
 - **Everything imports unpublished.** Sixty-four rows going live in one click, with 25 of them
