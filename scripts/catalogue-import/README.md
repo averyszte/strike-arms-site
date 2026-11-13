@@ -105,6 +105,7 @@ site's white box, or an item sitting small in a landscape strip.
    (`background-cleanup.mjs`); every photo is then trimmed and centred on a white square, never
    cropped. Products with clear packaging or a visor touching the sheet are listed in
    `SHEET_KEPT`, which keeps the lighting fix but skips the fade, so the plastic is not erased.
+   Another shop's watermark is painted white first by listing its corner in `ERASE_REGIONS`.
 3. `node scripts/catalogue-import/upload-photo-sets.mjs --dir=reframed` checks, and adding
    `--write` uploads and replaces, exactly as for photo sets. Uploads are recorded under
    `reframed/` in `photo-set-urls.json`, separate from the photo-set ones.

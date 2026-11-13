@@ -34,6 +34,10 @@ const PASS_RING_SHARE = 0.95;
 const PURE_WHITE = 245;
 /** Clear packaging or a visor touches the sheet: the flood-fill would erase it. */
 const SHEET_KEPT = new Set(['fast-helmet-camera-mount', 'eastern-bloc-police-riot-helmet']);
+/** Another shop's watermark, painted white, by slug and photo number (1-based). */
+const ERASE_REGIONS = {
+  'mesh-half-mask-multicam': { 1: [{ left: 0.66, top: 0.8, width: 0.34, height: 0.12 }] },
+};
 
 const args = process.argv.slice(2);
 const IS_FIND = args.includes('--find');
@@ -113,6 +117,7 @@ async function reframe() {
     for (const [index, src] of product.images.entries()) {
       const file = `${product.slug}/${String(index + 1).padStart(2, '0')}.webp`;
       const result = await processPhoto(await download(src), join(OUT_DIR, file), {
+        eraseRegions: ERASE_REGIONS[product.slug]?.[index + 1] ?? [],
         isEvenBackground: true,
         isSheetKept: SHEET_KEPT.has(product.slug),
         isNeverCropped: true,
