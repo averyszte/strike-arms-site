@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { HotspotPin } from "@/components/ShopByLoadout";
+
+import { HotspotPin } from "@/components/hotspot-pin";
+import { LoadoutProductCard } from "@/components/demo/combined/loadout-product-card";
+import { useLoadoutProducts } from "@/hooks/use-loadout-products";
 import { loadouts } from "@/lib/loadouts";
 
 /**
- * Combined homepage — demo-styled variant of the live ShopByLoadout. Same
- * interactive hotspot image + product list, but re-dressed to match the rest of
- * the combined demo: orange eyebrow, big black uppercase heading, chunky
- * uppercase tabs. Reuses the live component's data/hotspot logic so there's a
- * single source of truth and the live homepage stays untouched.
+ * Homepage "Shop by play style": a tabbed photo with labelled hotspots and the
+ * featured products beside it. Products come from the catalogue by slug, so
+ * names and prices are always current and each card links to its product page.
  */
 export function LoadoutShowcase() {
   const [activeTab, setActiveTab] = useState(loadouts[0].id);
   const activeData = loadouts.find((l) => l.id === activeTab)!;
+  const { bySlug, isLoading } = useLoadoutProducts();
 
   return (
     <section className="py-16 md:py-24 bg-background border-y border-border/60">
@@ -103,23 +104,15 @@ export function LoadoutShowcase() {
                 transition={{ duration: 0.3 }}
                 className="flex flex-col gap-3"
               >
-                {activeData.products.map((prod, i) => (
-                  <div
-                    key={i}
-                    className="group p-4 bg-card border-2 border-border rounded-none hover:border-accent transition-colors"
-                  >
-                    <div className="flex justify-between items-start mb-1.5">
-                      <h4 className="font-black uppercase text-sm text-foreground group-hover:text-accent transition-colors leading-snug pr-3 tracking-tight">
-                        {prod.name}
-                      </h4>
-                      <span className="text-sm font-black shrink-0">{prod.price}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{prod.desc}</p>
-                    <button className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-foreground group-hover:text-accent transition-colors">
-                      Buy Now <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
+                {activeData.products.map((item) => {
+                  const product = bySlug.get(item.slug);
+                  if (product) {
+                    return <LoadoutProductCard key={item.slug} product={product} desc={item.desc} />;
+                  }
+                  return isLoading ? (
+                    <div key={item.slug} className="h-24 bg-card border-2 border-border animate-pulse" />
+                  ) : null;
+                })}
               </motion.div>
             </AnimatePresence>
           </div>

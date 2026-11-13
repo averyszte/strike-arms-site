@@ -181,6 +181,18 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   return data ? rowToProduct(data) : null;
 }
 
+/** Published products for a hand-picked list of slugs, in no particular order. */
+export async function listProductsBySlugs(slugs: string[]): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .in('slug', slugs)
+    .eq('is_published', true);
+
+  if (error) throw error;
+  return (data ?? []).map(rowToProduct);
+}
+
 /**
  * Brand facet counts. PostgREST cannot group, so the brand column alone is
  * fetched and tallied here — one narrow column, not the whole catalogue.
