@@ -68,24 +68,25 @@ export function LoadoutShowcase() {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-background/20" />
-                <div className="hidden md:block">
-                  {activeData.hotspots.map((spot, i) => (
-                    <HotspotPin key={`${activeTab}-${i}`} spot={spot} index={i} />
-                  ))}
-                </div>
+                {activeData.hotspots.map((spot, i) => (
+                  <HotspotPin key={`${activeTab}-${i}`} spot={spot} index={i} />
+                ))}
               </motion.div>
             </AnimatePresence>
           </div>
 
           {/* Products sidebar */}
           <div className="lg:col-span-5 flex flex-col justify-center gap-4">
-            {/* Mobile labels — compact chips */}
+            {/* Mobile key: numbered to match the numbered pins on the photo */}
             <div className="md:hidden flex flex-wrap gap-2 mb-2">
               {activeData.hotspots.map((spot, i) => (
                 <span
                   key={i}
-                  className="bg-muted px-2.5 py-1 text-xs rounded-none font-semibold text-foreground"
+                  className="flex items-center gap-1.5 bg-muted pl-1 pr-2.5 py-1 text-xs rounded-none font-semibold text-foreground"
                 >
+                  <span className="flex items-center justify-center w-4 h-4 rounded-full bg-accent text-[10px] font-black leading-none text-accent-foreground">
+                    {i + 1}
+                  </span>
                   {spot.label}
                 </span>
               ))}
