@@ -109,8 +109,10 @@ pages (routes) → hooks (React state/effects) → data (repository) → externa
 ```
 
 - `lib/` = pure functions (no React, no side effects), usable from any layer.
-  - **One allowed exception:** a single app‑wide React context provider (e.g. `lib/cart-context.tsx`)
-    may live in `lib/` — cross‑cutting shared state with no home in `hooks/` or `components/`.
+  - No exceptions: app‑wide context providers do not live in `lib/`. The provider component goes in
+    `components/` (e.g. `components/cart/cart-provider.tsx`), its state in a hook
+    (`hooks/use-cart-state.ts`, with the context and `useCart` in `hooks/use-cart.ts`), and any
+    storage or Supabase call in `data/` (`data/cart-storage-repository.ts`).
 - `components/` used by pages and other components; rarely by hooks.
 - **A component must never call an external service directly.** It calls a hook → the hook calls
   the repository → the repository calls Supabase/Stripe/etc. This makes backend swaps trivial:

@@ -2,6 +2,8 @@
 
 Surveyed 2026-11-14 at commit bc14169. The survey was read-only, from the code; where the docs disagree, trust the code.
 
+Paths are as at bc14169. Since then, audit wave 3 moved `lib/cart-context.tsx` to `components/cart/cart-provider.tsx` plus `hooks/use-cart-state.ts` and `hooks/use-cart.ts`, with storage in `data/cart-storage-repository.ts`; and `lib/admin-auth-context.tsx` to `components/admin/admin-auth-provider.tsx` plus `hooks/use-admin-auth-state.ts` and `hooks/use-admin-auth.ts`.
+
 This replaces `docs/feature-inventory.md` (2026-08-29) as the record of what the site does. The detail lives in the section files. This page is the index and a map of how the features connect.
 
 | Section | File | Features | IDs |

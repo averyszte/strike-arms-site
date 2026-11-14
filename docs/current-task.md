@@ -33,9 +33,15 @@ in `docs/audit/audit-plan.md`; the current feature list is
 - **Gates for every lane:** typecheck and `eslint --max-warnings 0` from
   `artifacts/strike-arms` (commands under "Key gotchas" below). CI
   (`.github/workflows/ci.yml`) runs the same on every push to `main`.
-- **Parked:** M-065 (deleting the drafts pages and unused images) waits on
-  Phil, who chose to keep the demo page files for now. Their routes come out
-  under M-045.
+- **M-065 (unused images), done 2026-11-14:** deleted seven images in
+  `public/images` with no live reference anywhere in the repo, about 9.4 MB:
+  `why-buy.png`, `expert-advice.png`, `about-store.png`, `promo-banner.png`,
+  `hero-poster.png`, `store-front-1.jpg` and `category-repairs.png` (the home
+  grid uses the `.webp`). Kept, because `supabase/seed.sql` still points
+  product images at them: `category-rifles/pistols/bbs/gear/accessories.png`,
+  `loadout-outdoor/cqb/beginner.png` and `rifle-annotated.png` (about 13.8 MB).
+  They can go once the seed is replaced with the real catalogue or repointed
+  at the `.webp` files.
 
 Everything below this line is the status as it stood on 2026-09-29/30, kept for
 the history of what was pushed and when. Where it disagrees with

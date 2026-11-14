@@ -106,7 +106,8 @@ taking real money.
    - A password policy in `config.toml`.
    - Moving `admin-auth-context.tsx` out of `lib/` so its Supabase calls go
      through `data/` (the 4 unused `admin-auth-repository` functions already
-     exist for this).
+     exist for this). Done in audit wave 3C (2026-11-14): now
+     `components/admin/admin-auth-provider.tsx` and `hooks/use-admin-auth-state.ts`.
 8. **Migration 025, order status rules** (M). 024 went to admin invites (item 7), so every later number in section 4 moved up by one:
    - an allowed-transitions guard;
    - restock on cancel, through `adjust_stock` so the ledger records it;

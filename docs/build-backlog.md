@@ -26,7 +26,8 @@ typed client, and Supabase auth.
   public bundle untouched), robots.txt disallow. Branch's storefront versions and doc
   rewrites deliberately NOT taken — ours are newer.
 - [x] ~~Auth reconciliation~~ — namespaced instead of merged: branch's admin auth
-  (Supabase + TOTP) lives as `admin-auth-context` / `admin-auth-repository`; customer
+  (Supabase + TOTP) lives as `components/admin/admin-auth-provider.tsx` (state in `hooks/use-admin-auth-state.ts`,
+  calls in `data/admin-auth-repository.ts`; moved out of `lib/admin-auth-context` in audit wave 3C); customer
   accounts (local adapter) untouched. Customer→Supabase swap is still a future task.
 - [ ] **Seed data still has wrong brands** — warning header added; replace with the real
   ASG/CYMA/EVOLUTION catalogue before seeding production **[alan]**

@@ -164,11 +164,16 @@ delete from public.notification_jobs where status = 'pending';
 select public.schedule_notification_worker('https://cxnhkgndvzgyqhiwsvrr.supabase.co');
 ```
 
-- [ ] **Schedule the image sweep through Vault (M-019).** Use the scheduler
-      that the M-019 migration adds, which reads the key from Vault at run
-      time. Do **not** use the old `schedule_image_sweep(text, text)` form from
-      migration 012: it writes the service-role key into `cron.job` in plain
-      text.
+- [ ] **Image sweep through Vault (M-019).** `supabase db push` of 045
+      reschedules an existing sweep job in the new form by itself (its
+      NOTICE says so). If the push warns that it could not read the old URL,
+      or no sweep job exists yet, run this after 045 is applied. From 045 on,
+      `schedule_image_sweep` builds a job that reads the key from Vault at run
+      time, so the key never lands in `cron.job`:
+
+```sql
+select public.schedule_image_sweep('https://cxnhkgndvzgyqhiwsvrr.supabase.co');
+```
 - [ ] **Rotate the service-role key after M-019** (section 6), because the old
       one has sat in `cron.job`.
   - *Verify (SQL editor), all three:*
