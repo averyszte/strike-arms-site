@@ -35,6 +35,13 @@ const MAX_ATTEMPTS = 5;
 const GRACE_MS = 30 * 24 * 60 * 60 * 1000;
 
 type Admin = ReturnType<typeof createAdminClient>;
+/** Mirrors cardVariantOf in src/lib/product-image-variants.ts: a.jpg -> a-card.jpg. */
+function cardVariantOf(path: string): string {
+  const dot = path.lastIndexOf(".");
+  if (dot <= path.lastIndexOf("/")) return path;
+  return `${path.slice(0, dot)}-card${path.slice(dot)}`;
+}
+
 type QueueRow = { path: string; orphaned_at: string; attempt_count: number };
 
 function fail(code: string, detail: string): Response {
@@ -101,7 +108,10 @@ async function sweep(admin: Admin): Promise<Response> {
 
   // remove() succeeds for objects that are already gone, so an error here
   // means the Storage API itself is unhappy and the next run should retry.
-  const { error: removeError } = await admin.storage.from(BUCKET).remove(rows.map((row) => row.path));
+  // Each photo's card-sized copy (M-044) goes with it; photos uploaded
+  // before card copies existed simply have nothing at that path.
+  const objects = rows.flatMap((row) => [row.path, cardVariantOf(row.path)]);
+  const { error: removeError } = await admin.storage.from(BUCKET).remove(objects);
   if (removeError) {
     await requeue(admin, rows, removeError.message);
     return fail("storage_remove_failed", removeError.message);
