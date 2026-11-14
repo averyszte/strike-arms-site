@@ -1,8 +1,7 @@
 import { corsHeadersFor, jsonResponse } from "../_shared/cors.ts";
 import { clientIp } from "../_shared/client-ip.ts";
-import { RATE_LIMITED_MESSAGE, withinRateLimits } from "../_shared/rate-limit.ts";
+import { type GuardRefusal, guardPublicRequest } from "../_shared/guard.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
-import { verifyTurnstile } from "../_shared/turnstile.ts";
 
 /**
  * The contact form and the service quote form, both filed into `inquiries`.
@@ -13,6 +12,10 @@ import { verifyTurnstile } from "../_shared/turnstile.ts";
  * 036 takes that insert away; this function, with the service role, is now
  * the only way in. Guarded like checkout and order lookup (migration 035): a
  * Turnstile token, and limits per address and per email.
+ *
+ * The per-address limit is counted before the token is checked and the
+ * per-email limit only after it passes (M-004), so a script with no tokens
+ * cannot use up a real customer's allowance by sending their address.
  *
  * The honeypot and the "too fast to be human" check stay in the browser.
  * They answer a bot as if it had succeeded, which only works if the bot never
@@ -93,27 +96,18 @@ function readRequest(body: unknown): InquiryRequest | Invalid {
   };
 }
 
-type Refusal = { status: number; error: string };
-
 /** Null when the inquiry may be filed; otherwise what to answer with. */
-async function guard(req: Request, request: InquiryRequest): Promise<Refusal | null> {
+function guard(req: Request, request: InquiryRequest): Promise<GuardRefusal | null> {
   const ip = clientIp(req);
-  const limits = [
-    {
-      scope: "inquiry:email",
-      value: request.email.toLowerCase(),
-      max: 5,
-      windowSeconds: HOUR,
-    },
-  ];
-  if (ip) limits.push({ scope: "inquiry:ip", value: ip, max: 5, windowSeconds: TEN_MINUTES });
-
-  if (!(await withinRateLimits(createAdminClient(), limits))) {
-    return { status: 429, error: RATE_LIMITED_MESSAGE };
-  }
-
-  const check = await verifyTurnstile(request.turnstileToken, TURNSTILE_ACTION, ip);
-  return check.ok ? null : { status: check.status, error: check.error };
+  return guardPublicRequest(createAdminClient(), {
+    action: TURNSTILE_ACTION,
+    token: request.turnstileToken,
+    remoteIp: ip,
+    beforeToken: ip ? [{ scope: "inquiry:ip", value: ip, max: 5, windowSeconds: TEN_MINUTES }] : [],
+    afterToken: [
+      { scope: "inquiry:email", value: request.email.toLowerCase(), max: 5, windowSeconds: HOUR },
+    ],
+  });
 }
 
 async function file(request: InquiryRequest): Promise<void> {
@@ -141,7 +135,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if ("invalid" in request) return jsonResponse({ error: request.invalid }, 400, cors);
 
     const refusal = await guard(req, request);
-    if (refusal) return jsonResponse({ error: refusal.error }, refusal.status, cors);
+    if (refusal) {
+      return jsonResponse({ error: refusal.error, code: refusal.code }, refusal.status, cors);
+    }
 
     await file(request);
     return jsonResponse({ received: true }, 200, cors);

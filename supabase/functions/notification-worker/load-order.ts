@@ -21,6 +21,8 @@ export type EmailOrder = {
   channel: string;
   paymentMethod: string;
   fulfillmentMethod: "pickup" | "delivery" | "mixed";
+  /** Where the order is now, so a status email for a step it has left can be dropped. */
+  fulfillmentStatus: string;
   totalCents: number;
   shippingCents: number;
   vatCents: number;
@@ -79,6 +81,7 @@ export async function loadEmailOrder(
     channel: row.channel,
     paymentMethod: row.payment_method,
     fulfillmentMethod: row.fulfillment_method,
+    fulfillmentStatus: row.fulfillment_status,
     totalCents: row.total_cents,
     shippingCents: row.shipping_cents,
     vatCents: row.vat_cents,

@@ -1,11 +1,15 @@
 import type { EmailOrder } from "../load-order.ts";
-import { button, layout, panel, paragraph, SHOP, textLink, type RenderedEmail } from "./layout.ts";
+import { button, euros, layout, panel, paragraph, SHOP, textLink, type RenderedEmail } from "./layout.ts";
 import { COLLECTION_LINES, progressSteps, trackOrderUrl } from "./order-blocks.ts";
 
 /**
  * To the customer on every forward step of their order (033 decides which
  * changes queue one). A mixed order walks both lanes, so its wording names
  * which part of the order the step is about.
+ *
+ * The same copy serves an admin re-send (resend_notification, 031): it
+ * describes where the order is, not that it has just changed, and the
+ * worker only sends it while the order is still in that status.
  */
 
 type StatusCopy = {
@@ -58,10 +62,33 @@ const STATUS_COPY: Record<string, StatusCopy> = {
     heading: "Your order has been cancelled",
     one: "has been cancelled",
     many: "have been cancelled",
-    extra: "If a refund is due, we will email you when it has been issued.",
+    // The refund line depends on the order: see cancelledExtra.
     part: "posted",
   },
 };
+
+/** The statuses that have a customer email. */
+export const STATUS_EMAIL_STATUSES: ReadonlySet<string> = new Set(Object.keys(STATUS_COPY));
+
+/**
+ * A cancelled order mentions a refund only when one has been issued, so an
+ * unpaid or not-yet-refunded order is not promised money (M-030).
+ */
+function cancelledExtra(order: EmailOrder): string {
+  if (order.refundCents >= order.totalCents && order.totalCents > 0) {
+    return `We have refunded the full ${euros(order.totalCents)}. ` +
+      "Our refund email has the details of where the money goes.";
+  }
+  if (order.refundCents > 0) {
+    return `So far we have refunded ${euros(order.refundCents)} of ${euros(order.totalCents)}. ` +
+      "Our refund email has the details of where the money goes.";
+  }
+  return "If you did not ask for this, or have any questions about it, get in touch and we will help.";
+}
+
+function extraFor(order: EmailOrder, status: string, copy: StatusCopy): string | undefined {
+  return status === "cancelled" ? cancelledExtra(order) : copy.extra;
+}
 
 // "Order SA-1 is being packed" / "The posted items from order SA-1 are being packed".
 function whatMoved(order: EmailOrder, status: string, copy: StatusCopy): string {
@@ -87,6 +114,7 @@ export function statusChangedEmail(order: EmailOrder, status: string, siteUrl: s
   const trackUrl = trackOrderUrl(order, siteUrl);
   const postUrl = postTrackingUrl(order, status);
   const isCollecting = status === "ready_for_pickup";
+  const extra = extraFor(order, status, copy);
 
   const html = layout({
     preheader: `Order ${order.orderNumber} ${copy.one}.`,
@@ -95,7 +123,7 @@ export function statusChangedEmail(order: EmailOrder, status: string, siteUrl: s
     body:
       paragraph(intro) +
       progressSteps(status) +
-      (copy.extra ? paragraph(copy.extra) : "") +
+      (extra ? paragraph(extra) : "") +
       (isCollecting ? panel("Where and when", COLLECTION_LINES) : "") +
       (postUrl ? button(`Track with An Post`, postUrl) : "") +
       (postUrl ? textLink("See your order", trackUrl) : button("See your order", trackUrl)) +
@@ -107,7 +135,7 @@ export function statusChangedEmail(order: EmailOrder, status: string, siteUrl: s
     html,
     text: [
       intro,
-      copy.extra ?? "",
+      extra ?? "",
       isCollecting ? `Where and when:\n${COLLECTION_LINES.join("\n")}` : "",
       postUrl ? `Track with An Post (${order.trackingNumber}): ${postUrl}` : "",
       `See your order: ${trackUrl}`,

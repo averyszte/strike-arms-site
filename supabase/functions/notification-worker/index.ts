@@ -1,21 +1,23 @@
 import { jsonResponse, webhookCorsHeaders } from "../_shared/cors.ts";
-import { optionalEnv, requireEnv } from "../_shared/env.ts";
-import { sendEmail } from "../_shared/resend.ts";
+import { missingEnv } from "../_shared/env.ts";
 import { isServiceRoleCaller } from "../_shared/service-role-caller.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
-import { renderJob, type NotificationJob } from "./build-email.ts";
+import type { NotificationJob } from "./build-email.ts";
+import { deferJob, isBatchWide, processJob, type JobOutcome, type JobReport } from "./process-job.ts";
 
 /**
- * Sends the emails queued by migrations 030 (orders) and 039 (contact and
- * quote forms).
+ * Sends the emails queued by migrations 030 (orders), 039 (contact and
+ * quote forms) and 048 (the daily health digest).
  *
  * The trigger on orders writes a job in the same transaction as the change
  * that caused it, so an email is never promised for a change that rolled
  * back. pg_cron calls this function once a minute, and only when a job is
  * due. Each job is claimed with a lease (claim_notification_jobs), sent, and
- * then completed or backed off (complete_notification_job). The job id is the
- * Resend idempotency key, so a job whose lease ran out mid-send is not sent
- * twice.
+ * then completed, backed off or failed (process-job.ts).
+ *
+ * The response lists each job's outcome but no addresses or raw errors:
+ * pg_net keeps response bodies in a table. The detail goes to the function
+ * logs.
  *
  * Maintenance, not a public endpoint: verify_jwt is on and the caller must
  * hold the service role.
@@ -23,22 +25,37 @@ import { renderJob, type NotificationJob } from "./build-email.ts";
 
 const BATCH_SIZE = 10;
 
-type SupabaseAdmin = ReturnType<typeof createAdminClient>;
+// Checked before claiming, so a missing secret does not burn an attempt
+// on every queued job. REPLY_TO is optional.
+const REQUIRED_SECRETS = ["SITE_URL", "RESEND_API_KEY", "EMAIL_FROM", "OWNER_EMAIL"] as const;
 
-async function sendJob(admin: SupabaseAdmin, job: NotificationJob): Promise<void> {
-  const email = await renderJob(admin, job, requireEnv("SITE_URL").replace(/\/$/, ""));
-  // "owner" is resolved here so the address lives in one secret, not in rows.
-  const to = job.recipient === "owner" ? requireEnv("OWNER_EMAIL") : job.recipient;
-  await sendEmail({
-    to,
-    subject: email.subject,
-    html: email.html,
-    text: email.text,
-    // The sending subdomain has no inbox, so without REPLY_TO a customer's
-    // reply bounces. Owner alerts keep their own reply-to (the customer).
-    replyTo: email.replyTo ?? optionalEnv("REPLY_TO"),
-    idempotencyKey: job.id,
-  });
+type Tally = Record<JobOutcome, number>;
+
+function tally(reports: JobReport[]): Tally {
+  const counts: Tally = { sent: 0, retrying: 0, failed: 0, skipped: 0, deferred: 0 };
+  for (const report of reports) counts[report.outcome] += 1;
+  return counts;
+}
+
+async function runBatch(
+  admin: ReturnType<typeof createAdminClient>,
+  jobs: NotificationJob[],
+  siteUrl: string,
+): Promise<JobReport[]> {
+  const reports: JobReport[] = [];
+  let stopCause: string | null = null;
+  for (const job of jobs) {
+    if (stopCause) {
+      reports.push(await deferJob(admin, job, stopCause));
+      continue;
+    }
+    const { report, error } = await processJob(admin, job, siteUrl);
+    reports.push(report);
+    if (isBatchWide(error)) {
+      stopCause = `the email service failed for job ${job.id} (HTTP ${report.http_status ?? "none"})`;
+    }
+  }
+  return reports;
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {
@@ -52,37 +69,23 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return jsonResponse({ error: "Forbidden" }, 403, webhookCorsHeaders);
   }
 
+  const missing = missingEnv(REQUIRED_SECRETS);
+  if (missing.length > 0) {
+    // Secret names only, never values. Redeploy after setting them.
+    console.error(`notification-worker is missing secrets: ${missing.join(", ")}`);
+    return jsonResponse({ error: "misconfigured", missing }, 500, webhookCorsHeaders);
+  }
+
   const admin = createAdminClient();
-  const { data: jobs, error: claimError } = await admin.rpc("claim_notification_jobs", {
+  const { data, error: claimError } = await admin.rpc("claim_notification_jobs", {
     p_limit: BATCH_SIZE,
   });
   if (claimError) {
-    return jsonResponse({ error: claimError.message }, 500, webhookCorsHeaders);
+    console.error(`notification-worker could not claim jobs: ${claimError.message}`);
+    return jsonResponse({ error: "claim_failed" }, 500, webhookCorsHeaders);
   }
 
-  let sent = 0;
-  let failed = 0;
-  for (const job of (jobs ?? []) as NotificationJob[]) {
-    let sendError: string | null = null;
-    try {
-      await sendJob(admin, job);
-      sent += 1;
-    } catch (error) {
-      sendError = error instanceof Error ? error.message : String(error);
-      failed += 1;
-      console.error(`notification ${job.id} (${job.event_type}) failed: ${sendError}`);
-    }
-
-    const { error: completeError } = await admin.rpc("complete_notification_job", {
-      p_job_id: job.id,
-      p_error: sendError,
-    });
-    // The lease expires and the job is claimed again; the idempotency key
-    // stops a sent email going twice.
-    if (completeError) {
-      console.error(`notification ${job.id} not completed: ${completeError.message}`);
-    }
-  }
-
-  return jsonResponse({ sent, failed }, 200, webhookCorsHeaders);
+  const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
+  const reports = await runBatch(admin, (data ?? []) as NotificationJob[], siteUrl);
+  return jsonResponse({ ...tally(reports), jobs: reports }, 200, webhookCorsHeaders);
 });

@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { healthDigestEmail } from "../functions/notification-worker/templates/health-digest.ts";
 import type { RenderedEmail } from "../functions/notification-worker/templates/layout.ts";
 import { orderConfirmedEmail } from "../functions/notification-worker/templates/order-confirmed.ts";
 import { ownerOrderPaidEmail } from "../functions/notification-worker/templates/owner-order-paid.ts";
@@ -9,7 +10,14 @@ import { refundedEmail } from "../functions/notification-worker/templates/refund
 import { statusChangedEmail } from "../functions/notification-worker/templates/status-changed.ts";
 import { AUTH_EMAILS } from "./auth-emails.ts";
 import { pastePage } from "./paste-page.ts";
-import { COLLECT_ORDER, MIXED_ORDER, PART_REFUNDED_ORDER, POSTED_ORDER } from "./sample-orders.ts";
+import {
+  COLLECT_ORDER,
+  FULLY_REFUNDED_ORDER,
+  MIXED_ORDER,
+  PART_REFUNDED_ORDER,
+  POSTED_ORDER,
+  SAMPLE_HEALTH_DIGEST,
+} from "./sample-orders.ts";
 
 /**
  * Writes the Supabase Auth templates next to this file, plus
@@ -47,10 +55,12 @@ if (previewFlag !== -1) {
       statusChangedEmail(COLLECT_ORDER, status, SITE),
     ]),
     ["Customer: shipped (mixed)", statusChangedEmail(MIXED_ORDER, "shipped", SITE)],
-    ["Customer: cancelled", statusChangedEmail(POSTED_ORDER, "cancelled", SITE)],
+    ["Customer: cancelled (no refund yet)", statusChangedEmail(POSTED_ORDER, "cancelled", SITE)],
+    ["Customer: cancelled (refunded)", statusChangedEmail(FULLY_REFUNDED_ORDER, "cancelled", SITE)],
     ["Customer: part refund", refundedEmail(PART_REFUNDED_ORDER, 1900)],
     ["Alan: new order", ownerOrderPaidEmail(POSTED_ORDER, `${SITE}/admin/orders`)],
     ["Alan: new order (flagged)", ownerOrderPaidEmail(MIXED_ORDER, `${SITE}/admin/orders`)],
+    ["Alan: daily shop check", healthDigestEmail(SAMPLE_HEALTH_DIGEST, `${SITE}/admin`)],
   ];
   const all = [
     ...orderEmails.map(([label, email]) => ({ label, subject: email.subject, html: email.html })),

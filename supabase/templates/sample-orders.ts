@@ -1,6 +1,7 @@
 import type { EmailOrder } from "../functions/notification-worker/load-order.ts";
+import type { HealthDigest } from "../functions/notification-worker/templates/health-digest.ts";
 
-/** Made-up orders for previewing the order emails. Never sent. */
+/** Made-up orders and checks for previewing the emails. Never sent. */
 
 const base: EmailOrder = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -11,6 +12,7 @@ const base: EmailOrder = {
   channel: "web",
   paymentMethod: "stripe",
   fulfillmentMethod: "delivery",
+  fulfillmentStatus: "shipped",
   totalCents: 31450,
   shippingCents: 650,
   vatCents: 5881,
@@ -52,3 +54,13 @@ export const MIXED_ORDER: EmailOrder = {
 };
 
 export const PART_REFUNDED_ORDER: EmailOrder = { ...base, refundCents: 1900 };
+
+export const FULLY_REFUNDED_ORDER: EmailOrder = { ...base, fulfillmentStatus: "cancelled", refundCents: base.totalCents };
+
+export const SAMPLE_HEALTH_DIGEST: HealthDigest = {
+  checkedAt: "2026-11-14T08:07:00Z",
+  checks: [
+    { check: "email_queue", status: "fail", detail: "0 emails overdue by 15 minutes or more; 3 failed in 7 days" },
+    { check: "turnstile_failures", status: "warn", detail: "64 failed bot checks in 24 hours" },
+  ],
+};
