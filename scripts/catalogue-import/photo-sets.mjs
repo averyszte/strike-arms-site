@@ -47,6 +47,13 @@ export const PHOTO_SET_SLUGS = {
   'asg ssg 69 bolt action rifle': 'asg-ssg-69',
   'specna arms half tan': 'specna-arms-half-tan',
   'specna arms sa f02 with hal etu': 'specna-arms-sa-f02-hal-etu',
+  // Evolution range (batch 3). The supplier's MK18 photos come in black and a
+  // tan "BB" variant; MH-3000 has no colour suffix, so the black set is used.
+  'evolution ak e-104 tanker': 'evolution-ak-e-104-tanker',
+  'evolution m40 od': 'evolution-m40-sniper-rifle-od',
+  'evolution mk18 black': 'evolution-recon-mk18-mod-1-metal-hybrid',
+  'evolution recon 10 black tan': 'evolution-recon-10-carbontech-black-tan',
+  'evolution recon 14.5 black tan': 'evolution-recon-14-5-carbontech-black-tan',
   // pre-loved
   'aksu 74': 'pre-loved-cyma-aksu-74',
   'steyr aug a1': 'pre-loved-asg-steyr-aug-a1',
