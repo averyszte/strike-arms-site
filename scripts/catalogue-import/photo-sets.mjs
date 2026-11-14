@@ -54,6 +54,8 @@ export const PHOTO_SET_SLUGS = {
   'evolution mk18 black': 'evolution-recon-mk18-mod-1-metal-hybrid',
   'evolution recon 10 black tan': 'evolution-recon-10-carbontech-black-tan',
   'evolution recon 14.5 black tan': 'evolution-recon-14-5-carbontech-black-tan',
+  'evolution recon 10 black': 'evolution-recon-10-carbontech-black',
+  'evolution recon 14.5 black': 'evolution-recon-14-5-carbontech-black',
   // pre-loved
   'aksu 74': 'pre-loved-cyma-aksu-74',
   'steyr aug a1': 'pre-loved-asg-steyr-aug-a1',

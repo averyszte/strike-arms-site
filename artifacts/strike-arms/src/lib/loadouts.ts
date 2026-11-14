@@ -85,6 +85,33 @@ export const loadouts: Loadout[] = [
       },
     ],
   },
+  {
+    id: 'evolution',
+    name: 'Evolution',
+    image: '/images/evolution/evolution-playstyle.webp',
+    hotspots: [
+      { label: 'Evolution Recon 14.5"', x: 60, y: 55 },
+      { label: 'Hi-Cap Magazine', x: 51, y: 64 },
+    ],
+    products: [
+      {
+        slug: 'evolution-recon-14-5-carbontech-black-tan',
+        desc: 'Lightweight 14.5" Recon M4 with a Carbontech rail, steel gears and a 320 round magazine.',
+      },
+      {
+        slug: 'evolution-recon-10-carbontech-black-tan',
+        desc: 'The same Recon build in a compact 10" length, for close quarters.',
+      },
+      {
+        slug: 'evolution-m4-matrix-300rd-hi-cap-magazine',
+        desc: 'A spare 300 round high capacity magazine for M4 rifles.',
+      },
+      {
+        slug: 'asg-blaster-gamma-25g-bbs',
+        desc: '4,000 .25g BBs, a common weight for AEGs.',
+      },
+    ],
+  },
 ];
 
 /** Every slug the showcase needs, so one query can fetch them all. */

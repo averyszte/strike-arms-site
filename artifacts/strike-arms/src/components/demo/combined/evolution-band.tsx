@@ -3,9 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { useEvolutionProducts } from "@/hooks/use-evolution-products";
-import { EVOLUTION_SHELF_HREF, SCENE_ALT, SCENE_IMAGE, pinnedProducts } from "@/lib/evolution-band";
+import { EVOLUTION_SHELF_HREF, SCENE_ALT, SCENE_IMAGE } from "@/lib/evolution-band";
 import { EYEBROW } from "@/lib/storefront-styles";
-import { EvolutionScenePin } from "@/components/demo/combined/evolution-scene-pin";
 import { EvolutionRailCard } from "@/components/demo/combined/evolution-rail-card";
 
 /** Solid accent call to action into the Evolution shelf. */
@@ -23,13 +22,12 @@ function ShelfCta() {
 
 /**
  * Homepage feature for the Evolution range ("cinematic" draft C1): a full
- * bleed scene with shoppable pins, an oversized wordmark, then a rail of every
+ * bleed scene, an oversized wordmark, then a rail of every
  * published Evolution rifle. Renders nothing until at least one is published.
  */
 export function EvolutionBand() {
   const { products } = useEvolutionProducts();
   if (products.length === 0) return null;
-  const pins = pinnedProducts(products);
 
   return (
     <section aria-labelledby="evolution-band-heading" className="relative bg-background border-y border-border/60 overflow-hidden">
@@ -45,10 +43,6 @@ export function EvolutionBand() {
           </p>
           <div className="hidden md:block"><ShelfCta /></div>
         </div>
-
-        {pins.map(({ spot, product }, i) => (
-          <EvolutionScenePin key={spot.slug} spot={spot} product={product} index={i} />
-        ))}
 
         <motion.h2
           id="evolution-band-heading"
