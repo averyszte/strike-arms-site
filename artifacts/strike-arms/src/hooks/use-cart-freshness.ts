@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchFreshCartDetails } from '@/data/cart-freshness-repository';
 import { useCart } from '@/hooks/use-cart';
 import { NO_CART_CHANGES, refreshCartLines } from '@/lib/cart-refresh';
+import { CART_KEYS } from '@/lib/query-keys';
 import type { CartRefreshChanges } from '@/types/cart-freshness';
 
 /**
@@ -19,7 +20,7 @@ export function useCartFreshness(): CartRefreshChanges {
   const { lines, updateLines } = useCart();
 
   const { data } = useQuery({
-    queryKey: ['cart-freshness'],
+    queryKey: CART_KEYS.freshness,
     queryFn: async () => {
       const fresh = await fetchFreshCartDetails(lines.map((line) => line.productId));
       // Applied to the lines as they are now, in case a quantity changed

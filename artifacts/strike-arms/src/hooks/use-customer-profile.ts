@@ -5,13 +5,13 @@ import {
   setMarketingOptIn,
   updateCustomerProfile,
 } from '@/data/customer-account-repository';
-import { CUSTOMER_QUERY_ROOT } from '@/hooks/use-customer-session';
+import { CUSTOMER_KEYS } from '@/lib/query-keys';
 import type { ProfileInput } from '@/types/customer-account';
 
 /** The signed-in customer's profile, and the two ways to change it. */
 export function useCustomerProfile(userId: string | null) {
   const queryClient = useQueryClient();
-  const queryKey = [CUSTOMER_QUERY_ROOT, 'profile', userId];
+  const queryKey = CUSTOMER_KEYS.profile(userId);
   const refresh = () => queryClient.invalidateQueries({ queryKey });
 
   const profile = useQuery({

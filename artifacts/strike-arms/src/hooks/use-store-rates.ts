@@ -5,6 +5,7 @@ import {
   fetchStoreRatesHistory,
   updateStoreRates,
 } from '@/data/settings-repository';
+import { CART_KEYS, GC_TIME_ONE_HOUR, STALE_TIME_ONE_MINUTE } from '@/lib/query-keys';
 import type { StoreRates } from '@/types/store-settings';
 
 /**
@@ -17,10 +18,10 @@ import type { StoreRates } from '@/types/store-settings';
  */
 export function useStoreRates() {
   return useQuery({
-    queryKey: ['store-rates'],
+    queryKey: CART_KEYS.storeRates,
     queryFn: fetchStoreRates,
-    staleTime: 60 * 1000,
-    gcTime: 60 * 60 * 1000,
+    staleTime: STALE_TIME_ONE_MINUTE,
+    gcTime: GC_TIME_ONE_HOUR,
   });
 }
 

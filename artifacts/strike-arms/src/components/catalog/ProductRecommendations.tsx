@@ -1,5 +1,6 @@
 import { ProductCard } from '@/components/catalog/ProductCard';
-import { useCrossSellProducts, useSimilarProducts } from '@/hooks/use-related-products';
+import { useCrossSellProducts } from '@/hooks/use-cross-sell-products';
+import { useSimilarProducts } from '@/hooks/use-similar-products';
 import { CONTENT_TITLE } from '@/lib/storefront-styles';
 import type { Product } from '@/types/product';
 

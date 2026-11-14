@@ -10,6 +10,7 @@ import {
   nextPollDelay,
   type ConfirmationState,
 } from '@/lib/checkout-confirmation';
+import { CHECKOUT_KEYS } from '@/lib/query-keys';
 
 /**
  * The success page's view of its order: asks checkout-status every couple of
@@ -28,7 +29,7 @@ export function useCheckoutConfirmation(): {
   const orderId = params.get('order') ?? '';
   const sessionId = params.get('session') ?? '';
   const hasIds = orderId !== '' && sessionId !== '';
-  const queryKey = ['checkout-status', orderId, sessionId];
+  const queryKey = CHECKOUT_KEYS.status(orderId, sessionId);
   const queryClient = useQueryClient();
   const { clearCart } = useCart();
 

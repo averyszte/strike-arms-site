@@ -3,8 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { User } from '@supabase/supabase-js';
 
 import { getCustomerSession, onCustomerAuthChange } from '@/data/customer-auth-repository';
-
-export const CUSTOMER_QUERY_ROOT = 'customer';
+import { CUSTOMER_KEYS } from '@/lib/query-keys';
 
 type CustomerSession = { user: User | null; isLoading: boolean };
 
@@ -27,7 +26,7 @@ export function useCustomerSession(): CustomerSession {
     });
 
     const unsubscribe = onCustomerAuthChange((event, session) => {
-      if (event === 'SIGNED_OUT') queryClient.removeQueries({ queryKey: [CUSTOMER_QUERY_ROOT] });
+      if (event === 'SIGNED_OUT') queryClient.removeQueries({ queryKey: CUSTOMER_KEYS.root });
       setState({ user: session?.user ?? null, isLoading: false });
     });
 

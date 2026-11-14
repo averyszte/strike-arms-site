@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { listProducts } from "@/data/products-repository";
 import { EVOLUTION_TAG } from "@/lib/evolution-band";
+import { PRODUCT_KEYS, STALE_TIME_HALF_HOUR } from "@/lib/query-keys";
 import type { Product } from "@/types/product";
 
-const HALF_HOUR = 30 * 60 * 1000;
 const BAND_LIMIT = 12;
 
 /**
@@ -14,9 +14,9 @@ const BAND_LIMIT = 12;
  */
 export function useEvolutionProducts(): { products: Product[]; isLoading: boolean } {
   const query = useQuery({
-    queryKey: ["evolution-band-products"],
+    queryKey: PRODUCT_KEYS.evolutionBand,
     queryFn: () => listProducts({ tag: EVOLUTION_TAG, sort: "price-asc", pageSize: BAND_LIMIT }),
-    staleTime: HALF_HOUR,
+    staleTime: STALE_TIME_HALF_HOUR,
   });
   return { products: query.data?.items ?? [], isLoading: query.isLoading };
 }

@@ -48,8 +48,3 @@ export const profileSchema = z.object({
 });
 
 export const emailOnlySchema = z.object({ email: emailSchema });
-
-/** Whether a string is a plausible email, for the one-field forms. */
-export function isEmailLike(value: string): boolean {
-  return emailSchema.safeParse(value).success;
-}

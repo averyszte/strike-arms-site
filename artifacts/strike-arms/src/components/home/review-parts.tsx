@@ -1,5 +1,6 @@
 import { ArrowUpRight, Star } from "lucide-react";
-import { GOOGLE_RATING, initials, type Review } from "@/lib/review-bank";
+import { GOOGLE_RATING, initials } from "@/lib/review-bank";
+import type { Review } from "@/types/review";
 import { READ_REVIEWS_URL, WRITE_REVIEW_URL } from "@/lib/google-review-links";
 
 /** Google's four-colour G, unaltered, as its brand guidance asks. */

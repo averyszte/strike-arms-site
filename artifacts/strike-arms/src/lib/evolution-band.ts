@@ -1,3 +1,4 @@
+import { effectivePriceCents } from "@/lib/effective-price";
 import type { Product } from "@/types/product";
 
 /**
@@ -20,6 +21,5 @@ export function shortEvolutionName(name: string): string {
 
 /** The price a customer pays: the sale price when it undercuts the list price. */
 export function payablePriceCents(product: Product): number {
-  const { salePrice, price } = product;
-  return salePrice !== undefined && salePrice < price ? salePrice : price;
+  return effectivePriceCents(product.price, product.salePrice);
 }

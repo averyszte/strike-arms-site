@@ -66,3 +66,18 @@ export type CheckoutDetails = {
 
 /** What a signed-in customer's account can fill in on the checkout form. */
 export type CheckoutPrefill = Pick<CheckoutDetails, 'customerName' | 'customerEmail' | 'customerPhone'>;
+
+/** What useCart() returns: the basket and the actions that change it. */
+export interface CartContextValue {
+  lines: CartLine[];
+  basics: CartBasics;
+  wantsDelivery: boolean;
+  setWantsDelivery: (wants: boolean) => void;
+  /** False, with the basket unchanged, when it already holds MAX_CART_LINES other products. */
+  addLine: (line: Omit<CartLine, 'quantity'>, quantity?: number) => boolean;
+  setQuantity: (productId: string, quantity: number) => void;
+  removeLine: (productId: string) => void;
+  clearCart: () => void;
+  /** Rewrite every line at once, e.g. to match the catalogue (use-cart-freshness). */
+  updateLines: (update: (current: CartLine[]) => CartLine[]) => void;
+}

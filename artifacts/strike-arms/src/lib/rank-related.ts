@@ -1,4 +1,5 @@
 import type { CrossSellTarget } from '@/lib/cross-sell';
+import { effectivePriceCents } from '@/lib/effective-price';
 import type { Product } from '@/types/product';
 
 /**
@@ -28,7 +29,7 @@ const SIMILAR_PRICE = 1;
 const PRICE_BAND = 0.4;
 
 function effectivePrice(product: Product): number {
-  return product.salePrice ?? product.price;
+  return effectivePriceCents(product.price, product.salePrice);
 }
 
 function priceDistance(a: Product, b: Product): number {

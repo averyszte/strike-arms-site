@@ -11,8 +11,9 @@ export type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'partially_refunde
 export type FulfillmentStatus =
   | 'pending' | 'ready_for_pickup' | 'collected'
   | 'packed' | 'shipped' | 'delivered' | 'cancelled';
-export type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
-export type ItemFulfillmentMethod = 'pickup' | 'delivery';
+// Declared once in types/order.ts (W-01); re-exported so row types read the same.
+import type { FulfillmentMethod, ItemFulfillmentMethod } from '@/types/order';
+export type { FulfillmentMethod, ItemFulfillmentMethod };
 export type InquiryStatus = 'new' | 'replied' | 'archived';
 export type OrderChannel = 'web' | 'counter' | 'phone';
 export type PaymentMethod = 'stripe' | 'cash' | 'card_terminal' | 'bank_transfer';

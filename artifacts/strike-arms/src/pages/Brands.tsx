@@ -5,7 +5,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useBrands } from '@/hooks/useProducts';
+import { useBrands } from '@/hooks/use-brands';
 import { SITE_URL } from '@/lib/site-config';
 import { CARD_TITLE } from '@/lib/storefront-styles';
 import { buildItemListSchema, buildBreadcrumbSchema } from '@/lib/structured-data';

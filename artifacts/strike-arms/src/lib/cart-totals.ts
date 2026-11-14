@@ -51,9 +51,3 @@ export function calculateCartPricing(
     freeShippingThresholdCents: rates.freeShippingThresholdCents,
   };
 }
-
-/** True when the order would be part collected and part posted. */
-export function isMixedBasket(lines: CartLine[], wantsDelivery: boolean): boolean {
-  if (!wantsDelivery) return false;
-  return lines.some((line) => line.isShippable) && lines.some((line) => !line.isShippable);
-}

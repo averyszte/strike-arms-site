@@ -1,4 +1,5 @@
-import { RANKED_REVIEWS, type Review } from "@/lib/review-bank";
+import { RANKED_REVIEWS } from "@/lib/review-bank";
+import type { Review } from "@/types/review";
 import { RatingLine, ReviewButtons, ReviewCard } from "@/components/home/review-parts";
 
 /**

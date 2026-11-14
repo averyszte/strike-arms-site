@@ -1,12 +1,12 @@
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 
+import { effectivePriceCents } from "@/lib/effective-price";
 import { formatPrice } from "@/lib/format-price";
 import type { Product } from "@/types/product";
 
 function displayPriceCents(product: Product): number {
-  const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
-  return hasDiscount ? product.salePrice! : product.price;
+  return effectivePriceCents(product.price, product.salePrice);
 }
 
 /** One featured product in a play style, linking through to its product page. */

@@ -10,6 +10,8 @@ import type { GlossaryTerm } from '@/lib/glossary';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, BUSINESS, toAbsoluteUrl } from '@/lib/site-config';
 import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
+import { effectivePriceCents } from '@/lib/effective-price';
+import { formatCentsPlain } from '@/lib/format-price';
 
 export type JsonLdObject = Record<string, unknown>;
 
@@ -166,7 +168,7 @@ export function buildFaqSchema(items: FaqItem[]): JsonLdObject {
 }
 
 export function buildProductSchema(product: Product): JsonLdObject {
-  const priceCents = product.salePrice ?? product.price;
+  const priceCents = effectivePriceCents(product.price, product.salePrice);
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -178,7 +180,7 @@ export function buildProductSchema(product: Product): JsonLdObject {
     offers: {
       '@type': 'Offer',
       priceCurrency: 'EUR',
-      price: (priceCents / 100).toFixed(2),
+      price: formatCentsPlain(priceCents),
       availability: product.inStock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',

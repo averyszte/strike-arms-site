@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { claimGuestOrders, fetchMyOrders } from '@/data/customer-account-repository';
-import { CUSTOMER_QUERY_ROOT } from '@/hooks/use-customer-session';
+import { CUSTOMER_KEYS } from '@/lib/query-keys';
 
 /**
  * The signed-in customer's orders. Guest orders placed with the same email
@@ -10,7 +10,7 @@ import { CUSTOMER_QUERY_ROOT } from '@/hooks/use-customer-session';
  */
 export function useMyOrders(userId: string | null) {
   return useQuery({
-    queryKey: [CUSTOMER_QUERY_ROOT, 'orders', userId],
+    queryKey: CUSTOMER_KEYS.orders(userId),
     enabled: userId !== null,
     queryFn: async () => {
       await claimGuestOrders();

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { CardImage } from '@/components/catalog/card-image';
 import type { Product } from '@/types/product';
 
 export function ProductGallery({ product }: { product: Product }) {
@@ -26,7 +27,13 @@ export function ProductGallery({ product }: { product: Product }) {
               aria-label={`View image ${index + 1}`}
               className={`h-16 w-16 overflow-hidden border-2 bg-white transition-colors ${index === active ? 'border-accent' : 'border-border/60 hover:border-foreground'}`}
             >
-              <img src={image} alt="" className="h-full w-full object-contain p-1" loading="lazy" />
+              <CardImage
+                src={image}
+                alt=""
+                sizes="64px"
+                className="h-full w-full object-contain p-1"
+                loading="lazy"
+              />
             </button>
           ))}
         </div>

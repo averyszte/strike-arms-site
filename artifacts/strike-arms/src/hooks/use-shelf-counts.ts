@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { listShelfCounts } from '@/data/catalogue-counts-repository';
+import { CATALOGUE_KEYS, STALE_TIME_FIVE_MINUTES } from '@/lib/query-keys';
 
 /**
  * Published products per shelf, keyed `rifles` and `rifles/aeg-rifles`, for
@@ -8,9 +9,9 @@ import { listShelfCounts } from '@/data/catalogue-counts-repository';
  */
 export function useShelfCounts(): Record<string, number> | undefined {
   const { data } = useQuery({
-    queryKey: ['shelf-counts'],
+    queryKey: CATALOGUE_KEYS.shelfCounts,
     queryFn: listShelfCounts,
-    staleTime: 5 * 60 * 1000,
+    staleTime: STALE_TIME_FIVE_MINUTES,
   });
   return data;
 }

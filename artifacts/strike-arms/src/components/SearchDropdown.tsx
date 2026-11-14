@@ -1,11 +1,8 @@
-import { useRef, useState, useCallback, useEffect, type KeyboardEvent } from 'react';
-import { useLocation } from 'wouter';
 import { Search, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useSearchProducts } from '@/hooks/use-search-products';
-import { SearchResultRow } from '@/components/SearchResultRow';
-import type { Product } from '@/types/product';
+import { useSearchDropdown } from '@/hooks/use-search-dropdown';
+import { SearchPanelBody } from '@/components/search-panel-body';
 
 interface Props {
   onClose?: () => void;
@@ -13,80 +10,12 @@ interface Props {
 }
 
 export function SearchDropdown({ onClose, fullWidth = false }: Props) {
-  const [query, setQuery] = useState('');
-  const [open, setOpen] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  const [activeIdx, setActiveIdx] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [, navigate] = useLocation();
-
-  const { results, isError, isPending } = useSearchProducts(query);
-  const showPanel = open && query.length >= 2;
-
-  useEffect(() => {
-    if (!fullWidth) return undefined;
-    const id = setTimeout(() => inputRef.current?.focus(), 50);
-    return () => clearTimeout(id);
-  }, [fullWidth]);
-
-  useEffect(() => {
-    if (!showPanel) return;
-    const onDown = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setIsFocused(false);
-        setActiveIdx(-1);
-      }
-    };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
-  }, [showPanel]);
-
-  const closeAndClear = useCallback(() => {
-    setOpen(false);
-    setIsFocused(false);
-    setQuery('');
-    setActiveIdx(-1);
-    onClose?.();
-  }, [onClose]);
-
-  const goToProduct = useCallback(
-    (p: Product) => {
-      navigate(`/products/${p.slug}`);
-      closeAndClear();
-    },
-    [navigate, closeAndClear],
-  );
-
-  const submitSearch = useCallback(() => {
-    if (!query.trim()) return;
-    navigate(`/store?q=${encodeURIComponent(query.trim())}`);
-    closeAndClear();
-  }, [query, navigate, closeAndClear]);
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setOpen(false);
-      setActiveIdx(-1);
-      inputRef.current?.blur();
-      onClose?.();
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveIdx((i) => Math.min(i + 1, results.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveIdx((i) => Math.max(i - 1, -1));
-    } else if (e.key === 'Enter') {
-      if (results[activeIdx]) goToProduct(results[activeIdx]);
-      else submitSearch();
-    }
-  };
+  const { containerRef, inputRef, ...search } = useSearchDropdown(fullWidth, onClose);
 
   const pillClasses = fullWidth
     ? 'flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 w-full'
     : `flex items-center gap-2 rounded-full border transition-all duration-200 px-3 py-1.5 ${
-        isFocused
+        search.isFocused
           ? 'bg-card border-accent/60 w-44 xl:w-52'
           : 'bg-card border-border/60 w-28 xl:w-40 hover:border-border'
       }`;
@@ -99,37 +28,22 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
           ref={inputRef}
           type="text"
           placeholder="Search products…"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
-            setActiveIdx(-1);
-          }}
-          onKeyDown={handleKeyDown}
+          value={search.query}
+          onChange={(e) => search.handleChange(e.target.value)}
+          onKeyDown={search.handleKeyDown}
           className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
           aria-label="Search products"
           role="combobox"
-          aria-expanded={showPanel}
+          aria-expanded={search.showPanel}
           aria-autocomplete="list"
-          onFocus={() => {
-            setIsFocused(true);
-            setOpen(true);
-          }}
-          onBlur={() =>
-            setTimeout(() => {
-              setIsFocused(false);
-              setOpen(false);
-              setActiveIdx(-1);
-            }, 150)
-          }
+          onFocus={search.handleFocus}
+          onBlur={search.handleBlur}
         />
-        {query && (
+        {search.query && (
           <button
             onMouseDown={(e) => {
               e.preventDefault();
-              setQuery('');
-              setActiveIdx(-1);
-              inputRef.current?.focus();
+              search.clearQuery();
             }}
             className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
             aria-label="Clear search"
@@ -140,7 +54,7 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
       </div>
 
       <AnimatePresence>
-        {showPanel && (
+        {search.showPanel && (
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -152,64 +66,17 @@ export function SearchDropdown({ onClose, fullWidth = false }: Props) {
             role="listbox"
             aria-label="Search suggestions"
           >
-            {isError ? (
-              // Checked before results, because placeholderData keeps the last
-              // term's matches on screen while a new term is in flight. Showing
-              // those under a different query is a wrong answer, not a stale
-              // one.
-              <div className="px-4 py-6 text-center space-y-1">
-                <p className="text-sm text-foreground">Search is not working right now</p>
-                <p className="text-xs text-muted-foreground">
-                  That is a fault at our end, not an empty shelf.
-                </p>
-                <button
-                  className="text-xs text-accent hover:underline"
-                  onMouseDown={() => {
-                    navigate('/store');
-                    closeAndClear();
-                  }}
-                >
-                  Browse the full range
-                </button>
-              </div>
-            ) : isPending ? (
-              // Only true when there is nothing to show at all -- once a
-              // search has returned once, placeholderData keeps those results
-              // on screen while the next term is fetched. Without this branch
-              // the first search of a session reads "No results" for as long
-              // as the request takes, which is a wrong answer, not a slow one.
-              <div className="px-4 py-6 text-center">
-                <p className="text-sm text-muted-foreground">Searching…</p>
-              </div>
-            ) : results.length > 0 ? (
-              <>
-                <ul>
-                  {results.map((p, i) => (
-                    <SearchResultRow
-                      key={p.id}
-                      product={p}
-                      isActive={i === activeIdx}
-                      onSelect={() => goToProduct(p)}
-                      onHover={() => setActiveIdx(i)}
-                    />
-                  ))}
-                </ul>
-                <button
-                  className="w-full px-4 py-2.5 text-xs text-accent font-medium hover:bg-accent/10 transition-colors text-center border-t border-border/40"
-                  onMouseDown={submitSearch}
-                  onMouseEnter={() => setActiveIdx(-1)}
-                >
-                  View all results for "{query}"
-                </button>
-              </>
-            ) : (
-              <div className="px-4 py-6 text-center space-y-1">
-                <p className="text-sm text-muted-foreground">No results for "{query}"</p>
-                <button className="text-xs text-accent hover:underline" onMouseDown={submitSearch}>
-                  Search all products
-                </button>
-              </div>
-            )}
+            <SearchPanelBody
+              query={search.query}
+              results={search.results}
+              activeIdx={search.activeIdx}
+              isError={search.isError}
+              isPending={search.isPending}
+              onSelect={search.goToProduct}
+              onHover={search.setActiveIdx}
+              onSubmit={search.submitSearch}
+              onBrowseAll={search.browseAll}
+            />
           </motion.div>
         )}
       </AnimatePresence>

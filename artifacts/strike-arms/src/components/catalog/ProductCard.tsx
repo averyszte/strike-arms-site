@@ -1,5 +1,7 @@
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
+import { CardImage } from '@/components/catalog/card-image';
+import { effectivePriceCents, hasDiscount as isDiscounted } from '@/lib/effective-price';
 import { formatPrice } from '@/lib/format-price';
 import { isPreLoved } from '@/lib/product-condition';
 import type { Product } from '@/types/product';
@@ -11,7 +13,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { slug, name, brand, price, salePrice, images, inStock, isNew, isFeatured } = product;
   const displayImage = images[0] ?? '/images/placeholder-product.webp';
-  const hasDiscount = salePrice !== undefined && salePrice < price;
+  const hasDiscount = isDiscounted(price, salePrice);
+  const payableCents = effectivePriceCents(price, salePrice);
   const preLoved = isPreLoved(product.condition);
 
   return (
@@ -22,10 +25,11 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-white">
-        <img
+        <CardImage
           src={displayImage}
           alt={name}
           loading="lazy"
+          sizes="(min-width: 1280px) 25vw, (min-width: 640px) 33vw, 50vw"
           className="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.03]"
         />
 
@@ -73,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-baseline gap-2 pt-0.5">
           {hasDiscount ? (
             <>
-              <span className="text-base font-black text-accent">{formatPrice(salePrice!)}</span>
+              <span className="text-base font-black text-accent">{formatPrice(payableCents)}</span>
               <span className="text-xs text-muted-foreground line-through">{formatPrice(price)}</span>
             </>
           ) : (

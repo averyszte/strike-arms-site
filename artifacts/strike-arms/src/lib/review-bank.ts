@@ -1,4 +1,5 @@
 import { GOOGLE_REVIEWS } from "@/lib/google-reviews";
+import type { Review } from "@/types/review";
 
 /**
  * The review bank: real Google reviews shown on the site, best first.
@@ -7,14 +8,6 @@ import { GOOGLE_REVIEWS } from "@/lib/google-reviews";
  * word for word. Consumer Rights Act 2022: no invented or edited reviews.
  * The data lives in lib/google-reviews.ts.
  */
-export type Review = {
-  author: string;
-  /** The year, worked back from Google's "N years ago". */
-  date: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-  /** Empty when the reviewer left stars only. */
-  text: string;
-};
 
 /** "4.7 on Google". Google asks for an "as of" date beside it. */
 export const GOOGLE_RATING = { value: "4.7", asOf: "November 2026" };

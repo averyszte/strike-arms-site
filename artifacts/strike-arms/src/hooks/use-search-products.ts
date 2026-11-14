@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { searchCatalogue } from '@/data/products-repository';
+import { GC_TIME_TEN_MINUTES, PRODUCT_KEYS, STALE_TIME_FIVE_MINUTES } from '@/lib/query-keys';
 import type { Product } from '@/types/product';
 
 /** Stable empty array, so a query with no data does not remount the results. */
@@ -33,13 +34,13 @@ export function useSearchProducts(query: string, debounceMs = 250) {
   const { data, isError, isPending } = useQuery({
     // Lowercased, so "M4" and "m4" are one cache entry rather than two
     // identical round trips -- the search itself is case-insensitive.
-    queryKey: ['product-search', term.toLowerCase()],
+    queryKey: PRODUCT_KEYS.search(term.toLowerCase()),
     queryFn: () => searchCatalogue(term),
     // Below two characters every result is noise, and asking costs a round
     // trip to be told so.
     enabled: term.length >= 2,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: STALE_TIME_FIVE_MINUTES,
+    gcTime: GC_TIME_TEN_MINUTES,
     // Hold the last term's results while the next are in flight. Without this
     // the panel empties on every keystroke and reads as "no results".
     placeholderData: (previous) => previous,

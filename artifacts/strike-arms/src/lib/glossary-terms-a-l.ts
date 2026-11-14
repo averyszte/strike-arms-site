@@ -1,0 +1,185 @@
+import type { GlossaryTerm } from '@/types/glossary';
+
+/** Glossary terms A to L, in alphabetical order. Joined in lib/glossary.ts. */
+export const GLOSSARY_TERMS_A_L: GlossaryTerm[] = [
+  {
+    term: 'AEG',
+    slug: 'aeg',
+    definition:
+      'Automatic Electric Gun. A battery-powered airsoft gun that uses a motor and gearbox to cycle a spring-driven piston, firing on semi- or full-auto. The most common type of skirmish rifle and the usual starting point for new players.',
+    seeAlso: [{ label: 'Shop AEG rifles', href: '/store/rifles/aeg-rifles' }],
+  },
+  {
+    term: 'AEP',
+    slug: 'aep',
+    definition:
+      'Automatic Electric Pistol. A compact, battery-powered pistol using a small electric gearbox. Lower-powered than a GBB, popular as a beginner sidearm or for younger players.',
+    seeAlso: [{ label: 'Shop electric pistols', href: '/store/pistols/electric-pistols' }],
+  },
+  {
+    term: 'Angle of Engagement (AoE)',
+    slug: 'angle-of-engagement',
+    definition:
+      'The angle at which the sector gear first contacts the piston pickup tooth inside a gearbox. Correcting AoE spreads load across more teeth and is a common durability upgrade during a rebuild.',
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
+  },
+  {
+    term: 'BB',
+    slug: 'bb',
+    definition:
+      'The 6mm plastic spherical projectile an airsoft gun fires, sold by weight (e.g. 0.20g, 0.25g, 0.28g). Quality and weight affect accuracy, range and how well a gun feeds.',
+    seeAlso: [{ label: 'Shop BBs', href: '/store/consumables/bbs' }],
+  },
+  {
+    term: 'Bio BB',
+    slug: 'bio-bb',
+    definition:
+      'A biodegradable BB made to break down over time. Required by most outdoor sites in Ireland so that spent BBs do not persist in the environment.',
+    seeAlso: [{ label: 'Shop bio BBs', href: '/store/consumables/bio-bbs' }],
+  },
+  {
+    term: 'Blowback',
+    slug: 'blowback',
+    definition:
+      'A system where firing drives the slide or bolt rearward to mimic recoil, as in a gas blowback (GBB) pistol. Adds realism at the cost of gas or battery efficiency.',
+    seeAlso: [{ label: 'Shop GBB pistols', href: '/store/pistols/gbb-pistols' }],
+  },
+  {
+    term: 'Bolt-action',
+    slug: 'bolt-action',
+    definition:
+      'A rifle that is manually cocked between shots by cycling a bolt. Standard mechanism for airsoft sniper rifles, prized for a smooth, consistent single shot.',
+    seeAlso: [{ label: 'Shop sniper rifles', href: '/store/rifles/sniper' }],
+  },
+  {
+    term: 'Bucking (Hop rubber)',
+    slug: 'bucking',
+    definition:
+      'The rubber sleeve inside the hop-up unit that grips the BB and applies backspin. Swapping the bucking is one of the cheapest, most effective accuracy upgrades.',
+    seeAlso: [{ label: 'Hop-up tuning', href: '/services/hop-up-tuning' }],
+  },
+  {
+    term: 'Chronograph (Chrono)',
+    slug: 'chronograph',
+    definition:
+      'A device that measures BB velocity in feet per second (FPS) or metres per second, used to confirm a gun shoots within a site limit. Sites chrono guns before play.',
+    seeAlso: [{ label: 'Chrono testing', href: '/services/chrono-service' }],
+  },
+  {
+    term: 'CO2',
+    slug: 'co2',
+    definition:
+      'A propellant stored in small capsules, running at higher pressure than green gas. Performs better in cold weather but can stress seals in guns not designed for it.',
+    seeAlso: [{ label: 'Shop CO2', href: '/store/consumables/co2' }],
+  },
+  {
+    term: 'CQB',
+    slug: 'cqb',
+    definition:
+      'Close Quarters Battle. Indoor or tight urban-style play at short range, favouring compact guns, lower FPS limits and fast handling over reach.',
+  },
+  {
+    term: 'DMR',
+    slug: 'dmr',
+    definition:
+      'Designated Marksman Rifle. A semi-auto-only rifle tuned for range and accuracy, sitting between a standard AEG and a bolt-action sniper. Usually held to a higher FPS limit with a semi-only lock.',
+    seeAlso: [{ label: 'Shop rifles', href: '/store/rifles' }],
+  },
+  {
+    term: 'ETU',
+    slug: 'etu',
+    definition:
+      'Electronic Trigger Unit. Replaces mechanical trigger contacts with electronics for a crisper trigger, burst modes and trigger protection. Often paired with a MOSFET.',
+    seeAlso: [
+      { label: 'Upgrades', href: '/services/upgrades' },
+      { label: 'Upgrades guide', href: '/guides/airsoft-upgrades' },
+    ],
+  },
+  {
+    term: 'FPS',
+    slug: 'fps',
+    definition:
+      'Feet Per Second, the speed a BB leaves the barrel. FPS depends on the BB weight used to measure it, which is why sites also express limits in joules of energy.',
+    seeAlso: [{ label: 'Chrono testing', href: '/services/chrono-service' }],
+  },
+  {
+    term: 'Full-auto',
+    slug: 'full-auto',
+    definition:
+      'A firing mode that keeps shooting while the trigger is held. Many indoor/CQB sites restrict or ban full-auto; check the site rules before you play.',
+  },
+  {
+    term: 'GBB',
+    slug: 'gbb',
+    definition:
+      'Gas Blowback. A gas-powered gun (usually a pistol) with a moving slide that recoils on each shot for realism. Popular as sidearms and for training realism.',
+    seeAlso: [{ label: 'Shop GBB pistols', href: '/store/pistols/gbb-pistols' }],
+  },
+  {
+    term: 'GBBR',
+    slug: 'gbbr',
+    definition:
+      'Gas Blowback Rifle. A rifle-format gas blowback gun with strong recoil and realistic operation. More sensitive to cold and maintenance than an AEG.',
+    seeAlso: [{ label: 'Shop gas rifles / GBBR', href: '/store/rifles/gbbr' }],
+  },
+  {
+    term: 'Gearbox',
+    slug: 'gearbox',
+    definition:
+      'The sealed mechanical core of an AEG containing the gears, piston, spring and cylinder. Versions (V2, V3, etc.) correspond to different gun platforms.',
+    seeAlso: [{ label: 'Gearbox rebuilds', href: '/services/gearbox-rebuilds' }],
+  },
+  {
+    term: 'Green gas',
+    slug: 'green-gas',
+    definition:
+      'The most common airsoft propellant for gas guns, a silicone-lubricated pressurised gas. Convenient and gun-friendly, but loses power in cold conditions.',
+    seeAlso: [{ label: 'Shop green gas', href: '/store/consumables/green-gas' }],
+  },
+  {
+    term: 'Hop-up',
+    slug: 'hop-up',
+    definition:
+      'A system that applies backspin to the BB to flatten its trajectory and extend range. Adjusting the hop-up correctly is essential to accuracy on any airsoft gun.',
+    seeAlso: [{ label: 'Hop-up tuning', href: '/services/hop-up-tuning' }],
+  },
+  {
+    term: 'HPA',
+    slug: 'hpa',
+    definition:
+      'High Pressure Air. A system running the gun from a regulated compressed-air tank, giving highly consistent, tunable performance. Favoured by some competitive and speedsoft players.',
+  },
+  {
+    term: 'Imitation Firearm (IF) / RIF',
+    slug: 'rif',
+    definition:
+      'Terms used for replica-styled guns. A Realistic Imitation Firearm looks like a real firearm; a two-tone finish is sometimes used to distinguish a replica. Irish rules on these are specific — verify the current position rather than assuming UK rules apply.',
+    seeAlso: [{ label: 'Airsoft and the law', href: '/airsoft-law' }],
+  },
+  {
+    term: 'Joule',
+    slug: 'joule',
+    definition:
+      'The unit of muzzle energy, a weight-independent measure of a gun’s power. Because FPS changes with BB weight, joules give a fairer comparison and many limits are set this way.',
+  },
+  {
+    term: 'Joule creep',
+    slug: 'joule-creep',
+    definition:
+      'When a gun with a high air volume produces more energy with a heavier BB than a chrono reading on a light BB suggests. Relevant to DMR/sniper setups and site limits.',
+  },
+  {
+    term: 'LiPo',
+    slug: 'lipo',
+    definition:
+      'Lithium Polymer battery. Lightweight, high-output and the common choice for AEGs, but it must be charged, stored and handled correctly for safety and longevity.',
+    seeAlso: [{ label: 'Shop batteries', href: '/store/consumables/batteries' }],
+  },
+  {
+    term: 'Loadout',
+    slug: 'loadout',
+    definition:
+      'A player’s complete kit for a game: gun, magazines, load-bearing gear, eye protection and clothing. Loadouts vary between CQB and woodland play.',
+    seeAlso: [{ label: 'Shop tactical gear', href: '/store/gear' }],
+  },
+];

@@ -2,10 +2,9 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listFacetRows, listSearchMatchIds } from '@/data/catalog-facets-repository';
 import { buildCatalogFacets } from '@/lib/catalog-facets';
+import { CATALOGUE_KEYS, STALE_TIME_FIVE_MINUTES } from '@/lib/query-keys';
 import type { CatalogFacets } from '@/types/catalog-facets';
 import type { ProductFilters } from '@/types/product';
-
-const FIVE_MINUTES = 5 * 60 * 1000;
 
 /**
  * Counts for every control in the filter sidebar. One cached read of the
@@ -17,16 +16,16 @@ const FIVE_MINUTES = 5 * 60 * 1000;
  */
 export function useCatalogFacets(filters: ProductFilters): CatalogFacets | undefined {
   const rows = useQuery({
-    queryKey: ['facet-rows'],
+    queryKey: CATALOGUE_KEYS.facetRows,
     queryFn: listFacetRows,
-    staleTime: FIVE_MINUTES,
+    staleTime: STALE_TIME_FIVE_MINUTES,
   });
   const q = filters.q;
   const searchIds = useQuery({
-    queryKey: ['facet-search-ids', q],
+    queryKey: CATALOGUE_KEYS.facetSearchIds(q),
     queryFn: () => listSearchMatchIds(q ?? ''),
     enabled: !!q,
-    staleTime: FIVE_MINUTES,
+    staleTime: STALE_TIME_FIVE_MINUTES,
   });
 
   return useMemo(() => {

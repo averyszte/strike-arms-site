@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { redeemCustomerLink } from '@/data/customer-auth-repository';
 import { customerAuthError } from '@/lib/customer-auth-errors';
+import { CUSTOMER_KEYS } from '@/lib/query-keys';
 import type { EmailLinkState } from '@/types/auth';
 import type { CustomerLinkType } from '@/types/customer-account';
 
@@ -15,7 +16,7 @@ export function useCustomerEmailLink(
   type: CustomerLinkType,
 ): EmailLinkState | null {
   const query = useQuery({
-    queryKey: ['customer-email-link', type, tokenHash],
+    queryKey: CUSTOMER_KEYS.emailLink(type, tokenHash),
     enabled: tokenHash !== null,
     retry: false,
     staleTime: Infinity,

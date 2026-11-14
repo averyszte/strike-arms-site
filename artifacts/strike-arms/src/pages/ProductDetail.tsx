@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { useProduct } from '@/hooks/useProduct';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
+import { effectivePriceCents } from '@/lib/effective-price';
+import { formatCentsPlain } from '@/lib/format-price';
 import { SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
 import {
   buildProductSchema,
@@ -61,7 +63,7 @@ function buildCrumbs(product: Product): BreadcrumbEntry[] {
 
 function ProductDetailView({ product }: { product: Product }) {
   const crumbs = buildCrumbs(product);
-  const priceCents = product.salePrice ?? product.price;
+  const priceCents = effectivePriceCents(product.price, product.salePrice);
   const description = product.shortDescription;
 
   return (
@@ -75,7 +77,7 @@ function ProductDetailView({ product }: { product: Product }) {
         <meta property="og:description" content={description} />
         <meta property="og:url" content={`${SITE_URL}/products/${product.slug}`} />
         <meta property="og:image" content={toAbsoluteUrl(product.images[0] ?? '/opengraph.jpg')} />
-        <meta property="product:price:amount" content={(priceCents / 100).toFixed(2)} />
+        <meta property="product:price:amount" content={formatCentsPlain(priceCents)} />
         <meta property="product:price:currency" content="EUR" />
       </Helmet>
       <JsonLd data={[buildProductSchema(product), buildBreadcrumbSchema(crumbs)]} />

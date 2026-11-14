@@ -13,9 +13,8 @@
  * └──────────────────────────────────────────────────────────────────────────┘
  */
 
+import type { FulfillmentMethod } from '@/types/order';
 import type { StoreRates } from '@/types/store-settings';
-
-export type FulfillmentMethod = 'pickup' | 'delivery' | 'mixed';
 
 /**
  * Delivery is charged once per order, on the value of the shippable lines

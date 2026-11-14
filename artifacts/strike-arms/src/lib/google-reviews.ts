@@ -1,4 +1,4 @@
-import type { Review } from "@/lib/review-bank";
+import type { Review } from "@/types/review";
 
 /**
  * Every 4- and 5-star review on the Strike Arms Google Business Profile, read

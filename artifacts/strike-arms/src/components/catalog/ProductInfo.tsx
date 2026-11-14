@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { CART_FULL_MESSAGE } from '@/lib/cart-limits';
+import { effectivePriceCents, hasDiscount as isDiscounted } from '@/lib/effective-price';
 import { formatPrice } from '@/lib/format-price';
 import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
@@ -15,8 +16,8 @@ import type { Product } from '@/types/product';
 export function ProductInfo({ product }: { product: Product }) {
   const { toast } = useToast();
   const { addLine } = useCart();
-  const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
-  const unitPriceCents = hasDiscount ? product.salePrice! : product.price;
+  const hasDiscount = isDiscounted(product.price, product.salePrice);
+  const unitPriceCents = effectivePriceCents(product.price, product.salePrice);
   const preLoved = isPreLoved(product.condition);
 
   const handleAddToCart = () => {
@@ -54,7 +55,7 @@ export function ProductInfo({ product }: { product: Product }) {
         {hasDiscount ? (
           <>
             <span className="text-3xl font-black text-accent">
-              {formatPrice(product.salePrice!)}
+              {formatPrice(unitPriceCents)}
             </span>
             <span className="text-base text-muted-foreground line-through">
               {formatPrice(product.price)}

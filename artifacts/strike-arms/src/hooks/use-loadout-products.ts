@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { listProductsBySlugs } from '@/data/products-repository';
 import { LOADOUT_SLUGS } from '@/lib/loadouts';
+import { PRODUCT_KEYS, STALE_TIME_HALF_HOUR } from '@/lib/query-keys';
 import type { Product } from '@/types/product';
-
-const HALF_HOUR = 30 * 60 * 1000;
 
 /**
  * The catalogue rows behind every play style, keyed by slug. One query covers
@@ -14,9 +13,9 @@ const HALF_HOUR = 30 * 60 * 1000;
  */
 export function useLoadoutProducts(): { bySlug: Map<string, Product>; isLoading: boolean } {
   const query = useQuery({
-    queryKey: ['loadout-products', LOADOUT_SLUGS],
+    queryKey: PRODUCT_KEYS.loadout(LOADOUT_SLUGS),
     queryFn: () => listProductsBySlugs(LOADOUT_SLUGS),
-    staleTime: HALF_HOUR,
+    staleTime: STALE_TIME_HALF_HOUR,
   });
 
   const bySlug = useMemo(
