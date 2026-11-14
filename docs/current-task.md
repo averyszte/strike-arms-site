@@ -2,6 +2,12 @@
 
 Last updated: 2026-11-14. **Current task: the pre-launch audit fix programme.**
 
+**Status:** the audit fixes are in progress on branch
+`claude/confident-sammet-18385d`, not yet pushed. Lanes L1 to L6 are committed
+(migrations 040 to 048 from L3); the Wave 3 refactors and platform clean-up are
+underway. Phil pushes, deploys and runs `supabase db push` when the branch is
+ready.
+
 ## Pre-launch audit fix programme (current)
 
 Six audits (A1 security, A2 correctness, A3 architecture, A4 performance, A5
@@ -57,12 +63,13 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
 - **17 (Turnstile and rate limit) is done in code, not live.** It needs keys from the Cloudflare
   dashboard. See "Item 17" below.
 
-Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
-032 service_role grants, 033 order tracking, 034 customer accounts, 035 rate limit, 036 inquiries
-lockdown, 037 product type rank, 038 `simple_stock`, 039 `inquiry_notifications` (corrected
-2026-11-14 from the file names in `supabase/migrations`; the earlier plan said 038 indexes and
-039 housekeeping). `db push` refuses a
-file numbered below one already on the remote, so numbers follow the order they are written.
+Migrations, by file name in `supabase/migrations`: 029 `webhook_alerts`, 030
+`notification_producer`, 031 `notification_extras`, 032 `service_role_grants`, 033
+`order_tracking`, 034 `customer_accounts`, 035 `rate_limit`, 036 `inquiries_lockdown`, 037
+`product_type_rank`, 038 `simple_stock`, 039 `inquiry_notifications`. The audit lanes added 040
+`payments_integrity` to 048 `system_health`. (Corrected 2026-11-14; the earlier plan said 038
+indexes and 039 housekeeping.) `db push` refuses a file numbered below one already on the
+remote, so numbers follow the order they are written.
 
 Push only when the user asks, with `git push origin HEAD:main`.
 

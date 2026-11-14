@@ -5,8 +5,8 @@
 #
 # The site job is the gate: install, typecheck, lint with zero warnings, and
 # the tests once a `test` script exists. The Deno job type-checks the edge
-# functions; it reports but does not fail the run until
-# supabase/functions/deno.json pins the imports (M-064).
+# functions against supabase/functions/deno.json; it reports but does not
+# fail the run until it has passed cleanly once (M-064).
 
 name: CI
 
@@ -59,8 +59,8 @@ jobs:
     name: Edge functions (deno check)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Advisory until M-064 adds supabase/functions/deno.json with pinned
-    # imports. Remove this line once the check passes cleanly.
+    # Advisory: supabase/functions/deno.json now pins the imports (M-064), but
+    # the check has not yet had a clean run. Remove this line once it does.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -69,5 +69,8 @@ jobs:
         with:
           deno-version: v2.x
 
+      # Run from supabase/functions so Deno picks up its deno.json (the pinned
+      # imports, M-064) and not the root package.json.
       - name: deno check
-        run: deno check supabase/functions/*/index.ts
+        working-directory: supabase/functions
+        run: deno check */index.ts

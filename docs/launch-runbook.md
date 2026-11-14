@@ -370,8 +370,9 @@ npx supabase functions deploy stripe-webhook
 
 ## 7. Admin MFA reset (D4)
 
-Every admin should enrol **two** authenticator factors (for example the phone
-and a password manager), named so they can be told apart. Removing a factor
+Admins can now add a second TOTP factor in the admin settings (D4), and every
+admin should enrol **two** (for example the phone and a password manager),
+named so they can be told apart. There are no recovery codes. Removing a factor
 in the admin settings is only allowed while another verified factor remains
 (M-026).
 
@@ -379,11 +380,12 @@ in the admin settings is only allowed while another verified factor remains
 the lost factor in the admin settings, and enrol a replacement. No developer
 step is needed.
 
-**If the admin has lost every factor**, Phil resets it:
+**If the admin has lost every factor**, Phil (the developer) resets it. The
+reset is only ever done **after confirming the person's identity by phone**:
 
-1. **Confirm who is asking** outside email: a call to a number already known,
-   or in person. A reset hands over refunds and orders, so never act on an
-   email or message alone.
+1. **Confirm who is asking by phone**, on a number already known for that
+   person (or in person). A reset hands over refunds and orders, so never act
+   on an email or message alone, and never on a number the request supplied.
 2. **Find the factors** (SQL editor; replace the address, which is not a
    secret):
 
@@ -391,9 +393,10 @@ step is needed.
 select f.id, f.friendly_name, f.status, f.created_at from auth.mfa_factors f join auth.users u on u.id = f.user_id where u.email = 'admin@example.com';
 ```
 
-3. **Remove them.** In Authentication > Users > the user, remove the MFA
-   factors if the dashboard offers it. Otherwise delete them by id from the
-   list above (SQL editor), one row per factor:
+3. **Remove them.** In the Supabase dashboard, Authentication > Users > the
+   user > delete the MFA factor (each one listed). If the dashboard does not
+   offer it, delete them by id from the list above (SQL editor), one row per
+   factor:
 
 ```sql
 delete from auth.mfa_factors where id = 'FACTOR_ID_FROM_STEP_2';
@@ -405,8 +408,9 @@ delete from auth.mfa_factors where id = 'FACTOR_ID_FROM_STEP_2';
 delete from auth.sessions where user_id = (select id from auth.users where email = 'admin@example.com');
 ```
 
-5. **The admin signs in with their password** and is taken to two-factor
-   enrolment, the same as a newly invited admin. They enrol two factors.
+5. **The admin enrols again on their next sign-in.** They sign in with their
+   password and are taken to two-factor enrolment, the same as a newly invited
+   admin. They enrol two factors.
    Until they do, the account is at aal1 and the admin data stays closed
    (every admin read needs aal2).
 6. **Log the reset** in the table below.

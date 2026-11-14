@@ -20,7 +20,7 @@ If anything I ask later conflicts with a rule in those docs, stop and flag the c
 ## Project summary
 
 - **Stack:** React 19.1 (pinned in the pnpm catalog in `pnpm-workspace.yaml`) + Vite + TypeScript, Tailwind + shadcn/ui, wouter (routing), react-helmet-async (meta), @tanstack/react-query (data), framer-motion (animation)
-- **Backend (when added):** Supabase (Postgres + Auth + Storage + RLS + Edge Functions). The Express scaffold in `artifacts/api-server/` is unused — do not extend it.
+- **Backend:** Supabase (Postgres + Auth + Storage + RLS + Edge Functions). The old Express and drizzle scaffold (`artifacts/api-server/`, `lib/`) was removed in the pre-launch audit (M-060); do not add a Node API server.
 - **Payments:** Stripe Checkout (hosted, not Elements). Webhook handler lives in a Supabase Edge Function.
 - **Deploy:** Cloudflare Pages.
 - **Monorepo:** pnpm workspaces. The site is in `artifacts/strike-arms/`.
