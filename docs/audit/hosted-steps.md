@@ -2,7 +2,8 @@
 
 This is the ordered list of everything the audit fixes need outside the code. Do it top to bottom, because the order matters. Each step has its own check. The detailed procedures are in `docs/launch-runbook.md`; the section numbers below point there.
 
-- **Branch:** `claude/confident-sammet-18385d`. Every commit is local; nothing is pushed or deployed yet.
+- **Status (2026-11-14):** stages 0 to 7 are done. The site is live behind the coming-soon gate, on the Strike Arms Stripe sandbox. Only the launch-day steps at the end remain.
+- **Skipped on purpose:** rotating the service-role key. A scan of every tracked file and the full git history found no key; it only ever sat in `cron.job`, which only the database superuser can read.
 - **Names only.** No secret value goes in this file, in chat or in a commit. Paste values into the dashboard or your own terminal.
 - **The three ordering rules:**
   1. `supabase db push` comes before any function deploy.
@@ -158,4 +159,71 @@ git push origin main
 
 ## At launch
 
-- [ ] The launch flip is runbook section 4: `IS_COMING_SOON=false` ships in the same deploy as the final `SITE_URL`, `VITE_SITE_URL` and the Auth Site URL. Then redeploy `create-checkout-session` and `notification-worker`.
+Do these in one sitting, in this order. Full detail is in `docs/launch-runbook.md` sections 3 to 5.
+
+### 1. Stripe live mode (runbook section 3)
+
+Test and live mode are separate in Stripe: nothing from the sandbox carries over. Do every step with the **live** toggle on, and do them together: a live key with the sandbox webhook secret fails every webhook signature, so customers pay and orders stay pending.
+
+- [ ] **Live secret key.** Stripe > Developers > API keys (live). Set it in your own terminal, pasting the `sk_live_` value after the `=`:
+
+```
+npx supabase secrets set STRIPE_SECRET_KEY=PASTE_LIVE_SECRET_KEY
+```
+
+- [ ] **Live webhook endpoint.** Stripe > Developers > Webhooks (live) > Add endpoint: `https://cxnhkgndvzgyqhiwsvrr.supabase.co/functions/v1/stripe-webhook`, with exactly these seven events:
+  - `checkout.session.completed`
+  - `checkout.session.async_payment_succeeded`
+  - `checkout.session.async_payment_failed`
+  - `checkout.session.expired`
+  - `charge.refunded`
+  - `charge.refund.updated`
+  - `charge.dispute.created`
+- [ ] **Live signing secret.** Copy the new endpoint's `whsec_` value:
+
+```
+npx supabase secrets set STRIPE_WEBHOOK_SECRET=PASTE_LIVE_WHSEC
+```
+
+- [ ] **Instant methods only (D2).** Settings > Payment methods (live): cards, Apple Pay and Google Pay on; SEPA Debit, bank transfer and other delayed methods off.
+- [ ] **Webhook failure emails** go to an address you read.
+
+### 2. Final site URL
+
+Everything becomes `https://strikearms.ie`: no `www`, no trailing slash.
+
+- [ ] **Function secret:**
+
+```powershell
+npx supabase secrets set "SITE_URL=https://strikearms.ie"
+```
+
+- [ ] **Supabase > Authentication > URL Configuration > Site URL:** `https://strikearms.ie`. Leave the redirect list as it is.
+- [ ] **Cloudflare Pages `VITE_SITE_URL`:** nothing to do. When it is unset, the site already uses `https://strikearms.ie`.
+
+### 3. Redeploy the functions
+
+One command picks up both the Stripe and the `SITE_URL` changes:
+
+```powershell
+npx supabase functions deploy
+```
+
+### 4. Open the gate
+
+- [ ] Set `IS_COMING_SOON = false` in `artifacts/strike-arms/src/lib/coming-soon-gate.ts`, commit, and push to `main`. It is a line of code, not a Supabase or Cloudflare setting. Cloudflare rebuilds and the shop is open a minute after the build.
+
+### 5. Check it
+
+- [ ] In a private window without `?preview`, `https://strikearms.ie/` shows the shop.
+- [ ] In the live endpoint, "Send test webhook" returns 200.
+- [ ] **One real order:** pay a small amount with a real card. The success page shows the order number, the confirmation email arrives and the admin shows it paid. Then refund it from the admin order sheet; the refund shows in Stripe and the refund email arrives.
+- [ ] An old PHP URL redirects:
+
+```powershell
+curl.exe -I https://strikearms.ie/Contact-us.php
+```
+
+  - *Check:* `301` with `Location: /contact`.
+- [ ] Admin > Dashboard: the system health card is all ok.
+- [ ] Disable or delete the sandbox webhook endpoint once live orders work.

@@ -217,8 +217,8 @@ webhook fail its signature check: customers pay, orders stay pending.
   - `checkout.session.async_payment_failed`
   - `checkout.session.expired`
   - `charge.refunded`
-  - `charge.refund.updated` and `charge.dispute.created`, **only once the
-    M-006 webhook handler is deployed**
+  - `charge.refund.updated`
+  - `charge.dispute.created`
 - [ ] **Live signing secret.** Copy the new endpoint's signing secret into the
       `STRIPE_WEBHOOK_SECRET` secret in Supabase.
 - [ ] **Instant methods only (D2).** Stripe > Settings > Payment methods (live
