@@ -140,7 +140,20 @@ export type Database = {
         Relationships: [];
       };
     };
-    Views: { [_ in never]: never };
+    Views: {
+      /** Published product counts by facet (migration 047). */
+      catalogue_counts: {
+        Row: {
+          facet: 'category' | 'subcategory' | 'brand' | 'brand_category';
+          category: string | null;
+          subcategory: string | null;
+          brand: string | null;
+          product_count: number;
+          in_stock_count: number;
+        };
+        Relationships: [];
+      };
+    };
     Functions: ServerFunctions & CustomerFunctions & {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin_aal2: { Args: Record<PropertyKey, never>; Returns: boolean };

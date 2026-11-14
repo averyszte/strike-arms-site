@@ -1,18 +1,16 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listFacetRows } from '@/data/catalog-facets-repository';
-import { countShelves } from '@/lib/catalog-facets';
+import { listShelfCounts } from '@/data/catalogue-counts-repository';
 
 /**
  * Published products per shelf, keyed `rifles` and `rifles/aeg-rifles`, for
- * the header menus. Shares the filter sidebar's cached read (same query key),
- * so the shop page does not fetch it twice. Undefined until it arrives.
+ * the header menus. One small grouped read (catalogue_counts, migration 047)
+ * instead of the whole catalogue. Undefined until it arrives.
  */
 export function useShelfCounts(): Record<string, number> | undefined {
   const { data } = useQuery({
-    queryKey: ['facet-rows'],
-    queryFn: listFacetRows,
+    queryKey: ['shelf-counts'],
+    queryFn: listShelfCounts,
     staleTime: 5 * 60 * 1000,
   });
-  return useMemo(() => (data ? countShelves(data) : undefined), [data]);
+  return data;
 }
