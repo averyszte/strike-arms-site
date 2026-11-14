@@ -1,5 +1,5 @@
 import { functionErrorMessage } from '@/data/function-error-message';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type {
   FulfillmentMethod,
   FulfillmentStatus,

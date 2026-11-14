@@ -10,7 +10,7 @@
  * use-product-image-upload.ts.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { compressImageSizes } from '@/lib/compress-image';
 import { cardVariantOf } from '@/lib/product-image-variants';
 

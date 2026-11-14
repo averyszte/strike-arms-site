@@ -21,6 +21,12 @@ export const PRODUCT_KEYS = {
   /** Prefix for every product list. Admin edits already invalidate this. */
   root: ['products'] as const,
   list: (filters: ProductFilters) => ['products', filters] as const,
+  /**
+   * The "load more" grids (M-050). Kept apart from `list` so a paged cache
+   * entry and a single-page one never share a key. `filters` leaves out
+   * `page`: loading another page grows this entry rather than starting one.
+   */
+  pages: (filters: Omit<ProductFilters, 'page'>) => ['products', 'pages', filters] as const,
   detail: (slug: string | undefined) => ['product', slug] as const,
   detailRoot: ['product'] as const,
   search: (term: string) => ['product-search', term] as const,
@@ -111,8 +117,10 @@ export const ADMIN_KEYS = {
     ['admin', 'inquiries', status, limit] as const,
   paymentAlertsRoot: ['admin', 'payment-alerts'] as const,
   paymentAlerts: (view: 'open' | 'handled') => ['admin', 'payment-alerts', view] as const,
-  migrationStatus: ['migration-status'] as const,
-  storeRatesHistory: ['store-rates-history'] as const,
+  // Under 'admin' so the QueryClient's admin defaults (always fresh, refetch
+  // on focus, App.tsx) apply to these as to every other admin read (M-049).
+  migrationStatus: ['admin', 'migration-status'] as const,
+  storeRatesHistory: ['admin', 'store-rates-history'] as const,
 } as const;
 
 const MINUTE_MS = 60 * 1000;

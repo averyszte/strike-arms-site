@@ -6,7 +6,7 @@
  * change with each ticked filter.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 
 /** Keyed `rifles` and `rifles/aeg-rifles`, the same keys countShelves uses. */
 export async function listShelfCounts(): Promise<Record<string, number>> {

@@ -1,6 +1,6 @@
 import type { PostgrestError } from '@supabase/supabase-js';
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { chunkArray } from '@/lib/chunk-array';
 import type { OrderItemRow } from '@/lib/order-mappers';
 

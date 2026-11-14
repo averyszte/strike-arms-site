@@ -6,7 +6,7 @@
  * "could not ask" -- isCurrentUserAdmin most of all -- can only do that if the
  * failure is not folded into the answer.
  */
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import type { EmailLinkType } from '@/types/auth';
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';
 

@@ -14,7 +14,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { useAdminMfaFactors, useRemoveMfaFactor } from '@/hooks/use-admin-mfa-factors';
+import { useAdminMfaFactors } from '@/hooks/use-admin-mfa-factors';
+import { useRemoveMfaFactor } from '@/hooks/use-remove-mfa-factor';
 import { useToast } from '@/hooks/use-toast';
 import type { TotpFactor } from '@/types/auth';
 

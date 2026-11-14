@@ -12,6 +12,9 @@
  * not used: Safari's canvas WebP encoding has been unreliable across versions,
  * and an encoder that silently produces an empty blob on one browser is worse
  * than a file that is 30% larger everywhere.
+ *
+ * Layer note: this uses browser canvas APIs, so it is not pure. It stays in lib/
+ * because it touches no network or storage; only data/storage-repository calls it.
  */
 
 export type CompressedImage = {

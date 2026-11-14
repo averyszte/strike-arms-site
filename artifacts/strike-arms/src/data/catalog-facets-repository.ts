@@ -7,7 +7,7 @@
  * it lets every count respond instantly to every filter.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { toProductCondition } from '@/lib/product-condition';
 import type { FacetRow } from '@/types/catalog-facets';

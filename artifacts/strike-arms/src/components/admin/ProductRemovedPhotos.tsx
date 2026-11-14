@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight, Undo2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { useOrphanedImages, useRestoreOrphanedImage, type OrphanedImage } from '@/hooks/use-orphaned-images';
+import { useOrphanedImages, type OrphanedImage } from '@/hooks/use-orphaned-images';
+import { useRestoreOrphanedImage } from '@/hooks/use-restore-orphaned-image';
 import { useToast } from '@/hooks/use-toast';
 import { loadErrorMessage } from '@/lib/load-error-message';
 

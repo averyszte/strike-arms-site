@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle2, ChevronRight, OctagonAlert } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useFailedEmailCount } from '@/hooks/use-failed-emails';
+import { useFailedEmailCount } from '@/hooks/use-failed-email-count';
 import { useMigrationAlertInput } from '@/hooks/use-migration-alert-input';
 import { buildOperationalAlerts } from '@/lib/admin-alerts';
 import type { Order } from '@/types/order';

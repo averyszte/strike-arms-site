@@ -4,7 +4,7 @@
  * address). Deleting the account goes through the delete-account Edge
  * Function, because only the service role can delete an auth user.
  */
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { toLookedUpOrder } from '@/data/order-lookup-repository';
 import type { CustomerProfile, ProfileInput } from '@/types/customer-account';
 import type { CustomerProfileRow } from '@/types/database-customer';

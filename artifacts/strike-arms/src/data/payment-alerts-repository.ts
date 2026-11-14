@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { Database } from '@/types/database';
 import type { PaymentAlert } from '@/types/payment-alert';
 

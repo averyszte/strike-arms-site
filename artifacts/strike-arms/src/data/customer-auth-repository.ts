@@ -17,7 +17,7 @@
  * project; until then it is ignored, so passing it is safe either way. Null
  * (no site key, local development) sends none.
  */
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { CustomerLinkType, SignUpInput } from '@/types/customer-account';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 

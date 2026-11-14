@@ -14,7 +14,7 @@
  * back as unchanged.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { ImportCreate, ImportPlan, ImportUpdate } from '@/lib/product-import';
 import type { ParsedFields } from '@/lib/product-import-columns';
 import type { ImportOutcome } from '@/types/product-import';

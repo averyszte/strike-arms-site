@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { CheckoutPaymentStatus, CheckoutStatus } from '@/types/checkout-status';
 
 /**

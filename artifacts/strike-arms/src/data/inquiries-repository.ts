@@ -1,5 +1,5 @@
 import { functionErrorMessage } from '@/data/function-error-message';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import type { Database } from '@/types/database';
 import type { Inquiry, InquiryStatus, CreateInquiryInput } from '@/types/inquiry';

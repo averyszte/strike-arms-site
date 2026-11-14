@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { StoreRates } from '@/types/store-settings';
 
 /**

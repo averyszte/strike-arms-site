@@ -11,7 +11,7 @@ import { CatalogLoadErrorPage } from '@/components/catalog/CatalogLoadErrorPage'
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBrandCategories } from '@/hooks/use-brand-categories';
 import { useBrands } from '@/hooks/use-brands';
-import { useProducts } from '@/hooks/useProducts';
+import { useProductPages } from '@/hooks/use-product-pages';
 import { brandCategoryLinks, brandPageMeta } from '@/lib/brand-page-meta';
 import { TEXT_LINK } from '@/lib/storefront-styles';
 import { SITE_URL } from '@/lib/site-config';
@@ -76,7 +76,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
   const [, setLocation] = useLocation();
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError, isFetching, refetch } = useProducts({
+  const products = useProductPages({
     brands: [slug],
     sort: 'featured',
     page,
@@ -84,8 +84,9 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
   });
   const { data: categories } = useBrandCategories(slug);
 
-  const items = data?.items ?? [];
-  const total = data?.total ?? count;
+  const { items, isLoading, isError, isFetching, refetch } = products;
+  // Until the first page arrives, the brand list's count stands in.
+  const total = products.hasData ? products.total : count;
   const meta = brandPageMeta(name, count);
   const path = `/brands/${slug}`;
 

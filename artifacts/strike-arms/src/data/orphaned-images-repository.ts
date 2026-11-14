@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { PRODUCT_IMAGES_BUCKET } from '@/data/storage-repository';
 
 /**

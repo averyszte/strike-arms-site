@@ -4,7 +4,7 @@ import {
   type FunctionErrorReply,
 } from '@/data/function-error-message';
 import { CART_FULL_MESSAGE, isCartLimitError } from '@/lib/cart-limits';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
 /**

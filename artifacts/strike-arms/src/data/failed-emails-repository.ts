@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { stillFailed, type EnqueueError, type FailedEmail } from '@/lib/failed-emails';
 
 /** How far back a failure is still worth showing. */

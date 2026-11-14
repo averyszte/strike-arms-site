@@ -10,7 +10,7 @@
  * Admin reads and writes live in admin-products-repository.ts.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { rowToProduct } from '@/lib/product-mappers';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { BRAND_NAMES, isListedBrand } from '@/lib/brands';
@@ -54,9 +54,10 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
 
   query = applySort(query, filters.sort ?? 'featured');
 
-  // "Load more" pagination: always fetch from index 0 up to page * pageSize,
-  // so incrementing page in the URL appends without a separate accumulator.
-  const { data, error, count } = await query.range(0, page * pageSize - 1);
+  // One page per call. "Load more" keeps the earlier pages in an infinite
+  // query (useProductPages), so they are not fetched again (M-050).
+  const from = (page - 1) * pageSize;
+  const { data, error, count } = await query.range(from, from + pageSize - 1);
   if (error) throw error;
 
   return {
@@ -148,27 +149,28 @@ export async function listProductsBySlugs(slugs: string[]): Promise<Product[]> {
 }
 
 /**
- * Brand facet counts. PostgREST cannot group, so the brand column alone is
- * fetched and tallied here — one narrow column, not the whole catalogue.
+ * Brand facet counts, from the catalogue_counts view (migration 047, M-051).
+ * Every published product counts, in stock or not, as the old row tally did.
+ * With a category, the brand-within-category rows are read instead.
  */
 export async function listBrands(
   category?: Category,
 ): Promise<{ slug: string; name: string; count: number }[]> {
-  let query = supabase.from('products').select('brand').eq('is_published', true);
-  if (category) query = query.eq('category', category);
+  let query = supabase.from('catalogue_counts').select('brand, product_count');
+  query = category
+    ? query.eq('facet', 'brand_category').eq('category', category)
+    : query.eq('facet', 'brand');
 
   const { data, error } = await query;
   if (error) throw error;
 
-  const counts = new Map<string, number>();
+  const brands: { slug: string; name: string; count: number }[] = [];
   for (const row of data ?? []) {
-    if (!isListedBrand(row.brand)) continue;
-    counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
+    if (!row.brand || !isListedBrand(row.brand)) continue;
+    const name = BRAND_NAMES[row.brand] ?? row.brand;
+    brands.push({ slug: row.brand, name, count: row.product_count });
   }
-
-  return Array.from(counts.entries())
-    .map(([slug, count]) => ({ slug, name: BRAND_NAMES[slug] ?? slug, count }))
-    .sort((a, b) => b.count - a.count);
+  return brands.sort((a, b) => b.count - a.count);
 }
 
 /**
@@ -176,26 +178,24 @@ export async function listBrands(
  *
  * Counted server-side across the whole brand rather than derived from the page
  * of products already on screen: a brand with more products than fit on one
- * page would otherwise show a category list that quietly omits the rest.
+ * page would otherwise show a category list that quietly omits the rest. Read
+ * from the brand-within-category rows of catalogue_counts (047, M-051).
  */
 export async function listBrandCategories(
   brand: string,
 ): Promise<{ category: Category; count: number }[]> {
   const { data, error } = await supabase
-    .from('products')
-    .select('category')
-    .eq('is_published', true)
+    .from('catalogue_counts')
+    .select('category, product_count')
+    .eq('facet', 'brand_category')
     .eq('brand', brand);
 
   if (error) throw error;
 
-  const counts = new Map<Category, number>();
+  const categories: { category: Category; count: number }[] = [];
   for (const row of data ?? []) {
-    const category = row.category as Category;
-    counts.set(category, (counts.get(category) ?? 0) + 1);
+    if (!row.category) continue;
+    categories.push({ category: row.category as Category, count: row.product_count });
   }
-
-  return Array.from(counts.entries())
-    .map(([category, count]) => ({ category, count }))
-    .sort((a, b) => b.count - a.count);
+  return categories.sort((a, b) => b.count - a.count);
 }

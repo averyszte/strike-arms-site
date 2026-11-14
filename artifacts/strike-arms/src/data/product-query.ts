@@ -4,7 +4,7 @@
  * the sort orders and the tag-shelf filters.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { ProductFilters } from '@/types/product';
 
 /**

@@ -11,7 +11,7 @@
  * a lost phone is not a lockout. A factor can be removed only while another
  * verified one remains.
  */
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { AuthLevel, MfaState, TotpEnrolment, TotpFactor } from '@/types/auth';
 
 const ISSUER = 'Strike Arms Admin';

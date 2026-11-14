@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ATTENTION_CLOSED_FULFILMENT, ATTENTION_OPEN_PAYMENT } from '@/lib/order-attention';
 import { listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';

@@ -16,12 +16,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  useEnqueueErrors,
-  useFailedEmails,
-  useResendFailedEmail,
-  useResolveEnqueueError,
-} from '@/hooks/use-failed-emails';
+import { useEnqueueErrors } from '@/hooks/use-enqueue-errors';
+import { useFailedEmails } from '@/hooks/use-failed-emails';
+import { useResendFailedEmail } from '@/hooks/use-resend-failed-email';
+import { useResolveEnqueueError } from '@/hooks/use-resolve-enqueue-error';
 import { useToast } from '@/hooks/use-toast';
 import type { FailedEmail } from '@/lib/failed-emails';
 import { loadErrorMessage } from '@/lib/load-error-message';

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import type { Database } from '@/types/database';
 import type { OrderEmail } from '@/types/order-email';
 

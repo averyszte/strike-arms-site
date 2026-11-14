@@ -5,7 +5,7 @@ import { MfaCodeForm } from '@/components/admin/MfaCodeForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAddMfaFactor } from '@/hooks/use-admin-mfa-factors';
+import { useAddMfaFactor } from '@/hooks/use-add-mfa-factor';
 
 interface Props {
   existingNames: string[];

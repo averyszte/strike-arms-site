@@ -10,7 +10,7 @@
  * (see use-admin-products.ts).
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/data/supabase-client';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import { rowToProduct } from '@/lib/product-mappers';

@@ -10,7 +10,7 @@ import { ActiveFilterChips } from '@/components/catalog/active-filter-chips';
 import { MobileFilterSheet } from '@/components/catalog/mobile-filter-sheet';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
 import { Pagination } from '@/components/catalog/Pagination';
-import { useProducts } from '@/hooks/useProducts';
+import { useProductPages } from '@/hooks/use-product-pages';
 import { parseFiltersFromSearch, filtersToSearchParams } from '@/lib/category-filters';
 import { isValidCategorySlug, getSubcategory } from '@/lib/taxonomy';
 import { deriveShopPageMeta } from '@/lib/shop-page-meta';
@@ -94,7 +94,7 @@ function ShopPageInner({
   setMobileFiltersOpen,
   setLocation,
 }: InnerProps) {
-  const { data, isLoading, isError, isFetching, refetch } = useProducts(filters);
+  const { items, total, isLoading, isError, isFetching, refetch } = useProductPages(filters);
 
   const buildBasePath = useCallback(() => {
     if (rawSubcategory && categorySlug) return `/store/${categorySlug}/${rawSubcategory}`;
@@ -136,8 +136,6 @@ function ShopPageInner({
   }, [buildBasePath, setLocation]);
 
   const heading = buildShopHeading(categorySlug, rawSubcategory, filters.q);
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
 
   return (
     <SiteLayout>
