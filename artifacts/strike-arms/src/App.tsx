@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
 import ComingSoon from "@/pages/ComingSoon";
 import SectionDrafts from "@/pages/SectionDrafts";
+import EvolutionDrafts from "@/pages/EvolutionDrafts";
 import Brands from "@/pages/Brands";
 import BrandPage from "@/pages/BrandPage";
 import NewArrivals from "@/pages/NewArrivals";
@@ -78,6 +79,7 @@ function Router() {
 
       {/* Standalone pages */}
       <Route path="/drafts/sections" component={SectionDrafts} />
+      <Route path="/drafts/evolution" component={EvolutionDrafts} />
       <Route path="/contact" component={Contact} />
       <Route path="/brands" component={Brands} />
       <Route path="/brands/:slug" component={BrandPage} />
