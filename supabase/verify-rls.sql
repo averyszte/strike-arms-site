@@ -26,7 +26,10 @@ browser_definers(name) as (values
   ('is_admin'), ('is_admin_aal2'), ('create_counter_order'),
   ('applied_migrations'), ('resend_notification'),
   -- customer accounts (034): each acts only on auth.uid()'s own rows
-  ('my_orders'), ('claim_my_guest_orders'), ('set_marketing_opt_in')
+  ('my_orders'), ('claim_my_guest_orders'), ('set_marketing_opt_in'),
+  -- pre-launch audit (041, 045, 046, 048): each checks is_admin_aal2() first
+  ('record_manual_refund'), ('void_counter_order'), ('preview_status_emails'),
+  ('list_orphaned_images'), ('restore_orphaned_image'), ('system_health')
 ),
 policies as (
   select tablename, policyname, cmd, roles,
