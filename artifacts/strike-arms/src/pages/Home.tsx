@@ -14,6 +14,7 @@ import { TrustMarquee } from "@/components/demo/combined/trust-marquee";
 import { CategoryGrid } from "@/components/demo/combined/category-grid";
 import { LoadoutShowcase } from "@/components/demo/combined/loadout-showcase";
 import { Lineup } from "@/components/demo/combined/lineup";
+import { EvolutionBand } from "@/components/demo/combined/evolution-band";
 import { ReviewsFeature } from "@/components/demo/combined/reviews-feature";
 import { FinalCta } from "@/components/demo/combined/final-cta";
 import { VisitShop } from "@/components/demo/combined/visit-shop";
@@ -59,6 +60,8 @@ export default function Home() {
         <CategoryGrid />
         <LoadoutShowcase />
         <Lineup />
+        {/* Hidden until an Evolution rifle is published. */}
+        <EvolutionBand />
         <ReviewsFeature />
         <VisitShop />
         <FAQSection />
