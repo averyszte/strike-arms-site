@@ -68,7 +68,7 @@ export function ReviewButtons({ tone = "dark" }: { tone?: "dark" | "accent" }) {
 
 export function ReviewCard({ review }: { review: Review }) {
   return (
-    <figure className="flex flex-col h-full bg-background border border-border/60 p-6 md:p-7">
+    <figure className="flex flex-col h-full bg-card border border-border/60 p-6 md:p-7">
       <Stars rating={review.rating} className={review.text ? "w-4 h-4" : "w-6 h-6"} />
       {/* Long reviews are cut at six lines; the full text is in the title. */}
       <blockquote className="flex-1 mt-5 text-lg leading-snug text-foreground line-clamp-6" title={review.text || undefined}>

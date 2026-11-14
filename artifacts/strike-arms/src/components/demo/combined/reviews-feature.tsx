@@ -47,7 +47,7 @@ function MarqueeRow({ reviews, isReversed }: { reviews: Review[]; isReversed: bo
 
 export function ReviewsFeature() {
   return (
-    <section className="py-16 md:py-24 bg-card border-b border-border/60 overflow-hidden">
+    <section className="py-16 md:py-24 bg-background border-b border-border/60 overflow-hidden">
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-3">Reviews</p>
