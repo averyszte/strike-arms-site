@@ -2,7 +2,7 @@
  * The request body for a refund, checked before anything reaches Stripe.
  *
  * The amount is read here but not trusted here: index.ts recomputes what is
- * actually refundable from the order row and clamps against that. This file
+ * actually refundable from the order row and Stripe, and refuses more. This file
  * only rejects shapes that are not numbers at all.
  */
 
@@ -16,7 +16,8 @@ export type RefundRequest = {
    * Generated once when the admin opens the dialog, so a double-click sends
    * the same idempotency key and Stripe returns the first refund instead of
    * issuing a second. A deliberate second refund opens the dialog again and
-   * gets a new id -- the same shape as checkout_attempt_id.
+   * gets a new id -- the same shape as checkout_attempt_id. index.ts adds
+   * the amount to the key, so an edited amount is a new refund, not a replay.
    */
   attemptId: string;
   reason: string | null;

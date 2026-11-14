@@ -43,6 +43,20 @@ export function mismatchReasons(
 }
 
 /**
+ * Puts a reason on the order for the admin's attention list (029). Appends,
+ * and skips a reason the order already carries, so a redelivered event does
+ * not say it twice.
+ */
+export async function flagOrder(
+  admin: SupabaseClient,
+  orderId: string,
+  reason: string,
+): Promise<void> {
+  const { error } = await admin.rpc("flag_order", { p_order_id: orderId, p_reason: reason });
+  if (error) throw new Error(`flag_order failed: ${error.message}`);
+}
+
+/**
  * Money taken on a session no order accounts for. Keyed on the event id, so a
  * redelivered event does not record it twice.
  */

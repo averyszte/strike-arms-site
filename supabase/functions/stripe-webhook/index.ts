@@ -1,19 +1,26 @@
 import Stripe from "npm:stripe@17.3.1";
+import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { webhookCorsHeaders, jsonResponse } from "../_shared/cors.ts";
 import { requireEnv } from "../_shared/env.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
+import { claimEvent, type ClaimOutcome, errorText, settleEvent } from "./event-claim.ts";
 import {
-  handleChargeRefunded,
+  handleAsyncPayment,
   handleCheckoutCompleted,
   handleCheckoutExpired,
 } from "./handlers.ts";
+import {
+  handleChargeRefunded,
+  handleDisputeCreated,
+  handleRefundUpdated,
+} from "./refund-handlers.ts";
 
 /**
  * Stripe's view of what happened, applied to our orders.
  *
  * This endpoint is public and unauthenticated by Supabase (verify_jwt = false
  * in config.toml) because Stripe does not carry a Supabase JWT. Its
- * authentication is the Stripe signature, verified below — nothing else in
+ * authentication is the Stripe signature, verified below; nothing else in
  * this function may run before that check passes.
  */
 
@@ -32,30 +39,77 @@ const HANDLED_EVENTS = new Set([
   "checkout.session.async_payment_failed",
   "checkout.session.expired",
   "charge.refunded",
+  "charge.refund.updated",
+  "charge.dispute.created",
 ]);
 
-async function dispatch(event: Stripe.Event): Promise<string> {
-  const admin = createAdminClient();
-
+async function dispatch(admin: SupabaseClient, event: Stripe.Event): Promise<string> {
+  const object = event.data.object;
   switch (event.type) {
     case "checkout.session.completed":
+      return await handleCheckoutCompleted(admin, object as Stripe.Checkout.Session, event.id);
     case "checkout.session.async_payment_succeeded":
-      return await handleCheckoutCompleted(
-        admin,
-        event.data.object as Stripe.Checkout.Session,
-        event.id,
-      );
-    case "checkout.session.expired":
+      return await handleAsyncPayment(admin, object as Stripe.Checkout.Session, event.id, true);
     case "checkout.session.async_payment_failed":
-      return await handleCheckoutExpired(
-        admin,
-        event.data.object as Stripe.Checkout.Session,
-      );
+      return await handleAsyncPayment(admin, object as Stripe.Checkout.Session, event.id, false);
+    case "checkout.session.expired":
+      return await handleCheckoutExpired(admin, object as Stripe.Checkout.Session);
     case "charge.refunded":
-      return await handleChargeRefunded(admin, event.data.object as Stripe.Charge);
+      return await handleChargeRefunded(admin, object as Stripe.Charge);
+    case "charge.refund.updated":
+      return await handleRefundUpdated(admin, object as Stripe.Refund);
+    case "charge.dispute.created":
+      return await handleDisputeCreated(admin, object as Stripe.Dispute);
     default:
       return `ignored ${event.type}`;
   }
+}
+
+/**
+ * Claims the event, handles it, and settles the claim. Every step's result is
+ * checked: a 200 tells Stripe to stop sending the event, so it is only
+ * answered once the work and the record of it have both been written.
+ */
+async function processEvent(event: Stripe.Event, cors: Record<string, string>): Promise<Response> {
+  const admin = createAdminClient();
+
+  let claim: ClaimOutcome;
+  try {
+    claim = await claimEvent(admin, event.id, event.type);
+  } catch (error) {
+    console.error("stripe-webhook could not claim event", event.id, errorText(error));
+    return jsonResponse({ error: "Could not claim event" }, 500, cors);
+  }
+
+  if (claim === "done") return jsonResponse({ received: true, duplicate: event.id }, 200, cors);
+  if (claim === "busy") {
+    // Another run holds it. Not a 2xx, so Stripe tries again; by then that run
+    // has settled it, or its claim has gone stale and the retry takes over.
+    return jsonResponse({ error: "Event is already being handled" }, 409, cors);
+  }
+
+  let outcome: string;
+  try {
+    outcome = await dispatch(admin, event);
+  } catch (error) {
+    const failure = errorText(error);
+    console.error("stripe-webhook handler failed", event.type, event.id, failure);
+    // Marked failed so the retry Stripe is about to send can claim it again.
+    // If even that cannot be written, the claim goes stale in two minutes.
+    await settleEvent(admin, event.id, failure);
+    return jsonResponse({ error: "Handler failed" }, 500, cors);
+  }
+
+  // Deliberate server-side audit line: the Supabase function log is the only
+  // record of which event ids we acted on, and on what.
+  console.info("stripe-webhook", event.type, event.id, outcome);
+
+  if (!(await settleEvent(admin, event.id, null))) {
+    // The work is done, but the log does not say so. A retry repeats it, which
+    // every handler is written to survive.
+    return jsonResponse({ error: "Could not record event" }, 500, cors);
+  }
+  return jsonResponse({ received: true }, 200, cors);
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {
@@ -81,7 +135,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       requireEnv("STRIPE_WEBHOOK_SECRET"),
     );
   } catch (error) {
-    console.error("stripe-webhook signature verification failed", error);
+    console.error("stripe-webhook signature verification failed", errorText(error));
     return jsonResponse({ error: "Invalid signature" }, 400, cors);
   }
 
@@ -89,38 +143,5 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return jsonResponse({ received: true, ignored: event.type }, 200, cors);
   }
 
-  const admin = createAdminClient();
-
-  // The database is the lock. claim_stripe_event inserts the event id and
-  // reports whether this call is the one that got it, so two concurrent
-  // deliveries of the same event cannot both do the work.
-  const { data: claimed, error: claimError } = await admin.rpc("claim_stripe_event", {
-    p_event_id: event.id,
-    p_type: event.type,
-  });
-
-  if (claimError) {
-    console.error("stripe-webhook could not claim event", event.id, claimError);
-    return jsonResponse({ error: "Could not claim event" }, 500, cors);
-  }
-
-  if (!claimed) {
-    return jsonResponse({ received: true, duplicate: event.id }, 200, cors);
-  }
-
-  try {
-    const outcome = await dispatch(event);
-    // Deliberate server-side audit line: the Supabase function log is the only
-    // record of which event ids we acted on, and on what.
-    console.info("stripe-webhook", event.type, event.id, outcome);
-    return jsonResponse({ received: true }, 200, cors);
-  } catch (error) {
-    // Release the claim, or the retry Stripe is about to send would be
-    // dismissed as a duplicate and the event lost for good.
-    await admin.rpc("release_stripe_event", { p_event_id: event.id });
-    console.error("stripe-webhook handler failed", event.type, event.id, error);
-
-    // A 500 asks Stripe to retry.
-    return jsonResponse({ error: "Handler failed" }, 500, cors);
-  }
+  return await processEvent(event, cors);
 });

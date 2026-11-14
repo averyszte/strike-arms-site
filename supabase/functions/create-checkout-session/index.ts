@@ -1,87 +1,48 @@
-import Stripe from "npm:stripe@17.3.1";
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { corsHeadersFor, jsonResponse } from "../_shared/cors.ts";
-import { requireEnv } from "../_shared/env.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
 import { CheckoutRequestError, parseCheckoutRequest } from "./parse-request.ts";
-import { priceBasket, type PricedBasket } from "./order-lines.ts";
-import { buildOrderInsert, buildStripeLineItems } from "./build-order.ts";
+import { priceBasket } from "./order-lines.ts";
+import { buildOrderInsert } from "./build-order.ts";
 import { signedInCustomerId } from "./signed-in-customer.ts";
 import { guardCheckout } from "./guard.ts";
+import { type AlreadyPaid, clearStaleAttempt } from "./stale-attempt.ts";
+import { openCheckoutSession } from "./open-session.ts";
 
 /**
  * Creates the pending order, checks every item is in stock, and hands back a
  * Stripe Checkout URL. The order exists before the session so the amount
  * charged can be checked against a total we calculated and stored, rather
  * than trusted.
+ *
+ * Answers:
+ *   200 { url, orderId }
+ *   400 { error, code: "invalid_request" }   a message written here, safe to show
+ *   409 { error, code: "already_paid", orderNumber, orderId, sessionId }
+ *   429 / 4xx / 503 from the guard            { error, code }
+ *   500 { error, code: "checkout_failed" }    detail in the function log only
  */
 
-// Stripe's session lifetime. Stripe requires at least 30 minutes.
-const SESSION_MINUTES = 30;
+const ALREADY_PAID_MESSAGE =
+  "Your earlier payment for this basket went through, so we have not taken another. " +
+  "Check your email for the order confirmation.";
 
-// Pinned explicitly so that upgrading the SDK and moving the API version stay
-// two separate, reviewable decisions.
-const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
-  apiVersion: "2024-11-20.acacia",
-  httpClient: Stripe.createFetchHttpClient(),
-});
-
-/**
- * Refuses the basket if any product is marked out of stock. Nothing is held:
- * the shop does not count stock (038). The function keeps its 028 name and
- * arguments so the database and this function can be deployed in any order.
- */
-async function requireInStock(
-  admin: SupabaseClient,
-  orderId: string,
-  basket: PricedBasket,
-): Promise<void> {
-  const { data: unavailableId, error } = await admin.rpc("reserve_order_stock", {
-    p_order_id: orderId,
-    p_lines: basket.lines.map((line) => ({
-      product_id: line.productId,
-      quantity: line.quantity,
-    })),
-    p_expires_at: new Date().toISOString(),
-  });
-
-  if (error) throw new Error(`Could not check stock: ${error.message}`);
-  if (!unavailableId) return;
-
-  const soldOut = basket.lines.find((line) => line.productId === unavailableId);
-  throw new CheckoutRequestError(
-    `${soldOut?.productName ?? "An item in your basket"} is out of stock. ` +
-      `Please remove it from your basket and try again.`,
+function alreadyPaidResponse(paid: AlreadyPaid, cors: Record<string, string>): Response {
+  return jsonResponse(
+    { error: ALREADY_PAID_MESSAGE, code: "already_paid", ...paid },
+    409,
+    cors,
   );
 }
 
 /**
- * A retry of the same attempt would otherwise leave the first attempt's order
- * pending with a live Stripe session. The old order is abandoned, not
- * deleted, so a payment still in flight on it finds its order; its Stripe
- * session is expired so that payment cannot start from here on.
- *
- * Neither step blocks the new checkout. If the abandon fails the old order
- * stays pending until Stripe expires its session; if an expire fails it was already
- * complete or expired, or times out on its own within 30 minutes.
+ * Abandoned, not deleted: if Stripe created the session but the response was
+ * lost, a payment on it must still find this order. A failed abandon is
+ * logged; the order then waits for the stale-order sweep (M-008).
  */
-async function abandonStaleAttempt(admin: SupabaseClient, attemptId: string): Promise<void> {
-  const { data, error } = await admin.rpc("clear_stale_checkout_attempt", {
-    p_attempt_id: attemptId,
-  });
-
-  if (error) {
-    console.error("clear_stale_checkout_attempt failed", error.message);
-    return;
-  }
-
-  for (const sessionId of (data ?? []) as string[]) {
-    try {
-      await stripe.checkout.sessions.expire(sessionId);
-    } catch (expireError) {
-      console.error(`could not expire stale session ${sessionId}`, expireError);
-    }
-  }
+async function abandonOrder(admin: SupabaseClient, orderId: string): Promise<void> {
+  const { error } = await admin.rpc("abandon_order", { p_order_id: orderId });
+  if (error) console.error("create-checkout-session could not abandon order", orderId, error.message);
 }
 
 async function handle(req: Request, cors: Record<string, string>): Promise<Response> {
@@ -89,9 +50,10 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
   const admin = createAdminClient();
 
   const refusal = await guardCheckout(admin, req, request.attemptId, request.turnstileToken);
-  if (refusal) return jsonResponse({ error: refusal.error }, refusal.status, cors);
+  if (refusal) return jsonResponse({ error: refusal.error, code: refusal.code }, refusal.status, cors);
 
-  await abandonStaleAttempt(admin, request.attemptId);
+  const paid = await clearStaleAttempt(admin, request.attemptId);
+  if (paid) return alreadyPaidResponse(paid, cors);
 
   const [basket, userId] = await Promise.all([
     priceBasket(admin, request.lines, request.wantsDelivery),
@@ -111,55 +73,10 @@ async function handle(req: Request, cors: Record<string, string>): Promise<Respo
   const orderId = order.id as string;
 
   try {
-    await requireInStock(admin, orderId, basket);
-
-    const { error: itemsError } = await admin.from("order_items").insert(
-      basket.lines.map((line) => ({
-        order_id: orderId,
-        product_id: line.productId,
-        product_slug: line.productSlug,
-        product_name: line.productName,
-        product_image: line.productImage,
-        brand: line.brand,
-        unit_price_cents: line.unitPriceCents,
-        quantity: line.quantity,
-        fulfillment_method: line.fulfillmentMethod,
-      })),
-    );
-
-    if (itemsError) throw new Error(`Could not save order items: ${itemsError.message}`);
-
-    const siteUrl = requireEnv("SITE_URL").replace(/\/$/, "");
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      currency: "eur",
-      line_items: buildStripeLineItems(basket),
-      customer_email: request.customerEmail,
-      expires_at: Math.floor(Date.now() / 1000) + SESSION_MINUTES * 60,
-      // {CHECKOUT_SESSION_ID} is filled in by Stripe. With the order id it is
-      // what lets the success page ask checkout-status for the order number.
-      success_url: `${siteUrl}/checkout/success?order=${orderId}&session={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/cart`,
-      metadata: { order_id: orderId },
-      payment_intent_data: { metadata: { order_id: orderId } },
-    }, {
-      // A double-clicked checkout reuses one session instead of opening two.
-      idempotencyKey: `checkout-session:${orderId}`,
-    });
-
-    // Best effort: the webhook correlates on metadata.order_id, so a failure
-    // here must not undo a session the shopper can already pay on.
-    await admin
-      .from("orders")
-      .update({ stripe_session_id: session.id })
-      .eq("id", orderId);
-
-    return jsonResponse({ url: session.url, orderId }, 200, cors);
+    const url = await openCheckoutSession(admin, orderId, request, basket);
+    return jsonResponse({ url, orderId }, 200, cors);
   } catch (error) {
-    // Abandoned, not deleted: if Stripe created the session but the response
-    // was lost, a payment on it must still find this order.
-    await admin.rpc("abandon_order", { p_order_id: orderId });
+    await abandonOrder(admin, orderId);
     throw error;
   }
 }
@@ -173,13 +90,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
   try {
     return await handle(req, cors);
   } catch (error) {
+    // Only CheckoutRequestError messages reach the shopper. They are written
+    // in parse-request.ts, order-lines.ts and open-session.ts from our own
+    // words and product names, never from a database or Stripe error (M-009).
     if (error instanceof CheckoutRequestError) {
-      return jsonResponse({ error: error.message }, 400, cors);
+      return jsonResponse({ error: error.message, code: "invalid_request" }, 400, cors);
     }
 
     console.error("create-checkout-session failed", error);
     return jsonResponse(
-      { error: "Checkout is temporarily unavailable. Please try again." },
+      { error: "Checkout is temporarily unavailable. Please try again.", code: "checkout_failed" },
       500,
       cors,
     );

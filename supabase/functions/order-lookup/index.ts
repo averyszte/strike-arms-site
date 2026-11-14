@@ -1,8 +1,8 @@
 import { corsHeadersFor, jsonResponse } from "../_shared/cors.ts";
 import { clientIp } from "../_shared/client-ip.ts";
-import { RATE_LIMITED_MESSAGE, withinRateLimits } from "../_shared/rate-limit.ts";
+import { type GuardRefusal, guardPublicRequest } from "../_shared/guard.ts";
+import type { RateLimit } from "../_shared/rate-limit.ts";
 import { createAdminClient } from "../_shared/supabase-admin.ts";
-import { verifyTurnstile } from "../_shared/turnstile.ts";
 
 /**
  * Guest order lookup, for /account. Stays when customer accounts land: it is
@@ -48,22 +48,25 @@ function readRequest(body: unknown): LookupRequest | null {
   return { orderNumber: number, email: address, turnstileToken: token };
 }
 
-type Refusal = { status: number; error: string };
-
-/** Null when the lookup may go ahead; otherwise what to answer with. */
-async function guard(req: Request, request: LookupRequest): Promise<Refusal | null> {
+/**
+ * Null when the lookup may go ahead; otherwise what to answer with.
+ *
+ * The per-address limit is counted before Turnstile, and the per-order limit
+ * only after a valid token (M-004). Counted first, a tokenless script could
+ * fill any order number's bucket and lock its real owner out for an hour.
+ */
+function guard(req: Request, request: LookupRequest): Promise<GuardRefusal | null> {
   const ip = clientIp(req);
-  const limits = [
-    { scope: "lookup:order", value: request.orderNumber, max: 10, windowSeconds: HOUR },
-  ];
-  if (ip) limits.push({ scope: "lookup:ip", value: ip, max: 10, windowSeconds: TEN_MINUTES });
-
-  if (!(await withinRateLimits(createAdminClient(), limits))) {
-    return { status: 429, error: RATE_LIMITED_MESSAGE };
-  }
-
-  const check = await verifyTurnstile(request.turnstileToken, TURNSTILE_ACTION, ip);
-  return check.ok ? null : { status: check.status, error: check.error };
+  const beforeToken: RateLimit[] = ip
+    ? [{ scope: "lookup:ip", value: ip, max: 10, windowSeconds: TEN_MINUTES }]
+    : [];
+  return guardPublicRequest(createAdminClient(), {
+    action: TURNSTILE_ACTION,
+    token: request.turnstileToken,
+    remoteIp: ip,
+    beforeToken,
+    afterToken: [{ scope: "lookup:order", value: request.orderNumber, max: 10, windowSeconds: HOUR }],
+  });
 }
 
 type ItemRow = {
@@ -169,7 +172,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     if (!request) return jsonResponse(NOT_FOUND, 200, cors);
 
     const refusal = await guard(req, request);
-    if (refusal) return jsonResponse({ error: refusal.error }, refusal.status, cors);
+    if (refusal) return jsonResponse({ error: refusal.error, code: refusal.code }, refusal.status, cors);
 
     return jsonResponse(await lookUp(request), 200, cors);
   } catch (error) {

@@ -13,6 +13,9 @@ import { RefundRequestError } from "./parse-request.ts";
 export type RefundableOrder = {
   id: string;
   paymentIntentId: string;
+  totalCents: number;
+  /** What the row says has gone back so far. refund-balance.ts checks Stripe too. */
+  refundCents: number;
   /** Total minus what has already gone back. Never negative. */
   refundableCents: number;
 };
@@ -69,7 +72,13 @@ export async function loadRefundableOrder(
     throw new RefundRequestError("There is nothing left to refund on this order.");
   }
 
-  return { id: order.id, paymentIntentId: order.stripe_payment_intent, refundableCents };
+  return {
+    id: order.id,
+    paymentIntentId: order.stripe_payment_intent,
+    totalCents: order.total_cents,
+    refundCents: order.refund_cents,
+    refundableCents,
+  };
 }
 
 /**

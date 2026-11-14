@@ -1,14 +1,21 @@
 import type Stripe from "npm:stripe@17.3.1";
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
-import { mismatchReasons, paymentIntentOf, recordUnmatchedPayment } from "./payment-alerts.ts";
+import {
+  euros,
+  flagOrder,
+  mismatchReasons,
+  paymentIntentOf,
+  recordUnmatchedPayment,
+} from "./payment-alerts.ts";
 
 /**
- * What each Stripe event does to an order.
+ * What each Checkout Session event does to an order.
  *
  * Every handler is written to be safely repeatable: Stripe retries, and the
  * same event can legitimately arrive twice. The database functions these call
- * are all guarded on the order's current status, so a second delivery is a
- * no-op rather than a second order number or email.
+ * are all guarded on the order's current status, and flag_order does not add
+ * a reason that is already there, so a second delivery is a no-op rather than
+ * a second order number, email or flag.
  */
 
 type OrderRow = {
@@ -16,6 +23,15 @@ type OrderRow = {
   total_cents: number;
   payment_status: string;
 };
+
+/**
+ * Word for word the reason 040's confirm_order_paid writes, so that this
+ * call and the database's own add one flag between them, not two. It is
+ * here as well so the flag is raised even if the webhook is deployed against
+ * a database that does not have 040 yet.
+ */
+const PAID_AFTER_ABANDON =
+  "Paid after a newer checkout was started for the same basket. Check Stripe for a second charge.";
 
 /**
  * The session tells us which order it belongs to via metadata we set when the
@@ -39,12 +55,34 @@ async function findOrderForSession(
 }
 
 /**
+ * Money arrived for an order that no longer holds anything, or for an order
+ * that is closed. Expired and failed orders are treated like money with no
+ * order at all; anything else (already paid, refunded) is a late repeat.
+ */
+async function handleNotPayable(
+  admin: SupabaseClient,
+  order: OrderRow,
+  session: Stripe.Checkout.Session,
+  eventId: string,
+): Promise<string> {
+  if (order.payment_status !== "expired" && order.payment_status !== "failed") {
+    return `order ${order.id} is ${order.payment_status}; nothing to confirm`;
+  }
+  await recordUnmatchedPayment(
+    admin,
+    eventId,
+    session,
+    "its order had already expired, so it was not confirmed",
+  );
+  return `order ${order.id} had expired; payment recorded for the owner`;
+}
+
+/**
  * Marks the order paid and gives it its order number.
  *
- * Also the handler for checkout.session.async_payment_succeeded, which carries
- * the same session once a delayed method settles. v1 is meant to run on
- * instant methods only (D4), but if a delayed one is ever switched on in the
- * Stripe dashboard the order is still confirmed rather than left pending.
+ * Instant payment methods only (D2): a session that completed without its
+ * payment clearing is a delayed method someone switched on in the Stripe
+ * dashboard. It is flagged for Alan and the order is not confirmed.
  *
  * Nothing here throws on bad data, because a throw asks Stripe to retry and
  * a retry of bad data fails the same way for three days. Money with no order
@@ -56,11 +94,20 @@ export async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
   eventId: string,
 ): Promise<string> {
+  const order = await findOrderForSession(admin, session);
+
   if (session.payment_status !== "paid") {
-    return `session ${session.id} completed, waiting on a delayed payment method`;
+    if (!order) return `session ${session.id} completed unpaid, and no order matches it`;
+    await flagOrder(
+      admin,
+      order.id,
+      `Stripe says this checkout finished but the payment has not cleared (${session.payment_status}). ` +
+        "Online checkout takes instant payments only, so the order was not confirmed. " +
+        "Do not hand anything over until Stripe shows the payment as succeeded.",
+    );
+    return `session ${session.id} completed unpaid; order ${order.id} flagged, not confirmed`;
   }
 
-  const order = await findOrderForSession(admin, session);
   if (!order) {
     await recordUnmatchedPayment(admin, eventId, session);
     return `no order found for paid session ${session.id}; recorded for the owner`;
@@ -71,33 +118,18 @@ export async function handleCheckoutCompleted(
     p_payment_intent_id: paymentIntentOf(session.payment_intent),
     p_session_id: session.id,
   });
-
   if (error) throw new Error(`confirm_order_paid failed: ${error.message}`);
 
-  // No number means the order was not payable. If it had already been paid
-  // and refunded this is a late repeat and there is nothing to do; if it had
-  // expired, money arrived for an order that no longer holds anything, which
-  // is treated like money with no order at all.
-  if (!data) {
-    if (order.payment_status !== "expired" && order.payment_status !== "failed") {
-      return `order ${order.id} is ${order.payment_status}; nothing to confirm`;
-    }
-    await recordUnmatchedPayment(
-      admin,
-      eventId,
-      session,
-      "its order had already expired, so it was not confirmed",
-    );
-    return `order ${order.id} had expired; payment recorded for the owner`;
-  }
+  // No number means the order was not payable.
+  if (!data) return await handleNotPayable(admin, order, session, eventId);
 
   const reasons = mismatchReasons(session, order.total_cents);
+  if (order.payment_status === "abandoned") reasons.push(PAID_AFTER_ABANDON);
+
   if (reasons.length > 0) {
-    const { error: flagError } = await admin.rpc("flag_order", {
-      p_order_id: order.id,
-      p_reason: reasons.join(" "),
-    });
-    if (flagError) throw new Error(`flag_order failed: ${flagError.message}`);
+    // One call per reason: flag_order skips a reason already on the order,
+    // and a joined string would not match the one 040 wrote on its own.
+    for (const reason of reasons) await flagOrder(admin, order.id, reason);
     return `order ${order.id} paid as ${data}, flagged: ${reasons.join(" ")}`;
   }
 
@@ -105,9 +137,43 @@ export async function handleCheckoutCompleted(
 }
 
 /**
- * Closes the order when a shopper walks away from a session, or when a
- * delayed payment method fails (checkout.session.async_payment_failed). Both
- * leave the order 'expired': no money arrived, and nothing needs Alan.
+ * checkout.session.async_payment_succeeded and _failed. Under D2 these
+ * should never arrive: they belong to delayed methods such as SEPA Debit,
+ * which the session no longer offers. If one does, nothing about the order
+ * changes; Alan is told what Stripe said so he can decide.
+ */
+export async function handleAsyncPayment(
+  admin: SupabaseClient,
+  session: Stripe.Checkout.Session,
+  eventId: string,
+  hasSucceeded: boolean,
+): Promise<string> {
+  const order = await findOrderForSession(admin, session);
+
+  if (!order) {
+    if (!hasSucceeded) return `delayed payment failed on session ${session.id}; no order matches it`;
+    await recordUnmatchedPayment(
+      admin,
+      eventId,
+      session,
+      "it was a delayed payment, which online checkout does not accept, with no order matching it",
+    );
+    return `delayed payment on session ${session.id} with no order; recorded for the owner`;
+  }
+
+  const reason = hasSucceeded
+    ? `Stripe reports a delayed payment of ${euros(session.amount_total)} has now cleared. ` +
+      "Online checkout takes instant payments only, so the order was not confirmed automatically. " +
+      "Check the payment in Stripe, then confirm or refund it."
+    : "Stripe reports a delayed payment for this order failed. No money was taken.";
+
+  await flagOrder(admin, order.id, reason);
+  return `delayed payment ${hasSucceeded ? "succeeded" : "failed"} on order ${order.id}; flagged only`;
+}
+
+/**
+ * Closes the order when a shopper walks away from a session. It becomes
+ * 'expired': no money arrived, and nothing needs Alan.
  */
 export async function handleCheckoutExpired(
   admin: SupabaseClient,
@@ -120,36 +186,4 @@ export async function handleCheckoutExpired(
   if (error) throw new Error(`expire_order failed: ${error.message}`);
 
   return data ? `order ${order.id} expired` : `order ${order.id} was not pending`;
-}
-
-/**
- * Records money going back out. Whether the product is back in stock is a
- * decision for the shop, made in the admin.
- */
-export async function handleChargeRefunded(
-  admin: SupabaseClient,
-  charge: Stripe.Charge,
-): Promise<string> {
-  const paymentIntentId = paymentIntentOf(charge.payment_intent);
-
-  if (!paymentIntentId) return `charge ${charge.id} has no payment intent`;
-
-  const { data, error } = await admin.rpc("record_refund", {
-    p_payment_intent_id: paymentIntentId,
-    p_refund_cents: charge.amount_refunded,
-    p_fully_refunded: charge.amount_refunded >= charge.amount,
-  });
-
-  if (error) throw new Error(`record_refund failed: ${error.message}`);
-  if (data) return `refund of ${charge.amount_refunded} recorded for ${paymentIntentId}`;
-
-  // No order to record it on. If it was a payment with no order, refunding it
-  // is what settles that alert.
-  const { data: resolved, error: resolveError } = await admin.rpc("resolve_payment_alert", {
-    p_payment_intent_id: paymentIntentId,
-  });
-  if (resolveError) throw new Error(`resolve_payment_alert failed: ${resolveError.message}`);
-  return resolved
-    ? `refund settled the unmatched payment ${paymentIntentId}`
-    : `no refundable order for ${paymentIntentId}`;
 }

@@ -11,8 +11,14 @@ const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Irish routing key + unique identifier, e.g. "K67 T9H9". */
-const EIRCODE_PATTERN = /^[A-Z]\d{2}\s?[A-Z0-9]{4}$/i;
+/**
+ * Irish routing key + unique identifier, e.g. "K67 T9H9" or "D6W 1234".
+ * Routing keys are a letter and two digits, except Dublin 6W, and use only
+ * the letters An Post issues. Kept identical to the storefront's
+ * src/lib/checkout-validation.ts (M-007), so the client never lets through
+ * an Eircode the server then refuses, or the other way round.
+ */
+const EIRCODE_PATTERN = /^([AC-FHKNPRTV-Y]\d{2}|D6W)\s?[0-9AC-FHKNPRTV-Y]{4}$/i;
 
 const MAX_LINES = 50;
 const MAX_QUANTITY_PER_LINE = 20;
