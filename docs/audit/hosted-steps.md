@@ -227,3 +227,15 @@ curl.exe -I https://strikearms.ie/Contact-us.php
   - *Check:* `301` with `Location: /contact`.
 - [ ] Admin > Dashboard: the system health card is all ok.
 - [ ] Disable or delete the sandbox webhook endpoint once live orders work.
+
+## After launch: search, analytics and hand-over
+
+Not done yet. Do these once the phase 2 S1 fixes (sitemap, redirects, noindex rules) are deployed, so Google reads the corrected files first.
+
+- [ ] **Sitemap:** S1 regenerates `public/sitemap.xml` from the routes and live products and wires it into the build (phase 2 N-005). Check `https://strikearms.ie/sitemap.xml` lists the real pages and no 404s.
+- [ ] **Google Search Console:** add `strikearms.ie` as a Domain property (DNS TXT record in Cloudflare). Submit `https://strikearms.ie/sitemap.xml`. If the old PHP site had a property, keep it: use it to watch the 301s and coverage.
+- [ ] **Google Analytics 4:** create the property and decide how it loads. It needs the CSP in `public/_headers` opened for it, and it is non-essential, so it needs cookie consent first (phase 2 N-108, for a solicitor). Do not add it before the consent banner exists.
+- [ ] **Bing Webmaster Tools:** import from Search Console.
+- [ ] **Google Business Profile:** check the website link points to `https://strikearms.ie`, and the name, address and hours match the site footer.
+- [ ] **Watch the migration:** in Search Console, check Pages and the old URLs weekly for the first month. Add any old URL that shows as 404 to `public/_redirects`.
+- [ ] **Clear test data before handing the site to Alan:** test orders (sandbox and live), test customers, test enquiries and failed-email rows. The stuck sandbox order on the health card goes with them.
