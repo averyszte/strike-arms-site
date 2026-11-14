@@ -31,7 +31,7 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
 
 export function VisitShop() {
   return (
-    <section className="py-16 md:py-24 bg-background border-b border-border/60">
+    <section id="visit" className="scroll-mt-24 py-16 md:py-24 bg-background border-b border-border/60">
       <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
         <div className="lg:col-span-5 flex flex-col">
           <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-4">

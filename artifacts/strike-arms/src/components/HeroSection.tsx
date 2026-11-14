@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { MapPin } from "lucide-react";
+
+import { HeroReviewBadge } from "@/components/hero-review-badge";
 
 export function HeroSection() {
   const [videoFailed, setVideoFailed] = useState(false);
@@ -99,12 +102,17 @@ export function HeroSection() {
             >
               Shop Gear
             </Link>
-            <Link
-              href="/contact"
-              className="inline-flex h-12 items-center justify-center rounded-sm border border-foreground bg-transparent px-8 text-sm font-medium text-foreground hover:bg-foreground hover:text-background transition-colors"
+            <a
+              href="#visit"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-sm border border-foreground bg-transparent px-8 text-sm font-medium text-foreground hover:bg-foreground hover:text-background transition-colors"
             >
-              Get Expert Advice
-            </Link>
+              <MapPin className="w-4 h-4" aria-hidden="true" />
+              Visit the Store
+            </a>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="mt-8 flex justify-center">
+            <HeroReviewBadge />
           </motion.div>
         </motion.div>
       </div>
