@@ -58,10 +58,10 @@ export default function Home() {
           <BrandMarquee />
         </div>
         <CategoryGrid />
-        <LoadoutShowcase />
-        <Lineup />
         {/* Hidden until an Evolution rifle is published. */}
         <EvolutionBand />
+        <LoadoutShowcase />
+        <Lineup />
         <ReviewsFeature />
         <VisitShop />
         <FAQSection />
