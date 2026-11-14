@@ -7,7 +7,7 @@ import { ProductsDialogs } from '@/components/admin/ProductsDialogs';
 import { ProductsGroups } from '@/components/admin/ProductsGroups';
 import { ProductsToolbar } from '@/components/admin/ProductsToolbar';
 import { ToastAction } from '@/components/ui/toast';
-import { useAdminProductsList } from '@/hooks/use-admin-products';
+import { useAdminProductsList } from '@/hooks/use-admin-products-list';
 import { useProductsActions } from '@/hooks/use-products-actions';
 import { useProductsDialogs } from '@/hooks/use-products-dialogs';
 import { useProductsExport } from '@/hooks/use-products-export';

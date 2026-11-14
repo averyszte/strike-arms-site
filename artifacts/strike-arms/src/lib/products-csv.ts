@@ -1,4 +1,5 @@
-import { buildCsv, csvFilename, money } from '@/lib/csv-write';
+import { buildCsv, csvFilename } from '@/lib/csv-write';
+import { formatCentsPlain } from '@/lib/format-price';
 import { CONDITION_LABELS } from '@/lib/product-condition';
 import type { Product } from '@/types/product';
 
@@ -61,8 +62,8 @@ function productRow(product: Product): string[] {
     // The label rather than the stored value, to read like the Yes/No columns
     // beside it. The importer lower-cases before matching, so it round-trips.
     CONDITION_LABELS[product.condition],
-    money(product.price),
-    product.salePrice != null ? money(product.salePrice) : '',
+    formatCentsPlain(product.price),
+    product.salePrice != null ? formatCentsPlain(product.salePrice) : '',
     product.shortDescription,
     product.description ?? '',
     product.images.join(LIST_SEPARATOR),

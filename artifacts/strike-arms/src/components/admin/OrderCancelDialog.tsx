@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRefundOrder } from '@/hooks/use-refund-order';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/format-price';
 import { formatOrderNumber } from '@/lib/order-display';
 import { refundEligibility } from '@/lib/order-refund';
 import type { Order } from '@/types/order';
@@ -57,7 +58,7 @@ export function OrderCancelDialog({ order, open, onClose, onCancel }: Props) {
         onSuccess: result => {
           toast({
             title: result.isRecorded ? 'Refunded and cancelled' : 'Refund sent, recording pending',
-            description: `€${(result.amountCents / 100).toFixed(2)} is going back to the customer.`,
+            description: `${formatPrice(result.amountCents)} is going back to the customer.`,
           });
           cancelOnly();
         },
@@ -108,7 +109,7 @@ export function OrderCancelDialog({ order, open, onClose, onCancel }: Props) {
             <Button type="button" variant="destructive" disabled={refund.isPending} onClick={cancelAndRefund}>
               {refund.isPending
                 ? 'Refunding...'
-                : `Cancel and refund €${(eligibility.refundableCents / 100).toFixed(2)}`}
+                : `Cancel and refund ${formatPrice(eligibility.refundableCents)}`}
             </Button>
           )}
         </AlertDialogFooter>

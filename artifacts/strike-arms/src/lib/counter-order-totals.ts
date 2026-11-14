@@ -1,3 +1,4 @@
+import { effectivePriceCents } from '@/lib/effective-price';
 import {
   calculateShippingCents,
   deriveFulfillmentMethod,
@@ -39,8 +40,7 @@ export type CounterOrderTotals = {
 
 /** The sale price when there is one and it is genuinely lower. Mirrors pricedLine(). */
 export function counterUnitPriceCents(product: Product): number {
-  const sale = product.salePrice;
-  return sale != null && sale < product.price ? sale : product.price;
+  return effectivePriceCents(product.price, product.salePrice);
 }
 
 /** Same cap as create_counter_order (M-022): a typo of 500 is refused here first. */

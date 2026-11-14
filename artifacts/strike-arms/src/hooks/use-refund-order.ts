@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { requestRefund, type RefundRequest, type RefundResult } from '@/data/refunds-repository';
+import { useInvalidateOrders } from '@/hooks/use-invalidate-orders';
 
 export type { RefundResult };
 
@@ -11,13 +12,10 @@ export type { RefundResult };
  * letting an unchanged badge read as a failed refund.
  */
 export function useRefundOrder() {
-  const qc = useQueryClient();
+  const invalidate = useInvalidateOrders();
 
   return useMutation({
     mutationFn: (request: RefundRequest) => requestRefund(request),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
-      qc.invalidateQueries({ queryKey: ['admin', 'order'] });
-    },
+    onSuccess: invalidate,
   });
 }

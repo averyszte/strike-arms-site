@@ -9,6 +9,20 @@ export function formatPrice(cents: number): string {
   return `€${formatCentsPlain(cents)}`;
 }
 
+const WHOLE_EUROS = new Intl.NumberFormat('en-IE', {
+  style: 'currency',
+  currency: 'EUR',
+  maximumFractionDigits: 0,
+});
+
+/**
+ * A headline figure rounded to the euro with thousands grouping, e.g. 123456 ->
+ * "€1,235". For dashboard tiles, where the cents are noise.
+ */
+export function formatWholeEuros(cents: number): string {
+  return WHOLE_EUROS.format(cents / 100);
+}
+
 /**
  * Cents as a plain two-decimal number with no currency sign, e.g. 18900 ->
  * "189.00". For machine-read places: structured data, meta tags, CSV cells and

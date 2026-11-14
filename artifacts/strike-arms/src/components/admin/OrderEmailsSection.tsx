@@ -14,7 +14,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useOrderEmails, useResendOrderEmail } from '@/hooks/use-order-emails';
+import { useOrderEmails } from '@/hooks/use-order-emails';
+import { useResendOrderEmail } from '@/hooks/use-resend-order-email';
 import { useToast } from '@/hooks/use-toast';
 import { loadErrorMessage } from '@/lib/load-error-message';
 import {

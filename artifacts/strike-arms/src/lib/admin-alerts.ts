@@ -62,12 +62,9 @@ function attentionAlerts(orders: Order[]): OperationalAlert[] {
   ];
 }
 
-function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
+/** Money the shop is holding or has not seen confirmed. */
+function paymentAlerts(orders: Order[], now: number): OperationalAlert[] {
   const alerts: OperationalAlert[] = [];
-
-  // No "failed payments" alert: 'failed' only ever meant a shopper who walked
-  // away from Stripe, and since 029 that is recorded as 'expired'. Nothing
-  // about it needs Alan.
 
   // Money taken, order cancelled, not all of it given back (M-030). A
   // partial refund on a cancelled order is still money the shop is holding.
@@ -100,6 +97,13 @@ function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
       href: '/admin/orders?payment=pending',
     });
   }
+
+  return alerts;
+}
+
+/** Orders sitting at one fulfilment step for longer than they should. */
+function fulfilmentAlerts(orders: Order[], now: number): OperationalAlert[] {
+  const alerts: OperationalAlert[] = [];
 
   const stalePending = orders.filter(
     (o) =>
@@ -149,6 +153,13 @@ function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
   }
 
   return alerts;
+}
+
+function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
+  // No "failed payments" alert: 'failed' only ever meant a shopper who walked
+  // away from Stripe, and since 029 that is recorded as 'expired'. Nothing
+  // about it needs Alan.
+  return [...paymentAlerts(orders, now), ...fulfilmentAlerts(orders, now)];
 }
 
 function stockAlerts(products: Product[]): OperationalAlert[] {

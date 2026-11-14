@@ -1,6 +1,6 @@
 import { History } from 'lucide-react';
 
-import { useStoreRatesHistory } from '@/hooks/use-store-rates';
+import { useStoreRatesHistory } from '@/hooks/use-store-rates-history';
 import { describeRateChanges } from '@/lib/store-rates-form';
 
 const WHEN = new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium', timeStyle: 'short' });

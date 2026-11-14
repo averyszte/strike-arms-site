@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useSetTrackingNumber } from '@/hooks/use-orders';
+import { useSetTrackingNumber } from '@/hooks/use-set-tracking-number';
 import { useToast } from '@/hooks/use-toast';
 import { loadErrorMessage } from '@/lib/load-error-message';
 import { anPostTrackingUrl, readTrackingNumber } from '@/lib/tracking-number';

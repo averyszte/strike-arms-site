@@ -12,7 +12,8 @@
  *    and every fada in an Irish name turns to mojibake.
  * 3. CRLF line endings, which is what RFC 4180 says and what Excel expects.
  * 4. Money as a bare decimal. A euro sign or a thousands separator makes the
- *    column text, and a column of text does not sum.
+ *    column text, and a column of text does not sum. Callers write amounts
+ *    with formatCentsPlain() from format-price.ts.
  *
  * The apostrophe this adds is stripped again by the reader in csv-parse.ts, so
  * a file can go export -> edit -> import without collecting one per trip.
@@ -27,11 +28,6 @@ const FORMULA_START = /^[=+\-@\t\r]/;
 export function escapeCell(value: string): string {
   const safe = FORMULA_START.test(value) ? `'${value}` : value;
   return `"${safe.replace(/"/g, '""')}"`;
-}
-
-/** An amount a spreadsheet will add up: cents to a plain two-decimal number. */
-export function money(cents: number): string {
-  return (cents / 100).toFixed(2);
 }
 
 export function buildCsv(columns: string[], rows: string[][]): string {

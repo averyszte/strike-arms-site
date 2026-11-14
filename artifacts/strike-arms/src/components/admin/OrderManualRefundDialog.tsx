@@ -13,9 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useRecordManualRefund } from '@/hooks/use-order-admin-actions';
+import { useRecordManualRefund } from '@/hooks/use-record-manual-refund';
 import { useToast } from '@/hooks/use-toast';
-import { formatPrice } from '@/lib/format-price';
+import { formatCentsPlain, formatPrice } from '@/lib/format-price';
 import { parseRefundAmount } from '@/lib/order-refund';
 import type { Order } from '@/types/order';
 
@@ -27,7 +27,7 @@ interface Props {
 
 /** Records money handed back outside Stripe. Moves no money itself (M-033). */
 export function OrderManualRefundDialog({ order, refundableCents, onClose }: Props) {
-  const [amount, setAmount] = useState(() => (refundableCents / 100).toFixed(2));
+  const [amount, setAmount] = useState(() => formatCentsPlain(refundableCents));
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const record = useRecordManualRefund();

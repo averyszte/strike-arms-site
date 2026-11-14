@@ -1,4 +1,4 @@
-import { parseCsvTable } from '@/lib/csv-parse';
+import { parseCsvTable, type CsvTable } from '@/lib/csv-parse';
 import { parseSlugLike } from '@/lib/product-import-fields';
 import {
   checkSalePrice,
@@ -118,11 +118,88 @@ function rowProblems(fields: ParsedFields, product: Product | undefined): string
   return problems;
 }
 
-export function planProductImport(csvText: string, existing: Product[]): ImportPlan {
-  const table = parseCsvTable(csvText);
-  if (table.header.length === 0) return { ...emptyPlan(), fatal: 'That file has no rows in it.' };
+/** A cell reader for one record: undefined when the file has no such column. */
+type CellReader = (key: ColumnKey) => string | undefined;
+type CsvRecord = CsvTable['records'][number];
 
-  const { positions, unknownColumns, ignoredColumns } = mapHeader(table.header);
+function cellReader(record: CsvRecord, positions: Map<ColumnKey, number>): CellReader {
+  return (key) => {
+    const index = positions.get(key);
+    // A short row is a row whose trailing cells were left empty, not a row
+    // missing those columns -- the header still says they are there.
+    return index === undefined ? undefined : (record.cells[index] ?? '');
+  };
+}
+
+/** The slug a record is matched on, or the problem that stops the row. */
+function recordSlug(
+  read: CellReader,
+  line: number,
+  seen: Set<string>,
+): { slug: string } | { problem: ImportProblem } {
+  const slugResult = parseSlugLike('Slug', read('slug') ?? '');
+  if (!slugResult.ok) {
+    return { problem: { line, slug: (read('slug') ?? '').trim(), messages: [slugResult.message] } };
+  }
+  const slug = slugResult.value;
+  if (seen.has(slug)) {
+    return {
+      problem: {
+        line,
+        slug,
+        messages: ['This slug appears earlier in the file. Only the first row for a slug is used.'],
+      },
+    };
+  }
+  seen.add(slug);
+  return { slug };
+}
+
+/** Sorts one record into the plan: a problem, a create, an update or unchanged. */
+function planRecord(
+  plan: ImportPlan,
+  read: CellReader,
+  line: number,
+  slug: string,
+  product: Product | undefined,
+): void {
+  const { fields, messages } = parseFields(read);
+  messages.push(...rowProblems(fields, product));
+
+  if (messages.length > 0) {
+    plan.problems.push({ line, slug, messages });
+    return;
+  }
+
+  if (!product) {
+    plan.creates.push({ line, slug, name: fields.name ?? slug, fields });
+    return;
+  }
+
+  const changes = diffAgainst(product, fields);
+  if (changes.length === 0) {
+    plan.unchanged += 1;
+    return;
+  }
+
+  plan.updates.push({
+    line,
+    slug,
+    id: product.id,
+    name: product.name,
+    patch: changedOnly(fields, changes),
+    changes,
+    loadedUpdatedAt: product.updatedAt,
+    isStale: isNewerThanExport(product.updatedAt, read('updatedAt')),
+  });
+}
+
+/** The plan for a file that cannot be read row by row, or null when it can. */
+function fatalPlan(
+  table: CsvTable,
+  header: ReturnType<typeof mapHeader>,
+): ImportPlan | null {
+  const { positions, unknownColumns, ignoredColumns } = header;
   if (!positions.has('slug')) {
     return {
       ...emptyPlan(),
@@ -139,71 +216,30 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
       fatal: 'That file has a header and no rows.',
     };
   }
+  return null;
+}
 
+export function planProductImport(csvText: string, existing: Product[]): ImportPlan {
+  const table = parseCsvTable(csvText);
+  if (table.header.length === 0) return { ...emptyPlan(), fatal: 'That file has no rows in it.' };
+
+  const header = mapHeader(table.header);
+  const fatal = fatalPlan(table, header);
+  if (fatal) return fatal;
+
+  const { positions, unknownColumns, ignoredColumns } = header;
   const bySlug = new Map(existing.map((product) => [product.slug, product]));
   const plan: ImportPlan = { ...emptyPlan(), ignoredColumns, unknownColumns };
   const seen = new Set<string>();
 
   for (const record of table.records) {
-    const read = (key: ColumnKey): string | undefined => {
-      const index = positions.get(key);
-      // A short row is a row whose trailing cells were left empty, not a row
-      // missing those columns -- the header still says they are there.
-      return index === undefined ? undefined : (record.cells[index] ?? '');
-    };
-
-    const slugResult = parseSlugLike('Slug', read('slug') ?? '');
-    if (!slugResult.ok) {
-      plan.problems.push({
-        line: record.line,
-        slug: (read('slug') ?? '').trim(),
-        messages: [slugResult.message],
-      });
+    const read = cellReader(record, positions);
+    const matched = recordSlug(read, record.line, seen);
+    if ('problem' in matched) {
+      plan.problems.push(matched.problem);
       continue;
     }
-    const slug = slugResult.value;
-
-    if (seen.has(slug)) {
-      plan.problems.push({
-        line: record.line,
-        slug,
-        messages: ['This slug appears earlier in the file. Only the first row for a slug is used.'],
-      });
-      continue;
-    }
-    seen.add(slug);
-
-    const product = bySlug.get(slug);
-    const { fields, messages } = parseFields(read);
-
-    messages.push(...rowProblems(fields, product));
-
-    if (messages.length > 0) {
-      plan.problems.push({ line: record.line, slug, messages });
-      continue;
-    }
-
-    if (!product) {
-      plan.creates.push({ line: record.line, slug, name: fields.name ?? slug, fields });
-      continue;
-    }
-
-    const changes = diffAgainst(product, fields);
-    if (changes.length === 0) {
-      plan.unchanged += 1;
-      continue;
-    }
-
-    plan.updates.push({
-      line: record.line,
-      slug,
-      id: product.id,
-      name: product.name,
-      patch: changedOnly(fields, changes),
-      changes,
-      loadedUpdatedAt: product.updatedAt,
-      isStale: isNewerThanExport(product.updatedAt, read('updatedAt')),
-    });
+    planRecord(plan, read, record.line, matched.slug, bySlug.get(matched.slug));
   }
 
   return plan;

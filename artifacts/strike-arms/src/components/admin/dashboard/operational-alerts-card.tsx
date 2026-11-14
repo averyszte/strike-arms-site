@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle2, ChevronRight, OctagonAlert } from 'lucide-
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFailedEmailCount } from '@/hooks/use-failed-emails';
-import { useMigrationAlertInput } from '@/hooks/use-migration-status';
+import { useMigrationAlertInput } from '@/hooks/use-migration-alert-input';
 import { buildOperationalAlerts } from '@/lib/admin-alerts';
 import type { Order } from '@/types/order';
 import type { Product } from '@/types/product';

@@ -1,6 +1,6 @@
 import { Route, Switch } from 'wouter';
 
-import { AdminAuthProvider } from '@/lib/admin-auth-context';
+import { AdminAuthProvider } from '@/components/admin/admin-auth-provider';
 import AcceptInvitePage from '@/pages/admin/AcceptInvitePage';
 import AdminRoot from '@/pages/admin/AdminRoot';
 import LoginPage from '@/pages/admin/LoginPage';

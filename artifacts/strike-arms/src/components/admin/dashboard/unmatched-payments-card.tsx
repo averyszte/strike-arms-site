@@ -17,11 +17,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
-import {
-  useHandledPaymentAlerts,
-  useOpenPaymentAlerts,
-  useSetPaymentAlertResolved,
-} from '@/hooks/use-payment-alerts';
+import { useHandledPaymentAlerts } from '@/hooks/use-handled-payment-alerts';
+import { useOpenPaymentAlerts } from '@/hooks/use-open-payment-alerts';
+import { useSetPaymentAlertResolved } from '@/hooks/use-set-payment-alert-resolved';
 import { loadErrorMessage } from '@/lib/load-error-message';
 
 /**

@@ -8,7 +8,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useCreateSubcategory, useUpdateSubcategory } from '@/hooks/use-categories';
+import { useCreateSubcategory } from '@/hooks/use-create-subcategory';
+import { useUpdateSubcategory } from '@/hooks/use-update-subcategory';
 import { useToast } from '@/hooks/use-toast';
 import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';

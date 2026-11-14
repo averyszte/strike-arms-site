@@ -1,8 +1,5 @@
+import { formatPrice } from '@/lib/format-price';
 import type { Order } from '@/types/order';
-
-function fmtEuros(cents: number) {
-  return `€${(cents / 100).toFixed(2)}`;
-}
 
 /**
  * The read-only middle of the order sheet: what was bought, what it came to,
@@ -22,13 +19,13 @@ export function OrderLinesSummary({ order }: { order: Order }) {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-foreground truncate">{item.productName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {fmtEuros(item.unitPriceCents)} × {item.quantity}
+                    {formatPrice(item.unitPriceCents)} × {item.quantity}
                     {' · '}
                     {item.fulfillmentMethod === 'delivery' ? 'Post' : 'Collect'}
                   </p>
                 </div>
                 <p className="text-sm font-medium tabular-nums">
-                  {fmtEuros(item.subtotalCents)}
+                  {formatPrice(item.subtotalCents)}
                 </p>
               </div>
             ))}
@@ -40,22 +37,22 @@ export function OrderLinesSummary({ order }: { order: Order }) {
         {order.shippingCents > 0 && (
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Delivery</span>
-            <span>{fmtEuros(order.shippingCents)}</span>
+            <span>{formatPrice(order.shippingCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>VAT</span>
-          <span>{fmtEuros(order.vatCents)}</span>
+          <span>{formatPrice(order.vatCents)}</span>
         </div>
         {order.refundCents > 0 && (
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Refunded</span>
-            <span>−{fmtEuros(order.refundCents)}</span>
+            <span>−{formatPrice(order.refundCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm font-semibold text-foreground">
           <span>Total</span>
-          <span>{fmtEuros(order.totalCents)}</span>
+          <span>{formatPrice(order.totalCents)}</span>
         </div>
       </section>
 

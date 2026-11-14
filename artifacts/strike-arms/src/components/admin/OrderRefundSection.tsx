@@ -3,6 +3,7 @@ import { Clock, Undo2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { OrderRefundDialog } from '@/components/admin/OrderRefundDialog';
+import { formatPrice } from '@/lib/format-price';
 import {
   isRefundAwaitingOrder,
   refundEligibility,
@@ -51,7 +52,7 @@ export function OrderRefundSection({ order }: { order: Order }) {
             onClick={() => setIsOpen(true)}
           >
             <Undo2 className="mr-1.5 h-4 w-4" aria-hidden="true" />
-            Refund up to €{(eligibility.refundableCents / 100).toFixed(2)}
+            Refund up to {formatPrice(eligibility.refundableCents)}
           </Button>
           <p className="mt-2 text-xs text-muted-foreground">
             Sends the money back through Stripe.

@@ -1,10 +1,9 @@
 import { useCallback, useRef, useState, type KeyboardEvent } from 'react';
-import { useLocation } from 'wouter';
 
 import { useDelayedFocus } from '@/hooks/use-delayed-focus';
 import { useOutsideMousedown } from '@/hooks/use-outside-mousedown';
+import { useSearchNavigation } from '@/hooks/use-search-navigation';
 import { useSearchProducts } from '@/hooks/use-search-products';
-import type { Product } from '@/types/product';
 
 /** Short wait before focusing the full-width (mobile) search box once it mounts. */
 const FULL_WIDTH_FOCUS_DELAY_MS = 50;
@@ -22,7 +21,6 @@ export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
   const [activeIdx, setActiveIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [, navigate] = useLocation();
 
   const { results, isError, isPending } = useSearchProducts(query);
   const showPanel = open && query.length >= 2;
@@ -44,24 +42,7 @@ export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
     onClose?.();
   }, [onClose]);
 
-  const goToProduct = useCallback(
-    (p: Product) => {
-      navigate(`/products/${p.slug}`);
-      closeAndClear();
-    },
-    [navigate, closeAndClear],
-  );
-
-  const submitSearch = useCallback(() => {
-    if (!query.trim()) return;
-    navigate(`/store?q=${encodeURIComponent(query.trim())}`);
-    closeAndClear();
-  }, [query, navigate, closeAndClear]);
-
-  const browseAll = useCallback(() => {
-    navigate('/store');
-    closeAndClear();
-  }, [navigate, closeAndClear]);
+  const { goToProduct, submitSearch, browseAll } = useSearchNavigation(query, closeAndClear);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {

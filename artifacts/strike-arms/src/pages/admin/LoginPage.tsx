@@ -3,7 +3,7 @@ import { Redirect } from 'wouter';
 import { AdminAuthScreen } from '@/components/admin/AdminAuthScreen';
 import { AdminSignInForm } from '@/components/admin/AdminSignInForm';
 import { ForgotPasswordPanel } from '@/components/admin/ForgotPasswordPanel';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 export default function LoginPage() {
   const { user, isAdmin, isLoading } = useAdminAuth();

@@ -1,25 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { listOrderEmails, resendOrderEmail } from '@/data/order-emails-repository';
-
-function orderEmailsKey(orderId: string | null) {
-  return ['admin', 'order-emails', orderId] as const;
-}
+import { listOrderEmails } from '@/data/order-emails-repository';
+import { ADMIN_KEYS } from '@/lib/query-keys';
 
 export function useOrderEmails(orderId: string | null) {
   return useQuery({
-    queryKey: orderEmailsKey(orderId),
+    queryKey: ADMIN_KEYS.orderEmails(orderId),
     queryFn: () => listOrderEmails(orderId as string),
     enabled: orderId !== null,
-  });
-}
-
-export function useResendOrderEmail(orderId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (jobId: string) => resendOrderEmail(jobId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: orderEmailsKey(orderId) });
-    },
   });
 }

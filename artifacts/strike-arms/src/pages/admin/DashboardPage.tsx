@@ -11,18 +11,11 @@ import { OperationalAlertsCard } from '@/components/admin/dashboard/operational-
 import { UnmatchedPaymentsCard } from '@/components/admin/dashboard/unmatched-payments-card';
 import { FailedEmailsCard } from '@/components/admin/dashboard/failed-emails-card';
 import { SystemHealthCard } from '@/components/admin/dashboard/system-health-card';
-import { useAllOrdersWithItems } from '@/hooks/use-orders';
+import { useAllOrdersWithItems } from '@/hooks/use-all-orders-with-items';
 import { useAdminProducts } from '@/hooks/use-admin-products';
 import { useInquiries } from '@/hooks/use-inquiries';
 import { computeDashboardMetrics, workQueue } from '@/lib/admin-dashboard-metrics';
-
-function fmtEuros(cents: number) {
-  return new Intl.NumberFormat('en-IE', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(cents / 100);
-}
+import { formatWholeEuros } from '@/lib/format-price';
 
 export default function DashboardPage() {
   const ordersQuery = useAllOrdersWithItems();
@@ -78,8 +71,8 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Revenue This Month"
-            value={fmtEuros(metrics.revenueThisMonth)}
-            detail={`${fmtEuros(metrics.revenueAllTime)} all time`}
+            value={formatWholeEuros(metrics.revenueThisMonth)}
+            detail={`${formatWholeEuros(metrics.revenueAllTime)} all time`}
             icon={Euro}
           />
           <StatCard

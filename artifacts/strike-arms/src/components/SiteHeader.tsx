@@ -1,42 +1,20 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
-import { isAppRoute } from "@/lib/is-app-route";
-import { Search, ShoppingCart, Menu, ChevronDown, User } from "lucide-react";
+import { Search, Menu, ChevronDown, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchDropdown } from "@/components/SearchDropdown";
+import { SiteHeaderCartLink } from "@/components/site-header-cart-link";
+import { SiteHeaderMegaColumns } from "@/components/site-header-mega-columns";
 import { SiteHeaderMobileDrawer } from "@/components/site-header-mobile-drawer";
-import { useCart } from "@/hooks/use-cart";
 import { navItems } from "@/lib/site-navigation";
 import { pruneNavItems } from "@/lib/prune-navigation";
+import { useHoverMenu } from "@/hooks/use-hover-menu";
 import { useShelfCounts } from "@/hooks/use-shelf-counts";
 
 export function SiteHeader() {
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { basics } = useCart();
-
-  const handleNavEnter = (name: string) => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setActiveMenu(name);
-  };
-
-  const handleNavLeave = () => {
-    closeTimer.current = setTimeout(() => setActiveMenu(null), 120);
-  };
-
-  const handleMegaEnter = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-  };
-
-  const handleMegaLeave = () => {
-    closeTimer.current = setTimeout(() => setActiveMenu(null), 120);
-  };
-
-  useEffect(() => {
-    return () => { if (closeTimer.current) clearTimeout(closeTimer.current); };
-  }, []);
+  const { activeMenu, closeMenu, openMenu, scheduleClose, cancelClose } = useHoverMenu();
 
   // Empty shelves are left out of the menus (lib/prune-navigation.ts).
   const shelfCounts = useShelfCounts();
@@ -72,12 +50,12 @@ export function SiteHeader() {
           {/* CENTER ZONE — primary nav */}
           <nav
             className="hidden lg:flex items-center justify-center h-full"
-            onMouseLeave={handleNavLeave}
+            onMouseLeave={scheduleClose}
           >
             {visibleNavItems.map((item) => (
               <button
                 key={item.name}
-                onMouseEnter={() => handleNavEnter(item.name)}
+                onMouseEnter={() => openMenu(item.name)}
                 className={`relative h-full px-2 xl:px-2.5 flex items-center gap-0.5 xl:gap-1 whitespace-nowrap text-[0.82rem] font-medium tracking-wide transition-colors ${
                   activeMenu === item.name
                     ? "text-foreground"
@@ -116,20 +94,7 @@ export function SiteHeader() {
             <Link href="/account" className="hover:text-accent transition-colors" aria-label="Your account">
               <User className="w-5 h-5" />
             </Link>
-            <Link
-              href="/cart"
-              className="relative hover:text-accent transition-colors"
-              aria-label={
-                basics.itemCount === 1 ? "Cart, 1 item" : `Cart, ${basics.itemCount} items`
-              }
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {basics.itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-accent text-accent-foreground font-bold min-w-[14px] h-[14px] px-[3px] flex items-center justify-center rounded-full text-[9px] leading-none">
-                  {basics.itemCount > 99 ? "99+" : basics.itemCount}
-                </span>
-              )}
-            </Link>
+            <SiteHeaderCartLink />
           </div>
         </div>
 
@@ -158,41 +123,10 @@ export function SiteHeader() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="absolute left-0 right-0 top-full z-50 bg-[#111111] border-b border-border/60 shadow-2xl"
-              onMouseEnter={handleMegaEnter}
-              onMouseLeave={handleMegaLeave}
+              onMouseEnter={cancelClose}
+              onMouseLeave={scheduleClose}
             >
-              <div className="max-w-[1400px] mx-auto px-6 py-8 grid grid-cols-3 gap-8">
-                {activeMegaData.mega.map((col) => (
-                  <div key={col.title}>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent mb-4">
-                      {col.title}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {col.links.map((link) => (
-                        <li key={link.label}>
-                          {isAppRoute(link.href) ? (
-                            <Link
-                              href={link.href}
-                              onClick={() => setActiveMenu(null)}
-                              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              {link.label}
-                            </Link>
-                          ) : (
-                            <a
-                              href={link.href}
-                              onClick={() => setActiveMenu(null)}
-                              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              {link.label}
-                            </a>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+              <SiteHeaderMegaColumns columns={activeMegaData.mega} onNavigate={closeMenu} />
             </motion.div>
           )}
         </AnimatePresence>

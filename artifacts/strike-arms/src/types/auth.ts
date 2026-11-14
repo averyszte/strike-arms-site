@@ -1,3 +1,5 @@
+import type { User } from '@supabase/supabase-js';
+
 /**
  * Supabase's assurance level for the *current* session.
  *
@@ -39,3 +41,26 @@ export type EmailLinkState =
   | { state: 'redeeming' }
   | { state: 'redeemed' }
   | { state: 'invalid'; message: string };
+
+/** What useAdminAuth hands the admin screens. */
+export type AdminAuthContextValue = {
+  user: User | null;
+  isAdmin: boolean;
+  isLoading: boolean;
+  /**
+   * Assurance level and factor status. AuthGuard holds the admin at the MFA
+   * gate until level is 'aal2', because that is what the write policies check.
+   */
+  mfa: MfaState;
+  /** Re-read the assurance level after enrolling or entering a code. */
+  refreshMfa: () => Promise<void>;
+  /**
+   * Set when the admin check itself failed, as opposed to answering "no".
+   * AuthGuard shows a retry instead of sending a real admin back to login.
+   */
+  connectionError: unknown;
+  /** Run the admin check again after a connection error. */
+  recheck: () => Promise<void>;
+  signIn: (email: string, password: string, captchaToken: string | null) => Promise<void>;
+  signOut: () => Promise<void>;
+};

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useVoidCounterOrder } from '@/hooks/use-order-admin-actions';
+import { useVoidCounterOrder } from '@/hooks/use-void-counter-order';
 import { useToast } from '@/hooks/use-toast';
 import { formatOrderNumber } from '@/lib/order-display';
 import { formatPrice } from '@/lib/format-price';

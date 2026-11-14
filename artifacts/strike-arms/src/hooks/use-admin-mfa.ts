@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { enrollTotp, verifyTotp } from '@/data/admin-mfa-repository';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 import type { TotpEnrolment } from '@/types/auth';
 
 /**

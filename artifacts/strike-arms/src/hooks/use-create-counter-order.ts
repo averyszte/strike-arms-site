@@ -1,6 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { createCounterOrder } from '@/data/orders-repository';
+import { useInvalidateOrders } from '@/hooks/use-invalidate-orders';
+import { useInvalidateProducts } from '@/hooks/use-invalidate-products';
 import type { CounterOrderInput } from '@/types/order';
 
 /**
@@ -11,14 +13,14 @@ import type { CounterOrderInput } from '@/types/order';
  * adds is priced and stock-checked against a count the sale has already spent.
  */
 export function useCreateCounterOrder() {
-  const queryClient = useQueryClient();
+  const invalidateOrders = useInvalidateOrders();
+  const invalidateProducts = useInvalidateProducts();
 
   return useMutation({
     mutationFn: (input: CounterOrderInput) => createCounterOrder(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      invalidateOrders();
+      invalidateProducts();
     },
   });
 }

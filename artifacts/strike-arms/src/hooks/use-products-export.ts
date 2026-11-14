@@ -2,11 +2,11 @@ import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { listAllProducts } from '@/data/admin-products-repository';
-import { ALL_PRODUCTS_KEY } from '@/hooks/use-admin-products';
 import { useCsvDownload } from '@/hooks/use-csv-download';
 import { useToast } from '@/hooks/use-toast';
 import { loadErrorMessage } from '@/lib/load-error-message';
 import { buildProductsCsv, productsCsvFilename } from '@/lib/products-csv';
+import { ADMIN_KEYS } from '@/lib/query-keys';
 
 /**
  * Downloads the catalogue as a CSV: every product that is not archived,
@@ -22,7 +22,7 @@ export function useProductsExport() {
   const exportProducts = useCallback(async () => {
     setIsExporting(true);
     try {
-      const all = await qc.fetchQuery({ queryKey: ALL_PRODUCTS_KEY, queryFn: listAllProducts });
+      const all = await qc.fetchQuery({ queryKey: ADMIN_KEYS.productsAll, queryFn: listAllProducts });
       const products = all.filter((product) => !product.isArchived);
       download(buildProductsCsv(products), productsCsvFilename(new Date()));
       return products.length;

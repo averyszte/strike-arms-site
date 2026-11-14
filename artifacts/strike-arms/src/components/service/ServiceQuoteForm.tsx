@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { CheckCircle2, Send } from 'lucide-react';
 
 import { BotCheck } from '@/components/BotCheck';
 import { CheckoutField } from '@/components/cart/CheckoutField';
+import { ConsentField } from '@/components/contact/consent-field';
 import { HoneypotField } from '@/components/contact/honeypot-field';
+import { InquirySendError } from '@/components/contact/inquiry-send-error';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useSubmitInquiry } from '@/hooks/use-inquiries';
+import { useSubmitInquiry } from '@/hooks/use-submit-inquiry';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import { looksAutomated } from '@/lib/inquiry-validation';
 import {
@@ -150,24 +151,12 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         onChange={(website) => patch({ website })}
       />
 
-      <div>
-        <div className="flex items-start gap-2">
-          <Checkbox
-            id="quote-consent"
-            checked={form.consent}
-            aria-describedby={errors.consent ? 'quote-consent-error' : undefined}
-            onCheckedChange={(checked) => patch({ consent: checked === true })}
-          />
-          <Label htmlFor="quote-consent" className="text-sm font-normal leading-relaxed">
-            I am happy for Strike Arms to hold these details in order to reply to me.
-          </Label>
-        </div>
-        {errors.consent && (
-          <p id="quote-consent-error" className="mt-1.5 text-sm text-destructive">
-            {errors.consent}
-          </p>
-        )}
-      </div>
+      <ConsentField
+        id="quote-consent"
+        checked={form.consent}
+        error={errors.consent}
+        onChange={(consent) => patch({ consent })}
+      />
 
       <BotCheck
         containerRef={turnstile.ref}
@@ -175,12 +164,7 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         hasFailed={turnstile.hasFailed}
       />
 
-      {submit.isError && (
-        <p className="flex items-start gap-2 rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          {submit.errorMessage} You can also ring the shop on {BUSINESS.telephone}.
-        </p>
-      )}
+      {submit.isError && <InquirySendError message={submit.errorMessage} />}
 
       <Button
         type="submit"

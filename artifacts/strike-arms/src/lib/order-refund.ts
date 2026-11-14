@@ -1,4 +1,6 @@
+import { formatPrice } from '@/lib/format-price';
 import { PAYMENT_METHOD_LABELS } from '@/lib/order-display';
+import { parseEuroCents } from '@/lib/parse-euro-cents';
 import type { Order } from '@/types/order';
 
 /**
@@ -53,24 +55,20 @@ export function refundEligibility(order: Order): RefundEligibility {
   return { canRefund: true, refundableCents };
 }
 
-// Euros with at most two decimals. Number() alone accepts "1e3", which here
-// would be a four-figure refund typed as three characters.
-const EUROS = /^\d+(\.\d{1,2})?$/;
-
 export type ParsedRefundAmount = { ok: true; cents: number } | { ok: false; error: string };
 
 /**
- * Rounds the scaled value: 6.50 is 649.9999... in binary, and truncating would
- * refund a cent less than the admin typed, every time, silently.
+ * Euros with at most two decimals, rounded to cents by parseEuroCents (W-03).
+ * Number() alone accepts "1e3", which here would be a four-figure refund typed
+ * as three characters.
  */
 export function parseRefundAmount(input: string, maxCents: number): ParsedRefundAmount {
-  const text = input.trim();
-  if (!EUROS.test(text)) return { ok: false, error: 'Enter an amount in euro, e.g. 24.99' };
+  const cents = parseEuroCents(input);
+  if (cents === null) return { ok: false, error: 'Enter an amount in euro, e.g. 24.99' };
 
-  const cents = Math.round(Number(text) * 100);
   if (cents <= 0) return { ok: false, error: 'Enter an amount greater than zero.' };
   if (cents > maxCents) {
-    return { ok: false, error: `Only €${(maxCents / 100).toFixed(2)} is still refundable.` };
+    return { ok: false, error: `Only ${formatPrice(maxCents)} is still refundable.` };
   }
 
   return { ok: true, cents };
@@ -92,7 +90,7 @@ export function isRefundAwaitingOrder(order: Order, sent: SentRefund | null): bo
 }
 
 export function sentRefundMessage(sent: SentRefund): string {
-  const euros = `€${(sent.amountCents / 100).toFixed(2)}`;
+  const euros = formatPrice(sent.amountCents);
   return sent.isRecorded
     ? `Refund of ${euros} sent. Waiting for the order to update.`
     : `Refund of ${euros} sent, recording pending. Stripe has the refund; the order updates when Stripe confirms it.`;

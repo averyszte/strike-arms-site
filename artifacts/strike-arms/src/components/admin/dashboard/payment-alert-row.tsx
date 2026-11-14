@@ -2,13 +2,14 @@ import { format } from 'date-fns';
 import { ExternalLink } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { formatCentsPlain } from '@/lib/format-price';
 import { stripePaymentUrl } from '@/lib/stripe-dashboard-link';
 import type { PaymentAlert } from '@/types/payment-alert';
 
 function fmtAmount(alert: PaymentAlert): string {
   if (alert.amountCents === null) return 'Unknown amount';
   const currency = (alert.currency ?? 'eur').toUpperCase();
-  return `${(alert.amountCents / 100).toFixed(2)} ${currency}`;
+  return `${formatCentsPlain(alert.amountCents)} ${currency}`;
 }
 
 interface Props {

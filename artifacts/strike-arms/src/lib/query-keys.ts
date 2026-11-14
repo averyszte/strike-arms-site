@@ -1,9 +1,11 @@
 import type { CrossSellTarget } from '@/lib/cross-sell';
 import type { CustomerLinkType } from '@/types/customer-account';
-import type { Category, ProductFilters } from '@/types/product';
+import type { InquiryStatus } from '@/types/inquiry';
+import type { FulfillmentStatus, OrderListFilters } from '@/types/order';
+import type { AdminProductListFilters, Category, ProductFilters } from '@/types/product';
 
 /**
- * Every React Query key the storefront uses, in one place (W-02).
+ * Every React Query key the app uses, in one place (W-02).
  *
  * Keys are a contract between hooks: a mutation invalidates by prefix, so a
  * key renamed in one hook and not the other silently stops the refresh. Each
@@ -83,6 +85,34 @@ export const CUSTOMER_KEYS = {
   orders: (userId: string | null) => [CUSTOMER_QUERY_ROOT, 'orders', userId] as const,
   emailLink: (type: CustomerLinkType, tokenHash: string | null) =>
     ['customer-email-link', type, tokenHash] as const,
+} as const;
+
+/**
+ * The admin's keys. Same contract as above: each factory returns the array the
+ * hook used before, and the `*Root` entries are the prefixes a write
+ * invalidates.
+ */
+export const ADMIN_KEYS = {
+  productsRoot: ['admin', 'products'] as const,
+  productsAll: ['admin', 'products', 'all'] as const,
+  productsList: (filters: AdminProductListFilters) =>
+    ['admin', 'products', 'list', filters] as const,
+  ordersRoot: ['admin', 'orders'] as const,
+  orders: (filters: OrderListFilters) => ['admin', 'orders', filters] as const,
+  ordersWithItems: ['admin', 'orders', 'all-with-items'] as const,
+  orderRoot: ['admin', 'order'] as const,
+  order: (id: string | null) => ['admin', 'order', id] as const,
+  statusEmailPreview: (status: FulfillmentStatus | null, orderIds: string[]) =>
+    ['admin', 'status-email-preview', status, orderIds] as const,
+  orderEmailsRoot: ['admin', 'order-emails'] as const,
+  orderEmails: (orderId: string | null) => ['admin', 'order-emails', orderId] as const,
+  inquiriesRoot: ['admin', 'inquiries'] as const,
+  inquiries: (status: InquiryStatus | undefined, limit: number) =>
+    ['admin', 'inquiries', status, limit] as const,
+  paymentAlertsRoot: ['admin', 'payment-alerts'] as const,
+  paymentAlerts: (view: 'open' | 'handled') => ['admin', 'payment-alerts', view] as const,
+  migrationStatus: ['migration-status'] as const,
+  storeRatesHistory: ['store-rates-history'] as const,
 } as const;
 
 const MINUTE_MS = 60 * 1000;

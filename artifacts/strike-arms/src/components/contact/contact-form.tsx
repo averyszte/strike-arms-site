@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 import { BotCheck } from '@/components/BotCheck';
 import { CheckoutField } from '@/components/cart/CheckoutField';
+import { ConsentField } from '@/components/contact/consent-field';
+import { ContactFormSent } from '@/components/contact/contact-form-sent';
 import { HoneypotField } from '@/components/contact/honeypot-field';
+import { InquirySendError } from '@/components/contact/inquiry-send-error';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useSubmitInquiry } from '@/hooks/use-inquiries';
+import { useSubmitInquiry } from '@/hooks/use-submit-inquiry';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import {
   EMPTY_INQUIRY_FORM,
@@ -17,8 +19,7 @@ import {
   type InquiryFieldErrors,
   type InquiryForm,
 } from '@/lib/inquiry-validation';
-import { BUSINESS } from '@/lib/site-config';
-import { CARD_TITLE, CTA_PRIMARY, PANEL, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
+import { CTA_PRIMARY } from '@/lib/storefront-styles';
 
 /**
  * The public contact form.
@@ -76,24 +77,7 @@ export function ContactForm() {
     turnstile.reset();
   }
 
-  if (isSent) {
-    return (
-      <div className={`${PANEL} p-6`}>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
-          <h2 className={`${CARD_TITLE} text-lg`}>Thanks — we have it</h2>
-        </div>
-        <p className="mt-3 text-muted-foreground leading-relaxed">
-          We read every message and normally come back within a day or two. If it is urgent, ring
-          the shop on{' '}
-          <a href={phoneHref(BUSINESS.telephone)} className={TEXT_LINK}>
-            {BUSINESS.telephone}
-          </a>{' '}
-          — that is always the fastest way to reach us.
-        </p>
-      </div>
-    );
-  }
+  if (isSent) return <ContactFormSent />;
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
@@ -161,24 +145,12 @@ export function ContactForm() {
         onChange={(website) => patch({ website })}
       />
 
-      <div>
-        <div className="flex items-start gap-2">
-          <Checkbox
-            id="contact-consent"
-            checked={form.consent}
-            aria-describedby={errors.consent ? 'contact-consent-error' : undefined}
-            onCheckedChange={(checked) => patch({ consent: checked === true })}
-          />
-          <Label htmlFor="contact-consent" className="text-sm font-normal leading-relaxed">
-            I am happy for Strike Arms to hold these details in order to reply to me.
-          </Label>
-        </div>
-        {errors.consent && (
-          <p id="contact-consent-error" className="mt-1.5 text-sm text-destructive">
-            {errors.consent}
-          </p>
-        )}
-      </div>
+      <ConsentField
+        id="contact-consent"
+        checked={form.consent}
+        error={errors.consent}
+        onChange={(consent) => patch({ consent })}
+      />
 
       <BotCheck
         containerRef={turnstile.ref}
@@ -186,12 +158,7 @@ export function ContactForm() {
         hasFailed={turnstile.hasFailed}
       />
 
-      {submit.isError && (
-        <p className="flex items-start gap-2 rounded border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          {submit.errorMessage} You can also ring the shop on {BUSINESS.telephone}.
-        </p>
-      )}
+      {submit.isError && <InquirySendError message={submit.errorMessage} />}
 
       <Button
         type="submit"

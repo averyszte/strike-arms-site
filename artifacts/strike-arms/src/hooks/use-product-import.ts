@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { applyProductImport } from '@/data/products-import-repository';
+import { useInvalidateProducts } from '@/hooks/use-invalidate-products';
 import type { ImportPlan } from '@/lib/product-import';
 
 /**
@@ -11,13 +12,9 @@ import type { ImportPlan } from '@/lib/product-import';
  * reason someone imported a new price list.
  */
 export function useProductImport() {
-  const qc = useQueryClient();
+  const invalidate = useInvalidateProducts();
   return useMutation({
     mutationFn: (plan: ImportPlan) => applyProductImport(plan),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-      qc.invalidateQueries({ queryKey: ['products'] });
-      qc.invalidateQueries({ queryKey: ['subcategories'] });
-    },
+    onSuccess: invalidate,
   });
 }

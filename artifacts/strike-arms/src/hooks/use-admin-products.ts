@@ -1,20 +1,7 @@
-import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  listAllProducts,
-  listProducts,
-  createProduct,
-  updateProduct,
-  bulkUpdateProducts,
-  setProductsArchived,
-} from '@/data/admin-products-repository';
-import type {
-  AdminProductListFilters,
-  NewProduct,
-  ProductBulkPatch,
-  ProductPatch,
-} from '@/types/product';
+import { useQuery } from '@tanstack/react-query';
 
-export const ALL_PRODUCTS_KEY = ['admin', 'products', 'all'] as const;
+import { listAllProducts } from '@/data/admin-products-repository';
+import { ADMIN_KEYS } from '@/lib/query-keys';
 
 /**
  * The whole catalogue, archived included. `enabled` lets a dialog ask for it
@@ -23,66 +10,8 @@ export const ALL_PRODUCTS_KEY = ['admin', 'products', 'all'] as const;
  */
 export function useAdminProducts({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery({
-    queryKey: ALL_PRODUCTS_KEY,
+    queryKey: ADMIN_KEYS.productsAll,
     queryFn: listAllProducts,
     enabled,
-  });
-}
-
-/** One page of the products list, filtered on the server. */
-export function useAdminProductsList(filters: AdminProductListFilters) {
-  return useQuery({
-    queryKey: ['admin', 'products', 'list', filters],
-    queryFn: () => listProducts(filters),
-    // Keeps the current page on screen while the next one or a new search
-    // loads, instead of dropping to a spinner on every keystroke.
-    placeholderData: keepPreviousData,
-  });
-}
-
-/** Every product write invalidates the same three caches. */
-function useProductInvalidation() {
-  const qc = useQueryClient();
-  return () => {
-    void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
-    void qc.invalidateQueries({ queryKey: ['products'] });
-    void qc.invalidateQueries({ queryKey: ['subcategories'] });
-  };
-}
-
-export function useCreateProduct() {
-  const invalidate = useProductInvalidation();
-  return useMutation({
-    mutationFn: (input: NewProduct) => createProduct(input),
-    onSuccess: invalidate,
-  });
-}
-
-export function useUpdateProduct() {
-  const invalidate = useProductInvalidation();
-  return useMutation({
-    // expectedUpdatedAt: the save is refused if the row moved on since (M-032).
-    mutationFn: ({ id, patch, expectedUpdatedAt }: { id: string; patch: ProductPatch; expectedUpdatedAt?: string }) =>
-      updateProduct(id, patch, expectedUpdatedAt),
-    onSuccess: invalidate,
-  });
-}
-
-export function useBulkUpdateProducts() {
-  const invalidate = useProductInvalidation();
-  return useMutation({
-    mutationFn: ({ ids, patch }: { ids: string[]; patch: ProductBulkPatch }) =>
-      bulkUpdateProducts(ids, patch),
-    onSuccess: invalidate,
-  });
-}
-
-/** Archive (true) or restore (false). Products are never deleted from here. */
-export function useSetProductsArchived() {
-  const invalidate = useProductInvalidation();
-  return useMutation({
-    mutationFn: ({ ids, isArchived }: { ids: string[]; isArchived: boolean }) =>
-      setProductsArchived(ids, isArchived),
-    onSettled: invalidate,
   });
 }

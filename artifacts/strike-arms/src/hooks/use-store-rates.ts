@@ -1,12 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import {
-  fetchStoreRates,
-  fetchStoreRatesHistory,
-  updateStoreRates,
-} from '@/data/settings-repository';
+import { fetchStoreRates } from '@/data/settings-repository';
 import { CART_KEYS, GC_TIME_ONE_HOUR, STALE_TIME_ONE_MINUTE } from '@/lib/query-keys';
-import type { StoreRates } from '@/types/store-settings';
 
 /**
  * Delivery and VAT rates, read from the database.
@@ -23,26 +18,4 @@ export function useStoreRates() {
     staleTime: STALE_TIME_ONE_MINUTE,
     gcTime: GC_TIME_ONE_HOUR,
   });
-}
-
-/**
- * Saving a rate has to reach the cart immediately, so the cache above is
- * replaced with the row that came back rather than merely invalidated -- an
- * admin who saves and then looks at the shop should not see the old price for
- * the next ten minutes.
- */
-export function useUpdateStoreRates() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (rates: StoreRates) => updateStoreRates(rates),
-    onSuccess: (saved) => {
-      qc.setQueryData(['store-rates'], saved);
-      void qc.invalidateQueries({ queryKey: ['store-rates-history'] });
-    },
-  });
-}
-
-/** The last rate changes, for the history list under the form (M-029). */
-export function useStoreRatesHistory() {
-  return useQuery({ queryKey: ['store-rates-history'], queryFn: () => fetchStoreRatesHistory() });
 }

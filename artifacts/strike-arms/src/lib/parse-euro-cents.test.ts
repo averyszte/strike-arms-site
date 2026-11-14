@@ -27,3 +27,21 @@ test("format then parse is the identity", () => {
     assert.equal(parseEuroCents(formatCentsPlain(cents)), cents);
   }
 });
+
+test("parsing refuses the formats the old per-site parsers also refused", () => {
+  // Three decimals, a thousands separator, exponent and hex notation all used
+  // to reach Number() or parseFloat() somewhere; none is a euro amount here.
+  assert.equal(parseEuroCents("12.345"), null);
+  assert.equal(parseEuroCents("1,000.50"), null);
+  assert.equal(parseEuroCents("1e3"), null);
+  assert.equal(parseEuroCents("0x10"), null);
+  assert.equal(parseEuroCents("12."), null);
+  assert.equal(parseEuroCents(".5"), null);
+});
+
+test("parsing rounds the scaled value, so binary fractions keep their cent", () => {
+  // 19.99 * 100 is 1998.9999999999998; truncating it would give 1998.
+  assert.equal(parseEuroCents("19.99"), 1999);
+  assert.equal(parseEuroCents("0.29"), 29);
+  assert.equal(parseEuroCents("8.7"), 870);
+});

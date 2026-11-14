@@ -1,3 +1,5 @@
+import { formatCentsPlain } from '@/lib/format-price';
+import { parseEuroCents } from '@/lib/parse-euro-cents';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 import type { Category, NewProduct, Product, ProductPatch } from '@/types/product';
 
@@ -11,8 +13,8 @@ export function toFormValues(product: Product): ProductFormValues {
     subcategory: product.subcategory,
     brand: product.brand,
     condition: product.condition,
-    priceEuros: (product.price / 100).toFixed(2),
-    salePriceEuros: product.salePrice != null ? (product.salePrice / 100).toFixed(2) : '',
+    priceEuros: formatCentsPlain(product.price),
+    salePriceEuros: product.salePrice != null ? formatCentsPlain(product.salePrice) : '',
     shortDescription: product.shortDescription,
     description: product.description ?? '',
     isPublished: product.isPublished ?? false,
@@ -54,10 +56,10 @@ export function toProductInput(values: ProductFormValues): NewProduct {
     subcategory: values.subcategory,
     brand: values.brand,
     condition: values.condition,
-    price: Math.round(parseFloat(values.priceEuros) * 100),
-    salePrice: values.salePriceEuros
-      ? Math.round(parseFloat(values.salePriceEuros) * 100)
-      : undefined,
+    // The schema has already held both fields to the euro-amount pattern, so
+    // the null branches are unreachable; NaN keeps the old parseFloat result.
+    price: parseEuroCents(values.priceEuros) ?? Number.NaN,
+    salePrice: parseEuroCents(values.salePriceEuros) ?? undefined,
     shortDescription: values.shortDescription,
     description: values.description,
     isPublished: values.isPublished,

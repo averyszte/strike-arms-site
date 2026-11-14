@@ -1,4 +1,5 @@
-import { useBulkUpdateProducts, useSetProductsArchived } from '@/hooks/use-admin-products';
+import { useBulkUpdateProducts } from '@/hooks/use-bulk-update-products';
+import { useSetProductsArchived } from '@/hooks/use-set-products-archived';
 import { useToast } from '@/hooks/use-toast';
 import { failedItemsMessage } from '@/lib/admin-error-message';
 import { loadErrorMessage } from '@/lib/load-error-message';

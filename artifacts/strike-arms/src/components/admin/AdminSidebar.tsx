@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 type NavItem = { label: string; href: string; icon: ElementType };
 type NavGroupDef = { label: string; matchPrefixes: string[]; items: NavItem[] };

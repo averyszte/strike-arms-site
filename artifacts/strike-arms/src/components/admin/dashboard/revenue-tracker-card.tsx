@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatPrice } from '@/lib/format-price';
 import { ChannelSplit } from '@/components/admin/dashboard/channel-split';
 import { buildRevenueRows, periodStart } from '@/lib/admin-dashboard-metrics';
 import type { PeriodKey } from '@/lib/admin-dashboard-metrics';
@@ -73,7 +74,7 @@ export function RevenueTrackerCard({ orders }: Props) {
                 tickFormatter={(v: number) => `€${Math.round(v / 100)}`}
               />
               <Tooltip
-                formatter={(v: number) => [`€${(v / 100).toFixed(2)}`, 'Revenue']}
+                formatter={(v: number) => [formatPrice(v), 'Revenue']}
                 contentStyle={{
                   background: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',

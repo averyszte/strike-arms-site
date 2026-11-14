@@ -1,13 +1,10 @@
 import { Link } from 'wouter';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatPrice } from '@/lib/format-price';
 import { Badge } from '@/components/ui/badge';
 import { formatOrderNumber } from '@/lib/order-display';
 import type { Order } from '@/types/order';
-
-function formatEuros(cents: number) {
-  return `€${(cents / 100).toFixed(2)}`;
-}
 
 interface Props {
   orders: Order[];
@@ -44,7 +41,7 @@ export function RecentOrdersCard({ orders }: Props) {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-semibold tabular-nums">
-                    {formatEuros(order.totalCents)}
+                    {formatPrice(order.totalCents)}
                   </p>
                   <Badge variant="outline" className="text-[10px] capitalize mt-0.5">
                     {order.fulfillmentStatus.replace(/_/g, ' ')}

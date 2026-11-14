@@ -1,7 +1,7 @@
 import { useSearch } from 'wouter';
 
 import { readTokenHash, useEmailLink } from '@/hooks/use-email-link';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { emailLinkScreen } from '@/lib/email-link-screen';
 import type { EmailLinkType } from '@/types/auth';
 

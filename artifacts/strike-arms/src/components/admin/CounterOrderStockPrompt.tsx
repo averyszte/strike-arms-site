@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useBulkUpdateProducts } from '@/hooks/use-admin-products';
+import { useBulkUpdateProducts } from '@/hooks/use-bulk-update-products';
 import { useToast } from '@/hooks/use-toast';
 import { loadErrorMessage } from '@/lib/load-error-message';
 

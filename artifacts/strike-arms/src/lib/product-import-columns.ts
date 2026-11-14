@@ -1,3 +1,5 @@
+import { hasDiscount } from '@/lib/effective-price';
+import { formatCentsPlain } from '@/lib/format-price';
 import {
   parseBoolean,
   parseCategory,
@@ -202,8 +204,8 @@ export function checkSalePrice(fields: ParsedFields, existing: Product | undefin
   if (sale == null) return null;
   const price = fields.price ?? existing?.price;
   if (price === undefined) return null;
-  if (sale < price) return null;
-  return `Sale price (${(sale / 100).toFixed(2)}) must be below the price (${(price / 100).toFixed(2)})`;
+  if (hasDiscount(price, sale)) return null;
+  return `Sale price (${formatCentsPlain(sale)}) must be below the price (${formatCentsPlain(price)})`;
 }
 
 export type ImportChange = { field: string; label: string; from: string; to: string };
@@ -212,7 +214,7 @@ const MONEY_FIELDS = new Set(['price', 'salePrice']);
 
 function display(field: string, value: unknown): string {
   if (value === null || value === undefined) return '';
-  if (MONEY_FIELDS.has(field) && typeof value === 'number') return (value / 100).toFixed(2);
+  if (MONEY_FIELDS.has(field) && typeof value === 'number') return formatCentsPlain(value);
   if (Array.isArray(value)) return value.join('; ');
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   return String(value);

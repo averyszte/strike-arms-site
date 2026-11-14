@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Redirect } from 'wouter';
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { MfaGate } from '@/components/admin/MfaGate';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 interface Props {
   children: ReactNode;

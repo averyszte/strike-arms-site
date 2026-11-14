@@ -16,19 +16,16 @@ import { CounterOrderProductPicker } from '@/components/admin/CounterOrderProduc
 import { CounterOrderStockPrompt, type SoldProduct } from '@/components/admin/CounterOrderStockPrompt';
 import { CounterOrderTotals } from '@/components/admin/CounterOrderTotals';
 import { useAdminProducts } from '@/hooks/use-admin-products';
-import { useCreateCounterOrder } from '@/hooks/use-create-counter-order';
+import { useCounterOrderLines } from '@/hooks/use-counter-order-lines';
+import { useRecordCounterSale } from '@/hooks/use-record-counter-sale';
 import { useStoreRates } from '@/hooks/use-store-rates';
-import { useToast } from '@/hooks/use-toast';
 import {
   EMPTY_COUNTER_ORDER_DRAFT,
-  draftToCounterOrderInput,
   validateCounterOrder,
   type CounterOrderFieldErrors,
 } from '@/lib/counter-order-draft';
-import { calculateCounterTotals, resolveCounterLines } from '@/lib/counter-order-totals';
-import { formatPrice } from '@/lib/format-price';
-import type { CounterOrderDraft, CounterOrderLine, ItemFulfillmentMethod } from '@/types/order';
-import type { Product } from '@/types/product';
+import { calculateCounterTotals } from '@/lib/counter-order-totals';
+import type { CounterOrderDraft, ItemFulfillmentMethod } from '@/types/order';
 
 /**
  * Ringing up a sale made in the shop or over the phone.
@@ -45,7 +42,6 @@ type CounterOrderSheetProps = {
 };
 
 export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
-  const [lines, setLines] = useState<CounterOrderLine[]>([]);
   const [draft, setDraft] = useState<CounterOrderDraft>(EMPTY_COUNTER_ORDER_DRAFT);
   const [errors, setErrors] = useState<CounterOrderFieldErrors>({});
   const [soldProducts, setSoldProducts] = useState<SoldProduct[] | null>(null);
@@ -56,54 +52,22 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
     isError: isProductsError,
   } = useAdminProducts();
   const { data: rates } = useStoreRates();
-  const createOrder = useCreateCounterOrder();
-  const { toast } = useToast();
+  const { resolved, addedIds, addProduct, patchLine, removeLine, clearLines } =
+    useCounterOrderLines(products);
+  const { recordSale, isPending } = useRecordCounterSale();
 
-  const resolved = useMemo(() => resolveCounterLines(lines, products), [lines, products]);
   // Archived products are off sale; they stay in `products` only so lines resolve.
   const pickable = useMemo(() => products.filter((product) => !product.isArchived), [products]);
   const totals = useMemo(() => calculateCounterTotals(resolved, rates), [resolved, rates]);
-
-  const addedIds = useMemo(
-    () => new Set(resolved.map((line) => line.productId)),
-    [resolved],
-  );
 
   function patchDraft(update: Partial<CounterOrderDraft>) {
     setDraft((current) => ({ ...current, ...update }));
   }
 
-  function addProduct(product: Product) {
-    setLines((current) => [
-      ...current,
-      {
-        productId: product.id,
-        quantity: 1,
-        // Collection is the safe default: it is the only method every product
-        // supports, and it is what actually happens at a counter.
-        fulfillmentMethod: 'pickup',
-      },
-    ]);
-  }
-
-  function patchLine(productId: string, update: Partial<CounterOrderLine>) {
-    setLines((current) =>
-      current.map((line) => (line.productId === productId ? { ...line, ...update } : line)),
-    );
-  }
-
-  function removeLine(productId: string) {
-    setLines((current) => current.filter((line) => line.productId !== productId));
-  }
-
-  function reset() {
-    setLines([]);
+  function handleClose() {
+    clearLines();
     setDraft(EMPTY_COUNTER_ORDER_DRAFT);
     setErrors({});
-  }
-
-  function handleClose() {
-    reset();
     onClose();
   }
 
@@ -114,41 +78,10 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
-    // Submitted from the resolved list, not the raw draft: a product deleted
-    // while the sheet was open is not in it, and so is not sold.
-    const submitted: CounterOrderLine[] = resolved.map((line) => ({
-      productId: line.productId,
-      quantity: line.quantity,
-      fulfillmentMethod: line.fulfillmentMethod,
-    }));
-
-    try {
-      const result = await createOrder.mutateAsync(
-        draftToCounterOrderInput(draft, submitted, totals.hasDeliveryLines),
-      );
-      // The server's total, not the preview: they differ if a price changed
-      // while the sheet was open (M-022).
-      const warning =
-        result.outOfStock.length > 0
-          ? ` The website lists ${result.outOfStock.join(', ')} as out of stock: check the shelf.`
-          : '';
-      toast({
-        title: 'Sale recorded',
-        description: `Order ${result.orderNumber ?? ''} for ${formatPrice(result.totalCents)}.${warning}`,
-      });
-      const outOfStock = new Set(result.outOfStock);
-      const stillListed = resolved
-        .filter((line) => line.product.inStock && !outOfStock.has(line.product.name))
-        .map((line) => ({ id: line.product.id, name: line.product.name }));
-      if (stillListed.length > 0) setSoldProducts(stillListed);
-      handleClose();
-    } catch (error: unknown) {
-      toast({
-        title: 'Could not record the sale',
-        description: error instanceof Error ? error.message : 'Something went wrong.',
-        variant: 'destructive',
-      });
-    }
+    const stillListed = await recordSale(draft, resolved, totals.hasDeliveryLines);
+    if (stillListed === null) return;
+    if (stillListed.length > 0) setSoldProducts(stillListed);
+    handleClose();
   }
 
   return (
@@ -215,8 +148,8 @@ export function CounterOrderSheet({ open, onClose }: CounterOrderSheetProps) {
               <Button type="button" variant="outline" className="flex-1" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1" disabled={createOrder.isPending}>
-                {createOrder.isPending ? 'Saving…' : 'Record sale'}
+              <Button type="submit" className="flex-1" disabled={isPending}>
+                {isPending ? 'Saving…' : 'Record sale'}
               </Button>
             </div>
           </form>

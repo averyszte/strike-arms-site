@@ -170,32 +170,6 @@ export default tseslint.config(
   // ── Documented exceptions ─────────────────────────────────────────────────
 
   {
-    // The two React context providers live in lib/ even though lib/ is meant
-    // to be pure functions. They predate this config; moving them would mean a
-    // new top-level folder, which CLAUDE.md's folder list does not have.
-    // Recorded here so the exception is one visible list rather than scattered
-    // eslint-disable comments. (src/lib/auth-context.tsx was listed too; that
-    // file no longer exists, so the entry was dropped under W-05.)
-    files: [
-      'src/lib/admin-auth-context.tsx',
-      'src/lib/cart-context.tsx',
-    ],
-    rules: {
-      'no-restricted-imports': restrictImports({
-        group: ['@/components', '@/components/*', '@/pages', '@/pages/*'],
-        message: 'A context provider may not import UI.',
-      }),
-    },
-  },
-
-  {
-    // Static lookup tables, not logic. Splitting a 300-line list of terms into
-    // two 150-line lists makes it harder to read, not easier.
-    files: ['src/lib/glossary.ts', 'src/lib/taxonomy.ts'],
-    rules: { 'max-lines': 'off' },
-  },
-
-  {
     // Vendored shadcn helpers that happen to live outside components/ui/.
     // Same standing as the rest of the shadcn set: we do not own them, so we
     // do not lint them. use-toast.ts imports the toast primitive's types, and
@@ -206,14 +180,6 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': 'off',
       'react-hooks/set-state-in-effect': 'off',
     },
-  },
-
-  {
-    // react-refresh guards hot-module reload, not correctness, and it flags
-    // every context provider by design. Providers are the one place we accept
-    // a lost fast-refresh.
-    files: ['src/lib/*-context.tsx'],
-    rules: { 'react-refresh/only-export-components': 'off' },
   },
 
   {

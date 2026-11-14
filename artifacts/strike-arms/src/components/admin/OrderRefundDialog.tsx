@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { useRefundOrder } from '@/hooks/use-refund-order';
 import { useToast } from '@/hooks/use-toast';
 import type { RefundResult } from '@/hooks/use-refund-order';
+import { formatCentsPlain, formatPrice } from '@/lib/format-price';
 import { REFUND_REASONS, parseRefundAmount, type RefundReason } from '@/lib/order-refund';
 
 /**
@@ -40,7 +41,7 @@ interface Props {
 }
 
 export function OrderRefundDialog({ orderId, refundableCents, open, onClose, onSent }: Props) {
-  const [amount, setAmount] = useState(() => (refundableCents / 100).toFixed(2));
+  const [amount, setAmount] = useState(() => formatCentsPlain(refundableCents));
   const [reason, setReason] = useState<RefundReason>('requested_by_customer');
   const [error, setError] = useState<string | null>(null);
   // One id per dialog, so a double-click or a retry is the same refund to
@@ -84,8 +85,8 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose, onS
           toast({
             title: result.isRecorded ? 'Refund sent' : 'Refund sent, recording pending',
             description: result.isRecorded
-              ? `€${(result.amountCents / 100).toFixed(2)} refunded. Stripe says ${result.status}.`
-              : `€${(result.amountCents / 100).toFixed(2)} is with Stripe (${result.status}). ` +
+              ? `${formatPrice(result.amountCents)} refunded. Stripe says ${result.status}.`
+              : `${formatPrice(result.amountCents)} is with Stripe (${result.status}). ` +
                 'The order updates when Stripe confirms it. Do not refund it again.',
           });
           onSent(result);
@@ -117,7 +118,7 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose, onS
           <DialogHeader>
             <DialogTitle>Refund this order</DialogTitle>
             <DialogDescription>
-              Up to €{(refundableCents / 100).toFixed(2)} can still be refunded. The money goes back
+              Up to {formatPrice(refundableCents)} can still be refunded. The money goes back
               to the card it was taken from. If the item came back saleable, mark it in stock again
               in Products.
             </DialogDescription>

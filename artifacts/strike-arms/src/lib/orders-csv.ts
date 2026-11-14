@@ -4,13 +4,14 @@ import {
   ORDER_CHANNEL_LABELS,
   PAYMENT_METHOD_LABELS,
 } from '@/lib/order-display';
-import { buildCsv, csvFilename, money } from '@/lib/csv-write';
+import { buildCsv, csvFilename } from '@/lib/csv-write';
+import { formatCentsPlain } from '@/lib/format-price';
 
 /**
  * Turns orders into a CSV an accountant can open without swearing.
  *
- * The escaping, the byte order mark and the money formatting live in
- * csv-write.ts — shared with the product export, so the two files cannot
+ * The escaping and the byte order mark live in csv-write.ts, and money is
+ * formatCentsPlain from format-price.ts — shared with the product export, so the two files cannot
  * disagree about what is safe to hand a spreadsheet.
  */
 
@@ -71,11 +72,11 @@ function orderRow(order: Order): string[] {
     order.customerPhone ?? '',
     address(order.shippingAddress),
     order.shippingAddress?.eircode ?? '',
-    money(order.totalCents - order.vatCents),
-    money(order.vatCents),
-    money(order.shippingCents),
-    money(order.totalCents),
-    money(order.refundCents),
+    formatCentsPlain(order.totalCents - order.vatCents),
+    formatCentsPlain(order.vatCents),
+    formatCentsPlain(order.shippingCents),
+    formatCentsPlain(order.totalCents),
+    formatCentsPlain(order.refundCents),
     itemsSummary(order),
     itemCount(order),
     order.isArchived ? 'Yes' : 'No',

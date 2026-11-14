@@ -1,5 +1,7 @@
 import { Search } from 'lucide-react';
 
+import { CardImage } from '@/components/catalog/card-image';
+import { effectivePriceCents, hasDiscount } from '@/lib/effective-price';
 import { formatPrice } from '@/lib/format-price';
 import { getCategory } from '@/lib/taxonomy';
 import type { Product } from '@/types/product';
@@ -33,7 +35,7 @@ export function SearchResultRow({ product, isActive, onSelect, onHover }: Props)
       >
         <div className="w-9 h-9 bg-white rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
           {product.images[0] ? (
-            <img src={product.images[0]} alt="" className="w-full h-full object-contain p-0.5" />
+            <CardImage src={product.images[0]} alt="" sizes="36px" className="w-full h-full object-contain p-0.5" />
           ) : (
             <Search className="w-3.5 h-3.5 text-muted-foreground" />
           )}
@@ -45,9 +47,11 @@ export function SearchResultRow({ product, isActive, onSelect, onHover }: Props)
           </p>
         </div>
         <div className="shrink-0 text-right">
-          {product.salePrice ? (
+          {hasDiscount(product.price, product.salePrice) ? (
             <>
-              <p className="text-sm font-semibold text-accent">{formatPrice(product.salePrice)}</p>
+              <p className="text-sm font-semibold text-accent">
+                {formatPrice(effectivePriceCents(product.price, product.salePrice))}
+              </p>
               <p className="text-[11px] line-through text-muted-foreground">
                 {formatPrice(product.price)}
               </p>

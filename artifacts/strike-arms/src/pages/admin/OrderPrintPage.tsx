@@ -6,7 +6,7 @@ import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { DocumentHeader } from '@/components/admin/print/document-header';
 import { PackingSlip } from '@/components/admin/print/packing-slip';
 import { Invoice } from '@/components/admin/print/invoice';
-import { useOrder } from '@/hooks/use-orders';
+import { useOrder } from '@/hooks/use-order';
 import { ORDER_DOCUMENT_LABELS, readDocumentKind } from '@/lib/order-document';
 import { formatOrderNumber } from '@/lib/order-display';
 

@@ -1,14 +1,9 @@
-import {
-  useBulkFulfillmentStatus,
-  useBulkSetArchived,
-  useSetOrderArchived,
-  useUpdateFulfillmentStatus,
-} from '@/hooks/use-orders';
+import { useSetOrderArchived } from '@/hooks/use-set-order-archived';
+import { useUpdateFulfillmentStatus } from '@/hooks/use-update-fulfillment-status';
+import { useOrdersBulkActions } from '@/hooks/use-orders-bulk-actions';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useToast } from '@/hooks/use-toast';
-import { failedItemsMessage } from '@/lib/admin-error-message';
 import { loadErrorMessage } from '@/lib/load-error-message';
-import { formatOrderNumber } from '@/lib/order-display';
 import type { FulfillmentStatus, Order, OrderListFilters } from '@/types/order';
 
 /**
@@ -25,27 +20,16 @@ type OrdersActionsInput = {
   onDone: () => void;
 };
 
-/** Names the orders a chunked write refused, by order number (M-040). */
-function bulkFailedDescription(orders: Order[], description: string, error: unknown): string {
-  const numbers = new Map(orders.map(o => [o.id, formatOrderNumber(o.orderNumber)]));
-  return failedItemsMessage(error, id => numbers.get(id), `${description}. ${loadErrorMessage(error)}`);
-}
-
 export function useOrdersActions({ filters, showArchived, selectedIds, orders, onDone }: OrdersActionsInput) {
   const updateStatus = useUpdateFulfillmentStatus();
   const setArchived = useSetOrderArchived();
-  const bulkArchive = useBulkSetArchived();
-  const bulkStatus = useBulkFulfillmentStatus();
+  const bulk = useOrdersBulkActions({ showArchived, selectedIds, orders, onDone });
   const { exportOrders, isExporting } = useOrdersExport();
   const { toast } = useToast();
 
   function failed(description: string, error?: unknown) {
     const reason = error === undefined ? '' : ` ${loadErrorMessage(error)}`;
     toast({ title: 'Error', description: `${description}.${reason}`, variant: 'destructive' });
-  }
-
-  function bulkFailed(description: string, error: unknown) {
-    toast({ title: 'Error', description: bulkFailedDescription(orders, description, error), variant: 'destructive' });
   }
 
   async function changeStatus(orderId: string, status: FulfillmentStatus) {
@@ -71,32 +55,6 @@ export function useOrdersActions({ filters, showArchived, selectedIds, orders, o
     }
   }
 
-  async function bulkToggleArchive() {
-    const orderIds = selectedIds;
-    try {
-      await bulkArchive.mutateAsync({ orderIds, isArchived: !showArchived });
-      onDone();
-      toast({
-        title: showArchived ? 'Orders restored' : 'Orders archived',
-        description: `${orderIds.length} updated. Archived orders still count towards revenue.`,
-      });
-    } catch (error) {
-      bulkFailed('Failed to update the selected orders', error);
-    }
-  }
-
-  async function bulkChangeStatus(status: FulfillmentStatus) {
-    const orderIds = selectedIds;
-    try {
-      await bulkStatus.mutateAsync({ orderIds, status });
-      onDone();
-      toast({ title: 'Orders updated', description: `${orderIds.length} changed.` });
-    } catch (error) {
-      // Chunked, so orders before the refused one may already have moved.
-      bulkFailed('Not every selected order was changed', error);
-    }
-  }
-
   async function exportCsv() {
     try {
       const count = await exportOrders(filters, selectedIds);
@@ -108,13 +66,13 @@ export function useOrdersActions({ filters, showArchived, selectedIds, orders, o
 
   return {
     isMoving: updateStatus.isPending,
-    isBulkPending: bulkArchive.isPending || bulkStatus.isPending,
+    isBulkPending: bulk.isBulkPending,
     isExporting,
     changeStatus: (orderId: string, status: FulfillmentStatus) =>
       void changeStatus(orderId, status),
     toggleArchive: (order: Order) => void toggleArchive(order),
-    bulkToggleArchive: () => void bulkToggleArchive(),
-    bulkChangeStatus: (status: FulfillmentStatus) => void bulkChangeStatus(status),
+    bulkToggleArchive: bulk.bulkToggleArchive,
+    bulkChangeStatus: bulk.bulkChangeStatus,
     exportCsv: () => void exportCsv(),
   };
 }

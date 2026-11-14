@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useUpdateStoreRates } from '@/hooks/use-store-rates';
+import { useUpdateStoreRates } from '@/hooks/use-update-store-rates';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
 import { StoreRatesConfirmDialog } from '@/components/admin/settings/StoreRatesConfirmDialog';

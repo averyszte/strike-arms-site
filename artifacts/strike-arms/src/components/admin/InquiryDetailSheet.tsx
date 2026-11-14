@@ -9,7 +9,7 @@ import {
 import { format } from 'date-fns';
 
 import { ContactLinks } from '@/components/admin/contact-links';
-import { useUpdateInquiryStatus } from '@/hooks/use-inquiries';
+import { useUpdateInquiryStatus } from '@/hooks/use-update-inquiry-status';
 import { useToast } from '@/hooks/use-toast';
 import type { Inquiry, InquiryStatus } from '@/types/inquiry';
 

@@ -1,9 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { useFormContext, Controller, useWatch } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -11,36 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ProductCategoryFields } from '@/components/admin/product-category-fields';
+import { FieldError } from '@/components/admin/product-field-error';
+import { ProductFlagFields } from '@/components/admin/product-flag-fields';
 import { ProductImagesField } from '@/components/admin/ProductImagesField';
 import { ProductSlugField } from '@/components/admin/ProductSlugField';
-import { useSubcategories } from '@/hooks/use-categories';
 import type { ProductImageUpload } from '@/hooks/use-product-image-upload';
 import { CONDITION_LABELS, PRODUCT_CONDITIONS } from '@/lib/product-condition';
-import type { Category } from '@/types/product';
 import type { ProductFormValues } from '@/lib/product-form-schema';
-
-const CATEGORIES = [
-  'rifles', 'pistols', 'consumables', 'accessories', 'gear', 'more',
-] as const;
-
-type BooleanFieldName = keyof ProductFormValues &
-  ('inStock' | 'isPublished' | 'isNew' | 'isFeatured' | 'isShippable');
-
-const BOOLEAN_FIELDS: [BooleanFieldName, string][] = [
-  // Set by hand: nothing counts stock, and a sale leaves it ticked.
-  ['inStock', 'In stock'],
-  ['isPublished', 'Published'],
-  ['isNew', 'New'],
-  ['isFeatured', 'Featured'],
-  // Off by default. Guns are collect-in-store only, so an item is never
-  // posted unless someone has explicitly ticked this.
-  ['isShippable', 'Can be posted'],
-];
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-destructive">{message}</p>;
-}
 
 interface Props {
   /** Owned by ProductFormSheet, which also has to discard on cancel. */
@@ -53,20 +29,8 @@ export function ProductFormFields({ upload, isLive }: Props) {
   const {
     register,
     control,
-    setValue,
     formState: { errors },
   } = useFormContext<ProductFormValues>();
-
-  const selectedCategory = useWatch({ control, name: 'category' }) as Category;
-  const { data: subcategories = [] } = useSubcategories(selectedCategory);
-
-  const prevCategoryRef = useRef(selectedCategory);
-  useEffect(() => {
-    if (prevCategoryRef.current !== selectedCategory) {
-      setValue('subcategory', '');
-      prevCategoryRef.current = selectedCategory;
-    }
-  }, [selectedCategory, setValue]);
 
   return (
     <div className="space-y-4">
@@ -78,61 +42,7 @@ export function ProductFormFields({ upload, isLive }: Props) {
 
       <ProductSlugField isLive={isLive} />
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <Label>Category *</Label>
-          <Controller
-            name="category"
-            control={control}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(c => (
-                    <SelectItem key={c} value={c} className="capitalize">
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <FieldError message={errors.category?.message} />
-        </div>
-
-        <div className="space-y-1">
-          <Label>Subcategory *</Label>
-          <Controller
-            name="subcategory"
-            control={control}
-            render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-                disabled={subcategories.length === 0}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      subcategories.length === 0 ? 'No subcategories yet' : 'Select'
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategories.map(s => (
-                    <SelectItem key={s.id} value={s.slug}>
-                      {s.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <FieldError message={errors.subcategory?.message} />
-        </div>
-      </div>
+      <ProductCategoryFields />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
@@ -198,26 +108,7 @@ export function ProductFormFields({ upload, isLive }: Props) {
         <Input id="tags" {...register('tags')} placeholder="aeg, m4, carbine" />
       </div>
 
-      <div className="flex flex-wrap gap-5 pt-1">
-        {BOOLEAN_FIELDS.map(([name, label]) => (
-          <div key={name} className="flex items-center gap-2">
-            <Controller
-              name={name}
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  id={name}
-                  checked={field.value as boolean}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
-            <Label htmlFor={name} className="cursor-pointer font-normal">
-              {label}
-            </Label>
-          </div>
-        ))}
-      </div>
+      <ProductFlagFields />
     </div>
   );
 }

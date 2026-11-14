@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { listAppliedMigrations } from '@/data/migrations-repository';
-import type { MigrationAlertInput } from '@/lib/migration-alerts';
 import { compareMigrations } from '@/lib/migration-status';
+import { ADMIN_KEYS, GC_TIME_ONE_HOUR, STALE_TIME_HALF_HOUR } from '@/lib/query-keys';
 
 /**
  * Cached for the session. What the database has applied changes when someone
@@ -12,29 +12,15 @@ import { compareMigrations } from '@/lib/migration-status';
  */
 export function useMigrationStatus() {
   return useQuery({
-    queryKey: ['migration-status'],
+    queryKey: ADMIN_KEYS.migrationStatus,
     queryFn: async () => {
       const applied = await listAppliedMigrations();
       if (applied.kind === 'check-missing') return { kind: 'check-missing' } as const;
       if (applied.kind === 'not-verified') return { kind: 'not-verified' } as const;
       return { kind: 'ok', status: compareMigrations(applied.versions) } as const;
     },
-    staleTime: 30 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
+    staleTime: STALE_TIME_HALF_HOUR,
+    gcTime: GC_TIME_ONE_HOUR,
     refetchOnWindowFocus: false,
   });
-}
-
-/**
- * The same answer, shaped for the dashboard alert. Undefined while loading, or
- * if the query failed for a reason other than the function being absent -- an
- * alert that says nothing is pending because it never got an answer is worse
- * than no alert at all.
- */
-export function useMigrationAlertInput(): MigrationAlertInput | undefined {
-  const { data } = useMigrationStatus();
-  // An unverified session proves nothing about the database either way.
-  if (!data || data.kind === 'not-verified') return undefined;
-  if (data.kind === 'check-missing') return { kind: 'check-missing' };
-  return { kind: 'ok', pendingCount: data.status.pending.length };
 }

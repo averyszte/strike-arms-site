@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { AlertCircle, Lock } from 'lucide-react';
-import { Link } from 'wouter';
 
 import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { CheckoutAgeConfirmation } from '@/components/cart/checkout-age-confirmation';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { DeliveryAddressFields } from '@/components/cart/DeliveryAddressFields';
 import { useCheckoutPrefill } from '@/hooks/use-checkout-prefill';
@@ -16,7 +14,7 @@ import {
   validateCheckoutDetails,
   type CheckoutFieldErrors,
 } from '@/lib/checkout-validation';
-import { CTA_PRIMARY, TEXT_LINK } from '@/lib/storefront-styles';
+import { CTA_PRIMARY } from '@/lib/storefront-styles';
 import type { CheckoutDetails } from '@/types/cart';
 
 type CheckoutFormProps = {
@@ -106,35 +104,11 @@ export function CheckoutForm({
         <DeliveryAddressFields details={details} errors={errors} onChange={patch} />
       )}
 
-      <div>
-        <div className="flex items-start gap-3">
-          <Checkbox
-            id="age-confirmed"
-            checked={details.ageConfirmed}
-            aria-describedby={errors.ageConfirmed ? 'age-confirmed-error' : undefined}
-            onCheckedChange={(checked) => patch({ ageConfirmed: checked === true })}
-          />
-          <Label htmlFor="age-confirmed" className="cursor-pointer font-normal leading-snug">
-            I confirm I am 18 years of age or over.
-          </Label>
-        </div>
-        {errors.ageConfirmed && (
-          <p id="age-confirmed-error" className="mt-1.5 text-sm text-destructive">
-            {errors.ageConfirmed}
-          </p>
-        )}
-        <p className="mt-3 text-sm text-muted-foreground">
-          By placing your order you agree to our{' '}
-          <Link href="/terms" className={TEXT_LINK}>
-            terms of sale
-          </Link>
-          . Most online orders can be cancelled within 14 days: see{' '}
-          <Link href="/returns" className={TEXT_LINK}>
-            returns
-          </Link>
-          .
-        </p>
-      </div>
+      <CheckoutAgeConfirmation
+        checked={details.ageConfirmed}
+        error={errors.ageConfirmed}
+        onChange={(ageConfirmed) => patch({ ageConfirmed })}
+      />
 
       <BotCheck
         containerRef={turnstile.ref}

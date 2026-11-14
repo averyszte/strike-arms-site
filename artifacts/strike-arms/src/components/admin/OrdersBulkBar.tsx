@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useStatusEmailPreview } from '@/hooks/use-order-admin-actions';
+import { useStatusEmailPreview } from '@/hooks/use-status-email-preview';
 import { FULFILLMENT_OPTIONS } from '@/lib/order-display';
 import type { FulfillmentStatus } from '@/types/order';
 

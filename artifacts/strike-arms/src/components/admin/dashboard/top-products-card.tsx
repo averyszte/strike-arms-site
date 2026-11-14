@@ -1,10 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatPrice } from '@/lib/format-price';
 import { buildProductSales } from '@/lib/admin-dashboard-metrics';
 import type { Order } from '@/types/order';
-
-function formatEuros(cents: number) {
-  return `€${(cents / 100).toFixed(2)}`;
-}
 
 interface Props {
   orders: Order[];
@@ -33,7 +30,7 @@ export function TopProductsCard({ orders }: Props) {
                   <p className="text-xs text-muted-foreground">{row.quantity} sold</p>
                 </div>
                 <p className="text-sm font-semibold tabular-nums shrink-0">
-                  {formatEuros(row.revenue)}
+                  {formatPrice(row.revenue)}
                 </p>
               </div>
             ))}

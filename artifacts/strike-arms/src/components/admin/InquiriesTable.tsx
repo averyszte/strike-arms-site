@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { useInquiries, useUpdateInquiryStatus } from '@/hooks/use-inquiries';
+import { useInquiries } from '@/hooks/use-inquiries';
+import { useUpdateInquiryStatus } from '@/hooks/use-update-inquiry-status';
 import { INQUIRIES_PAGE_SIZE } from '@/lib/inquiries-paging';
 import { InquiryDetailSheet } from '@/components/admin/InquiryDetailSheet';
 import { TableScrollHint } from '@/components/admin/TableScrollHint';

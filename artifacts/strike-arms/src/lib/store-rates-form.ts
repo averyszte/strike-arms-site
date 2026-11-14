@@ -1,4 +1,7 @@
 import type { StoreRates } from '@/types/store-settings';
+// Relative, not @/: node --test runs store-rates-form.test.ts with no alias map.
+import { formatCentsPlain, formatPrice } from './format-price.ts';
+import { isEuroAmount, parseEuroCents } from './parse-euro-cents.ts';
 
 /**
  * The rates as they are typed: euros and a percentage, not cents and basis
@@ -13,8 +16,7 @@ export type StoreRatesForm = {
 
 export type StoreRatesErrors = Partial<Record<keyof StoreRatesForm, string>>;
 
-// Euros with at most two decimals. Number() alone accepts "1e3" and hex.
-const EUROS = /^\d+(\.\d{1,2})?$/;
+// Euros are checked by isEuroAmount (W-03): Number() alone accepts "1e3" and hex.
 // A percentage with at most two decimals, so 23 and 13.5 both work.
 const PERCENT = /^\d+(\.\d{1,2})?$/;
 
@@ -30,8 +32,8 @@ const IRISH_VAT_BASIS_POINTS = [0, 900, 1_350, 2_300];
 
 export function ratesToForm(rates: StoreRates): StoreRatesForm {
   return {
-    shippingFlat: (rates.shippingFlatCents / 100).toFixed(2),
-    freeShippingThreshold: (rates.freeShippingThresholdCents / 100).toFixed(2),
+    shippingFlat: formatCentsPlain(rates.shippingFlatCents),
+    freeShippingThreshold: formatCentsPlain(rates.freeShippingThresholdCents),
     vatRate: String(rates.vatRateBasisPoints / 100),
   };
 }
@@ -40,11 +42,14 @@ export function ratesToForm(rates: StoreRates): StoreRatesForm {
  * Rounds rather than truncates, and rounds the *scaled* value: 6.5 euro is
  * 649.9999... in binary, and Math.round on the scaled number lands on 650
  * where a bare `| 0` lands on 649 and undercharges by a cent forever.
+ *
+ * Only meaningful after validateStoreRates has passed; a euro field that is
+ * not an amount comes back as NaN, as Number() made of it before.
  */
 export function formToRates(form: StoreRatesForm): StoreRates {
   return {
-    shippingFlatCents: Math.round(Number(form.shippingFlat) * 100),
-    freeShippingThresholdCents: Math.round(Number(form.freeShippingThreshold) * 100),
+    shippingFlatCents: parseEuroCents(form.shippingFlat) ?? Number.NaN,
+    freeShippingThresholdCents: parseEuroCents(form.freeShippingThreshold) ?? Number.NaN,
     vatRateBasisPoints: Math.round(Number(form.vatRate) * 100),
   };
 }
@@ -59,12 +64,12 @@ export function validateStoreRates(form: StoreRatesForm): StoreRatesErrors {
   const errors: StoreRatesErrors = {};
   const rates = formToRates(form);
 
-  if (!EUROS.test(form.shippingFlat.trim()) || rates.shippingFlatCents > MAX_SHIPPING_CENTS) {
+  if (!isEuroAmount(form.shippingFlat) || rates.shippingFlatCents > MAX_SHIPPING_CENTS) {
     errors.shippingFlat = 'Enter an amount in euro between 0 and 100, e.g. 6.50';
   }
 
   if (
-    !EUROS.test(form.freeShippingThreshold.trim()) ||
+    !isEuroAmount(form.freeShippingThreshold) ||
     rates.freeShippingThresholdCents > MAX_THRESHOLD_CENTS
   ) {
     errors.freeShippingThreshold = 'Enter an amount in euro between 0 and 2,000, e.g. 75.00';
@@ -98,10 +103,6 @@ export function storeRatesWarnings(rates: StoreRates): string[] {
 
 export type RateChange = { label: string; from: string; to: string };
 
-function euro(cents: number): string {
-  return `€${(cents / 100).toFixed(2)}`;
-}
-
 function percent(basisPoints: number): string {
   return `${basisPoints / 100}%`;
 }
@@ -109,11 +110,11 @@ function percent(basisPoints: number): string {
 /** Old against new, only for the rates that changed. */
 export function describeRateChanges(saved: StoreRates, next: StoreRates): RateChange[] {
   const rows: RateChange[] = [
-    { label: 'Delivery charge', from: euro(saved.shippingFlatCents), to: euro(next.shippingFlatCents) },
+    { label: 'Delivery charge', from: formatPrice(saved.shippingFlatCents), to: formatPrice(next.shippingFlatCents) },
     {
       label: 'Free delivery over',
-      from: euro(saved.freeShippingThresholdCents),
-      to: euro(next.freeShippingThresholdCents),
+      from: formatPrice(saved.freeShippingThresholdCents),
+      to: formatPrice(next.freeShippingThresholdCents),
     },
     { label: 'VAT rate', from: percent(saved.vatRateBasisPoints), to: percent(next.vatRateBasisPoints) },
   ];

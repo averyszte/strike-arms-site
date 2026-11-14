@@ -2,7 +2,7 @@ import { ShieldCheck } from 'lucide-react';
 
 import { MfaChallenge } from '@/components/admin/MfaChallenge';
 import { MfaEnrolment } from '@/components/admin/MfaEnrolment';
-import { useAdminAuth } from '@/lib/admin-auth-context';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 /**
  * Stands between a signed-in admin and the admin itself until the session is

@@ -1,3 +1,4 @@
+import { parseEuroCents } from '@/lib/parse-euro-cents';
 import { toProductCondition } from '@/lib/product-condition';
 import { LIST_SEPARATOR } from '@/lib/products-csv';
 import type { Category, ProductCondition } from '@/types/product';
@@ -18,7 +19,6 @@ import type { Category, ProductCondition } from '@/types/product';
 
 export type ParseResult<T> = { ok: true; value: T } | { ok: false; message: string };
 
-const EUROS = /^\d+(\.\d{1,2})?$/;
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 /** The largest Postgres int, in cents. */
 const MAX_CENTS = 2_147_483_647;
@@ -67,13 +67,13 @@ export function parseCondition(raw: string): ParseResult<ProductCondition> {
   return { ok: true, value };
 }
 
-/** Euro amount to cents. Math.round, because 6.50 is 649.9999... in binary. */
+/** Euro amount to cents, through parseEuroCents (W-03). */
 export function parseEuros(label: string, raw: string): ParseResult<number> {
   const value = raw.trim();
-  if (!EUROS.test(value)) {
+  const cents = parseEuroCents(value);
+  if (cents === null) {
     return { ok: false, message: `${label} must be an amount in euro, e.g. 129.00 (got "${value}")` };
   }
-  const cents = Math.round(Number(value) * 100);
   // The database holds prices as a positive int (001): zero, or anything past
   // the int range, is refused there, after the preview said the row was fine.
   if (cents <= 0) return { ok: false, message: `${label} must be more than 0.00 (got "${value}")` };
