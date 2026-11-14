@@ -2,6 +2,7 @@ import { Store, Truck } from 'lucide-react';
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { BUSINESS } from '@/lib/site-config';
 import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 
@@ -23,13 +24,18 @@ export function FulfillmentChoice({
   hasPickupItems,
   onChange,
 }: FulfillmentChoiceProps) {
+  const canDeliver = IS_DELIVERY_ENABLED && hasShippableItems;
+
   return (
     <div className={`${PANEL} p-5`}>
       <h2 className={`${CARD_TITLE} text-lg`}>How would you like it?</h2>
+      {!IS_DELIVERY_ENABLED && (
+        <p className="mt-2 text-sm font-semibold text-accent">{DELIVERY_PAUSED_LINE}</p>
+      )}
 
       <RadioGroup
         className="mt-4 space-y-3"
-        value={wantsDelivery ? 'delivery' : 'pickup'}
+        value={wantsDelivery && canDeliver ? 'delivery' : 'pickup'}
         onValueChange={(value) => onChange(value === 'delivery')}
       >
         <div className="flex items-start gap-3">
@@ -50,26 +56,28 @@ export function FulfillmentChoice({
             value="delivery"
             id="fulfilment-delivery"
             className="mt-1"
-            disabled={!hasShippableItems}
+            disabled={!canDeliver}
           />
           <Label
             htmlFor="fulfilment-delivery"
-            className={`cursor-pointer font-normal ${hasShippableItems ? '' : 'opacity-60'}`}
+            className={`cursor-pointer font-normal ${canDeliver ? '' : 'cursor-not-allowed opacity-60'}`}
           >
             <span className="flex items-center gap-2 font-bold text-foreground">
               <Truck className="h-4 w-4 text-accent" aria-hidden="true" />
               Deliver to me
             </span>
             <span className="mt-1 block text-sm text-muted-foreground">
-              {hasShippableItems
-                ? 'Delivery across Ireland.'
-                : 'Nothing in your cart can be posted.'}
+              {!IS_DELIVERY_ENABLED
+                ? 'Coming soon.'
+                : hasShippableItems
+                  ? 'Delivery across Ireland.'
+                  : 'Nothing in your cart can be posted.'}
             </span>
           </Label>
         </div>
       </RadioGroup>
 
-      {wantsDelivery && hasShippableItems && hasPickupItems && (
+      {wantsDelivery && canDeliver && hasPickupItems && (
         <p className="mt-4 border border-border/60 bg-muted/40 p-3 text-sm text-muted-foreground">
           Some items in your cart are collect-in-store only and will be held for you at the shop.
           The rest will be posted to the address you give below.

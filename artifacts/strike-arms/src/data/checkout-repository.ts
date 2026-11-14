@@ -4,6 +4,7 @@ import {
   type FunctionErrorReply,
 } from '@/data/function-error-message';
 import { CART_FULL_MESSAGE, isCartLimitError } from '@/lib/cart-limits';
+import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { supabase } from '@/data/supabase-client';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
@@ -73,7 +74,8 @@ function buildBody(
   attemptId: string,
   turnstileToken: string | null,
 ) {
-  const wantsDelivery = details.wantsDelivery && lines.some((line) => line.isShippable);
+  const wantsDelivery =
+    IS_DELIVERY_ENABLED && details.wantsDelivery && lines.some((line) => line.isShippable);
 
   return {
     attemptId,

@@ -688,3 +688,11 @@ From B7, not defects. Phil picks any he wants for a later phase.
 | B8 exclusions | M-028 import undo, M-031 dashboard load, P-02, P-05, P-06, P-07, P-08 | Re-listed by B8 as already fixed or deferred; no new evidence. P-06 is referenced, not reopened, by N-084. |
 
 Reopened rather than dropped, because the audits bring new evidence: P-03 (N-032, N-051), the L5 image-size exclusion (N-025), M-044 card srcset (N-021), M-053 reload guard (N-043) and M-050 realtime intent (N-031).
+
+## Later: rendering and framework options (noted 2026-11-14, not started)
+
+Phil asked how hard a move to Astro or plain HTML would be. Parked to look at later. Summary of the answer:
+
+- **Plain HTML:** not workable. Cart, checkout, accounts, live stock and prices, and the admin all need JavaScript and Supabase.
+- **Astro:** workable, about one to two weeks plus a full SEO re-check. Content pages (home, categories, brands, products, guides, glossary, law, where-to-play, info) become static HTML; cart, filters, search and account forms stay React islands; the admin stays a React app on one route. Product pages built from Supabase need a rebuild when Alan edits a product (a deploy hook), or Astro server mode on Cloudflare. It is a stack change under CLAUDE.md, so Phil decides.
+- **Cheaper route, recommended first:** finish phase 2; then PD2 (a Cloudflare Pages Function with HTMLRewriter for per-route head tags, structured data and real 404s, tested on a preview deploy); then optionally prerender the static content pages at build time inside Vite. Watch Search Console for a month before deciding on Astro.

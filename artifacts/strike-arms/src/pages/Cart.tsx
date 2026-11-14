@@ -17,7 +17,7 @@ import { CARD_TITLE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
 
 const TITLE = 'Your Cart — Strike Arms Airsoft Dublin';
 const DESCRIPTION =
-  'Review your cart, choose collection in Swords or delivery across Ireland, and check out securely.';
+  'Review your cart, choose collection in Swords and check out securely.';
 
 export default function Cart() {
   const { lines, basics, wantsDelivery, setWantsDelivery, setQuantity, removeLine } = useCart();
