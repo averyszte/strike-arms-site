@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { HotspotPin } from "@/components/hotspot-pin";
-import { LoadoutProductCard } from "@/components/demo/combined/loadout-product-card";
+import { LoadoutProductCard } from "@/components/home/loadout-product-card";
 import { useLoadoutProducts } from "@/hooks/use-loadout-products";
 import { loadouts } from "@/lib/loadouts";
 
@@ -65,6 +65,8 @@ export function LoadoutShowcase() {
                 <img
                   src={activeData.image}
                   alt={activeData.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-background/20" />

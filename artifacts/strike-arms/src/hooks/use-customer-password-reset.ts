@@ -5,12 +5,13 @@ import {
   requestCustomerPasswordReset,
   updateCustomerPassword,
 } from '@/data/customer-auth-repository';
-import type { EmailCodeInput } from '@/types/customer-account';
+import type { CaptchaInput, EmailCodeInput } from '@/types/customer-account';
 
 /** Ask for a reset email, enter its code (which signs in), then set the password. */
 export function useCustomerPasswordReset() {
   const request = useMutation({
-    mutationFn: (email: string) => requestCustomerPasswordReset(email),
+    mutationFn: ({ email, captchaToken }: { email: string } & CaptchaInput) =>
+      requestCustomerPasswordReset(email, captchaToken),
   });
   const confirmCode = useMutation({
     mutationFn: ({ email, code }: EmailCodeInput) => confirmRecoveryCode(email, code),

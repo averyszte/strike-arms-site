@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { AlertTriangle, ArrowRight, CheckCircle2, Loader2, Mail, Phone, Store } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Loader2, Mail, Phone, RefreshCw, Store } from 'lucide-react';
 
 import { CreateAccountNudge } from '@/components/account/CreateAccountNudge';
 import { SiteLayout } from '@/components/SiteLayout';
@@ -86,7 +86,7 @@ function StatusLine({ state, orderNumber }: { state: ConfirmationState; orderNum
  * payment is confirmed: someone whose payment failed keeps their basket.
  */
 export default function CheckoutSuccess() {
-  const { state, orderNumber } = useCheckoutConfirmation();
+  const { state, orderNumber, checkAgain, isChecking } = useCheckoutConfirmation();
   const hero = HERO[state];
 
   return (
@@ -133,8 +133,24 @@ export default function CheckoutSuccess() {
           {state === 'delayed' && (
             <p className="flex items-start gap-3 text-sm text-muted-foreground">
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-              You can also refresh this page in a few minutes to check again.
+              This page keeps checking for the next ten minutes, so you can leave it open. You
+              can also check again now.
             </p>
+          )}
+
+          {state === 'delayed' && (
+            <button
+              type="button"
+              onClick={checkAgain}
+              disabled={isChecking}
+              className={CTA_SECONDARY_SM}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isChecking ? 'animate-spin' : ''}`}
+                aria-hidden="true"
+              />
+              {isChecking ? 'Checking' : 'Check again'}
+            </button>
           )}
         </div>
 

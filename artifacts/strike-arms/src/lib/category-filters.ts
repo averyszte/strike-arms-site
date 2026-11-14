@@ -10,6 +10,16 @@ function parseBrands(raw: string | null): string[] | undefined {
   return brands.length ? Array.from(new Set(brands)).sort() : undefined;
 }
 
+/**
+ * A whole number of at least `min` from the URL, or undefined. A hand-edited
+ * `?page=abc` or `?minPrice=-5` must not reach the query as NaN.
+ */
+function parseWholeNumber(raw: string | null, min: number): number | undefined {
+  if (raw === null || !/^\d+$/.test(raw.trim())) return undefined;
+  const value = Number(raw.trim());
+  return Number.isSafeInteger(value) && value >= min ? value : undefined;
+}
+
 const VALID_SORTS = ['featured', 'newest', 'price-asc', 'price-desc', 'name-asc'] as const;
 
 /**
@@ -25,9 +35,8 @@ export function parseFiltersFromSearch(
   const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
 
   const sort = params.get('sort');
-  const page = params.get('page');
-  const minPrice = params.get('minPrice');
-  const maxPrice = params.get('maxPrice');
+  const minPrice = parseWholeNumber(params.get('minPrice'), 0);
+  const maxPrice = parseWholeNumber(params.get('maxPrice'), 0);
   const condition = params.get('condition');
 
   return {
@@ -35,8 +44,9 @@ export function parseFiltersFromSearch(
     subcategory,
     q: params.get('q')?.trim() || undefined,
     brands: parseBrands(params.get('brand')),
-    minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
-    maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
+    minPrice,
+    // A maximum below the minimum would list nothing, so it is dropped.
+    maxPrice: minPrice !== undefined && maxPrice !== undefined && maxPrice < minPrice ? undefined : maxPrice,
     inStockOnly: params.get('inStockOnly') === '1',
     onSaleOnly: params.get('onSaleOnly') === '1',
     // Narrowed rather than cast: ?condition=anything must not reach the query
@@ -46,7 +56,7 @@ export function parseFiltersFromSearch(
       sort && (VALID_SORTS as readonly string[]).includes(sort)
         ? (sort as ProductFilters['sort'])
         : undefined,
-    page: page ? Math.max(1, parseInt(page, 10)) : 1,
+    page: parseWholeNumber(params.get('page'), 1) ?? 1,
     pageSize: 24,
   };
 }

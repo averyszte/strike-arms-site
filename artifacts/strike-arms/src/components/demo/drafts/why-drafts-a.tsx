@@ -1,17 +1,11 @@
 import { Link } from "wouter";
 import { ArrowRight, Phone } from "lucide-react";
+import { REASONS } from "@/lib/why-draft-reasons";
 
 /**
  * "Why Strike Arms" drafts, part one: numbered ruled rows instead of the
  * icon-in-a-box grid. Copy is the live section's four reasons.
  */
-export const REASONS = [
-  { title: "Expert gear advice", copy: "We've tested what we sell. Real recommendations from people who actually play." },
-  { title: "Beginner-friendly", copy: "New to airsoft? We'll walk you through what you need, and nothing you don't." },
-  { title: "Fair pricing", copy: "No inflated markups. Competitive prices on quality gear and replicas." },
-  { title: "After-sale support", copy: "Issue after purchase? Need an upgrade installed? We're here to help." },
-];
-
 export const PHONE_HREF = "tel:+353872736351";
 export const PHONE_LABEL = "+353 87 273 6351";
 

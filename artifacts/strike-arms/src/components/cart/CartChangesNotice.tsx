@@ -10,8 +10,9 @@ function listNames(names: string[]): string {
 }
 
 /**
- * Says what changed when the basket was checked against the shop, so a new
- * total or a missing line is never a silent surprise.
+ * Says what changed when the basket was checked against the shop, and which
+ * lines are out of stock, so a new total or a missing line is never a silent
+ * surprise.
  */
 export function CartChangesNotice({ changes }: { changes: CartRefreshChanges }) {
   if (!hasCartChanges(changes)) return null;
@@ -20,7 +21,7 @@ export function CartChangesNotice({ changes }: { changes: CartRefreshChanges }) 
     <div className={`${PANEL} mb-8 flex items-start gap-3 p-4`} role="status">
       <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
       <div className="space-y-1 text-sm text-muted-foreground">
-        <p className="font-medium text-foreground">Your cart has been updated</p>
+        <p className="font-medium text-foreground">Please check your cart</p>
         {changes.repriced.length > 0 && (
           <p>The price of {listNames(changes.repriced)} has changed since you added it.</p>
         )}
@@ -29,6 +30,9 @@ export function CartChangesNotice({ changes }: { changes: CartRefreshChanges }) 
         )}
         {changes.removed.length > 0 && (
           <p>{listNames(changes.removed)} is no longer available and has been removed.</p>
+        )}
+        {changes.outOfStock.length > 0 && (
+          <p>{listNames(changes.outOfStock)} is out of stock at the moment.</p>
         )}
       </div>
     </div>

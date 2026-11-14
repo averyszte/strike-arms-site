@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useEvolutionProducts } from "@/hooks/use-evolution-products";
 import { EVOLUTION_SHELF_HREF, SCENE_ALT, SCENE_IMAGE } from "@/lib/evolution-band";
 import { EYEBROW } from "@/lib/storefront-styles";
-import { EvolutionRailCard } from "@/components/demo/combined/evolution-rail-card";
+import { EvolutionRailCard } from "@/components/home/evolution-rail-card";
 
 /** Solid accent call to action into the Evolution shelf. */
 function ShelfCta() {

@@ -3,21 +3,27 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 import { HeroReviewBadge } from "@/components/hero-review-badge";
+import { useHeroVideo } from "@/hooks/use-hero-video";
+
+const POSTER = "/images/strike-arms-hero-poster-desktop.webp";
 
 export function HeroSection() {
+  const shouldPlayVideo = useHeroVideo();
   const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isShowingVideo = shouldPlayVideo && !videoFailed;
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.play().catch(() => setVideoFailed(true));
-  }, []);
+  }, [isShowingVideo]);
 
+  // The text is visible from the first paint (it is the page's largest
+  // element); it only rises into place, so the entrance never delays LCP.
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: {},
     visible: {
-      opacity: 1,
       transition: {
         staggerChildren: 0.15,
         delayChildren: 0.2,
@@ -26,23 +32,26 @@ export function HeroSection() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
+    hidden: { y: 12 },
+    visible: { y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
   };
 
   return (
     <section className="relative w-full h-[90vh] min-h-[580px] max-h-[900px] flex items-center justify-center overflow-hidden">
       {/* ── HERO BACKGROUND ──────────────────────────────────────────────
-          Video:   /videos/strike-arms-hero-desktop.webm
-          Poster:  /images/strike-arms-hero-poster-desktop.webp
+          Video:   /videos/strike-arms-hero-desktop.webm (wide screens only,
+                   not with data-saver or reduced motion: use-hero-video)
+          Poster:  /images/strike-arms-hero-poster-desktop.webp (shown first, and in place of the video)
           To add an MP4 source, place it at /videos/strike-arms-hero-desktop.mp4
           and add: <source src="/videos/strike-arms-hero-desktop.mp4" type="video/mp4" />
       ─────────────────────────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        {videoFailed ? (
+        {!isShowingVideo ? (
           <img
-            src="/images/strike-arms-hero-poster-desktop.webp"
+            src={POSTER}
             alt=""
+            fetchPriority="high"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
         ) : (
@@ -53,7 +62,7 @@ export function HeroSection() {
             loop
             playsInline
             preload="metadata"
-            poster="/images/strike-arms-hero-poster-desktop.webp"
+            poster={POSTER}
             disablePictureInPicture
             disableRemotePlayback
             className="absolute inset-0 w-full h-full object-cover object-center"

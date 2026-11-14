@@ -9,7 +9,7 @@ import {
   ReviewButtons,
   ReviewCard,
   Stars,
-} from "@/components/demo/combined/review-parts";
+} from "@/components/home/review-parts";
 
 /** A: a Google summary panel on the left, the top three review cards beside it. */
 export function ReviewsSummaryCards() {

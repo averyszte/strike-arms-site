@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearch } from 'wouter';
 
@@ -6,21 +6,23 @@ import { clearCheckoutAttemptId } from '@/data/checkout-attempt-repository';
 import { fetchCheckoutStatus } from '@/data/checkout-status-repository';
 import { useCart } from '@/hooks/use-cart';
 import {
-  CONFIRMATION_POLL_MS,
   confirmationState,
-  shouldPollAgain,
+  nextPollDelay,
   type ConfirmationState,
 } from '@/lib/checkout-confirmation';
 
 /**
  * The success page's view of its order: asks checkout-status every couple of
- * seconds until the webhook has confirmed the payment, then clears the cart
- * and the checkout attempt. Nothing is cleared before that, so a shopper
- * whose payment did not go through still has their basket.
+ * seconds until the webhook has confirmed the payment, then more slowly while
+ * it is "delayed", and clears the cart and the checkout attempt only once the
+ * payment is confirmed. A shopper whose payment did not go through still has
+ * their basket, and one whose webhook is late is never told to pay again.
  */
 export function useCheckoutConfirmation(): {
   state: ConfirmationState;
   orderNumber: string | null;
+  checkAgain: () => void;
+  isChecking: boolean;
 } {
   const params = new URLSearchParams(useSearch());
   const orderId = params.get('order') ?? '';
@@ -35,13 +37,13 @@ export function useCheckoutConfirmation(): {
     queryFn: () => fetchCheckoutStatus(orderId, sessionId),
     enabled: hasIds,
     retry: 2,
+    staleTime: 0,
     refetchOnWindowFocus: false,
     refetchInterval: (q) =>
-      shouldPollAgain(
+      nextPollDelay(
         confirmationState(q.state.data, q.state.dataUpdateCount, q.state.status === 'error'),
-      )
-        ? CONFIRMATION_POLL_MS
-        : false,
+        q.state.dataUpdateCount + q.state.errorUpdateCount,
+      ),
   });
 
   const polls = queryClient.getQueryState(queryKey)?.dataUpdateCount ?? 0;
@@ -55,5 +57,15 @@ export function useCheckoutConfirmation(): {
     clearCheckoutAttemptId();
   }, [state, clearCart]);
 
-  return { state, orderNumber: query.data?.orderNumber ?? null };
+  const { refetch } = query;
+  const checkAgain = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  return {
+    state,
+    orderNumber: query.data?.orderNumber ?? null,
+    checkAgain,
+    isChecking: query.isFetching,
+  };
 }

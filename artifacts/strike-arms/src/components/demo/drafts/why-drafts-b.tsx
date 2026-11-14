@@ -1,4 +1,5 @@
-import { Eyebrow, NumberedRows, REASONS, WhyCtas } from "@/components/demo/drafts/why-drafts-a";
+import { Eyebrow, NumberedRows, WhyCtas } from "@/components/demo/drafts/why-drafts-a";
+import { REASONS } from "@/lib/why-draft-reasons";
 
 /** C: one big manifesto line over a full-bleed photo, reasons as ruled rows. */
 export function WhyManifesto() {

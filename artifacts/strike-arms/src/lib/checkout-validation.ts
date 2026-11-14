@@ -10,8 +10,12 @@ import type { CheckoutDetails } from '@/types/cart';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Irish routing key + unique identifier, e.g. "K67 T9H9". */
-const EIRCODE_PATTERN = /^[A-Z]\d{2}\s?[A-Z0-9]{4}$/i;
+/**
+ * Irish routing key + unique identifier, e.g. "K67 T9H9" or "D6W XY12". The
+ * routing key is a letter and two digits, or D6W for Dublin 6W; both parts use
+ * the Eircode alphabet. Keep in step with create-checkout-session/parse-request.ts.
+ */
+const EIRCODE_PATTERN = /^([AC-FHKNPRTV-Y]\d{2}|D6W)\s?[0-9AC-FHKNPRTV-Y]{4}$/i;
 
 export type CheckoutFieldErrors = Partial<Record<keyof CheckoutDetails, string>>;
 

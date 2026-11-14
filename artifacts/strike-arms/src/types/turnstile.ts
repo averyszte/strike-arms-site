@@ -3,8 +3,11 @@
  * (challenges.cloudflare.com/turnstile/v0/api.js) sets window.turnstile.
  */
 
-/** Must match the action the Edge Function checks for. */
-export type TurnstileAction = 'checkout' | 'order-lookup' | 'inquiry';
+/**
+ * Must match the action the Edge Function checks for. `customer-auth` is
+ * checked by Supabase Auth, which does not look at the action.
+ */
+export type TurnstileAction = 'checkout' | 'order-lookup' | 'inquiry' | 'customer-auth';
 
 export type TurnstileRenderOptions = {
   sitekey: string;

@@ -25,7 +25,7 @@ export function CartLineRow({
     <li className="flex gap-4 py-5 border-b border-border/60">
       <Link href={`/products/${line.slug}`} className="shrink-0">
         <img
-          src={line.image ?? '/images/placeholder-product.png'}
+          src={line.image ?? '/images/placeholder-product.webp'}
           alt={line.name}
           className="h-20 w-20 border border-border/60 object-contain p-1 bg-white"
           loading="lazy"

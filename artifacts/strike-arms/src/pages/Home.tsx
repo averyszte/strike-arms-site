@@ -10,14 +10,14 @@ import { SITE_URL, toAbsoluteUrl } from "@/lib/site-config";
 import { HeroSection } from "@/components/HeroSection";
 import { BrandMarquee } from "@/components/BrandMarquee";
 import { FAQSection } from "@/components/FAQSection";
-import { TrustMarquee } from "@/components/demo/combined/trust-marquee";
-import { CategoryGrid } from "@/components/demo/combined/category-grid";
-import { LoadoutShowcase } from "@/components/demo/combined/loadout-showcase";
-import { Lineup } from "@/components/demo/combined/lineup";
-import { EvolutionBand } from "@/components/demo/combined/evolution-band";
-import { ReviewsFeature } from "@/components/demo/combined/reviews-feature";
-import { FinalCta } from "@/components/demo/combined/final-cta";
-import { VisitShop } from "@/components/demo/combined/visit-shop";
+import { TrustMarquee } from "@/components/home/trust-marquee";
+import { CategoryGrid } from "@/components/home/category-grid";
+import { LoadoutShowcase } from "@/components/home/loadout-showcase";
+import { Lineup } from "@/components/home/lineup";
+import { EvolutionBand } from "@/components/home/evolution-band";
+import { ReviewsFeature } from "@/components/home/reviews-feature";
+import { FinalCta } from "@/components/home/final-cta";
+import { VisitShop } from "@/components/home/visit-shop";
 
 const DESCRIPTION =
   "Shop airsoft rifles, pistols, BBs, gas, and tactical gear with expert advice from a Dublin store that knows the equipment inside out.";

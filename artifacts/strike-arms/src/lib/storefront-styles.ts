@@ -1,6 +1,6 @@
 /**
  * The storefront's type and button vocabulary, lifted from the homepage
- * (Direction D, src/components/demo/combined). Every public page composes these
+ * (Direction D, src/components/home). Every public page composes these
  * strings so a heading or a CTA reads the same wherever it appears. Plain class
  * strings, not components: they go on a Link, an <a>, or a shadcn Button's
  * className alike.

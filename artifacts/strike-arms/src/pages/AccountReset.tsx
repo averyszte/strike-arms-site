@@ -34,8 +34,8 @@ export default function AccountReset() {
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
 
-  async function ask(email: string) {
-    await request.mutateAsync(email);
+  async function ask(email: string, captchaToken: string | null) {
+    await request.mutateAsync({ email, captchaToken });
     setSentTo(email);
   }
 
@@ -66,7 +66,7 @@ export default function AccountReset() {
         title="Check your email"
         submitLabel="Continue"
         onConfirm={(code) => confirm(sentTo, code)}
-        onResend={() => request.mutateAsync(sentTo)}
+        onResend={(captchaToken) => request.mutateAsync({ email: sentTo, captchaToken })}
       />
     );
   } else {

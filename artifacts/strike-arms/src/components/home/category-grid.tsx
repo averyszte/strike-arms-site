@@ -7,12 +7,12 @@ import { ArrowUpRight } from "lucide-react";
  * Laid out as full-width stacked rows (one category per row).
  */
 const CATEGORIES = [
-  { name: "Rifles", image: "/images/category-rifles.png", href: "/store/rifles" },
-  { name: "Pistols", image: "/images/category-pistols.png", href: "/store/pistols" },
-  { name: "Consumables", image: "/images/category-bbs.png", href: "/store/consumables" },
-  { name: "Accessories", image: "/images/category-accessories.png", href: "/store/accessories" },
-  { name: "Gear", image: "/images/category-gear.png", href: "/store/gear" },
-  { name: "Repairs & Upgrades", image: "/images/category-repairs.png", href: "/services" },
+  { name: "Rifles", image: "/images/category-rifles.webp", href: "/store/rifles" },
+  { name: "Pistols", image: "/images/category-pistols.webp", href: "/store/pistols" },
+  { name: "Consumables", image: "/images/category-bbs.webp", href: "/store/consumables" },
+  { name: "Accessories", image: "/images/category-accessories.webp", href: "/store/accessories" },
+  { name: "Gear", image: "/images/category-gear.webp", href: "/store/gear" },
+  { name: "Repairs & Upgrades", image: "/images/category-repairs.webp", href: "/services" },
 ];
 
 export function CategoryGrid() {
@@ -48,7 +48,10 @@ export function CategoryGrid() {
               <img
                 src={cat.image}
                 alt={cat.name}
+                width={896}
+                height={1280}
                 loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />

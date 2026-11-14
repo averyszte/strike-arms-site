@@ -2,12 +2,12 @@ import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 
 const categories = [
-  { name: "Rifles",              image: "/images/category-rifles.png",      href: "/store/rifles" },
-  { name: "Pistols",             image: "/images/category-pistols.png",     href: "/store/pistols" },
-  { name: "Consumables",         image: "/images/category-bbs.png",         href: "/store/consumables" },
-  { name: "Accessories",         image: "/images/category-accessories.png", href: "/store/accessories" },
-  { name: "Gear",                image: "/images/category-gear.png",        href: "/store/gear" },
-  { name: "Repairs & Upgrades",  image: "/images/category-repairs.png",     href: "/services" },
+  { name: "Rifles",              image: "/images/category-rifles.webp",      href: "/store/rifles" },
+  { name: "Pistols",             image: "/images/category-pistols.webp",     href: "/store/pistols" },
+  { name: "Consumables",         image: "/images/category-bbs.webp",         href: "/store/consumables" },
+  { name: "Accessories",         image: "/images/category-accessories.webp", href: "/store/accessories" },
+  { name: "Gear",                image: "/images/category-gear.webp",        href: "/store/gear" },
+  { name: "Repairs & Upgrades",  image: "/images/category-repairs.webp",     href: "/services" },
 ];
 
 export function CategoryStrip() {

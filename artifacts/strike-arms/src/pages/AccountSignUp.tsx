@@ -25,8 +25,11 @@ export default function AccountSignUp() {
 
   if (session.user) return <Redirect to="/account" replace />;
 
-  async function submit({ fullName, email, password }: SignUpFormInput) {
-    await signUp.mutateAsync({ fullName, email, password });
+  async function submit(
+    { fullName, email, password }: SignUpFormInput,
+    captchaToken: string | null,
+  ) {
+    await signUp.mutateAsync({ fullName, email, password, captchaToken });
     setSentTo(email);
   }
 
@@ -44,7 +47,7 @@ export default function AccountSignUp() {
           title="Check your email"
           submitLabel="Confirm email"
           onConfirm={(code) => confirmCode.mutateAsync({ email: sentTo, code })}
-          onResend={() => resendCode.mutateAsync(sentTo)}
+          onResend={(captchaToken) => resendCode.mutateAsync({ email: sentTo, captchaToken })}
         />
       ) : (
         <SignUpForm onSubmit={submit} />

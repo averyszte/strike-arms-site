@@ -25,9 +25,9 @@ export default function AccountSignIn() {
 
   if (session.user && !signIn.isPending) return <Redirect to="/account" replace />;
 
-  async function submit(input: SignInInput) {
+  async function submit(input: SignInInput, captchaToken: string | null) {
     try {
-      await signIn.mutateAsync(input);
+      await signIn.mutateAsync({ ...input, captchaToken });
       navigate('/account', { replace: true });
     } catch (error: unknown) {
       if (!isAuthErrorCode(error, 'email_not_confirmed')) throw error;
@@ -49,7 +49,9 @@ export default function AccountSignIn() {
           title="Confirm your email first"
           submitLabel="Confirm and sign in"
           onConfirm={(code) => confirmCode.mutateAsync({ email: unconfirmedEmail, code })}
-          onResend={() => resendCode.mutateAsync(unconfirmedEmail)}
+          onResend={(captchaToken) =>
+            resendCode.mutateAsync({ email: unconfirmedEmail, captchaToken })
+          }
         />
       ) : (
         <SignInForm onSubmit={submit} />

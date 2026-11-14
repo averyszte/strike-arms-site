@@ -16,7 +16,7 @@ import type { FacetRow } from '@/types/catalog-facets';
 const PAGE_ROWS = 1000;
 
 const FACET_COLUMNS =
-  'id, category, subcategory, brand, condition, price_cents, sale_price_cents, in_stock';
+  'id, category, subcategory, brand, condition, effective_price_cents, sale_price_cents, in_stock';
 
 type FacetDbRow = {
   id: string;
@@ -24,7 +24,8 @@ type FacetDbRow = {
   subcategory: string;
   brand: string;
   condition: string;
-  price_cents: number;
+  /** The sale price when there is one, else the list price (migration 009). */
+  effective_price_cents: number;
   sale_price_cents: number | null;
   in_stock: boolean;
 };
@@ -36,7 +37,7 @@ function toFacetRow(row: FacetDbRow): FacetRow {
     subcategory: row.subcategory,
     brand: row.brand,
     condition: toProductCondition(row.condition) ?? 'new',
-    priceCents: row.price_cents,
+    priceCents: row.effective_price_cents,
     inStock: row.in_stock,
     isOnSale: row.sale_price_cents !== null,
   };

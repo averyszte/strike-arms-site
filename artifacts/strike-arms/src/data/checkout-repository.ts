@@ -1,4 +1,9 @@
-import { functionErrorMessage } from '@/data/function-error-message';
+import {
+  readFunctionError,
+  replyMessage,
+  type FunctionErrorReply,
+} from '@/data/function-error-message';
+import { CART_FULL_MESSAGE, isCartLimitError } from '@/lib/cart-limits';
 import { supabase } from '@/lib/supabase';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
@@ -15,12 +20,52 @@ export type CheckoutSession = {
   orderId: string;
 };
 
+/** The earlier order in this tab, which the server says has already been paid. */
+export type AlreadyPaidOrder = {
+  orderNumber: string | null;
+  /** Both present only if the server sends them; then the success page can show the order. */
+  orderId: string | null;
+  sessionId: string | null;
+};
+
 /** An error whose message came from the server and is safe to show. */
-export class CheckoutError extends Error {}
+export class CheckoutError extends Error {
+  readonly alreadyPaid: AlreadyPaidOrder | null;
+
+  constructor(message: string, alreadyPaid: AlreadyPaidOrder | null = null) {
+    super(message);
+    this.alreadyPaid = alreadyPaid;
+  }
+}
 
 type CheckoutResponse = { url?: string | null; orderId?: string; error?: string };
 
 const UNAVAILABLE = 'Checkout is temporarily unavailable. Please try again.';
+const ALREADY_PAID =
+  'Your earlier payment for this basket went through, so we have not taken another. ' +
+  'Check your email for the order confirmation.';
+const HTTP_CONFLICT = 409;
+
+function stringField(body: Record<string, unknown>, key: string): string | null {
+  const value = body[key];
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+/**
+ * A 409 means the previous checkout in this tab was paid after all (M-003), so
+ * a second payment was refused. Anything else carries the server's message.
+ */
+function toCheckoutError(reply: FunctionErrorReply): CheckoutError {
+  if (reply.status === HTTP_CONFLICT) {
+    return new CheckoutError(replyMessage(reply, ALREADY_PAID), {
+      orderNumber: stringField(reply.body, 'orderNumber'),
+      orderId: stringField(reply.body, 'orderId'),
+      sessionId: stringField(reply.body, 'sessionId'),
+    });
+  }
+  const message = replyMessage(reply, UNAVAILABLE);
+  return new CheckoutError(isCartLimitError(message) ? CART_FULL_MESSAGE : message);
+}
 
 function buildBody(
   lines: CartLine[],
@@ -68,7 +113,7 @@ export async function createCheckoutSession(
 
   // A non-2xx response arrives as an error with the body attached, so the
   // server's own message is what the shopper reads when there is one.
-  if (error) throw new CheckoutError(await functionErrorMessage(error, UNAVAILABLE));
+  if (error) throw toCheckoutError(await readFunctionError(error));
   if (!data?.url || !data.orderId) throw new CheckoutError(UNAVAILABLE);
 
   return { url: data.url, orderId: data.orderId };

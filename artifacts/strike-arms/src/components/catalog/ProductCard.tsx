@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { slug, name, brand, price, salePrice, images, inStock, isNew, isFeatured } = product;
-  const displayImage = images[0] ?? '/images/category-rifles.png';
+  const displayImage = images[0] ?? '/images/placeholder-product.webp';
   const hasDiscount = salePrice !== undefined && salePrice < price;
   const preLoved = isPreLoved(product.condition);
 

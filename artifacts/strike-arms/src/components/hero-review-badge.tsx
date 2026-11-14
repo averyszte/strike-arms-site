@@ -1,7 +1,8 @@
 import { Star } from "lucide-react";
 
 import { GOOGLE_RATING } from "@/lib/review-bank";
-import { GoogleG, READ_REVIEWS_URL } from "@/components/demo/combined/review-parts";
+import { GoogleG } from "@/components/home/review-parts";
+import { READ_REVIEWS_URL } from "@/lib/google-review-links";
 
 const RATING = Number(GOOGLE_RATING.value);
 /** How much of each of the five stars to fill, so 4.7 shows a part-filled fifth star. */

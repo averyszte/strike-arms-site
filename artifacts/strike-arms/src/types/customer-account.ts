@@ -17,6 +17,9 @@ export type SignUpInput = { fullName: string; email: string; password: string };
 
 export type SignInInput = { email: string; password: string };
 
+/** A Turnstile token for Supabase Auth's bot check, or null when there is no widget. */
+export type CaptchaInput = { captchaToken: string | null };
+
 /** The two kinds of emailed link a customer can arrive from. */
 export type CustomerLinkType = 'email' | 'recovery';
 

@@ -14,7 +14,12 @@ import {
 import { useJsonDownload } from '@/hooks/use-json-download';
 import type { CustomerDataExport } from '@/types/customer-account';
 
-type PasswordChange = { email: string; currentPassword: string; newPassword: string };
+type PasswordChange = {
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+  captchaToken: string | null;
+};
 
 type AccountOwner = { id: string; email: string };
 
@@ -27,9 +32,9 @@ export function useCustomerAccountActions(owner: AccountOwner | null) {
   const download = useJsonDownload();
 
   const changePassword = useMutation({
-    mutationFn: async ({ email, currentPassword, newPassword }: PasswordChange) => {
+    mutationFn: async ({ email, currentPassword, newPassword, captchaToken }: PasswordChange) => {
       try {
-        await signInCustomer(email, currentPassword);
+        await signInCustomer(email, currentPassword, captchaToken);
       } catch {
         throw new Error('Your current password is not right.');
       }

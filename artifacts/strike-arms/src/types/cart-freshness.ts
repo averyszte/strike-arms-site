@@ -4,6 +4,7 @@ export type FreshCartDetails = {
   name: string;
   unitPriceCents: number;
   isShippable: boolean;
+  isInStock: boolean;
 };
 
 /** What changed when the basket was checked against the catalogue. */
@@ -14,4 +15,6 @@ export type CartRefreshChanges = {
   noLongerShippable: string[];
   /** Names of lines taken out because the product is no longer for sale. */
   removed: string[];
+  /** Names of lines whose product is out of stock now. They stay in the cart. */
+  outOfStock: string[];
 };

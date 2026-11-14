@@ -1,13 +1,6 @@
 import { ArrowUpRight, Star } from "lucide-react";
-import { GOOGLE_PLACE_ID, GOOGLE_RATING, initials, type Review } from "@/lib/review-bank";
-import { MAPS_SEARCH_URL } from "@/lib/shop-location";
-
-export const READ_REVIEWS_URL = GOOGLE_PLACE_ID
-  ? `https://www.google.com/maps/place/?q=place_id:${GOOGLE_PLACE_ID}`
-  : MAPS_SEARCH_URL;
-export const WRITE_REVIEW_URL = GOOGLE_PLACE_ID
-  ? `https://search.google.com/local/writereview?placeid=${GOOGLE_PLACE_ID}`
-  : MAPS_SEARCH_URL;
+import { GOOGLE_RATING, initials, type Review } from "@/lib/review-bank";
+import { READ_REVIEWS_URL, WRITE_REVIEW_URL } from "@/lib/google-review-links";
 
 /** Google's four-colour G, unaltered, as its brand guidance asks. */
 export function GoogleG({ className = "w-6 h-6" }: { className?: string }) {

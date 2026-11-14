@@ -4,7 +4,7 @@ import type { Product } from '@/types/product';
 
 export function ProductGallery({ product }: { product: Product }) {
   const [active, setActive] = useState(0);
-  const images = product.images.length > 0 ? product.images : ['/images/category-rifles.png'];
+  const images = product.images.length > 0 ? product.images : ['/images/placeholder-product.webp'];
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import { RANKED_REVIEWS, type Review } from "@/lib/review-bank";
-import { RatingLine, ReviewButtons, ReviewCard } from "@/components/demo/combined/review-parts";
+import { RatingLine, ReviewButtons, ReviewCard } from "@/components/home/review-parts";
 
 /**
  * Combined homepage — Google reviews as two rows drifting opposite ways, with

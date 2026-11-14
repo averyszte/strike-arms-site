@@ -60,8 +60,8 @@ export default function AccountDetails() {
       )}
       <EmailChangeCard currentEmail={email} onSubmit={(next) => actions.changeEmail.mutateAsync(next)} />
       <PasswordChangeCard
-        onSubmit={(currentPassword, newPassword) =>
-          actions.changePassword.mutateAsync({ email, currentPassword, newPassword })
+        onSubmit={(currentPassword, newPassword, captchaToken) =>
+          actions.changePassword.mutateAsync({ email, currentPassword, newPassword, captchaToken })
         }
       />
       <YourDataCard

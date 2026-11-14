@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, useSearch, useLocation } from 'wouter';
 import { Helmet } from 'react-helmet-async';
 import { SITE_URL } from '@/lib/site-config';
@@ -28,6 +28,15 @@ export default function ShopPage() {
   const [, setLocation] = useLocation();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // ── Filters ──────────────────────────────────────────────────────────────────
+  // One object per URL, so the callbacks and queries below that depend on it
+  // are not rebuilt on every render. Before the validation returns, because
+  // it is a hook; an invalid category never reaches the query.
+  const filters = useMemo(
+    () => parseFiltersFromSearch(search, rawCategory as Category | undefined, rawSubcategory),
+    [search, rawCategory, rawSubcategory],
+  );
+
   // ── Validation ───────────────────────────────────────────────────────────────
   if (rawCategory && !isValidCategorySlug(rawCategory)) {
     return <NotFound />;
@@ -37,13 +46,6 @@ export default function ShopPage() {
   }
 
   const categorySlug = rawCategory as CategorySlug | undefined;
-
-  // ── Filters ──────────────────────────────────────────────────────────────────
-  const filters = parseFiltersFromSearch(
-    search,
-    categorySlug as Category | undefined,
-    rawSubcategory,
-  );
 
   const meta = deriveShopPageMeta(categorySlug, rawSubcategory, filters.q);
 

@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import type { FreshCartDetails } from '@/types/cart-freshness';
 
 /**
- * The current price and postability of the products in a basket.
+ * The current price, postability and stock of the products in a basket.
  *
  * A basket lives in localStorage for as long as the shopper likes, so what it
  * remembers can be days out of date. A product missing from the result is no
@@ -17,7 +17,7 @@ export async function fetchFreshCartDetails(
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, effective_price_cents, is_shippable')
+    .select('id, name, effective_price_cents, is_shippable, in_stock')
     .in('id', productIds)
     .eq('is_published', true);
 
@@ -29,6 +29,7 @@ export async function fetchFreshCartDetails(
       name: row.name,
       unitPriceCents: row.effective_price_cents,
       isShippable: row.is_shippable,
+      isInStock: row.in_stock,
     });
   }
   return fresh;

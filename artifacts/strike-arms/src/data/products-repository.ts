@@ -16,57 +16,10 @@ import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { BRAND_NAMES, isListedBrand } from '@/lib/brands';
 import type { CrossSellTarget } from '@/lib/cross-sell';
 import type { Product, ProductFilters, ProductListResult, Category } from '@/types/product';
+import { PRODUCT_COLUMNS, applySort, applyTagFilters, buildBaseQuery } from '@/data/product-query';
 
 /** Rows the header dropdown asks for. It has room to show six. */
 const SEARCH_RESULT_LIMIT = 6;
-
-type ProductQuery = ReturnType<typeof buildBaseQuery>;
-
-function buildBaseQuery() {
-  return supabase.from('products').select('*', { count: 'exact' }).eq('is_published', true);
-}
-
-/**
- * Postgres does not guarantee row order for equal sort keys, so every sort
- * ends with `id` as a tiebreaker. Without it, "load more" pagination can
- * show the same product twice and skip another, because the second page is
- * a fresh query that is free to order the ties differently.
- */
-function applySort(query: ProductQuery, sort: NonNullable<ProductFilters['sort']>) {
-  switch (sort) {
-    case 'featured':
-      return query
-        .order('is_featured', { ascending: false })
-        .order('type_rank', { ascending: true })
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: true });
-    case 'newest':
-      return query.order('created_at', { ascending: false }).order('id', { ascending: true });
-    case 'price-asc':
-      return query
-        .order('effective_price_cents', { ascending: true })
-        .order('id', { ascending: true });
-    case 'price-desc':
-      return query
-        .order('effective_price_cents', { ascending: false })
-        .order('id', { ascending: true });
-    case 'name-asc':
-      return query.order('name', { ascending: true }).order('id', { ascending: true });
-  }
-}
-
-/**
- * Shelves such as Jumble and Safety Equipment are tags rather than
- * subcategories, so a product can sit on one and in its normal aisle too.
- */
-function applyTagFilters(query: ProductQuery, filters: ProductFilters) {
-  let next = query;
-  if (filters.tag) next = next.contains('tags', [filters.tag]);
-  if (filters.excludeTags?.length) {
-    next = next.not('tags', 'ov', `{${filters.excludeTags.join(',')}}`);
-  }
-  return next;
-}
 
 // ─── Read operations ──────────────────────────────────────────────────────────
 
@@ -79,10 +32,11 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.subcategory) query = query.eq('subcategory', filters.subcategory);
   if (filters.brands?.length) query = query.in('brand', filters.brands);
-  // Price filters compare against the list price, matching the price shown on
-  // the filter control itself.
-  if (filters.minPrice !== undefined) query = query.gte('price_cents', filters.minPrice);
-  if (filters.maxPrice !== undefined) query = query.lte('price_cents', filters.maxPrice);
+  // Price filters compare against the price a shopper pays (the sale price
+  // when there is one), the same price the cards show and the sidebar's
+  // range is built from (catalog-facets-repository.ts).
+  if (filters.minPrice !== undefined) query = query.gte('effective_price_cents', filters.minPrice);
+  if (filters.maxPrice !== undefined) query = query.lte('effective_price_cents', filters.maxPrice);
   if (filters.inStockOnly) query = query.eq('in_stock', true);
   if (filters.onSaleOnly) query = query.not('sale_price_cents', 'is', null);
   if (filters.isNewOnly) query = query.eq('is_new', true);
@@ -156,7 +110,7 @@ export async function searchCatalogue(
 export async function listByTarget(target: CrossSellTarget, limit: number): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PRODUCT_COLUMNS)
     .eq('is_published', true)
     .eq('category', target.category)
     .eq('subcategory', target.subcategory)
@@ -172,7 +126,7 @@ export async function listByTarget(target: CrossSellTarget, limit: number): Prom
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PRODUCT_COLUMNS)
     .eq('slug', slug)
     .eq('is_published', true)
     .maybeSingle();
@@ -185,7 +139,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function listProductsBySlugs(slugs: string[]): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PRODUCT_COLUMNS)
     .in('slug', slugs)
     .eq('is_published', true);
 

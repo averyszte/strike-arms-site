@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { MailCheck } from 'lucide-react';
 
 import { MfaCodeForm } from '@/components/admin/MfaCodeForm';
+import { BotCheck } from '@/components/BotCheck';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { CARD_TITLE, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 
@@ -11,7 +13,8 @@ type EmailCodeStepProps = {
   submitLabel: string;
   /** Throws when the code is wrong or expired. */
   onConfirm: (code: string) => Promise<void>;
-  onResend: () => Promise<void>;
+  /** Sends a new email; the token is for Supabase Auth's bot check. */
+  onResend: (captchaToken: string | null) => Promise<void>;
 };
 
 type ResendState = 'idle' | 'sending' | 'sent';
@@ -25,6 +28,9 @@ export function EmailCodeStep({ email, title, submitLabel, onConfirm, onResend }
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resend, setResend] = useState<ResendState>('idle');
+  // Only the resend needs a bot check: typing the code is not guarded.
+  const turnstile = useTurnstile('customer-auth');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
 
   async function confirm(code: string): Promise<boolean> {
     setIsPending(true);
@@ -44,11 +50,13 @@ export function EmailCodeStep({ email, title, submitLabel, onConfirm, onResend }
     setResend('sending');
     setError(null);
     try {
-      await onResend();
+      await onResend(turnstile.token);
       setResend('sent');
     } catch (caught: unknown) {
       setError(customerAuthError(caught));
       setResend('idle');
+    } finally {
+      turnstile.reset();
     }
   }
 
@@ -79,13 +87,22 @@ export function EmailCodeStep({ email, title, submitLabel, onConfirm, onResend }
           <button
             type="button"
             className={TEXT_LINK}
-            disabled={resend === 'sending'}
+            disabled={resend === 'sending' || isWaitingForBotCheck}
             onClick={() => void sendAgain()}
           >
             {resend === 'sending' ? 'sending' : 'send a new code'}
           </button>
         )}
       </p>
+      {resend !== 'sent' && (
+        <div className="mt-4">
+          <BotCheck
+            containerRef={turnstile.ref}
+            isEnabled={turnstile.isEnabled}
+            hasFailed={turnstile.hasFailed}
+          />
+        </div>
+      )}
     </section>
   );
 }

@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { canAddToCart, MAX_QUANTITY_PER_LINE } from '@/lib/cart-limits';
 import { calculateCartBasics } from '@/lib/cart-totals';
 import { loadCart, saveCart } from '@/lib/cart-storage';
 import type { CartBasics, CartLine } from '@/types/cart';
@@ -19,14 +20,13 @@ import type { CartBasics, CartLine } from '@/types/cart';
  * data-fetching hook.
  */
 
-const MAX_QUANTITY_PER_LINE = 20;
-
 export interface CartContextValue {
   lines: CartLine[];
   basics: CartBasics;
   wantsDelivery: boolean;
   setWantsDelivery: (wants: boolean) => void;
-  addLine: (line: Omit<CartLine, 'quantity'>, quantity?: number) => void;
+  /** False, with the basket unchanged, when it already holds MAX_CART_LINES other products. */
+  addLine: (line: Omit<CartLine, 'quantity'>, quantity?: number) => boolean;
   setQuantity: (productId: string, quantity: number) => void;
   removeLine: (productId: string) => void;
   clearCart: () => void;
@@ -50,6 +50,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addLine = useCallback(
     (line: Omit<CartLine, 'quantity'>, quantity = 1) => {
+      if (!canAddToCart(lines, line.productId)) return false;
       setLines((current) => {
         const existing = current.find((entry) => entry.productId === line.productId);
         if (!existing) return [...current, { ...line, quantity: clampQuantity(quantity) }];
@@ -60,8 +61,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : entry,
         );
       });
+      return true;
     },
-    [],
+    [lines],
   );
 
   const setQuantity = useCallback((productId: string, quantity: number) => {

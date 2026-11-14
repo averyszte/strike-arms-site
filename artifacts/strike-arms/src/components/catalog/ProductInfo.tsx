@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
+import { CART_FULL_MESSAGE } from '@/lib/cart-limits';
 import { formatPrice } from '@/lib/format-price';
 import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName } from '@/lib/brands';
@@ -19,7 +20,7 @@ export function ProductInfo({ product }: { product: Product }) {
   const preLoved = isPreLoved(product.condition);
 
   const handleAddToCart = () => {
-    addLine({
+    const isAdded = addLine({
       productId: product.id,
       slug: product.slug,
       name: product.name,
@@ -28,6 +29,11 @@ export function ProductInfo({ product }: { product: Product }) {
       unitPriceCents,
       isShippable: product.isShippable,
     });
+
+    if (!isAdded) {
+      toast({ title: 'Your basket is full', description: CART_FULL_MESSAGE, variant: 'destructive' });
+      return;
+    }
 
     toast({
       title: 'Added to your cart',

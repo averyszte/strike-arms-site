@@ -6,9 +6,11 @@ import { Mail } from 'lucide-react';
 import type { z } from 'zod';
 
 import { FormError } from '@/components/account/FormError';
+import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { emailOnlySchema } from '@/lib/customer-account-validation';
 import { CARD_TITLE, CTA_PRIMARY_SM, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
@@ -16,12 +18,14 @@ import { CARD_TITLE, CTA_PRIMARY_SM, PANEL, TEXT_LINK } from '@/lib/storefront-s
 type EmailOnly = z.infer<typeof emailOnlySchema>;
 
 type ResetRequestFormProps = {
-  onSubmit: (email: string) => Promise<void>;
+  onSubmit: (email: string, captchaToken: string | null) => Promise<void>;
 };
 
 /** Step one of a reset: the email to send the code to. */
 export function ResetRequestForm({ onSubmit }: ResetRequestFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const turnstile = useTurnstile('customer-auth');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -29,11 +33,14 @@ export function ResetRequestForm({ onSubmit }: ResetRequestFormProps) {
   } = useForm<EmailOnly>({ resolver: zodResolver(emailOnlySchema), defaultValues: { email: '' } });
 
   async function submit({ email }: EmailOnly) {
+    if (isWaitingForBotCheck) return;
     setSubmitError(null);
     try {
-      await onSubmit(email);
+      await onSubmit(email, turnstile.token);
     } catch (error: unknown) {
       setSubmitError(customerAuthError(error));
+    } finally {
+      turnstile.reset();
     }
   }
 
@@ -56,9 +63,15 @@ export function ResetRequestForm({ onSubmit }: ResetRequestFormProps) {
           {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
         </div>
 
+        <BotCheck
+          containerRef={turnstile.ref}
+          isEnabled={turnstile.isEnabled}
+          hasFailed={turnstile.hasFailed}
+        />
+
         <FormError message={submitError} />
 
-        <Button type="submit" className={CTA_PRIMARY_SM} disabled={isSubmitting}>
+        <Button type="submit" className={CTA_PRIMARY_SM} disabled={isSubmitting || isWaitingForBotCheck}>
           <Mail className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Sending' : 'Email me a code'}
         </Button>

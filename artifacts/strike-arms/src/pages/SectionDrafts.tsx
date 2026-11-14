@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { SiteLayout } from "@/components/SiteLayout";
-import { Lineup } from "@/components/demo/combined/lineup";
+import { Lineup } from "@/components/home/lineup";
 import { WhyOwnerRows, WhyStats } from "@/components/demo/drafts/why-drafts-a";
 import { WhyManifesto, WhyPhotoCards, WhySpecSheet } from "@/components/demo/drafts/why-drafts-b";
 import {

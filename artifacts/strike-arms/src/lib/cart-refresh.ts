@@ -5,6 +5,7 @@ export const NO_CART_CHANGES: CartRefreshChanges = {
   repriced: [],
   noLongerShippable: [],
   removed: [],
+  outOfStock: [],
 };
 
 /**
@@ -17,7 +18,12 @@ export function refreshCartLines(
   lines: CartLine[],
   fresh: Map<string, FreshCartDetails>,
 ): { lines: CartLine[]; changes: CartRefreshChanges } {
-  const changes: CartRefreshChanges = { repriced: [], noLongerShippable: [], removed: [] };
+  const changes: CartRefreshChanges = {
+    repriced: [],
+    noLongerShippable: [],
+    removed: [],
+    outOfStock: [],
+  };
   const next: CartLine[] = [];
 
   for (const line of lines) {
@@ -28,6 +34,7 @@ export function refreshCartLines(
     }
     if (current.unitPriceCents !== line.unitPriceCents) changes.repriced.push(current.name);
     if (line.isShippable && !current.isShippable) changes.noLongerShippable.push(current.name);
+    if (!current.isInStock) changes.outOfStock.push(current.name);
     next.push({
       ...line,
       name: current.name,
@@ -52,6 +59,7 @@ export function hasCartChanges(changes: CartRefreshChanges): boolean {
   return (
     changes.repriced.length > 0 ||
     changes.noLongerShippable.length > 0 ||
-    changes.removed.length > 0
+    changes.removed.length > 0 ||
+    changes.outOfStock.length > 0
   );
 }

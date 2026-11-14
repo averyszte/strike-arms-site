@@ -5,9 +5,11 @@ import { Link } from 'wouter';
 import { UserPlus } from 'lucide-react';
 
 import { FormError } from '@/components/account/FormError';
+import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { signUpSchema, type SignUpFormInput } from '@/lib/customer-account-validation';
 import { PASSWORD_HINT } from '@/lib/password-policy';
@@ -15,13 +17,15 @@ import { CARD_TITLE, CTA_PRIMARY_SM, PANEL, TEXT_LINK } from '@/lib/storefront-s
 
 type SignUpFormProps = {
   /** Throws when Supabase refuses; the form says why and keeps the fields. */
-  onSubmit: (input: SignUpFormInput) => Promise<void>;
+  onSubmit: (input: SignUpFormInput, captchaToken: string | null) => Promise<void>;
 };
 
 const EMPTY: SignUpFormInput = { fullName: '', email: '', password: '', confirmPassword: '' };
 
 export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const turnstile = useTurnstile('customer-auth');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -29,11 +33,14 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
   } = useForm<SignUpFormInput>({ resolver: zodResolver(signUpSchema), defaultValues: EMPTY });
 
   async function submit(input: SignUpFormInput) {
+    if (isWaitingForBotCheck) return;
     setSubmitError(null);
     try {
-      await onSubmit(input);
+      await onSubmit(input, turnstile.token);
     } catch (error: unknown) {
       setSubmitError(customerAuthError(error));
+    } finally {
+      turnstile.reset();
     }
   }
 
@@ -62,9 +69,15 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
           . No marketing email unless you ask for it.
         </p>
 
+        <BotCheck
+          containerRef={turnstile.ref}
+          isEnabled={turnstile.isEnabled}
+          hasFailed={turnstile.hasFailed}
+        />
+
         <FormError message={submitError} />
 
-        <Button type="submit" className={CTA_PRIMARY_SM} disabled={isSubmitting}>
+        <Button type="submit" className={CTA_PRIMARY_SM} disabled={isSubmitting || isWaitingForBotCheck}>
           <UserPlus className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Creating account' : 'Create account'}
         </Button>
