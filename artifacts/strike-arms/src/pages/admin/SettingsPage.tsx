@@ -2,6 +2,8 @@ import { Helmet } from 'react-helmet-async';
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
 import { MigrationStatusPanel } from '@/components/admin/MigrationStatusPanel';
 import { StoreRatesForm } from '@/components/admin/StoreRatesForm';
+import { MfaFactorsPanel } from '@/components/admin/settings/MfaFactorsPanel';
+import { StoreRatesHistory } from '@/components/admin/settings/StoreRatesHistory';
 import { useStoreRates } from '@/hooks/use-store-rates';
 
 export default function SettingsPage() {
@@ -37,6 +39,11 @@ export default function SettingsPage() {
       )}
 
       {rates && <StoreRatesForm rates={rates} />}
+      <StoreRatesHistory />
+
+      <div className="mt-8">
+        <MfaFactorsPanel />
+      </div>
 
       <div className="mt-8">
         <MigrationStatusPanel />

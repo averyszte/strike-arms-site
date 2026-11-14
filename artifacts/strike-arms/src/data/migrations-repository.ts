@@ -13,14 +13,21 @@ import { supabase } from '@/lib/supabase';
 
 /** PostgREST: the function does not exist in the exposed schema. */
 const FUNCTION_MISSING = 'PGRST202';
+/** Postgres: insufficient privilege. Since 043 the check needs an AAL2 session. */
+const NOT_AUTHORISED = '42501';
 
-export type AppliedMigrations = { kind: 'ok'; versions: string[] } | { kind: 'check-missing' };
+export type AppliedMigrations =
+  | { kind: 'ok'; versions: string[] }
+  | { kind: 'check-missing' }
+  /** The session has not passed two-factor, so the database will not answer. */
+  | { kind: 'not-verified' };
 
 export async function listAppliedMigrations(): Promise<AppliedMigrations> {
   const { data, error } = await supabase.rpc('applied_migrations');
 
   if (error) {
     if (error.code === FUNCTION_MISSING) return { kind: 'check-missing' };
+    if (error.code === NOT_AUTHORISED) return { kind: 'not-verified' };
     throw new Error(error.message);
   }
 

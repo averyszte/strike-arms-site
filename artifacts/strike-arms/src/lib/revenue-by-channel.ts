@@ -1,4 +1,5 @@
 import { ORDER_CHANNEL_LABELS } from '@/lib/order-display';
+import { countsAsRevenue, netRevenueCents, revenueDate } from '@/lib/order-revenue';
 import type { Order, OrderChannel } from '@/types/order';
 
 export type ChannelRevenueRow = {
@@ -13,7 +14,8 @@ export type ChannelRevenueRow = {
 type Bucket = { cents: number; orderCount: number };
 
 /**
- * Splits paid revenue by how the order was taken.
+ * Splits paid revenue by how the order was taken. Partially refunded orders
+ * count, net of the refund, and the period is by paid date (M-027).
  *
  * A blended figure flatters the website: if most of the month's money was rung
  * up at the counter, the shop is doing well and the website is doing nothing,
@@ -30,10 +32,10 @@ export function buildChannelRevenue(orders: Order[], since: Date | null): Channe
   let total = 0;
 
   for (const order of orders) {
-    if (order.paymentStatus !== 'paid') continue;
-    if (since && new Date(order.createdAt) < since) continue;
+    if (!countsAsRevenue(order)) continue;
+    if (since && revenueDate(order) < since) continue;
 
-    const net = order.totalCents - order.refundCents;
+    const net = netRevenueCents(order);
     const bucket = buckets.get(order.channel) ?? { cents: 0, orderCount: 0 };
     buckets.set(order.channel, { cents: bucket.cents + net, orderCount: bucket.orderCount + 1 });
     total += net;

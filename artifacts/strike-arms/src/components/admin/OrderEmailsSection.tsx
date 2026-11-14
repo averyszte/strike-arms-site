@@ -1,6 +1,17 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { Send } from 'lucide-react';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useOrderEmails, useResendOrderEmail } from '@/hooks/use-order-emails';
@@ -17,12 +28,14 @@ import type { OrderEmail } from '@/types/order-email';
 /**
  * The emails this order has sent or queued (030), with a resend for one that
  * failed or never arrived. A resend is a fresh email to the order's current
- * address, so correcting a mistyped email and resending is the fix.
+ * address, so correcting a mistyped email and resending is the fix. It asks
+ * first, naming the address: the customer gets a second copy (M-042).
  */
 export function OrderEmailsSection({ orderId }: { orderId: string }) {
   const { data: emails, isError } = useOrderEmails(orderId);
   const resend = useResendOrderEmail(orderId);
   const { toast } = useToast();
+  const [confirming, setConfirming] = useState<OrderEmail | null>(null);
 
   async function handleResend(email: OrderEmail) {
     try {
@@ -68,7 +81,7 @@ export function OrderEmailsSection({ orderId }: { orderId: string }) {
                 variant="outline"
                 size="sm"
                 disabled={resend.isPending}
-                onClick={() => void handleResend(email)}
+                onClick={() => setConfirming(email)}
               >
                 <Send className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
                 Resend
@@ -77,6 +90,29 @@ export function OrderEmailsSection({ orderId }: { orderId: string }) {
           </li>
         ))}
       </ul>
+
+      <AlertDialog open={confirming !== null} onOpenChange={open => !open && setConfirming(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Resend this email?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirming && `${ORDER_EMAIL_LABELS[confirming.eventType]} goes to ${orderEmailRecipient(confirming)} again.`}{' '}
+              If the address is wrong, correct it on the order first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirming) void handleResend(confirming);
+                setConfirming(null);
+              }}
+            >
+              Resend
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

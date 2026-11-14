@@ -20,6 +20,8 @@ export type ParseResult<T> = { ok: true; value: T } | { ok: false; message: stri
 
 const EUROS = /^\d+(\.\d{1,2})?$/;
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+/** The largest Postgres int, in cents. */
+const MAX_CENTS = 2_147_483_647;
 
 const CATEGORIES: Category[] = [
   'rifles',
@@ -71,7 +73,12 @@ export function parseEuros(label: string, raw: string): ParseResult<number> {
   if (!EUROS.test(value)) {
     return { ok: false, message: `${label} must be an amount in euro, e.g. 129.00 (got "${value}")` };
   }
-  return { ok: true, value: Math.round(Number(value) * 100) };
+  const cents = Math.round(Number(value) * 100);
+  // The database holds prices as a positive int (001): zero, or anything past
+  // the int range, is refused there, after the preview said the row was fine.
+  if (cents <= 0) return { ok: false, message: `${label} must be more than 0.00 (got "${value}")` };
+  if (cents > MAX_CENTS) return { ok: false, message: `${label} is too large (got "${value}")` };
+  return { ok: true, value: cents };
 }
 
 /** Same, but an empty cell means "no sale price" rather than an error. */

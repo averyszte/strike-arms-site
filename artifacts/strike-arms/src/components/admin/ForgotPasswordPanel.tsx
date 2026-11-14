@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 
+import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRequestPasswordReset } from '@/hooks/use-request-password-reset';
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { loadErrorMessage } from '@/lib/load-error-message';
 
 interface Props {
@@ -20,10 +22,14 @@ interface Props {
 export function ForgotPasswordPanel({ initialEmail, onBack }: Props) {
   const [email, setEmail] = useState(initialEmail);
   const request = useRequestPasswordReset();
+  // Turnstile on the reset request too (M-056), or it is an open email cannon.
+  const turnstile = useTurnstile('admin-auth');
+  const isWaitingForBotCheck = turnstile.isEnabled && !turnstile.token;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    request.mutate(email.trim());
+    if (isWaitingForBotCheck) return;
+    request.mutate({ email: email.trim(), captchaToken: turnstile.token }, { onSettled: turnstile.reset });
   }
 
   if (request.isSuccess) {
@@ -57,13 +63,15 @@ export function ForgotPasswordPanel({ initialEmail, onBack }: Props) {
         />
       </div>
 
+      <BotCheck containerRef={turnstile.ref} isEnabled={turnstile.isEnabled} hasFailed={turnstile.hasFailed} />
+
       {request.isError && (
         <p role="alert" className="text-sm text-destructive">
           The reset email was not sent. {loadErrorMessage(request.error)}
         </p>
       )}
 
-      <Button type="submit" className="w-full" disabled={request.isPending}>
+      <Button type="submit" className="w-full" disabled={request.isPending || isWaitingForBotCheck}>
         {request.isPending ? 'Sending…' : 'Send reset link'}
       </Button>
       <Button type="button" variant="ghost" className="w-full" onClick={onBack}>

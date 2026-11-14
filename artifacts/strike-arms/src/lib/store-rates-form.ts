@@ -18,7 +18,15 @@ const EUROS = /^\d+(\.\d{1,2})?$/;
 // A percentage with at most two decimals, so 23 and 13.5 both work.
 const PERCENT = /^\d+(\.\d{1,2})?$/;
 
-const MAX_VAT_PERCENT = 100;
+// Hard limits, the same as the 043 check constraints: anything outside them
+// cannot be meant, and the database would refuse it anyway (M-029).
+export const MAX_SHIPPING_CENTS = 10_000;
+export const MAX_THRESHOLD_CENTS = 200_000;
+export const MAX_VAT_BASIS_POINTS = 3_000;
+
+// Soft limits: allowed, but the confirm step calls them out.
+const WARN_SHIPPING_CENTS = 3_000;
+const IRISH_VAT_BASIS_POINTS = [0, 900, 1_350, 2_300];
 
 export function ratesToForm(rates: StoreRates): StoreRatesForm {
   return {
@@ -49,21 +57,67 @@ export function formToRates(form: StoreRatesForm): StoreRates {
  */
 export function validateStoreRates(form: StoreRatesForm): StoreRatesErrors {
   const errors: StoreRatesErrors = {};
+  const rates = formToRates(form);
 
-  if (!EUROS.test(form.shippingFlat.trim())) {
-    errors.shippingFlat = 'Enter an amount in euro, e.g. 6.50';
+  if (!EUROS.test(form.shippingFlat.trim()) || rates.shippingFlatCents > MAX_SHIPPING_CENTS) {
+    errors.shippingFlat = 'Enter an amount in euro between 0 and 100, e.g. 6.50';
   }
 
-  if (!EUROS.test(form.freeShippingThreshold.trim())) {
-    errors.freeShippingThreshold = 'Enter an amount in euro, e.g. 75.00';
+  if (
+    !EUROS.test(form.freeShippingThreshold.trim()) ||
+    rates.freeShippingThresholdCents > MAX_THRESHOLD_CENTS
+  ) {
+    errors.freeShippingThreshold = 'Enter an amount in euro between 0 and 2,000, e.g. 75.00';
   }
 
-  const vat = Number(form.vatRate.trim());
-  if (!PERCENT.test(form.vatRate.trim()) || vat > MAX_VAT_PERCENT) {
-    errors.vatRate = 'Enter a rate between 0 and 100, e.g. 23';
+  if (!PERCENT.test(form.vatRate.trim()) || rates.vatRateBasisPoints > MAX_VAT_BASIS_POINTS) {
+    errors.vatRate = 'Enter a rate between 0 and 30, e.g. 23';
   }
 
   return errors;
+}
+
+/**
+ * Values that are allowed but unusual, shown in the confirm step so a slip
+ * (30 euro delivery, a threshold of 0, a VAT rate Ireland does not use) is
+ * seen before it reaches every customer.
+ */
+export function storeRatesWarnings(rates: StoreRates): string[] {
+  const warnings: string[] = [];
+  if (rates.shippingFlatCents > WARN_SHIPPING_CENTS) {
+    warnings.push('Delivery is over 30 euro.');
+  }
+  if (rates.freeShippingThresholdCents === 0) {
+    warnings.push('A threshold of 0 makes every delivery free.');
+  }
+  if (!IRISH_VAT_BASIS_POINTS.includes(rates.vatRateBasisPoints)) {
+    warnings.push('VAT is not one of the Irish rates (0, 9, 13.5 or 23 per cent).');
+  }
+  return warnings;
+}
+
+export type RateChange = { label: string; from: string; to: string };
+
+function euro(cents: number): string {
+  return `€${(cents / 100).toFixed(2)}`;
+}
+
+function percent(basisPoints: number): string {
+  return `${basisPoints / 100}%`;
+}
+
+/** Old against new, only for the rates that changed. */
+export function describeRateChanges(saved: StoreRates, next: StoreRates): RateChange[] {
+  const rows: RateChange[] = [
+    { label: 'Delivery charge', from: euro(saved.shippingFlatCents), to: euro(next.shippingFlatCents) },
+    {
+      label: 'Free delivery over',
+      from: euro(saved.freeShippingThresholdCents),
+      to: euro(next.freeShippingThresholdCents),
+    },
+    { label: 'VAT rate', from: percent(saved.vatRateBasisPoints), to: percent(next.vatRateBasisPoints) },
+  ];
+  return rows.filter(row => row.from !== row.to);
 }
 
 /** True when nothing was actually changed, so a no-op does not hit the network. */

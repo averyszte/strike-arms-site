@@ -13,6 +13,7 @@ import { OrderDeliveryDetails } from '@/components/admin/OrderDeliveryDetails';
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { OrderLinesSummary } from '@/components/admin/OrderLinesSummary';
 import { OrderRefundSection } from '@/components/admin/OrderRefundSection';
+import { OrderManualActionsSection } from '@/components/admin/OrderManualActionsSection';
 import { OrderTrackingNumberField } from '@/components/admin/OrderTrackingNumberField';
 import { PrintActions } from '@/components/admin/print/print-actions';
 import { loadErrorMessage } from '@/lib/load-error-message';
@@ -166,6 +167,7 @@ export function OrderDetailSheet({ orderId, onClose }: Props) {
             <OrderLinesSummary order={order} />
 
             <OrderRefundSection order={order} />
+            <OrderManualActionsSection order={order} />
 
             <OrderEmailsSection orderId={order.id} />
 

@@ -11,9 +11,11 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { compressImage } from '@/lib/compress-image';
+import { compressImageSizes } from '@/lib/compress-image';
+import { cardVariantOf } from '@/lib/product-image-variants';
 
-const BUCKET = 'product-images';
+export const PRODUCT_IMAGES_BUCKET = 'product-images';
+const BUCKET = PRODUCT_IMAGES_BUCKET;
 
 /** Matches allowed_mime_types on the bucket. Also feeds the file input's accept. */
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
@@ -70,15 +72,9 @@ export function storagePathFromPublicUrl(publicUrl: string): string | null {
   return publicUrl.slice(index + PUBLIC_URL_MARKER.length).split('?')[0] || null;
 }
 
-/** Compresses, uploads, and returns the public URL to store on the product. */
-export async function uploadProductImage(file: File): Promise<string> {
-  assertUploadable(file);
-
-  const compressed = await compressImage(file);
-  const path = generatePath(compressed.extension);
-
-  const { error } = await supabase.storage.from(BUCKET).upload(path, compressed.blob, {
-    contentType: compressed.contentType,
+async function put(path: string, blob: Blob, contentType: string): Promise<void> {
+  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
+    contentType,
     cacheControl: CACHE_CONTROL,
     // Never overwrite. A UUID collision would mean losing another product's
     // image silently, which is exactly the kind of failure that goes unnoticed
@@ -86,6 +82,26 @@ export async function uploadProductImage(file: File): Promise<string> {
     upsert: false,
   });
   if (error) throw error;
+}
+
+/**
+ * Compresses, uploads the full photo and its card copy (M-044), and returns
+ * the full photo's public URL to store on the product.
+ */
+export async function uploadProductImage(file: File): Promise<string> {
+  assertUploadable(file);
+
+  const { full, card } = await compressImageSizes(file);
+  const path = generatePath(full.extension);
+
+  await put(path, full.blob, full.contentType);
+  try {
+    await put(cardVariantOf(path), card.blob, card.contentType);
+  } catch (error) {
+    // Half an upload is worse than none: take the full photo back down.
+    await supabase.storage.from(BUCKET).remove([path]);
+    throw error;
+  }
 
   return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
@@ -104,6 +120,7 @@ export async function uploadProductImage(file: File): Promise<string> {
 export async function deleteUncommittedImage(publicUrl: string): Promise<void> {
   const path = storagePathFromPublicUrl(publicUrl);
   if (!path) return;
-  const { error } = await supabase.storage.from(BUCKET).remove([path]);
+  // remove() succeeds for a card copy that was never made.
+  const { error } = await supabase.storage.from(BUCKET).remove([path, cardVariantOf(path)]);
   if (error) throw error;
 }

@@ -6,6 +6,7 @@ import { ProductsBulkBar } from '@/components/admin/ProductsBulkBar';
 import { ProductsDialogs } from '@/components/admin/ProductsDialogs';
 import { ProductsGroups } from '@/components/admin/ProductsGroups';
 import { ProductsToolbar } from '@/components/admin/ProductsToolbar';
+import { ToastAction } from '@/components/ui/toast';
 import { useAdminProductsList } from '@/hooks/use-admin-products';
 import { useProductsActions } from '@/hooks/use-products-actions';
 import { useProductsDialogs } from '@/hooks/use-products-dialogs';
@@ -36,7 +37,11 @@ export function ProductsTable() {
   const groups = useMemo(() => groupProductsByCategory(list.data?.items ?? []), [list.data]);
   const visible = useMemo(() => flattenGroups(groups), [groups]);
   const selection = useRowSelection(visible);
-  const actions = useProductsActions(selection.clear);
+  const actions = useProductsActions(selection.clear, (onUndo) => (
+    <ToastAction altText="Undo" onClick={onUndo}>
+      Undo
+    </ToastAction>
+  ));
   const settledTotal = list.isFetching ? undefined : list.data?.total;
   usePageClamp(filters.page, ADMIN_PAGE_SIZE, settledTotal, filters.setPage);
 
@@ -78,9 +83,9 @@ export function ProductsTable() {
           isPending={actions.isPending}
           isArchivedView={filters.showArchived}
           onClear={selection.clear}
-          onPatch={(patch) => actions.patch(ids, patch)}
-          onArchive={() => actions.archive(ids)}
-          onRestore={() => actions.restore(ids)}
+          onPatch={(patch) => actions.patch(selection.selectedRows, patch)}
+          onArchive={() => actions.archive(selection.selectedRows)}
+          onRestore={() => actions.restore(selection.selectedRows)}
         />
       )}
       <ProductsGroups

@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ProductImagesField } from '@/components/admin/ProductImagesField';
+import { ProductSlugField } from '@/components/admin/ProductSlugField';
 import { useSubcategories } from '@/hooks/use-categories';
 import type { ProductImageUpload } from '@/hooks/use-product-image-upload';
 import { CONDITION_LABELS, PRODUCT_CONDITIONS } from '@/lib/product-condition';
@@ -44,9 +45,11 @@ function FieldError({ message }: { message?: string }) {
 interface Props {
   /** Owned by ProductFormSheet, which also has to discard on cancel. */
   upload: ProductImageUpload;
+  /** The product was published when the sheet opened: its slug is locked. */
+  isLive: boolean;
 }
 
-export function ProductFormFields({ upload }: Props) {
+export function ProductFormFields({ upload, isLive }: Props) {
   const {
     register,
     control,
@@ -73,11 +76,7 @@ export function ProductFormFields({ upload }: Props) {
         <FieldError message={errors.name?.message} />
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="slug">Slug *</Label>
-        <Input id="slug" {...register('slug')} placeholder="e.g. gandg-cm16-carbine" />
-        <FieldError message={errors.slug?.message} />
-      </div>
+      <ProductSlugField isLive={isLive} />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">

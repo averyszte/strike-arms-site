@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import {
@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRefundOrder } from '@/hooks/use-refund-order';
 import { useToast } from '@/hooks/use-toast';
+import type { RefundResult } from '@/hooks/use-refund-order';
 import { REFUND_REASONS, parseRefundAmount, type RefundReason } from '@/lib/order-refund';
 
 /**
@@ -34,16 +35,22 @@ interface Props {
   refundableCents: number;
   open: boolean;
   onClose: () => void;
+  /** Told what Stripe accepted, so the sheet can show the pending marker. */
+  onSent: (result: RefundResult) => void;
 }
 
-export function OrderRefundDialog({ orderId, refundableCents, open, onClose }: Props) {
+export function OrderRefundDialog({ orderId, refundableCents, open, onClose, onSent }: Props) {
   const [amount, setAmount] = useState(() => (refundableCents / 100).toFixed(2));
   const [reason, setReason] = useState<RefundReason>('requested_by_customer');
   const [error, setError] = useState<string | null>(null);
-  // One id per dialog, so a double-click is the same refund to Stripe. A
-  // deliberate second refund means opening the dialog again, which is a new id
-  // and a genuinely new refund.
+  // One id per dialog, so a double-click or a retry is the same refund to
+  // Stripe. The server binds the key to the amount too, so editing the amount
+  // is a different refund. A deliberate second refund means opening the
+  // dialog again after this one succeeded, which is a new id.
   const [attemptId] = useState(() => crypto.randomUUID());
+  // isPending only flips after a render; this catches the second click of a
+  // double-click that lands before it does.
+  const isInFlight = useRef(false);
   const refund = useRefundOrder();
   const { toast } = useToast();
 
@@ -52,6 +59,7 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose }: P
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (isInFlight.current) return;
 
     const parsed = parseRefundAmount(amount, refundableCents);
     if (!parsed.ok) {
@@ -59,6 +67,7 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose }: P
       return;
     }
     setError(null);
+    isInFlight.current = true;
 
     refund.mutate(
       {
@@ -73,12 +82,17 @@ export function OrderRefundDialog({ orderId, refundableCents, open, onClose }: P
       {
         onSuccess: (result) => {
           toast({
-            title: 'Refund sent to Stripe',
-            description:
-              `€${(result.amountCents / 100).toFixed(2)} — Stripe says ${result.status}. ` +
-              'The order updates when Stripe confirms it, usually within a few seconds.',
+            title: result.isRecorded ? 'Refund sent' : 'Refund sent, recording pending',
+            description: result.isRecorded
+              ? `€${(result.amountCents / 100).toFixed(2)} refunded. Stripe says ${result.status}.`
+              : `€${(result.amountCents / 100).toFixed(2)} is with Stripe (${result.status}). ` +
+                'The order updates when Stripe confirms it. Do not refund it again.',
           });
+          onSent(result);
           onClose();
+        },
+        onSettled: () => {
+          isInFlight.current = false;
         },
         onError: (mutationError) => {
           setError(

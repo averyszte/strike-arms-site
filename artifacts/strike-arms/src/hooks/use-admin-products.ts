@@ -61,7 +61,9 @@ export function useCreateProduct() {
 export function useUpdateProduct() {
   const invalidate = useProductInvalidation();
   return useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: ProductPatch }) => updateProduct(id, patch),
+    // expectedUpdatedAt: the save is refused if the row moved on since (M-032).
+    mutationFn: ({ id, patch, expectedUpdatedAt }: { id: string; patch: ProductPatch; expectedUpdatedAt?: string }) =>
+      updateProduct(id, patch, expectedUpdatedAt),
     onSuccess: invalidate,
   });
 }

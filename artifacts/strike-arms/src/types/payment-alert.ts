@@ -11,4 +11,6 @@ export type PaymentAlert = {
   /** Written by the webhook, in words the admin can show. */
   detail: string;
   createdAt: string;
+  /** Null while open. Set by "Mark handled" or a Stripe refund. */
+  resolvedAt: string | null;
 };

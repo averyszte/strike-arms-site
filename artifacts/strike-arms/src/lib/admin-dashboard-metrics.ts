@@ -10,6 +10,7 @@ import {
   isAfter,
 } from 'date-fns';
 import type { Order } from '@/types/order';
+import { countsAsRevenue, netRevenueCents, revenueDate } from './order-revenue.ts';
 
 export type DashboardMetrics = {
   revenueThisMonth: number;
@@ -36,17 +37,16 @@ export function workQueue(orders: Order[]): Order[] {
   return orders.filter(o => !o.isArchived);
 }
 
-export function computeDashboardMetrics(orders: Order[]): DashboardMetrics {
-  const now = new Date();
+export function computeDashboardMetrics(orders: Order[], now: Date = new Date()): DashboardMetrics {
   const monthStart = startOfMonth(now);
   const dayStart = startOfDay(now);
-  const paid = orders.filter(o => o.paymentStatus === 'paid');
+  const paid = orders.filter(countsAsRevenue);
 
   return {
-    revenueAllTime: paid.reduce((s, o) => s + o.totalCents - o.refundCents, 0),
+    revenueAllTime: paid.reduce((s, o) => s + netRevenueCents(o), 0),
     revenueThisMonth: paid
-      .filter(o => isAfter(new Date(o.createdAt), monthStart))
-      .reduce((s, o) => s + o.totalCents - o.refundCents, 0),
+      .filter(o => isAfter(revenueDate(o), monthStart))
+      .reduce((s, o) => s + netRevenueCents(o), 0),
     // A queue, so archived orders drop out of it. The revenue and volume
     // figures either side of this deliberately do not.
     pendingPickups: workQueue(orders).filter(
@@ -77,17 +77,20 @@ export function periodStart(period: PeriodKey, now: Date = new Date()): Date | n
   return startOfDay(subDays(now, PERIOD_DAYS[period] - 1));
 }
 
-export function buildRevenueRows(orders: Order[], period: PeriodKey): RevenueRow[] {
-  const paid = orders.filter(o => o.paymentStatus === 'paid');
-  const now = new Date();
+export function buildRevenueRows(
+  orders: Order[],
+  period: PeriodKey,
+  now: Date = new Date(),
+): RevenueRow[] {
+  const paid = orders.filter(countsAsRevenue);
 
   function sumBucket(start: Date, end: Date): number {
     return paid
       .filter(o => {
-        const d = new Date(o.createdAt);
+        const d = revenueDate(o);
         return d >= start && d <= end;
       })
-      .reduce((s, o) => s + o.totalCents - o.refundCents, 0);
+      .reduce((s, o) => s + netRevenueCents(o), 0);
   }
 
   if (period === '7d') {
@@ -117,10 +120,10 @@ export function buildRevenueRows(orders: Order[], period: PeriodKey): RevenueRow
   if (paid.length === 0) return [];
   const oldest = paid.reduce(
     (min, o) => {
-      const d = new Date(o.createdAt);
+      const d = revenueDate(o);
       return d < min ? d : min;
     },
-    new Date(),
+    now,
   );
 
   return eachMonthOfInterval({ start: startOfMonth(oldest), end: now })
@@ -135,7 +138,7 @@ export function buildProductSales(orders: Order[]): ProductSalesRow[] {
   const map = new Map<string, ProductSalesRow>();
 
   for (const order of orders) {
-    if (order.paymentStatus !== 'paid') continue;
+    if (!countsAsRevenue(order)) continue;
     for (const item of order.items ?? []) {
       const existing = map.get(item.productSlug) ?? {
         name: item.productName,

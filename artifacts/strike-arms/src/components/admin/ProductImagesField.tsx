@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImagePlus, Loader2, Star, X } from 'lucide-react';
 
+import { ProductRemovedPhotos } from '@/components/admin/ProductRemovedPhotos';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -133,8 +134,12 @@ export function ProductImagesField({ upload }: Props) {
       <p className="text-xs text-muted-foreground">
         JPEG, PNG or WebP. Photos are resized and compressed in the browser before
         upload, so a phone photo is fine. The first image is the one shown on the
-        product card.
+        product card. A removed photo can be put back for 30 days.
       </p>
+
+      <ProductRemovedPhotos
+        onRestore={url => !images.includes(url) && setImages([...images, url])}
+      />
     </div>
   );
 }

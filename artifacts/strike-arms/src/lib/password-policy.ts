@@ -25,6 +25,8 @@ export const newPasswordSchema = z
   .object({
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'Type the password again'),
+    // Only the change-password page asks for it (M-041); empty elsewhere.
+    currentPassword: z.string(),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'The two passwords do not match',
@@ -62,6 +64,13 @@ export function passwordUpdateError(error: unknown): string {
       return `That password does not meet the rules. ${PASSWORD_HINT}`;
     case 'same_password':
       return 'The new password must be different from the current one.';
+    case 'current_password_mismatch':
+    case 'invalid_credentials':
+      return 'Your current password is not right. Nothing was changed.';
+    case 'current_password_required':
+      return 'Type your current password first.';
+    case 'reauthentication_needed':
+      return 'For safety, sign out, sign back in and change the password straight away.';
     case 'insufficient_aal':
       return 'Enter a code from your authenticator app first, then set the password.';
     default:

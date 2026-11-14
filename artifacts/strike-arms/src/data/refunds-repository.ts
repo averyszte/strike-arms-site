@@ -3,10 +3,9 @@ import { supabase } from '@/lib/supabase';
 /**
  * The only caller of the refund Edge Function.
  *
- * Nothing here writes to the order. Stripe accepting the refund and the order
- * being marked refunded are two different events, and the second one arrives
- * through the webhook -- so the admin gets told what actually happened rather
- * than what this function hoped would happen.
+ * Nothing here writes to the order. The function records the refund on the
+ * order straight after Stripe accepts it and says whether that worked
+ * (isRecorded); when it did not, the webhook records it a moment later.
  */
 
 /** An error whose message came from the server and is safe to show. */
@@ -17,6 +16,11 @@ export type RefundResult = {
   amountCents: number;
   /** Stripe's own: 'succeeded', 'pending', 'failed', 'requires_action'. */
   status: string;
+  /**
+   * False when Stripe took the refund but the order row could not be written
+   * straight away (M-006). The webhook records it shortly after.
+   */
+  isRecorded: boolean;
 };
 
 type RefundResponse = Partial<RefundResult> & { error?: string };
@@ -44,6 +48,7 @@ export async function requestRefund(request: RefundRequest): Promise<RefundResul
     refundId: data.refundId,
     amountCents: data.amountCents,
     status: data.status ?? 'unknown',
+    isRecorded: data.isRecorded === true,
   };
 }
 

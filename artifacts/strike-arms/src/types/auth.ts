@@ -23,6 +23,14 @@ export interface TotpEnrolment {
   secret: string;
 }
 
+/** A verified authenticator on the admin's account (M-026: a backup device is allowed). */
+export interface TotpFactor {
+  id: string;
+  /** What the admin called it, for example "Alan's phone". Empty for the first one enrolled. */
+  name: string;
+  createdAt: string;
+}
+
 /** The two kinds of emailed link an admin can arrive from. */
 export type EmailLinkType = 'invite' | 'recovery';
 

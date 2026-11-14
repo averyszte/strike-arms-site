@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { fetchStoreRates, updateStoreRates } from '@/data/settings-repository';
+import {
+  fetchStoreRates,
+  fetchStoreRatesHistory,
+  updateStoreRates,
+} from '@/data/settings-repository';
 import type { StoreRates } from '@/types/store-settings';
 
 /**
@@ -30,6 +34,14 @@ export function useUpdateStoreRates() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (rates: StoreRates) => updateStoreRates(rates),
-    onSuccess: (saved) => qc.setQueryData(['store-rates'], saved),
+    onSuccess: (saved) => {
+      qc.setQueryData(['store-rates'], saved);
+      void qc.invalidateQueries({ queryKey: ['store-rates-history'] });
+    },
   });
+}
+
+/** The last rate changes, for the history list under the form (M-029). */
+export function useStoreRatesHistory() {
+  return useQuery({ queryKey: ['store-rates-history'], queryFn: () => fetchStoreRatesHistory() });
 }

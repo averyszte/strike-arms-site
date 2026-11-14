@@ -65,6 +65,16 @@ export function MigrationStatusPanel() {
           </div>
         )}
 
+        {data?.kind === 'not-verified' && (
+          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              The check needs a session that has passed two-factor. Sign out and back in with a
+              code, then reload this page.
+            </span>
+          </div>
+        )}
+
         {data?.kind === 'check-missing' && (
           <div className="flex items-start gap-2 text-sm text-destructive">
             <OctagonAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />

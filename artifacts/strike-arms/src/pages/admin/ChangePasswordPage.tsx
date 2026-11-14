@@ -8,9 +8,9 @@ export default function ChangePasswordPage() {
   const [isChanged, setIsChanged] = useState(false);
   const { mutateAsync } = useUpdatePassword();
 
-  async function changePassword(password: string) {
+  async function changePassword(password: string, currentPassword: string) {
     setIsChanged(false);
-    await mutateAsync(password);
+    await mutateAsync({ password, currentPassword });
     setIsChanged(true);
   }
 
@@ -28,7 +28,7 @@ export default function ChangePasswordPage() {
             Password changed. Use the new one next time you sign in.
           </p>
         )}
-        <NewPasswordForm submitLabel="Update password" onSubmit={changePassword} />
+        <NewPasswordForm submitLabel="Update password" onSubmit={changePassword} shouldAskCurrent />
       </div>
     </>
   );

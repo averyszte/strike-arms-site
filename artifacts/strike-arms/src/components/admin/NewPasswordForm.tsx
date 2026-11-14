@@ -15,7 +15,13 @@ import {
 interface Props {
   submitLabel: string;
   /** Throws when Supabase refuses; the form shows why and keeps the fields. */
-  onSubmit: (password: string) => Promise<void>;
+  onSubmit: (password: string, currentPassword: string) => Promise<void>;
+  /**
+   * Changing a password while signed in asks for the current one (M-041), so a
+   * left-open or stolen session cannot lock the admin out. An invite or reset
+   * link has already proved who it is.
+   */
+  shouldAskCurrent?: boolean;
 }
 
 /**
@@ -24,7 +30,7 @@ interface Props {
  * which used to check three different things (and none of them what Supabase
  * checks).
  */
-export function NewPasswordForm({ submitLabel, onSubmit }: Props) {
+export function NewPasswordForm({ submitLabel, onSubmit, shouldAskCurrent = false }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     formState: { errors, isSubmitting },
@@ -33,13 +39,17 @@ export function NewPasswordForm({ submitLabel, onSubmit }: Props) {
     reset,
   } = useForm<NewPasswordInput>({
     resolver: zodResolver(newPasswordSchema),
-    defaultValues: { password: '', confirmPassword: '' },
+    defaultValues: { password: '', confirmPassword: '', currentPassword: '' },
   });
 
-  async function submit({ password }: NewPasswordInput) {
+  async function submit({ password, currentPassword }: NewPasswordInput) {
     setSubmitError(null);
+    if (shouldAskCurrent && currentPassword === '') {
+      setSubmitError('Type your current password first.');
+      return;
+    }
     try {
-      await onSubmit(password);
+      await onSubmit(password, currentPassword);
       reset();
     } catch (error: unknown) {
       setSubmitError(passwordUpdateError(error));
@@ -48,6 +58,12 @@ export function NewPasswordForm({ submitLabel, onSubmit }: Props) {
 
   return (
     <form onSubmit={e => void handleSubmit(submit)(e)} className="space-y-4" noValidate>
+      {shouldAskCurrent && (
+        <div className="space-y-1.5">
+          <Label htmlFor="current-password">Current password</Label>
+          <Input id="current-password" type="password" autoComplete="current-password" {...register('currentPassword')} />
+        </div>
+      )}
       <div className="space-y-1.5">
         <Label htmlFor="new-password">New password</Label>
         <Input

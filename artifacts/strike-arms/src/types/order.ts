@@ -166,4 +166,8 @@ export type CounterOrderInput = {
 export type CounterOrderResult = {
   orderId: string;
   orderNumber: string | null;
+  /** The server's total, priced from the catalogue (044, M-022). */
+  totalCents: number;
+  /** Names of products sold while not ticked in stock. A warning, not a refusal (D1). */
+  outOfStock: string[];
 };

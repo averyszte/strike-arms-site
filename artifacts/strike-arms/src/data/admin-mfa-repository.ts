@@ -6,9 +6,13 @@
  * aal1, so without the flow in this file an admin can sign in, see everything,
  * and be refused by the database on every single save. Enrolment is therefore
  * mandatory, not optional — see AuthGuard.
+ *
+ * M-026: an admin may hold a second, named authenticator (a backup device), so
+ * a lost phone is not a lockout. A factor can be removed only while another
+ * verified one remains.
  */
 import { supabase } from '@/lib/supabase';
-import type { AuthLevel, MfaState, TotpEnrolment } from '@/types/auth';
+import type { AuthLevel, MfaState, TotpEnrolment, TotpFactor } from '@/types/auth';
 
 const ISSUER = 'Strike Arms Admin';
 
@@ -19,14 +23,26 @@ const ISSUER = 'Strike Arms Admin';
  * stored session rather than calling the network, which matters because this
  * runs inside onAuthStateChange. nextLevel is 'aal2' exactly when the user has
  * at least one *verified* factor, which is the question we are asking.
+ *
+ * Throws when the level cannot be read (M-036), so the caller can keep the
+ * last known level instead of dropping a working admin to aal1.
  */
 export async function getMfaState(): Promise<MfaState> {
   const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (error || !data) return { level: 'none', hasTotpFactor: false };
+  if (error || !data) throw error ?? new Error('Could not read the two-factor state');
   return {
     level: (data.currentLevel ?? 'none') as AuthLevel,
     hasTotpFactor: data.nextLevel === 'aal2',
   };
+}
+
+/** The verified authenticators on this account, oldest first. */
+export async function listTotpFactors(): Promise<TotpFactor[]> {
+  const { data, error } = await supabase.auth.mfa.listFactors();
+  if (error) throw error;
+  return data.totp
+    .map(f => ({ id: f.id, name: f.friendly_name ?? '', createdAt: f.created_at }))
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
 /**
@@ -35,9 +51,10 @@ export async function getMfaState(): Promise<MfaState> {
  * The factor is unusable until verifyTotp() confirms a code from it. Abandoned
  * attempts are cleared first — Supabase caps the number of factors per user,
  * and an admin who closes the tab mid-enrolment would otherwise be locked out
- * of enrolling by their own leftovers.
+ * of enrolling by their own leftovers. A second factor needs a name that the
+ * account does not already use (Supabase refuses duplicates).
  */
-export async function enrollTotp(): Promise<{
+export async function enrollTotp(name?: string): Promise<{
   enrolment: TotpEnrolment | null;
   error: string | null;
 }> {
@@ -46,6 +63,7 @@ export async function enrollTotp(): Promise<{
   const { data, error } = await supabase.auth.mfa.enroll({
     factorType: 'totp',
     issuer: ISSUER,
+    ...(name ? { friendlyName: name } : {}),
   });
   if (error) return { enrolment: null, error: error.message };
   if (!data.totp) return { enrolment: null, error: 'Supabase returned no TOTP factor' };
@@ -65,29 +83,43 @@ export async function enrollTotp(): Promise<{
  *
  * Pass the factorId from enrolment while that factor is still unverified;
  * listFactors() only reports verified ones, so it cannot find it for us.
+ * Without one, the code is tried against each verified factor in turn, so a
+ * code from the backup device works at the gate without picking a device.
  */
 export async function verifyTotp(
   code: string,
   factorId?: string,
 ): Promise<{ error: string | null }> {
-  const id = factorId ?? (await getVerifiedTotpFactorId());
-  if (!id) return { error: 'No authenticator is set up on this account' };
+  const ids = factorId ? [factorId] : await getVerifiedTotpFactorIds();
+  if (ids.length === 0) return { error: 'No authenticator is set up on this account' };
 
-  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: id, code });
-  if (error) return { error: error.message };
-  return { error: null };
+  let lastError = 'That code was not accepted';
+  for (const id of ids) {
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: id, code });
+    if (!error) return { error: null };
+    lastError = error.message;
+  }
+  return { error: lastError };
 }
 
-/** Remove a verified factor. Leaves the admin at aal1 until they enrol again. */
+/**
+ * Remove a verified factor. Refused when it is the only one, because that
+ * would leave the account with no second factor and the admin locked at aal1.
+ */
 export async function unenrollTotp(factorId: string): Promise<{ error: string | null }> {
+  const ids = await getVerifiedTotpFactorIds();
+  if (!ids.includes(factorId)) return { error: 'That authenticator is no longer on this account' };
+  if (ids.length < 2) {
+    return { error: 'Add another authenticator before removing this one' };
+  }
   const { error } = await supabase.auth.mfa.unenroll({ factorId });
   return { error: error ? error.message : null };
 }
 
-async function getVerifiedTotpFactorId(): Promise<string | null> {
+async function getVerifiedTotpFactorIds(): Promise<string[]> {
   const { data, error } = await supabase.auth.mfa.listFactors();
-  if (error || !data) return null;
-  return data.totp[0]?.id ?? null;
+  if (error || !data) return [];
+  return data.totp.map(f => f.id);
 }
 
 async function removeUnverifiedTotpFactors(): Promise<void> {

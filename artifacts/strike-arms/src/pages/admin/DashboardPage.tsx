@@ -9,6 +9,8 @@ import { TopProductsCard } from '@/components/admin/dashboard/top-products-card'
 import { RecentOrdersCard } from '@/components/admin/dashboard/recent-orders-card';
 import { OperationalAlertsCard } from '@/components/admin/dashboard/operational-alerts-card';
 import { UnmatchedPaymentsCard } from '@/components/admin/dashboard/unmatched-payments-card';
+import { FailedEmailsCard } from '@/components/admin/dashboard/failed-emails-card';
+import { SystemHealthCard } from '@/components/admin/dashboard/system-health-card';
 import { useAllOrdersWithItems } from '@/hooks/use-orders';
 import { useAdminProducts } from '@/hooks/use-admin-products';
 import { useInquiries } from '@/hooks/use-inquiries';
@@ -70,6 +72,8 @@ export default function DashboardPage() {
         <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
 
         <UnmatchedPaymentsCard />
+        <FailedEmailsCard />
+        <SystemHealthCard />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard

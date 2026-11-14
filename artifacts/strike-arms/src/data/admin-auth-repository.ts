@@ -10,8 +10,20 @@ import { supabase } from '@/lib/supabase';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import type { EmailLinkType } from '@/types/auth';
 
-export async function signInWithPassword(email: string, password: string): Promise<void> {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+/**
+ * captchaToken is the Turnstile token (M-056). Null when there is no site key
+ * (local development); once Auth CAPTCHA is on, hosted Supabase refuses that.
+ */
+export async function signInWithPassword(
+  email: string,
+  password: string,
+  captchaToken: string | null = null,
+): Promise<void> {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
   if (error) throw error;
 }
 
@@ -51,9 +63,14 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 /**
  * Needs a session: a normal one for a change of password, or the one that
  * redeeming an invite or reset link creates.
+ *
+ * A change while signed in sends the current password too (M-041). Supabase
+ * checks it once "Require current password" is on in the hosted Auth settings.
  */
-export async function updatePassword(password: string): Promise<void> {
-  const { error } = await supabase.auth.updateUser({ password });
+export async function updatePassword(password: string, currentPassword?: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser(
+    currentPassword ? { password, current_password: currentPassword } : { password },
+  );
   if (error) throw error;
 }
 
@@ -66,9 +83,10 @@ export async function updatePassword(password: string): Promise<void> {
  * Supabase answers the same way whether or not the address has an account,
  * so this cannot be used to find out who the admins are.
  */
-export async function requestPasswordReset(email: string): Promise<void> {
+export async function requestPasswordReset(email: string, captchaToken: string | null = null): Promise<void> {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/admin/reset-password`,
+    ...(captchaToken && { captchaToken }),
   });
   if (error) throw error;
 }

@@ -28,7 +28,9 @@ import type { Product } from '@/types/product';
  * the preview so that mistake is visible before it happens.
  *
  * Only columns present in the file are touched. A file of just Slug and Price
- * changes prices and nothing else; an absent column never blanks a field.
+ * changes prices and nothing else; an absent column never blanks a field. And
+ * only fields that differ are written (M-028), so a column that matches does
+ * not overwrite an edit made since the export.
  */
 
 export type ImportCreate = {
@@ -45,6 +47,10 @@ export type ImportUpdate = {
   name: string;
   patch: ParsedFields;
   changes: ImportChange[];
+  /** The version the preview saw. The write is refused if it has moved on. */
+  loadedUpdatedAt?: string;
+  /** Saved in the admin after this file was exported (M-028). */
+  isStale: boolean;
 };
 
 export type ImportProblem = { line: number; slug: string; messages: string[] };
@@ -82,6 +88,34 @@ function missingForCreate(fields: ParsedFields): string[] {
   return REQUIRED_FOR_CREATE.filter((key) => fields[key] === undefined).map(
     (key) => `${FIELD_LABELS[key]} is needed to create a new product`,
   );
+}
+
+function changedOnly(fields: ParsedFields, changes: ImportChange[]): ParsedFields {
+  const changed = new Set(changes.map((change) => change.field));
+  return Object.fromEntries(
+    Object.entries(fields).filter(([field]) => changed.has(field)),
+  ) as ParsedFields;
+}
+
+/** True when the product was saved after the row's Updated stamp. A blank stamp cannot tell. */
+export function isNewerThanExport(current: string | undefined, exported: string | undefined): boolean {
+  if (!current || !exported || exported.trim() === '') return false;
+  const was = Date.parse(exported.trim());
+  const now = Date.parse(current);
+  return !Number.isNaN(was) && !Number.isNaN(now) && now > was;
+}
+
+/** Checks that need the whole row and the product it matches, not one cell. */
+function rowProblems(fields: ParsedFields, product: Product | undefined): string[] {
+  const problems: string[] = [];
+  const saleProblem = checkSalePrice(fields, product);
+  if (saleProblem) problems.push(saleProblem);
+  // The database refuses an archived product that is published (026).
+  if (product?.isArchived && fields.isPublished) {
+    problems.push('This product is archived. Restore it in the products list before publishing it.');
+  }
+  if (!product) problems.push(...missingForCreate(fields));
+  return problems;
 }
 
 export function planProductImport(csvText: string, existing: Product[]): ImportPlan {
@@ -142,9 +176,7 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
     const product = bySlug.get(slug);
     const { fields, messages } = parseFields(read);
 
-    const saleProblem = checkSalePrice(fields, product);
-    if (saleProblem) messages.push(saleProblem);
-    if (!product) messages.push(...missingForCreate(fields));
+    messages.push(...rowProblems(fields, product));
 
     if (messages.length > 0) {
       plan.problems.push({ line: record.line, slug, messages });
@@ -167,8 +199,10 @@ export function planProductImport(csvText: string, existing: Product[]): ImportP
       slug,
       id: product.id,
       name: product.name,
-      patch: fields,
+      patch: changedOnly(fields, changes),
       changes,
+      loadedUpdatedAt: product.updatedAt,
+      isStale: isNewerThanExport(product.updatedAt, read('updatedAt')),
     });
   }
 

@@ -10,11 +10,12 @@ import type { ImportPlan } from '@/lib/product-import';
  * up here as a new product rather than a rename. Seeing "40 new" where you
  * expected "40 updated" is the moment to stop.
  *
- * Only the first few rows of each list are shown. The point is to recognise a
- * mistake, not to read two hundred diffs.
+ * Every row is listed, in a scrolling box (M-028): a summary that stops at
+ * eight hides the ninth change, and that is the one that reverts somebody's
+ * edit. Rows saved since the file was exported are flagged.
  */
 
-const SHOWN = 8;
+const LIST = 'max-h-64 overflow-y-auto pr-1';
 
 type ProductImportPreviewProps = {
   plan: ImportPlan;
@@ -43,6 +44,7 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
   }
 
   const notices: string[] = [];
+  const stale = plan.updates.filter((update) => update.isStale).length;
   if (plan.unknownColumns.length > 0) {
     notices.push(`Columns not recognised and ignored: ${plan.unknownColumns.join(', ')}.`);
   }
@@ -72,6 +74,15 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
         />
       </div>
 
+      {stale > 0 && (
+        <p className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-foreground">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
+          {stale} {stale === 1 ? 'product was' : 'products were'} saved in the admin after this file
+          was exported. Only the cells that differ are written, but check those rows: the file may
+          be putting back an old value.
+        </p>
+      )}
+
       {notices.map((notice) => (
         <p key={notice} className="text-xs text-muted-foreground">
           {notice}
@@ -83,19 +94,14 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
           <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             New products
           </h4>
-          <ul className="space-y-1 text-sm">
-            {plan.creates.slice(0, SHOWN).map((create) => (
+          <ul className={`space-y-1 text-sm ${LIST}`}>
+            {plan.creates.map((create) => (
               <li key={create.slug} className="text-foreground">
                 {create.name}{' '}
                 <span className="font-mono text-xs text-muted-foreground">{create.slug}</span>
               </li>
             ))}
           </ul>
-          {plan.creates.length > SHOWN && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              and {plan.creates.length - SHOWN} more
-            </p>
-          )}
         </section>
       )}
 
@@ -104,10 +110,17 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
           <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Changes
           </h4>
-          <ul className="space-y-2 text-sm">
-            {plan.updates.slice(0, SHOWN).map((update) => (
+          <ul className={`space-y-2 text-sm ${LIST}`}>
+            {plan.updates.map((update) => (
               <li key={update.slug}>
-                <p className="font-medium text-foreground">{update.name}</p>
+                <p className="font-medium text-foreground">
+                  {update.name}
+                  {update.isStale && (
+                    <span className="ml-2 text-xs font-normal text-amber-500">
+                      changed since the export
+                    </span>
+                  )}
+                </p>
                 <ul className="mt-0.5 space-y-0.5">
                   {update.changes.map((change) => (
                     <li key={change.field} className="text-xs text-muted-foreground">
@@ -119,11 +132,6 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
               </li>
             ))}
           </ul>
-          {plan.updates.length > SHOWN && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              and {plan.updates.length - SHOWN} more
-            </p>
-          )}
         </section>
       )}
 
@@ -135,8 +143,8 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
           <p className="mb-1.5 text-xs text-muted-foreground">
             These are skipped. Everything else still imports.
           </p>
-          <ul className="space-y-1 text-xs">
-            {plan.problems.slice(0, SHOWN).map((problem) => (
+          <ul className={`space-y-1 text-xs ${LIST}`}>
+            {plan.problems.map((problem) => (
               <li key={`${problem.line}-${problem.slug}`}>
                 <span className="font-medium text-foreground">Row {problem.line}</span>
                 {problem.slug && (
@@ -146,11 +154,6 @@ export function ProductImportPreview({ plan }: ProductImportPreviewProps) {
               </li>
             ))}
           </ul>
-          {plan.problems.length > SHOWN && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              and {plan.problems.length - SHOWN} more
-            </p>
-          )}
         </section>
       )}
     </div>

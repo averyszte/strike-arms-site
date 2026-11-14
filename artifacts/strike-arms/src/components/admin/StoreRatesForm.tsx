@@ -5,11 +5,15 @@ import { Label } from '@/components/ui/label';
 import { useUpdateStoreRates } from '@/hooks/use-store-rates';
 import { useToast } from '@/hooks/use-toast';
 import { formatPrice } from '@/lib/format-price';
+import { StoreRatesConfirmDialog } from '@/components/admin/settings/StoreRatesConfirmDialog';
 import {
+  describeRateChanges,
   formToRates,
   ratesAreUnchanged,
   ratesToForm,
+  storeRatesWarnings,
   validateStoreRates,
+  type RateChange,
   type StoreRatesErrors,
 } from '@/lib/store-rates-form';
 import type { StoreRates } from '@/types/store-settings';
@@ -21,6 +25,7 @@ interface Props {
 export function StoreRatesForm({ rates }: Props) {
   const [form, setForm] = useState(() => ratesToForm(rates));
   const [errors, setErrors] = useState<StoreRatesErrors>({});
+  const [changes, setChanges] = useState<RateChange[] | null>(null);
   const update = useUpdateStoreRates();
   const { toast } = useToast();
 
@@ -36,6 +41,12 @@ export function StoreRatesForm({ rates }: Props) {
       return;
     }
 
+    // M-029: a slip goes live for every customer, so show old against new first.
+    setChanges(describeRateChanges(rates, formToRates(form)));
+  }
+
+  function save() {
+    setChanges(null);
     update.mutate(formToRates(form), {
       onSuccess: (saved) => {
         setForm(ratesToForm(saved));
@@ -58,7 +69,7 @@ export function StoreRatesForm({ rates }: Props) {
           onChange={(e) => setForm((f) => ({ ...f, shippingFlat: e.target.value }))}
         />
         <p className="mt-1 text-xs text-muted-foreground">
-          Charged once per order that is being posted. In euro.
+          Charged once per order that is being posted. In euro, up to 100.
         </p>
         {errors.shippingFlat && (
           <p className="mt-1 text-xs text-destructive">{errors.shippingFlat}</p>
@@ -103,6 +114,13 @@ export function StoreRatesForm({ rates }: Props) {
       <Button type="submit" disabled={update.isPending}>
         {update.isPending ? 'Saving...' : 'Save rates'}
       </Button>
+
+      <StoreRatesConfirmDialog
+        changes={changes}
+        warnings={changes ? storeRatesWarnings(formToRates(form)) : []}
+        onCancel={() => setChanges(null)}
+        onConfirm={save}
+      />
     </form>
   );
 }

@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
   const { mutateAsync } = useUpdatePassword();
 
   async function setPassword(password: string) {
-    await mutateAsync(password);
+    await mutateAsync({ password });
     toast({ title: 'Password changed' });
     navigate('/admin');
   }

@@ -23,6 +23,7 @@ import type {
 } from '@/types/database-rows';
 import type { ServerFunctions } from '@/types/database-server-functions';
 import type { CustomerFunctions, CustomerTables } from '@/types/database-customer';
+import type { AdminFunctions, AdminTables } from '@/types/database-admin';
 
 export type { Json } from '@/types/database-rows';
 
@@ -32,7 +33,7 @@ export type { Json } from '@/types/database-rows';
 
 export type Database = {
   public: {
-    Tables: CustomerTables & {
+    Tables: CustomerTables & AdminTables & {
       products: {
         Row: ProductRow;
         Insert: Omit<
@@ -154,7 +155,7 @@ export type Database = {
         Relationships: [];
       };
     };
-    Functions: ServerFunctions & CustomerFunctions & {
+    Functions: ServerFunctions & CustomerFunctions & AdminFunctions & {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin_aal2: { Args: Record<PropertyKey, never>; Returns: boolean };
       // Deployment metadata (migration 016). Admin-only; the Settings screen
@@ -188,7 +189,13 @@ export type Database = {
           p_shipping_county?: string | null;
           p_shipping_eircode?: string | null;
         };
-        Returns: { order_id: string; order_number: string | null };
+        // 044: also the server's total and the names of lines not in stock.
+        Returns: {
+          order_id: string;
+          order_number: string | null;
+          total_cents: number;
+          out_of_stock: string[];
+        };
       };
       // 031: queues a fresh copy of an order email. Checks is_admin_aal2().
       resend_notification: {

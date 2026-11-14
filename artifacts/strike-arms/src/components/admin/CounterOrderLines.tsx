@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { formatPrice } from '@/lib/format-price';
-import type { ResolvedCounterLine } from '@/lib/counter-order-totals';
+import { MAX_COUNTER_LINE_QUANTITY, type ResolvedCounterLine } from '@/lib/counter-order-totals';
 import type { ItemFulfillmentMethod } from '@/types/order';
 
 /**
@@ -54,6 +54,7 @@ export function CounterOrderLines({
             <Input
               type="number"
               min={1}
+              max={MAX_COUNTER_LINE_QUANTITY}
               value={line.quantity}
               aria-label={`Quantity of ${line.product.name}`}
               className="h-8 w-16 shrink-0 text-center"

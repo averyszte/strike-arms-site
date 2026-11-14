@@ -14,7 +14,7 @@ export default function AcceptInvitePage() {
   const { mutateAsync } = useUpdatePassword();
 
   async function setPassword(password: string) {
-    await mutateAsync(password);
+    await mutateAsync({ password });
     navigate('/admin');
   }
 

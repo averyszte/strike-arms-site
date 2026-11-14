@@ -115,7 +115,7 @@ async function runCreates(creates: ImportCreate[], outcome: ImportOutcome): Prom
 async function runUpdates(updates: ImportUpdate[], outcome: ImportOutcome): Promise<void> {
   for (const update of updates) {
     try {
-      await updateProduct(update.id, update.patch);
+      await updateProduct(update.id, update.patch, update.loadedUpdatedAt);
       outcome.updated += 1;
     } catch (error) {
       outcome.failures.push({

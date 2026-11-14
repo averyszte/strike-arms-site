@@ -61,3 +61,38 @@ export async function updateStoreRates(rates: StoreRates): Promise<StoreRates> {
     vatRateBasisPoints: data.vat_rate_basis_points,
   };
 }
+
+export type StoreRatesChange = {
+  id: number;
+  changedAt: string;
+  before: StoreRates;
+  after: StoreRates;
+};
+
+/**
+ * The last rate changes, newest first (043 writes them by trigger). The
+ * select policy is AAL2 admin, so an aal1 session reads an empty list.
+ */
+export async function fetchStoreRatesHistory(limit = 20): Promise<StoreRatesChange[]> {
+  const { data, error } = await supabase
+    .from('store_settings_history')
+    .select('*')
+    .order('changed_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(row => ({
+    id: row.id,
+    changedAt: row.changed_at,
+    before: {
+      shippingFlatCents: row.old_shipping_flat_cents,
+      freeShippingThresholdCents: row.old_free_shipping_threshold_cents,
+      vatRateBasisPoints: row.old_vat_rate_basis_points,
+    },
+    after: {
+      shippingFlatCents: row.new_shipping_flat_cents,
+      freeShippingThresholdCents: row.new_free_shipping_threshold_cents,
+      vatRateBasisPoints: row.new_vat_rate_basis_points,
+    },
+  }));
+}

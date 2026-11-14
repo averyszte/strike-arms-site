@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useStatusEmailPreview } from '@/hooks/use-order-admin-actions';
 import { FULFILLMENT_OPTIONS } from '@/lib/order-display';
 import type { FulfillmentStatus } from '@/types/order';
 
@@ -31,7 +32,7 @@ import type { FulfillmentStatus } from '@/types/order';
  */
 
 type OrdersBulkBarProps = {
-  selectedCount: number;
+  selectedIds: string[];
   isArchivedView: boolean;
   isPending: boolean;
   onClear: () => void;
@@ -40,7 +41,7 @@ type OrdersBulkBarProps = {
 };
 
 export function OrdersBulkBar({
-  selectedCount,
+  selectedIds,
   isArchivedView,
   isPending,
   onClear,
@@ -48,6 +49,11 @@ export function OrdersBulkBar({
   onToggleArchive,
 }: OrdersBulkBarProps) {
   const [pendingStatus, setPendingStatus] = useState<FulfillmentStatus | null>(null);
+  const selectedCount = selectedIds.length;
+  // M-017: say how many customers get an email before anyone presses the
+  // button, so a bulk "Mark shipped" is never a surprise to forty inboxes.
+  const emailPreview = useStatusEmailPreview(selectedIds, pendingStatus);
+  const emailCount = emailPreview.data;
 
   const label = FULFILLMENT_OPTIONS.find((option) => option.value === pendingStatus)?.label ?? '';
   const orderWord = selectedCount === 1 ? 'order' : 'orders';
@@ -101,10 +107,24 @@ export function OrdersBulkBar({
               Every selected order changes at once, and each change is written to its history.
               There is no single click that puts them back.
             </AlertDialogDescription>
+            <p className="text-sm font-medium text-foreground">
+              {emailPreview.isLoading && 'Counting the customers this emails...'}
+              {emailPreview.isError && 'Could not count the emails. Some customers may be emailed.'}
+              {emailCount !== undefined &&
+                (emailCount === 0
+                  ? 'No customer is emailed.'
+                  : `${emailCount} ${emailCount === 1 ? 'customer is' : 'customers are'} emailed.`)}
+            </p>
+            {pendingStatus === 'cancelled' && (
+              <p className="text-sm text-destructive">
+                Paid orders are not refunded by this. Open each one and refund it from the order.
+              </p>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              disabled={emailPreview.isLoading}
               onClick={() => {
                 if (pendingStatus) onStatusChange(pendingStatus);
                 setPendingStatus(null);

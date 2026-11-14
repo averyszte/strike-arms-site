@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -6,84 +7,26 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { ProductFormFields } from '@/components/admin/ProductFormFields';
+import { ProductPublishWarning } from '@/components/admin/ProductPublishWarning';
 import { productFormSchema } from '@/lib/product-form-schema';
 import type { ProductFormValues } from '@/lib/product-form-schema';
 import { useCreateProduct, useUpdateProduct } from '@/hooks/use-admin-products';
 import { useProductImageUpload } from '@/hooks/use-product-image-upload';
 import { useToast } from '@/hooks/use-toast';
-import type { Category, NewProduct, Product } from '@/types/product';
-
-function toFormValues(product: Product): ProductFormValues {
-  return {
-    name: product.name,
-    slug: product.slug,
-    category: product.category,
-    subcategory: product.subcategory,
-    brand: product.brand,
-    condition: product.condition,
-    priceEuros: (product.price / 100).toFixed(2),
-    salePriceEuros: product.salePrice != null ? (product.salePrice / 100).toFixed(2) : '',
-    shortDescription: product.shortDescription,
-    description: product.description ?? '',
-    isPublished: product.isPublished ?? false,
-    isNew: product.isNew ?? false,
-    isFeatured: product.isFeatured ?? false,
-    isShippable: product.isShippable,
-    inStock: product.inStock,
-    tags: (product.tags ?? []).join(', '),
-    images: product.images,
-  };
-}
-
-const DEFAULT_VALUES: ProductFormValues = {
-  name: '',
-  slug: '',
-  category: 'rifles',
-  subcategory: '',
-  brand: '',
-  // New stock is the ordinary case; secondhand is the one you have to choose.
-  condition: 'new',
-  priceEuros: '',
-  salePriceEuros: '',
-  shortDescription: '',
-  description: '',
-  isPublished: false,
-  isNew: false,
-  isFeatured: false,
-  isShippable: false,
-  inStock: true,
-  tags: '',
-  images: [],
-};
-
-function toProductInput(values: ProductFormValues): NewProduct {
-  return {
-    name: values.name,
-    slug: values.slug,
-    category: values.category as Category,
-    subcategory: values.subcategory,
-    brand: values.brand,
-    condition: values.condition,
-    price: Math.round(parseFloat(values.priceEuros) * 100),
-    salePrice: values.salePriceEuros
-      ? Math.round(parseFloat(values.salePriceEuros) * 100)
-      : undefined,
-    shortDescription: values.shortDescription,
-    description: values.description,
-    isPublished: values.isPublished,
-    isNew: values.isNew,
-    isFeatured: values.isFeatured,
-    isShippable: values.isShippable,
-    inStock: values.inStock,
-    tags: values.tags
-      .split(',')
-      .map(t => t.trim())
-      .filter(Boolean),
-    images: values.images,
-  };
-}
+import { DEFAULT_PRODUCT_FORM_VALUES, dirtyProductPatch, toFormValues, toProductInput } from '@/lib/product-form-values';
+import type { Product } from '@/types/product';
 
 interface Props {
   open: boolean;
@@ -97,6 +40,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   const update = useUpdateProduct();
   const upload = useProductImageUpload();
   const isEdit = !!product;
+  const [isConfirmingDiscard, setIsConfirmingDiscard] = useState(false);
 
   /**
    * Anything uploaded during this session but never saved onto the product is
@@ -104,23 +48,31 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
    * saving is the common path — an admin opens "Add product", picks four
    * photos, then changes their mind.
    */
-  function handleClose() {
+  function discardAndClose() {
+    setIsConfirmingDiscard(false);
     upload.discardAll();
     onClose();
+  }
+
+  // Closing by accident (a click outside, Escape) lost every edit (M-036).
+  function handleClose() {
+    if (form.formState.isDirty) setIsConfirmingDiscard(true);
+    else discardAndClose();
   }
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     // ProductsTable keys this sheet on the product id, so switching rows
     // remounts it and these defaults are re-read. No reset effect needed.
-    defaultValues: product ? toFormValues(product) : DEFAULT_VALUES,
+    defaultValues: product ? toFormValues(product) : DEFAULT_PRODUCT_FORM_VALUES,
   });
 
   async function onSubmit(values: ProductFormValues) {
     try {
       const input = toProductInput(values);
       if (isEdit && product) {
-        await update.mutateAsync({ id: product.id, patch: input });
+        const patch = dirtyProductPatch(input, form.formState.dirtyFields);
+        await update.mutateAsync({ id: product.id, patch, expectedUpdatedAt: product.updatedAt });
       } else {
         await create.mutateAsync(input);
       }
@@ -131,7 +83,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
       onClose();
     } catch (err: unknown) {
       toast({
-        title: 'Error',
+        title: 'Not saved',
         description: err instanceof Error ? err.message : 'Something went wrong',
         variant: 'destructive',
       });
@@ -143,25 +95,42 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   const isPending = create.isPending || update.isPending || upload.isUploading;
 
   return (
-    <Sheet open={open} onOpenChange={o => { if (!o) handleClose(); }}>
-      <SheetContent className="w-full sm:max-w-[520px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{isEdit ? 'Edit Product' : 'Add Product'}</SheetTitle>
-        </SheetHeader>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
-            <ProductFormFields upload={upload} />
-            <div className="flex gap-2 pt-2 border-t border-border sticky bottom-0 bg-background pb-2">
-              <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isPending} className="flex-1">
-                {isPending ? 'Saving…' : isEdit ? 'Update' : 'Create'}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet open={open} onOpenChange={o => { if (!o) handleClose(); }}>
+        <SheetContent className="w-full sm:max-w-[520px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{isEdit ? 'Edit Product' : 'Add Product'}</SheetTitle>
+          </SheetHeader>
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-4">
+              <ProductFormFields upload={upload} isLive={product?.isPublished === true} />
+              <ProductPublishWarning />
+              <div className="flex gap-2 pt-2 border-t border-border sticky bottom-0 bg-background pb-2">
+                <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isPending} className="flex-1">
+                  {isPending ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
+        </SheetContent>
+      </Sheet>
+      <AlertDialog open={isConfirmingDiscard} onOpenChange={setIsConfirmingDiscard}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard your changes?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Nothing you changed here has been saved. Any photos uploaded since you opened it are deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep editing</AlertDialogCancel>
+            <AlertDialogAction onClick={discardAndClose}>Discard</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

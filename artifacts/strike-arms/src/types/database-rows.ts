@@ -90,7 +90,9 @@ export type NotificationEventType =
   // 031; no longer queued since 038, kept for the jobs already sent.
   | 'owner.low_stock'
   // 039: every contact form and service quote.
-  | 'owner.new_inquiry';
+  | 'owner.new_inquiry'
+  // 042/048: the daily system health digest. No order, product or inquiry.
+  | 'owner.health_digest';
 
 // 030: the email outbox. Written by triggers on orders, (031) products and
 // (039) inquiries, drained by the notification-worker function. recipient is

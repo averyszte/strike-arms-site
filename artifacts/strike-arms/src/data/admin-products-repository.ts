@@ -11,11 +11,12 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { chunkArray } from '@/lib/chunk-array';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import { rowToProduct } from '@/lib/product-mappers';
-import { ID_CHUNK, pageAll } from '@/data/orders-bulk-reads';
+import { pageAll } from '@/data/orders-bulk-reads';
+import { writeInChunks } from '@/data/chunked-write';
+import { ZeroRowsError } from '@/data/expect-rows';
 import type {
   AdminProductListFilters,
   NewProduct,
@@ -23,6 +24,22 @@ import type {
   ProductBulkPatch,
   ProductPatch,
 } from '@/types/product';
+import type { Database } from '@/types/database';
+
+type ProductRow = Database['public']['Tables']['products']['Row'];
+
+/** Admin reads carry updated_at, so an edit can tell it is not stale (M-032). */
+function adminRowToProduct(row: ProductRow): Product {
+  return { ...rowToProduct(row), updatedAt: row.updated_at };
+}
+
+/** Somebody else saved this product after it was loaded here. */
+export class StaleProductError extends Error {
+  constructor() {
+    super('This product was changed elsewhere since you opened it. Reload it and make the change again.');
+    this.name = 'StaleProductError';
+  }
+}
 
 /**
  * Every product, archived included, paged past the server's row cap.
@@ -40,7 +57,7 @@ export async function listAllProducts(): Promise<Product[]> {
       .order('id')
       .range(from, to),
   );
-  return rows.map(rowToProduct);
+  return rows.map(adminRowToProduct);
 }
 
 /**
@@ -78,7 +95,7 @@ export async function listProducts(
     .range((page - 1) * pageSize, page * pageSize - 1);
   if (error) throw error;
 
-  return { items: (data ?? []).map(rowToProduct), total: count ?? 0 };
+  return { items: (data ?? []).map(adminRowToProduct), total: count ?? 0 };
 }
 
 export async function createProduct(input: NewProduct): Promise<Product> {
@@ -107,7 +124,7 @@ export async function createProduct(input: NewProduct): Promise<Product> {
     .single();
 
   if (error) throw error;
-  return rowToProduct(data);
+  return adminRowToProduct(data);
 }
 
 type ProductFlags = Partial<
@@ -125,8 +142,17 @@ function flagColumns(patch: ProductFlags) {
   };
 }
 
-export async function updateProduct(id: string, patch: ProductPatch): Promise<Product> {
-  const { data, error } = await supabase
+/**
+ * Writes only the fields in the patch. With expectedUpdatedAt, the write is
+ * refused when the row has been saved since (M-032): two people editing the
+ * same product no longer silently overwrite each other.
+ */
+export async function updateProduct(
+  id: string,
+  patch: ProductPatch,
+  expectedUpdatedAt?: string,
+): Promise<Product> {
+  let query = supabase
     .from('products')
     .update({
       ...(patch.slug !== undefined && { slug: patch.slug }),
@@ -145,12 +171,16 @@ export async function updateProduct(id: string, patch: ProductPatch): Promise<Pr
       ...flagColumns(patch),
       ...(patch.tags !== undefined && { tags: patch.tags }),
     })
-    .eq('id', id)
-    .select()
-    .single();
+    .eq('id', id);
+  if (expectedUpdatedAt) query = query.eq('updated_at', expectedUpdatedAt);
 
+  const { data, error } = await query.select().maybeSingle();
   if (error) throw error;
-  return rowToProduct(data);
+  if (!data) {
+    if (expectedUpdatedAt) throw new StaleProductError();
+    throw new ZeroRowsError();
+  }
+  return adminRowToProduct(data);
 }
 
 // ─── Archive and bulk operations ──────────────────────────────────────────────
@@ -177,10 +207,7 @@ export async function setProductsArchived(ids: string[], isArchived: boolean): P
       }
     : { is_archived: false, archived_at: null };
 
-  for (const batch of chunkArray(ids, ID_CHUNK)) {
-    const { error } = await supabase.from('products').update(row).in('id', batch);
-    if (error) throw error;
-  }
+  await writeInChunks(ids, batch => supabase.from('products').update(row).in('id', batch).select('id'));
 }
 
 /** Applies the same patch to many products. See ProductBulkPatch for why it is narrow. */
@@ -189,8 +216,5 @@ export async function bulkUpdateProducts(ids: string[], patch: ProductBulkPatch)
   const row = flagColumns(patch);
   if (Object.keys(row).length === 0) return;
 
-  for (const batch of chunkArray(ids, ID_CHUNK)) {
-    const { error } = await supabase.from('products').update(row).in('id', batch);
-    if (error) throw error;
-  }
+  await writeInChunks(ids, batch => supabase.from('products').update(row).in('id', batch).select('id'));
 }

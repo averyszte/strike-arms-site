@@ -35,10 +35,14 @@ export const PRODUCT_CSV_COLUMNS = [
   'New',
   'Can be posted',
   'In stock',
+  'Updated',
 ] as const;
 
-/** Columns exported but never written back. None since stock became Yes/No (038). */
-export const IMPORT_IGNORED_COLUMNS: readonly string[] = [];
+/**
+ * Columns exported but never written back. Updated is the version the row was
+ * exported at: the import warns when a product has been saved since (M-028).
+ */
+export const IMPORT_IGNORED_COLUMNS: readonly string[] = ['Updated'];
 
 /** Multi-value cells use a semicolon, so a comma in a tag cannot split it. */
 export const LIST_SEPARATOR = ';';
@@ -68,6 +72,7 @@ function productRow(product: Product): string[] {
     yesNo(product.isNew),
     yesNo(product.isShippable),
     yesNo(product.inStock),
+    product.updatedAt ?? '',
   ];
 }
 

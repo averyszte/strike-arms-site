@@ -4,6 +4,7 @@ import { requestPasswordReset } from '@/data/admin-auth-repository';
 
 export function useRequestPasswordReset() {
   return useMutation({
-    mutationFn: (email: string) => requestPasswordReset(email),
+    mutationFn: ({ email, captchaToken }: { email: string; captchaToken: string | null }) =>
+      requestPasswordReset(email, captchaToken),
   });
 }

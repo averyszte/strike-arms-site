@@ -37,7 +37,7 @@ export function OrdersTablePanel({
     <>
       {selectedCount > 0 && (
         <OrdersBulkBar
-          selectedCount={selectedCount}
+          selectedIds={selection.selectedIds}
           isArchivedView={showArchived}
           isPending={actions.isBulkPending}
           onClear={selection.clear}

@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { requestRefund, type RefundRequest } from '@/data/refunds-repository';
+import { requestRefund, type RefundRequest, type RefundResult } from '@/data/refunds-repository';
+
+export type { RefundResult };
 
 /**
- * Invalidates the order afterwards, but the refreshed row will usually still
- * say "paid": Stripe's charge.refunded webhook is what moves it, and that
- * arrives a moment later. The dialog says so rather than letting the admin
- * read an unchanged badge as a failed refund and press the button again.
+ * Invalidates the order afterwards. When the function could not record the
+ * refund itself (isRecorded false) the refreshed row still says "paid" until
+ * the webhook arrives, so the sheet shows a pending marker rather than
+ * letting an unchanged badge read as a failed refund.
  */
 export function useRefundOrder() {
   const qc = useQueryClient();

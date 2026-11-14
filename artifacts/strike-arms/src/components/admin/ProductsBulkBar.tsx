@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
   ArchiveRestore,
@@ -28,11 +29,9 @@ import type { Product, ProductBulkPatch } from '@/types/product';
 /**
  * What you can do to a selection of products.
  *
- * Publishing, featuring and stock are one click, because the button that undoes each
- * of them is sitting right beside it. Archiving asks first, because restoring
- * brings products back as unfeatured drafts rather than as they were, and
- * publishing asks when the selection contains something that would go on the
- * shop looking broken -- no image, or no price.
+ * Every action asks first, with the count (M-037): a selection is easy to get
+ * wrong and the change goes live on the shop at once. Publishing also says how
+ * many would go on the shop looking broken. Archiving offers Undo afterwards.
  *
  * In the archived view the only thing to do to a selection is restore it.
  */
@@ -47,13 +46,45 @@ type ProductsBulkBarProps = {
   isArchivedView: boolean;
 };
 
-function ClearButton({ onClear }: { onClear: () => void }) {
-  return (
-    <Button type="button" size="sm" variant="ghost" className="ml-auto" onClick={onClear}>
-      <X className="mr-1.5 h-4 w-4" aria-hidden="true" />
-      Clear
-    </Button>
-  );
+type BulkAction = {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+  verb: string;
+  detail: string;
+};
+
+type Pending = BulkAction & { run: () => void };
+
+const PATCH_ACTIONS: (BulkAction & { patch: ProductBulkPatch })[] = [
+  { key: 'publish', label: 'Publish', icon: Eye, verb: 'Publish', patch: { isPublished: true }, detail: 'They go on the shop straight away.' },
+  { key: 'unpublish', label: 'Unpublish', icon: EyeOff, verb: 'Unpublish', patch: { isPublished: false }, detail: 'They come off the shop straight away.' },
+  { key: 'feature', label: 'Feature', icon: Star, verb: 'Feature', patch: { isFeatured: true }, detail: 'They show on the homepage.' },
+  { key: 'unfeature', label: 'Unfeature', icon: StarOff, verb: 'Unfeature', patch: { isFeatured: false }, detail: 'They come off the homepage.' },
+  { key: 'in-stock', label: 'In stock', icon: PackageCheck, verb: 'Mark in stock', patch: { inStock: true }, detail: 'Customers can buy them online.' },
+  { key: 'out-of-stock', label: 'Out of stock', icon: PackageX, verb: 'Mark out of stock', patch: { inStock: false }, detail: 'Customers can no longer buy them online.' },
+];
+
+const ARCHIVE: BulkAction = {
+  key: 'archive',
+  label: 'Archive',
+  icon: Archive,
+  verb: 'Archive',
+  detail: 'They come off the shop and out of this list. Their past orders are kept. Undo is offered straight after.',
+};
+
+const RESTORE: BulkAction = {
+  key: 'restore',
+  label: 'Restore as drafts',
+  icon: ArchiveRestore,
+  verb: 'Restore',
+  detail: 'They come back unpublished and unfeatured, to be checked before they go live again.',
+};
+
+function publishWarning(selected: Product[]): string {
+  const incomplete = countIncomplete(selected);
+  if (incomplete === 0) return '';
+  return ` ${incomplete} of them ${incomplete === 1 ? 'has' : 'have'} no image or no price, and will look broken.`;
 }
 
 export function ProductsBulkBar({
@@ -65,31 +96,20 @@ export function ProductsBulkBar({
   onRestore,
   isArchivedView,
 }: ProductsBulkBarProps) {
-  const [confirming, setConfirming] = useState<'publish' | 'archive' | null>(null);
-
+  const [pending, setPending] = useState<Pending | null>(null);
   const count = selected.length;
   const word = count === 1 ? 'product' : 'products';
-  const incomplete = countIncomplete(selected);
 
-  if (isArchivedView) {
-    return (
-      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2">
-        <p className="mr-1 text-sm font-medium text-foreground">
-          {count} {word} selected
-        </p>
-        <Button type="button" size="sm" variant="outline" disabled={isPending} onClick={onRestore}>
-          <ArchiveRestore className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Restore as drafts
-        </Button>
-        <ClearButton onClear={onClear} />
-      </div>
-    );
-  }
-
-  function handlePublish() {
-    if (incomplete > 0) setConfirming('publish');
-    else onPatch({ isPublished: true });
-  }
+  const actions: Pending[] = isArchivedView
+    ? [{ ...RESTORE, run: onRestore }]
+    : [
+        ...PATCH_ACTIONS.map(action => ({
+          ...action,
+          detail: action.key === 'publish' ? action.detail + publishWarning(selected) : action.detail,
+          run: () => onPatch(action.patch),
+        })),
+        { ...ARCHIVE, run: onArchive },
+      ];
 
   return (
     <>
@@ -97,127 +117,42 @@ export function ProductsBulkBar({
         <p className="mr-1 text-sm font-medium text-foreground">
           {count} {word} selected
         </p>
-
-        <Button type="button" size="sm" variant="outline" disabled={isPending} onClick={handlePublish}>
-          <Eye className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Publish
+        {actions.map(action => (
+          <Button
+            key={action.key}
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={isPending}
+            onClick={() => setPending(action)}
+          >
+            <action.icon className="mr-1.5 h-4 w-4" aria-hidden="true" />
+            {action.label}
+          </Button>
+        ))}
+        <Button type="button" size="sm" variant="ghost" className="ml-auto" onClick={onClear}>
+          <X className="mr-1.5 h-4 w-4" aria-hidden="true" />
+          Clear
         </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => onPatch({ isPublished: false })}
-        >
-          <EyeOff className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Unpublish
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => onPatch({ isFeatured: true })}
-        >
-          <Star className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Feature
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => onPatch({ isFeatured: false })}
-        >
-          <StarOff className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Unfeature
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => onPatch({ inStock: true })}
-        >
-          <PackageCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          In stock
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => onPatch({ inStock: false })}
-        >
-          <PackageX className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Out of stock
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => setConfirming('archive')}
-        >
-          <Archive className="mr-1.5 h-4 w-4" aria-hidden="true" />
-          Archive
-        </Button>
-
-        <ClearButton onClear={onClear} />
       </div>
 
-      <AlertDialog
-        open={confirming === 'publish'}
-        onOpenChange={(open) => !open && setConfirming(null)}
-      >
+      <AlertDialog open={pending !== null} onOpenChange={open => !open && setPending(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Publish {count} {word}?
+              {pending?.verb} {count} {word}?
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              {incomplete} of them {incomplete === 1 ? 'has' : 'have'} no image or no price, and
-              will go on the shop looking broken. Everything published here is visible to customers
-              straight away.
-            </AlertDialogDescription>
+            <AlertDialogDescription>{pending?.detail}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Go back</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                onPatch({ isPublished: true });
-                setConfirming(null);
+                pending?.run();
+                setPending(null);
               }}
             >
-              Publish anyway
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={confirming === 'archive'}
-        onOpenChange={(open) => !open && setConfirming(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Archive {count} {word}?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              They come off the shop and out of this list. Their past orders are kept, and they can be restored from Archived as unfeatured drafts, to be checked
-              before they go live again.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onArchive();
-                setConfirming(null);
-              }}
-            >
-              Archive {count} {word}
+              {pending?.verb} {count} {word}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

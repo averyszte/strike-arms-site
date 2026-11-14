@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import {
   getSession,
@@ -29,7 +29,7 @@ type AdminAuthContextValue = {
   connectionError: unknown;
   /** Run the admin check again after a connection error. */
   recheck: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, captchaToken: string | null) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -52,10 +52,24 @@ const SIGNED_OUT: AdminSession = {
 const CHECK_FAILED_MESSAGE =
   "Could not check this account's admin access. Check the connection and try again.";
 
-async function resolveSession(session: Session | null): Promise<AdminSession> {
-  if (!session?.user) return SIGNED_OUT;
+/**
+ * Read the MFA level, retrying once. On a second failure keep the last known
+ * level for the same user (M-036): a network blip must not drop a working
+ * admin back to the code screen. A different or new user starts from 'none'.
+ */
+async function readMfa(fallback: MfaState): Promise<MfaState> {
   try {
-    const [isAdmin, mfa] = await Promise.all([isCurrentUserAdmin(), getMfaState()]);
+    return await getMfaState();
+  } catch {
+    return getMfaState().catch(() => fallback);
+  }
+}
+
+async function resolveSession(session: Session | null, prev: AdminSession): Promise<AdminSession> {
+  if (!session?.user) return SIGNED_OUT;
+  const fallback = prev.user?.id === session.user.id ? prev.mfa : SIGNED_OUT.mfa;
+  try {
+    const [isAdmin, mfa] = await Promise.all([isCurrentUserAdmin(), readMfa(fallback)]);
     return { user: session.user, isAdmin, mfa, connectionError: null };
   } catch (error: unknown) {
     return {
@@ -69,12 +83,17 @@ async function resolveSession(session: Session | null): Promise<AdminSession> {
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AdminSession>(SIGNED_OUT);
   const [isLoading, setIsLoading] = useState(true);
+  // resolveSession needs the last state without re-subscribing on every change.
+  const stateRef = useRef<AdminSession>(SIGNED_OUT);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     let mounted = true;
 
     async function apply(session: Session | null) {
-      const next = await resolveSession(session);
+      const next = await resolveSession(session, stateRef.current);
       if (!mounted) return;
       setState(next);
       setIsLoading(false);
@@ -90,16 +109,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshMfa = useCallback(async () => {
-    const mfa = await getMfaState();
+    const mfa = await readMfa(stateRef.current.mfa);
     setState(prev => (prev.user ? { ...prev, mfa } : prev));
   }, []);
 
   const recheck = useCallback(async () => {
-    setState(await resolveSession(await getSession()));
+    setState(await resolveSession(await getSession(), stateRef.current));
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    await signInWithPassword(email, password);
+  const signIn = useCallback(async (email: string, password: string, captchaToken: string | null) => {
+    await signInWithPassword(email, password, captchaToken);
     const admin = await isCurrentUserAdmin().catch(async () => {
       await signOutOfSupabase();
       throw new Error(CHECK_FAILED_MESSAGE);

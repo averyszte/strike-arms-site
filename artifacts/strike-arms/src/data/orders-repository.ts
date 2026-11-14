@@ -1,8 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import { chunkArray } from '@/lib/chunk-array';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { ATTENTION_CLOSED_FULFILMENT, ATTENTION_OPEN_PAYMENT } from '@/lib/order-attention';
-import { ID_CHUNK, listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';
+import { listOrderItemsFor, pageAll } from '@/data/orders-bulk-reads';
+import { expectRows } from '@/data/expect-rows';
+import { writeInChunks } from '@/data/chunked-write';
 import { rowToOrder, rowToOrderStatusLog, type OrderRow } from '@/lib/order-mappers';
 import type {
   Order,
@@ -107,16 +108,19 @@ export async function updateOrderFulfillment(
 
 /** Null clears it. The database checks the format (033). */
 export async function setOrderTrackingNumber(id: string, trackingNumber: string | null): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('orders')
     .update({ tracking_number: trackingNumber })
-    .eq('id', id);
+    .eq('id', id)
+    .select('id');
   if (error) throw error;
+  expectRows(data);
 }
 
 export async function addOrderNote(id: string, note: string): Promise<void> {
-  const { error } = await supabase.from('orders').update({ notes: note }).eq('id', id);
+  const { data, error } = await supabase.from('orders').update({ notes: note }).eq('id', id).select('id');
   if (error) throw error;
+  expectRows(data);
 }
 
 /**
@@ -127,8 +131,13 @@ export async function addOrderNote(id: string, note: string): Promise<void> {
  * with it, which is a different thing from it never having happened.
  */
 export async function setOrderArchived(id: string, isArchived: boolean): Promise<void> {
-  const { error } = await supabase.from('orders').update({ is_archived: isArchived }).eq('id', id);
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ is_archived: isArchived })
+    .eq('id', id)
+    .select('id');
   if (error) throw error;
+  expectRows(data);
 }
 
 /**
@@ -199,7 +208,12 @@ export async function createCounterOrder(
   });
 
   if (error) throw error;
-  return { orderId: data.order_id, orderNumber: data.order_number };
+  return {
+    orderId: data.order_id,
+    orderNumber: data.order_number,
+    totalCents: data.total_cents,
+    outOfStock: data.out_of_stock ?? [],
+  };
 }
 
 /**
@@ -210,24 +224,16 @@ export async function createCounterOrder(
  * right trade for an action whose whole point is that it is reversible.
  */
 export async function setOrdersArchived(ids: string[], isArchived: boolean): Promise<void> {
-  for (const batch of chunkArray(ids, ID_CHUNK)) {
-    const { error } = await supabase
-      .from('orders')
-      .update({ is_archived: isArchived })
-      .in('id', batch);
-    if (error) throw error;
-  }
+  await writeInChunks(ids, batch =>
+    supabase.from('orders').update({ is_archived: isArchived }).in('id', batch).select('id'),
+  );
 }
 
 export async function updateOrdersFulfillment(
   ids: string[],
   status: FulfillmentStatus,
 ): Promise<void> {
-  for (const batch of chunkArray(ids, ID_CHUNK)) {
-    const { error } = await supabase
-      .from('orders')
-      .update({ fulfillment_status: status })
-      .in('id', batch);
-    if (error) throw error;
-  }
+  await writeInChunks(ids, batch =>
+    supabase.from('orders').update({ fulfillment_status: status }).in('id', batch).select('id'),
+  );
 }

@@ -1,5 +1,6 @@
 import { needsAttention } from '@/lib/order-attention';
 import { migrationAlerts, type MigrationAlertInput } from '@/lib/migration-alerts';
+import { failedEmailAlerts, inquiryAlerts, plural } from '@/lib/admin-alerts-messaging';
 import { matchesStockFilter } from '@/lib/stock-levels';
 import type { AlertSeverity, OperationalAlert } from '@/types/admin-alert';
 import type { Order } from '@/types/order';
@@ -23,6 +24,13 @@ const DAY_MS = 24 * HOUR_MS;
 /** A paid order nobody has touched by the next day. */
 const PENDING_STALE_MS = 24 * HOUR_MS;
 
+/**
+ * A Stripe session that has not confirmed in 45 minutes (M-002). Checkout
+ * sessions expire after 30, so by now the webhook should have said one way or
+ * the other. Either it never arrived or it failed after the customer paid.
+ */
+const STUCK_PAYMENT_MS = 45 * 60 * 1000;
+
 /** Packed means boxed and waiting for the courier, not sitting on the bench. */
 const PACKED_STALE_MS = 2 * DAY_MS;
 
@@ -31,11 +39,6 @@ const UNCOLLECTED_STALE_MS = 7 * DAY_MS;
 
 function ageOf(order: Order, now: number): number {
   return now - new Date(order.createdAt).getTime();
-}
-
-
-function plural(count: number, one: string, many: string): string {
-  return count === 1 ? one : many;
 }
 
 /**
@@ -66,19 +69,35 @@ function orderAlerts(orders: Order[], now: number): OperationalAlert[] {
   // away from Stripe, and since 029 that is recorded as 'expired'. Nothing
   // about it needs Alan.
 
-  // Money taken, order cancelled, nothing given back. There is no refund UI
-  // yet (D5.1), so this needs a person in the Stripe dashboard or the till.
+  // Money taken, order cancelled, not all of it given back (M-030). A
+  // partial refund on a cancelled order is still money the shop is holding.
   const owedRefund = orders.filter(
-    (o) => o.paymentStatus === 'paid' && o.fulfillmentStatus === 'cancelled' && o.refundCents === 0,
+    (o) =>
+      o.fulfillmentStatus === 'cancelled' &&
+      ((o.paymentStatus === 'paid' && o.refundCents === 0) || o.paymentStatus === 'partially_refunded'),
   );
   if (owedRefund.length > 0) {
     alerts.push({
       id: 'cancelled-not-refunded',
       severity: 'critical',
       count: owedRefund.length,
-      title: `${owedRefund.length} cancelled ${plural(owedRefund.length, 'order', 'orders')} still paid for`,
-      action: 'Refund by hand — the admin cannot do it yet',
+      title: `${owedRefund.length} cancelled ${plural(owedRefund.length, 'order', 'orders')} not fully refunded`,
+      action: 'Open the order and refund the rest',
       href: '/admin/orders?fulfillment=cancelled',
+    });
+  }
+
+  const stuckPayment = orders.filter(
+    (o) => o.paymentStatus === 'pending' && o.stripeSessionId !== null && ageOf(o, now) > STUCK_PAYMENT_MS,
+  );
+  if (stuckPayment.length > 0) {
+    alerts.push({
+      id: 'payment-stuck-pending',
+      severity: 'critical',
+      count: stuckPayment.length,
+      title: `${stuckPayment.length} ${plural(stuckPayment.length, 'payment has', 'payments have')} not confirmed in 45 minutes`,
+      action: 'Check the payment in Stripe before the customer rings',
+      href: '/admin/orders?payment=pending',
     });
   }
 
@@ -149,25 +168,6 @@ function stockAlerts(products: Product[]): OperationalAlert[] {
   return alerts;
 }
 
-/**
- * Nothing emails Alan when a contact form is filled in (E3 is deferred), so
- * without this the enquiries screen is a room nobody has a reason to walk into.
- */
-function inquiryAlerts(newInquiryCount: number): OperationalAlert[] {
-  if (newInquiryCount <= 0) return [];
-
-  return [
-    {
-      id: 'new-inquiries',
-      severity: 'warning',
-      count: newInquiryCount,
-      title: `${newInquiryCount} unanswered ${plural(newInquiryCount, 'enquiry', 'enquiries')}`,
-      action: 'Read and reply',
-      href: '/admin/inquiries',
-    },
-  ];
-}
-
 const SEVERITY_ORDER: Record<AlertSeverity, number> = { critical: 0, warning: 1 };
 
 type AlertInput = {
@@ -186,6 +186,8 @@ type AlertInput = {
    * state, and the rest of this file works without it.
    */
   migrations?: MigrationAlertInput;
+  /** Emails that gave up or never queued (M-010). Undefined while loading. */
+  failedEmailCount?: number;
 };
 
 export function buildOperationalAlerts({
@@ -194,6 +196,7 @@ export function buildOperationalAlerts({
   newInquiryCount,
   now,
   migrations,
+  failedEmailCount = 0,
 }: AlertInput): OperationalAlert[] {
   return [
     ...migrationAlerts(migrations),
@@ -201,5 +204,6 @@ export function buildOperationalAlerts({
     ...orderAlerts(orders, now),
     ...stockAlerts(products),
     ...inquiryAlerts(newInquiryCount),
+    ...failedEmailAlerts(failedEmailCount),
   ].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.count - a.count);
 }

@@ -16,6 +16,7 @@ export function useMigrationStatus() {
     queryFn: async () => {
       const applied = await listAppliedMigrations();
       if (applied.kind === 'check-missing') return { kind: 'check-missing' } as const;
+      if (applied.kind === 'not-verified') return { kind: 'not-verified' } as const;
       return { kind: 'ok', status: compareMigrations(applied.versions) } as const;
     },
     staleTime: 30 * 60 * 1000,
@@ -32,7 +33,8 @@ export function useMigrationStatus() {
  */
 export function useMigrationAlertInput(): MigrationAlertInput | undefined {
   const { data } = useMigrationStatus();
-  if (!data) return undefined;
+  // An unverified session proves nothing about the database either way.
+  if (!data || data.kind === 'not-verified') return undefined;
   if (data.kind === 'check-missing') return { kind: 'check-missing' };
   return { kind: 'ok', pendingCount: data.status.pending.length };
 }

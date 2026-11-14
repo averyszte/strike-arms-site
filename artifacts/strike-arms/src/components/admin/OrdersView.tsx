@@ -38,6 +38,7 @@ export function OrdersView() {
     filters,
     showArchived,
     selectedIds: selection.selectedIds,
+    orders,
     onDone: selection.clear,
   });
 

@@ -38,7 +38,9 @@ export type ColumnKey =
   | 'isFeatured'
   | 'isNew'
   | 'isShippable'
-  | 'inStock';
+  | 'inStock'
+  // Read for the staleness check only, never written (M-028).
+  | 'updatedAt';
 
 const COLUMN_KEYS: Record<string, ColumnKey> = {
   slug: 'slug',
@@ -58,6 +60,7 @@ const COLUMN_KEYS: Record<string, ColumnKey> = {
   new: 'isNew',
   'can be posted': 'isShippable',
   'in stock': 'inStock',
+  updated: 'updatedAt',
 };
 
 /** Everything a row can set. Absent keys are columns the file did not carry. */
@@ -172,7 +175,9 @@ export function parseFields(read: CellReader): { fields: ParsedFields; messages:
     (v) => void (fields.shortDescription = v),
   );
   when('description', (r) => asIs(r.trim()), (v) => void (fields.description = v));
-  when('images', (r) => asIs(parseList(r)), (v) => void (fields.images = v));
+  // A blank Images cell leaves the photos alone (M-018). Clearing them from a
+  // spreadsheet is too easy to do by accident; remove photos in the product form.
+  when('images', (r) => asIs(parseList(r)), (v) => void (v.length > 0 && (fields.images = v)));
   when('tags', (r) => asIs(parseList(r)), (v) => void (fields.tags = v));
   when('isPublished', (r) => parseBoolean('Published', r), (v) => void (fields.isPublished = v));
   when('isFeatured', (r) => parseBoolean('Featured', r), (v) => void (fields.isFeatured = v));

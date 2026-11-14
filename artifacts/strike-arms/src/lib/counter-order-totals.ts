@@ -43,9 +43,15 @@ export function counterUnitPriceCents(product: Product): number {
   return sale != null && sale < product.price ? sale : product.price;
 }
 
+/** Same cap as create_counter_order (M-022): a typo of 500 is refused here first. */
+export const MAX_COUNTER_LINE_QUANTITY = 50;
+
 // No stock check: nothing is counted since 038, and whatever is on the
 // counter is there to be sold, whatever the website says.
 function lineProblem(product: Product, line: CounterOrderLine): string | null {
+  if (line.quantity > MAX_COUNTER_LINE_QUANTITY) {
+    return `No more than ${MAX_COUNTER_LINE_QUANTITY} of one product in a sale.`;
+  }
   if (line.fulfillmentMethod === 'delivery' && !product.isShippable) {
     return 'Collection only — cannot be posted.';
   }

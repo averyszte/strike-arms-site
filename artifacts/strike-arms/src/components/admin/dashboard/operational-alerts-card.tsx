@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle2, ChevronRight, OctagonAlert } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useFailedEmailCount } from '@/hooks/use-failed-emails';
 import { useMigrationAlertInput } from '@/hooks/use-migration-status';
 import { buildOperationalAlerts } from '@/lib/admin-alerts';
 import type { Order } from '@/types/order';
@@ -30,7 +31,16 @@ export function OperationalAlertsCard({ orders, products, newInquiryCount }: Pro
   // is about the shop.
   const migrations = useMigrationAlertInput();
 
-  const alerts = buildOperationalAlerts({ orders, products, newInquiryCount, now, migrations });
+  const failedEmailCount = useFailedEmailCount();
+
+  const alerts = buildOperationalAlerts({
+    orders,
+    products,
+    newInquiryCount,
+    now,
+    migrations,
+    failedEmailCount,
+  });
 
   return (
     <Card>

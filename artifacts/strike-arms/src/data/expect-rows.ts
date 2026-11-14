@@ -1,0 +1,21 @@
+/**
+ * A write that matched nothing is not a success (M-034).
+ *
+ * RLS, a stale id or an AAL1 session all make PostgREST answer an update with
+ * 200 and no rows. Every admin write asks for the ids back with
+ * `.select('id')` and passes them through here, so "Saved" means saved.
+ */
+export class ZeroRowsError extends Error {
+  constructor(message = 'Nothing was saved. Reload the page and try again; if it keeps happening, sign out and back in.') {
+    super(message);
+    this.name = 'ZeroRowsError';
+  }
+}
+
+export function expectRows(data: { id: string }[] | null, expected = 1): void {
+  const count = data?.length ?? 0;
+  if (count === 0) throw new ZeroRowsError();
+  if (count < expected) {
+    throw new ZeroRowsError(`Only ${count} of ${expected} were saved. Reload and check them.`);
+  }
+}

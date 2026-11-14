@@ -44,6 +44,8 @@ export type Product = {
   isArchived?: boolean;
   tags?: string[];
   createdAt: string;          // ISO date — used for sort-by-newest
+  // Admin reads only: the version an edit is checked against (M-032).
+  updatedAt?: string;
 };
 
 export type ProductFilters = {

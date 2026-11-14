@@ -75,3 +75,25 @@ export function parseRefundAmount(input: string, maxCents: number): ParsedRefund
 
   return { ok: true, cents };
 }
+
+/**
+ * A refund this screen sent that the order does not show yet (M-006). Kept
+ * until the order's refunded total moves past what it was when it was sent,
+ * so the admin is not tempted to send the same money twice.
+ */
+export type SentRefund = {
+  amountCents: number;
+  isRecorded: boolean;
+  refundCentsBefore: number;
+};
+
+export function isRefundAwaitingOrder(order: Order, sent: SentRefund | null): boolean {
+  return sent !== null && order.refundCents <= sent.refundCentsBefore;
+}
+
+export function sentRefundMessage(sent: SentRefund): string {
+  const euros = `€${(sent.amountCents / 100).toFixed(2)}`;
+  return sent.isRecorded
+    ? `Refund of ${euros} sent. Waiting for the order to update.`
+    : `Refund of ${euros} sent, recording pending. Stripe has the refund; the order updates when Stripe confirms it.`;
+}
