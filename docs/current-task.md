@@ -1,9 +1,43 @@
 # Current Task
 
-Last updated: 2026-09-29 (Phase 4 and customer accounts in progress, branch `claude/phase-2-money-path`). Replaces
-the end-of-Phase-1 revision.
+Last updated: 2026-11-14. **Current task: the pre-launch audit fix programme.**
 
-## Where the project is right now
+## Pre-launch audit fix programme (current)
+
+Six audits (A1 security, A2 correctness, A3 architecture, A4 performance, A5
+resilience, A6 admin safety) were merged into `docs/audit/findings.md`: 69 items
+(M-001 to M-069), 13 Wave 3 refactors and 10 parked items. Scope and method are
+in `docs/audit/audit-plan.md`; the current feature list is
+`docs/audit/feature-bank.md`.
+
+- **Lanes:** L1 money path, L2 messaging, L3 database, L4 admin UI, L5
+  storefront, L6 platform, plus HOSTED (Phil, dashboards only). An item's lane
+  follows the files its fix touches; the shared-file owners table in
+  `findings.md` says who may edit a shared file.
+- **Wave order:** L3, L5 and L6 first; then L1 and L2; then L4; then the Wave 3
+  refactors. Follow the "Cross-lane dependencies" list in `findings.md`; several
+  items must merge in a set order.
+- **Decisions applied:** D1 stock is a manual tick; D2 instant payment methods
+  only; D3 Supabase Pro plus Resend SMTP; D4 MFA recovery is a second TOTP
+  factor plus the documented developer reset, no recovery codes; D5 the
+  client-side coming-soon gate is accepted; D6 lanes commit locally.
+- **Phil does all pushes, deploys, `supabase db push` and dashboard changes.**
+  The step-by-step for go-live is `docs/launch-runbook.md`; the hosted checklist
+  is the "Hosted config for Phil" section of `findings.md`.
+- **Gates for every lane:** typecheck and `eslint --max-warnings 0` from
+  `artifacts/strike-arms` (commands under "Key gotchas" below). CI
+  (`.github/workflows/ci.yml`) runs the same on every push to `main`.
+- **Parked:** M-065 (deleting the drafts pages and unused images) waits on
+  Phil, who chose to keep the demo page files for now. Their routes come out
+  under M-045.
+
+Everything below this line is the status as it stood on 2026-09-29/30, kept for
+the history of what was pushed and when. Where it disagrees with
+`docs/audit/findings.md` or `docs/launch-runbook.md`, those win.
+
+---
+
+## Historical status (2026-09-29/30)
 
 The plan being followed is `docs/audit/completion-plan.md`. Phase 1 (admin dashboard) is done
 and on `origin/main`. **Phase 2, the money path, is done in code except item 17**, on branch
@@ -25,7 +59,9 @@ and on `origin/main`. **Phase 2, the money path, is done in code except item 17*
 
 Migrations renumbered again: 029 `webhook_alerts`, 030 notifications, 031 notification extras,
 032 service_role grants, 033 order tracking, 034 customer accounts, 035 rate limit, 036 inquiries
-lockdown, 037 product type rank, 038 indexes, 039 housekeeping. `db push` refuses a
+lockdown, 037 product type rank, 038 `simple_stock`, 039 `inquiry_notifications` (corrected
+2026-11-14 from the file names in `supabase/migrations`; the earlier plan said 038 indexes and
+039 housekeeping). `db push` refuses a
 file numbered below one already on the remote, so numbers follow the order they are written.
 
 Push only when the user asks, with `git push origin HEAD:main`.
@@ -348,8 +384,8 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
 
 ## Key gotchas / rules (read before working)
 
-- **Free-tier auto-pause** every ~7 idle days. "Failed to fetch" on admin login means restore it
-  from the Supabase dashboard.
+- **Free-tier auto-pause** every ~7 idle days, until the move to Pro (D3, M-066). "Failed to
+  fetch" on admin login means restore it from the Supabase dashboard.
 - **A fresh worktree has no `.env.local`, `node_modules` or `supabase/.temp/`.** Copy `.env.local`
   into `artifacts/strike-arms/` from a sibling worktree and run `pnpm install` at the root (it
   installs, then the root preinstall hook reports a failure; the packages are there).
@@ -373,7 +409,8 @@ deploy `refund-order` (`npx supabase functions deploy refund-order`), and confir
   a solicitor.
 - **No secrets in chat.** The Supabase anon key and project ref `cxnhkgndvzgyqhiwsvrr` are the
   only exceptions. Never put a placeholder secret inside a runnable bash fence.
-- **Stay lean.** No multi-agent workflows, no deep-research harness.
+- **Stay lean.** No multi-agent workflows or deep-research harness unless the user sets one up.
+  The audit and its fix lanes were a deliberate, one-off exception chosen by the user.
 - CLAUDE.md hard rules: 300-line files, 80-line functions, `@/` aliases, no `any`, no
   `console.log`, layer rule.
 - Commits: write the message to a file and `git commit -F`, ending with

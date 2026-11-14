@@ -170,13 +170,13 @@ export default tseslint.config(
   // ── Documented exceptions ─────────────────────────────────────────────────
 
   {
-    // The three React context providers live in lib/ even though lib/ is meant
+    // The two React context providers live in lib/ even though lib/ is meant
     // to be pure functions. They predate this config; moving them would mean a
     // new top-level folder, which CLAUDE.md's folder list does not have.
-    // Recorded here so the exception is one visible list rather than three
-    // scattered eslint-disable comments.
+    // Recorded here so the exception is one visible list rather than scattered
+    // eslint-disable comments. (src/lib/auth-context.tsx was listed too; that
+    // file no longer exists, so the entry was dropped under W-05.)
     files: [
-      'src/lib/auth-context.tsx',
       'src/lib/admin-auth-context.tsx',
       'src/lib/cart-context.tsx',
     ],

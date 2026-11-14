@@ -2,7 +2,6 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { verifySupabaseConfig } from "./src/lib/verify-supabase-config";
 
 // PORT and BASE_PATH were required because Replit injected both. Nothing
@@ -28,7 +27,7 @@ if (Number.isNaN(port) || port <= 0) {
 // works on / and 404s on every nested route.
 const basePath = process.env.BASE_PATH || "/";
 
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(({ mode }) => {
   // Fail the build rather than shipping a bundle whose Supabase credentials are
   // absent, still placeholders, or from two different projects. These values are
   // inlined here, so this is the last point at which the cause is still obvious.
@@ -40,24 +39,10 @@ export default defineConfig(async ({ mode }) => {
 
   return {
     base: basePath,
-    plugins: [
-      react(),
-      tailwindcss(),
-      runtimeErrorOverlay(),
-      ...(process.env.NODE_ENV !== "production" &&
-      process.env.REPL_ID !== undefined
-        ? [
-            await import("@replit/vite-plugin-cartographer").then((m) =>
-              m.cartographer({
-                root: path.resolve(import.meta.dirname, ".."),
-              }),
-            ),
-            await import("@replit/vite-plugin-dev-banner").then((m) =>
-              m.devBanner(),
-            ),
-          ]
-        : []),
-    ],
+    // The Replit plugins (runtime error overlay, cartographer, dev banner)
+    // were removed in M-061: the overlay shipped in production builds and the
+    // other two only ran inside Replit, which is no longer used.
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve(import.meta.dirname, "src"),

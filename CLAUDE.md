@@ -19,7 +19,7 @@ If anything I ask later conflicts with a rule in those docs, stop and flag the c
 
 ## Project summary
 
-- **Stack:** React 18 + Vite + TypeScript, Tailwind + shadcn/ui, wouter (routing), react-helmet-async (meta), @tanstack/react-query (data), framer-motion (animation)
+- **Stack:** React 19.1 (pinned in the pnpm catalog in `pnpm-workspace.yaml`) + Vite + TypeScript, Tailwind + shadcn/ui, wouter (routing), react-helmet-async (meta), @tanstack/react-query (data), framer-motion (animation)
 - **Backend (when added):** Supabase (Postgres + Auth + Storage + RLS + Edge Functions). The Express scaffold in `artifacts/api-server/` is unused — do not extend it.
 - **Payments:** Stripe Checkout (hosted, not Elements). Webhook handler lives in a Supabase Edge Function.
 - **Deploy:** Cloudflare Pages.

@@ -3,6 +3,7 @@ Allow: /
 
 # Keep transactional/account pages out of the index.
 Disallow: /cart
+Disallow: /checkout
 Disallow: /account
 
 # Admin dashboard — never index.

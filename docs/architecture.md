@@ -88,16 +88,31 @@ When you're about to grow past 250 lines, stop and ask:
 
 ## Enforcement
 
-These rules are enforced by, in order:
+What actually enforces these rules in this repo (corrected 2026-11-14, audit
+items M-057 and M-063; an earlier version listed Prettier, Husky and
+lint-staged, none of which are set up):
 
-1. **CLAUDE.md** — AI assistants read this on every session
-2. **ESLint** — fails the build on violations
-3. **Prettier** — uniform formatting
-4. **Husky + lint-staged** — blocks bad commits
-5. **CI** — runs typecheck and lint on every PR
-6. **Code review** — catches what tooling misses
+1. **CLAUDE.md**: AI assistants read it at the start of every session.
+2. **TypeScript**: `artifacts/strike-arms/tsconfig.json` runs with `strict`,
+   `noUnusedLocals` and `noUnusedParameters`.
+   Run: `pnpm --filter @workspace/strike-arms run typecheck`.
+3. **ESLint**: `artifacts/strike-arms/eslint.config.js` encodes the file-size,
+   layer, `any` and `console.log` rules. It must pass with zero warnings.
+   Run: `pnpm --filter @workspace/strike-arms exec eslint . --max-warnings 0`.
+4. **CI**: `.github/workflows/ci.yml` runs install, typecheck, lint with
+   `--max-warnings 0` and the tests (once a `test` script exists) on every push
+   to `main` and every pull request. A second job runs `deno check` on the edge
+   functions; it is advisory until `supabase/functions/deno.json` pins the
+   imports (M-064).
+5. **Code review**: catches what tooling misses.
 
-Bypassing any layer (`--no-verify`, gratuitous `eslint-disable`, merging without review) is a process violation.
+Not in place: Prettier is installed at the root but no format check runs, and
+there is no pre-commit hook (no Husky, no lint-staged). CI is the gate. The
+edge functions under `supabase/functions/` are Deno and are not covered by the
+ESLint config.
+
+Bypassing any layer (gratuitous `eslint-disable`, merging with CI red,
+merging without review) is a process violation.
 
 ## Breaking a rule
 

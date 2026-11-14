@@ -27,6 +27,14 @@
   # challenges.cloudflare.com is Turnstile, the bot check on checkout and order
   # lookup: its script, the iframe it draws in, and its calls home.
   # www.google.com in frame-src is the shop map on the homepage.
+  # connect-src (M-014, checked 2026-11-14): the browser talks only to this
+  # Supabase project (REST, Auth, Storage, Realtime and the edge functions) and
+  # to Turnstile. Stripe Checkout is a full-page redirect, so it needs no
+  # connect-src entry. This is independent of the ALLOWED_ORIGINS function
+  # secret: that one lists the sites allowed to call the functions, this one
+  # lists the hosts this site may call. Nothing here changes when that secret
+  # is set. If the Supabase project ever changes, update the ref in img-src and
+  # connect-src in the same deploy as VITE_SUPABASE_URL.
   Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co https://challenges.cloudflare.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
 
 # Hashed filenames, so the content at a given URL never changes.
@@ -36,6 +44,24 @@
 # The shell must not be cached, or a deploy leaves people on the old bundle.
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# Deep links (/products/x, /store/rifles) are served the same index.html by the
+# Pages SPA fallback. There is deliberately no `/*` Cache-Control rule for
+# them: Pages joins the values of a header set by two matching rules with a
+# comma, so a `/*` no-cache would be glued onto the /assets/* immutable value
+# above and onto the image rules below. Pages already sends HTML with
+# `public, max-age=0, must-revalidate`, which is what we want (M-059, A5-23).
+# The runbook has a `curl -I` on a deep link to confirm it after each deploy.
+
+# Static images and video in public/. Their names are not content-hashed, so
+# they are not immutable: a week, then served stale for a day while the edge
+# revalidates (M-059, A4-09). Replacing one of these files in place can show
+# the old copy for up to a week; give a changed image a new filename instead.
+/images/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/videos/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 
 /sitemap.xml
   Cache-Control: public, max-age=3600

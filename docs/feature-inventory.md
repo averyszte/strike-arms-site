@@ -1,5 +1,11 @@
 # Feature Inventory — Strike Arms, whole site
 
+> **Superseded (2026-11-14).** This inventory dates from 2026-08-29 and is no
+> longer maintained. The current feature list is `docs/audit/feature-bank.md`
+> (with the detail in `docs/audit/feature-bank/`), and the pre-launch fix
+> programme works from `docs/audit/findings.md`. Kept for history only; do not
+> plan work from it.
+
 Every major feature across the public site, customer accounts, commerce, admin dashboard
 and platform. One row per feature; sub-features listed where they are substantial enough
 to be built or researched separately.

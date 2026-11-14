@@ -11,6 +11,7 @@
     "sitemap": "node scripts/generate-sitemap.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
+    "test": "node --test \"src/**/*.test.ts\"",
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {

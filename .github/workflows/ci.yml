@@ -1,0 +1,73 @@
+# CI for the Strike Arms site (audit item M-057).
+#
+# Runs on every push and pull request. It only reads the repo: no secrets, no
+# deploy, no database. Cloudflare Pages still does the build and deploy.
+#
+# The site job is the gate: install, typecheck, lint with zero warnings, and
+# the tests once a `test` script exists. The Deno job type-checks the edge
+# functions; it reports but does not fail the run until
+# supabase/functions/deno.json pins the imports (M-064).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: Site (typecheck, lint, tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # The root preinstall hook runs `sh -c` and refuses any package manager
+      # other than pnpm, so pnpm must be the one doing the install. The
+      # version matches local development (minimumReleaseAge in
+      # pnpm-workspace.yaml needs pnpm 10.16 or later).
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @workspace/strike-arms run typecheck
+
+      - name: Lint (zero warnings)
+        run: pnpm --filter @workspace/strike-arms exec eslint . --max-warnings 0
+
+      - name: Tests
+        run: pnpm --filter @workspace/strike-arms run --if-present test
+
+  edge-functions:
+    name: Edge functions (deno check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Advisory until M-064 adds supabase/functions/deno.json with pinned
+    # imports. Remove this line once the check passes cleanly.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: deno check
+        run: deno check supabase/functions/*/index.ts
