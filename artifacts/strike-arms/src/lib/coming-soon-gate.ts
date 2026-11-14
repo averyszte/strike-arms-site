@@ -5,7 +5,7 @@
  *
  * To launch: set IS_COMING_SOON to false and deploy.
  */
-export const IS_COMING_SOON = true;
+export const IS_COMING_SOON = false;
 
 const GATED_HOSTS = new Set(["strikearms.ie", "www.strikearms.ie"]);
 
