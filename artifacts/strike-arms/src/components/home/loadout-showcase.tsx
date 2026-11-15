@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { HotspotPin } from "@/components/hotspot-pin";
+import { LoadoutAddAllButton } from "@/components/home/loadout-add-all-button";
 import { LoadoutProductCard } from "@/components/home/loadout-product-card";
 import { useLoadoutProducts } from "@/hooks/use-loadout-products";
 import { loadouts } from "@/lib/loadouts";
@@ -16,6 +17,7 @@ export function LoadoutShowcase() {
   const [activeTab, setActiveTab] = useState(loadouts[0].id);
   const activeData = loadouts.find((l) => l.id === activeTab)!;
   const { bySlug, isLoading } = useLoadoutProducts();
+  const activeProducts = activeData.products.flatMap((item) => bySlug.get(item.slug) ?? []);
 
   return (
     <section className="py-16 md:py-24 bg-background border-y border-border/60">
@@ -119,6 +121,7 @@ export function LoadoutShowcase() {
                     <div key={item.slug} className="h-24 bg-card border-2 border-border animate-pulse" />
                   ) : null;
                 })}
+                <LoadoutAddAllButton products={activeProducts} />
               </motion.div>
             </AnimatePresence>
           </div>
