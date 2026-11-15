@@ -4,7 +4,7 @@
  * than in an env file. While it is empty, no consent banner shows and
  * nothing is loaded.
  */
-export const GTM_CONTAINER_ID = 'GTM-NFMHKZ48';
+export const GTM_CONTAINER_ID = 'GTM-KPFK6HVD';
 
 export const IS_ANALYTICS_CONFIGURED = /^GTM-[A-Z0-9]+$/.test(GTM_CONTAINER_ID);
 
