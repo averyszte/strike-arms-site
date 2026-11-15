@@ -15,7 +15,7 @@ export function HeroReviewBadge() {
       href={READ_REVIEWS_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Rated ${GOOGLE_RATING.value} out of 5 on Google. Read our reviews`}
+      aria-label={`Rated ${GOOGLE_RATING.value} out of 5 from ${GOOGLE_RATING.count} Google reviews. Read our reviews`}
       className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
     >
       <GoogleG className="w-4 h-4" />
@@ -30,7 +30,7 @@ export function HeroReviewBadge() {
           </span>
         ))}
       </span>
-      <span className="group-hover:underline underline-offset-4">Google reviews</span>
+      <span className="group-hover:underline underline-offset-4">{GOOGLE_RATING.count} Google reviews</span>
     </a>
   );
 }

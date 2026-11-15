@@ -9,7 +9,7 @@ export function CookieSettingsButton() {
     <button
       type="button"
       onClick={reopen}
-      className="text-xs text-muted-foreground hover:text-accent transition-colors"
+      className="cursor-pointer text-xs text-muted-foreground hover:text-accent transition-colors"
     >
       Cookie settings
     </button>

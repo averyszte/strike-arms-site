@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
 
-import { MarqueePauseButton } from "@/components/marquee-pause-button";
 import { BRAND_LOGOS, BRAND_LOGO_HEIGHT, type BrandLogo } from "@/lib/brand-logos";
 
 const LOGO_CLASS = "w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300";
@@ -48,12 +47,11 @@ function BrandGroup({ isCopy }: { isCopy: boolean }) {
 
 export function BrandMarquee() {
   const [isHovered, setIsHovered] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   return (
     <div
       className="relative overflow-hidden py-5"
-      data-paused={isPaused || isHovered}
+      data-paused={isHovered}
       style={{
         background: "#111111",
         borderTop: "1px solid rgba(255,255,255,0.06)",
@@ -84,13 +82,6 @@ export function BrandMarquee() {
         <BrandGroup isCopy />
         <BrandGroup isCopy />
       </div>
-
-      <MarqueePauseButton
-        isPaused={isPaused}
-        onToggle={() => setIsPaused((p) => !p)}
-        label="brand logos"
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
-      />
     </div>
   );
 }

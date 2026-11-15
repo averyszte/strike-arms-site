@@ -1,6 +1,3 @@
-import { useState } from "react";
-
-import { MarqueePauseButton } from "@/components/marquee-pause-button";
 import { useIsOnScreen } from "@/hooks/use-is-on-screen";
 import { RANKED_REVIEWS } from "@/lib/review-bank";
 import type { Review } from "@/types/review";
@@ -60,7 +57,6 @@ function MarqueeRow({ reviews, isReversed }: { reviews: Review[]; isReversed: bo
 }
 
 export function ReviewsFeature() {
-  const [isPaused, setIsPaused] = useState(false);
   // Off screen, the rows stop too, so they cost nothing while out of sight.
   const { ref, isOnScreen } = useIsOnScreen<HTMLElement>();
   return (
@@ -75,10 +71,7 @@ export function ReviewsFeature() {
         </div>
         <ReviewButtons />
       </div>
-      <div className="container mx-auto px-4 md:px-6 flex justify-end mb-3">
-        <MarqueePauseButton isPaused={isPaused} onToggle={() => setIsPaused((p) => !p)} label="reviews" className="border border-border" />
-      </div>
-      <div className="flex flex-col gap-4" data-paused={isPaused || !isOnScreen}>
+      <div className="flex flex-col gap-4" data-paused={!isOnScreen}>
         <MarqueeRow reviews={ROWS[0]} isReversed={false} />
         <MarqueeRow reviews={ROWS[1]} isReversed />
       </div>

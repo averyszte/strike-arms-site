@@ -1,8 +1,11 @@
 import { Link, useLocation } from 'wouter';
 
-import { Button } from '@/components/ui/button';
 import { useAnalyticsConsent } from '@/hooks/use-analytics-consent';
 import { useGoogleAnalytics } from '@/hooks/use-google-analytics';
+
+/** Same outline style as the hero's secondary button; both choices look alike on purpose. */
+const CHOICE_CLASS =
+  'inline-flex h-10 flex-1 cursor-pointer items-center justify-center rounded-sm border border-foreground bg-transparent px-6 text-sm font-medium text-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:flex-none';
 
 /**
  * Asks before any analytics loads. Accept and Reject look the same, and
@@ -30,12 +33,12 @@ export function CookieConsentBanner() {
           </Link>
         </p>
         <div className="flex shrink-0 gap-3">
-          <Button variant="outline" onClick={reject} className="flex-1 md:flex-none">
+          <button type="button" onClick={reject} className={CHOICE_CLASS}>
             Reject
-          </Button>
-          <Button variant="outline" onClick={accept} className="flex-1 md:flex-none">
+          </button>
+          <button type="button" onClick={accept} className={CHOICE_CLASS}>
             Accept
-          </Button>
+          </button>
         </div>
       </div>
     </section>

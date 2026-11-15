@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Asterisk } from "lucide-react";
 
-import { MarqueePauseButton } from "@/components/marquee-pause-button";
 import { TRUST_CLAIMS } from "@/lib/trust-claims";
 
 /**
@@ -12,14 +10,13 @@ import { TRUST_CLAIMS } from "@/lib/trust-claims";
  * stated them (lib/trust-claims.ts).
  *
  * Screen readers get the claims once, as a list; the moving copies are hidden
- * from them. It can be paused, and stands still for reduced motion.
+ * from them. It stands still for reduced motion.
  */
 export function TrustMarquee() {
-  const [isPaused, setIsPaused] = useState(false);
   const loop = [...TRUST_CLAIMS, ...TRUST_CLAIMS, ...TRUST_CLAIMS];
 
   return (
-    <div className="relative overflow-hidden bg-accent text-accent-foreground py-3.5 md:py-4" data-paused={isPaused}>
+    <div className="relative overflow-hidden bg-accent text-accent-foreground py-3.5 md:py-4">
       <ul className="sr-only">
         {TRUST_CLAIMS.map((claim) => <li key={claim}>{claim}</li>)}
       </ul>
@@ -33,12 +30,6 @@ export function TrustMarquee() {
           </span>
         ))}
       </div>
-      <MarqueePauseButton
-        isPaused={isPaused}
-        onToggle={() => setIsPaused((p) => !p)}
-        label="shop claims"
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground hover:text-background"
-      />
     </div>
   );
 }

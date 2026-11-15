@@ -9,8 +9,8 @@ import type { Review } from "@/types/review";
  * The data lives in lib/google-reviews.ts.
  */
 
-/** "4.7 on Google". Google asks for an "as of" date beside it. */
-export const GOOGLE_RATING = { value: "4.7", asOf: "November 2026" };
+/** "4.7 on Google" from 91 reviews, read off the Maps listing. Google asks for an "as of" date beside it. */
+export const GOOGLE_RATING = { value: "4.7", count: 91, asOf: "November 2026" };
 
 // The profile's place ID, read off Google's reviews panel (Nov 2026). It
 // unlocks the direct "write a review" link; set it to null to fall back to
