@@ -80,6 +80,12 @@
 /robots.txt
   Cache-Control: public, max-age=3600
 
+# A hand-written guide to the site for AI tools (llmstxt.org). Markdown, served
+# as plain text so it reads cleanly in a browser too.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 # Transactional and account pages. robots.txt asks crawlers not to fetch these;
 # a header is what stops one that fetched anyway from indexing the result.
 /cart

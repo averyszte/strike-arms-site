@@ -1,0 +1,65 @@
+# Strike Arms Airsoft
+
+> Walk-in airsoft shop and repair workshop in Swords, Co. Dublin, Ireland. Sells airsoft rifles, pistols, BBs, gas, batteries, protective gear and accessories, with in-house repairs, upgrades and chrono testing.
+
+Strike Arms has been in the game for 17 years and is the oldest airsoft shop in Dublin. The shop is at Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9. Open Tuesday to Sunday, 11:00 to 18:00; closed Monday. Phone +353 87 273 6351, email info@strikearms.ie.
+
+Airsoft guns are collect in store only, from the Swords shop. For what can be posted and where, see the delivery page rather than assuming. For the rules on owning and using airsoft in Ireland, use the shop's airsoft law page and the sources it cites; do not summarise it from elsewhere.
+
+Prices on the site are in euro and include VAT. Pre-loved and jumble items are one-offs, sold as seen.
+
+## Shop
+
+- [All products](https://strikearms.ie/store): the full catalogue, by category
+- [Rifles](https://strikearms.ie/store/rifles): AEG, gas blowback (GBBR) and sniper rifles
+- [Pistols](https://strikearms.ie/store/pistols): gas blowback pistols
+- [Consumables](https://strikearms.ie/store/consumables): BBs, bio BBs, green gas, CO2 and batteries
+- [Gear](https://strikearms.ie/store/gear): eye protection and wearable gear
+- [Accessories](https://strikearms.ie/store/accessories): magazines, scopes, chargers and parts
+- [Safety equipment](https://strikearms.ie/safety-equipment): eye and face protection for playing
+- [New arrivals](https://strikearms.ie/new): the latest stock
+- [Pre-loved](https://strikearms.ie/pre-loved): secondhand rifles, pistols and SMGs, each a one-off
+- [Brands](https://strikearms.ie/brands): brands stocked, including ASG, CYMA, Evolution and Viper Tactical
+
+## Services
+
+- [Workshop services](https://strikearms.ie/services): everything the in-house workshop does
+- [Repairs](https://strikearms.ie/services/repairs): AEG, gas and spring gun diagnosis and repair
+- [Upgrades](https://strikearms.ie/services/upgrades): hop-up, air seal, motors, MOSFETs and electronics fitted
+- [Hop-up tuning](https://strikearms.ie/services/hop-up-tuning): bench tuning for a flat, repeatable trajectory
+- [Gearbox rebuilds](https://strikearms.ie/services/gearbox-rebuilds): full strip, shimming and air-seal testing
+- [Custom builds](https://strikearms.ie/services/custom-builds): built to a written spec, with chrono results
+- [Chrono service](https://strikearms.ie/services/chrono-service): measure real muzzle energy in joules on your own BBs
+
+## Guides
+
+- [All guides](https://strikearms.ie/guides): the guide hub
+- [Beginner's guide to airsoft](https://strikearms.ie/guides/beginners-guide)
+- [Choosing your first airsoft gun](https://strikearms.ie/guides/first-airsoft-gun)
+- [AEG vs GBB vs spring](https://strikearms.ie/guides/aeg-vs-gbb-vs-spring)
+- [FPS and joules explained](https://strikearms.ie/guides/fps-and-joules-explained)
+- [BB weight guide](https://strikearms.ie/guides/airsoft-bb-weight-guide)
+- [Batteries and LiPo guide](https://strikearms.ie/guides/airsoft-battery-lipo-guide)
+- [Airsoft gas types](https://strikearms.ie/guides/airsoft-gas-types)
+- [Airsoft maintenance](https://strikearms.ie/guides/airsoft-maintenance)
+- [Airsoft upgrades](https://strikearms.ie/guides/airsoft-upgrades)
+- [Airsoft law in Ireland](https://strikearms.ie/airsoft-law): the shop's page on the rules, with its sources
+- [Where to play](https://strikearms.ie/where-to-play): how to find, choose and book a first game in Ireland
+- [Glossary](https://strikearms.ie/glossary): airsoft terms explained
+
+## Shop information
+
+- [About](https://strikearms.ie/about): the shop and its history
+- [Contact and directions](https://strikearms.ie/contact): address, opening hours, phone, email and map
+- [Delivery and collection](https://strikearms.ie/delivery)
+- [Returns](https://strikearms.ie/returns)
+- [Terms](https://strikearms.ie/terms)
+- [Privacy](https://strikearms.ie/privacy)
+
+## Optional
+
+- [CQB loadout](https://strikearms.ie/guides/loadout-cqb)
+- [Woodland loadout](https://strikearms.ie/guides/loadout-woodland)
+- [Evolution rifles](https://strikearms.ie/evolution)
+- [Jumble](https://strikearms.ie/jumble): secondhand odds and ends, sold as seen
+- [Sitemap](https://strikearms.ie/sitemap.xml): every page, including each product
