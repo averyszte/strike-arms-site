@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { CheckCircle2, Send } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
-import { BotCheck } from '@/components/BotCheck';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { ConsentField } from '@/components/contact/consent-field';
 import { HoneypotField } from '@/components/contact/honeypot-field';
-import { InquirySendError } from '@/components/contact/inquiry-send-error';
-import { Button } from '@/components/ui/button';
+import { InquiryFormFooter } from '@/components/contact/inquiry-form-footer';
+import { FormErrorSummary } from '@/components/form-error-summary';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useFocusFirstError } from '@/hooks/use-focus-first-error';
 import { useSubmitInquiry } from '@/hooks/use-submit-inquiry';
 import { useTurnstile } from '@/hooks/use-turnstile';
-import { looksAutomated } from '@/lib/inquiry-validation';
+import { isHoneypotFilled, isSubmittedTooFast } from '@/lib/inquiry-validation';
 import {
   EMPTY_SERVICE_QUOTE_FORM,
   composeQuoteMessage,
@@ -21,7 +21,7 @@ import {
   type ServiceQuoteForm as QuoteForm,
 } from '@/lib/service-quote';
 import { BUSINESS } from '@/lib/site-config';
-import { CARD_TITLE, CTA_PRIMARY, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
+import { CARD_TITLE, TEXT_LINK, phoneHref } from '@/lib/storefront-styles';
 
 /**
  * Asks for a quote on one service, from the page describing it.
@@ -36,6 +36,9 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
   const [form, setForm] = useState<QuoteForm>(EMPTY_SERVICE_QUOTE_FORM);
   const [errors, setErrors] = useState<ServiceQuoteErrors>({});
   const [isSent, setIsSent] = useState(false);
+  const [isTooFast, setIsTooFast] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const reportErrors = useFocusFirstError(formRef);
 
   // When the form was first rendered, for the "no human types this fast" check.
   const [openedAt] = useState(() => Date.now());
@@ -51,13 +54,17 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
 
     const found = validateServiceQuote(form);
     setErrors(found);
+    reportErrors(Object.keys(found).length);
     if (Object.keys(found).length > 0 || isWaitingForBotCheck) return;
 
     // Answered exactly like a real submission, and quietly dropped.
-    if (looksAutomated(form, Date.now() - openedAt)) {
+    if (isHoneypotFilled(form)) {
       setIsSent(true);
       return;
     }
+    const isFast = isSubmittedTooFast(Date.now() - openedAt);
+    setIsTooFast(isFast);
+    if (isFast) return;
 
     submit.mutate(
       {
@@ -79,7 +86,8 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
   if (isSent) return <QuoteSent />;
 
   return (
-    <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
+      <FormErrorSummary count={Object.keys(errors).length} />
       <CheckoutField
         id="quote-name"
         label="Your name"
@@ -158,23 +166,13 @@ export function ServiceQuoteForm({ serviceTitle }: { serviceTitle: string }) {
         onChange={(consent) => patch({ consent })}
       />
 
-      <BotCheck
-        containerRef={turnstile.ref}
-        isEnabled={turnstile.isEnabled}
-        hasFailed={turnstile.hasFailed}
+      <InquiryFormFooter
+        turnstile={turnstile}
+        isPending={submit.isPending}
+        sendError={submit.isError ? submit.errorMessage : null}
+        isTooFast={isTooFast}
+        idleLabel="Request a quote"
       />
-
-      {submit.isError && <InquirySendError message={submit.errorMessage} />}
-
-      <Button
-        type="submit"
-        size="lg"
-        disabled={submit.isPending || isWaitingForBotCheck}
-        className={CTA_PRIMARY}
-      >
-        <Send className="h-4 w-4" aria-hidden="true" />
-        {submit.isPending ? 'Sending…' : 'Request a quote'}
-      </Button>
     </form>
   );
 }
@@ -184,7 +182,9 @@ function QuoteSent() {
     <div className="mt-6 border border-border/60 bg-background p-5">
       <div className="flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
-        <h3 className={`${CARD_TITLE} text-base`}>Thanks — we have it</h3>
+        <h3 ref={(el) => el?.focus()} tabIndex={-1} className={`${CARD_TITLE} text-base outline-none`}>
+          Thanks — we have it
+        </h3>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         We normally come back within a day or two. Any figure we give before seeing the gun is a

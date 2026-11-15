@@ -1,5 +1,6 @@
 import type { CrossSellTarget } from '@/lib/cross-sell';
 import { effectivePriceCents } from '@/lib/effective-price';
+import { isPreLoved } from '@/lib/product-condition';
 import type { Product } from '@/types/product';
 
 /**
@@ -92,7 +93,9 @@ export function pickCrossSell(
 ): Product[] {
   const byTarget = new Map<string, Product[]>();
   for (const candidate of candidates) {
-    if (candidate.id === product.id) continue;
+    // An add-on has to be buyable today, and a one-off pre-loved item is not
+    // an accessory anyone needs alongside something else (N-067).
+    if (candidate.id === product.id || !candidate.inStock || isPreLoved(candidate.condition)) continue;
     const key = `${candidate.category}/${candidate.subcategory}`;
     const bucket = byTarget.get(key);
     if (bucket) bucket.push(candidate);

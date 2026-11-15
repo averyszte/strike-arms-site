@@ -8,10 +8,13 @@ import { CartSummary } from '@/components/cart/CartSummary';
 import { CheckoutForm } from '@/components/cart/CheckoutForm';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { FulfillmentChoice } from '@/components/cart/FulfillmentChoice';
+import { PaymentCancelledNotice } from '@/components/cart/payment-cancelled-notice';
 import { useCart } from '@/hooks/use-cart';
 import { useCartFreshness } from '@/hooks/use-cart-freshness';
 import { useCartPricing } from '@/hooks/use-cart-pricing';
 import { useCheckout } from '@/hooks/use-checkout';
+import { useClearCheckoutDraft } from '@/hooks/use-clear-checkout-draft';
+import { usePaymentCancelled } from '@/hooks/use-payment-cancelled';
 import { SITE_URL } from '@/lib/site-config';
 import { CARD_TITLE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
 
@@ -24,6 +27,8 @@ export default function Cart() {
   const pricing = useCartPricing();
   const cartChanges = useCartFreshness();
   const { startCheckout, isSubmitting, error } = useCheckout();
+  const isPaymentCancelled = usePaymentCancelled();
+  useClearCheckoutDraft(lines.length === 0);
 
   return (
     <SiteLayout>
@@ -38,6 +43,7 @@ export default function Cart() {
 
       <div className={`mx-auto px-4 md:px-6 py-12 md:py-16 ${PAGE_WIDTHS.medium}`}>
         <CartChangesNotice changes={cartChanges} />
+        {isPaymentCancelled && lines.length > 0 && <PaymentCancelledNotice />}
         {lines.length === 0 ? (
           <EmptyCart />
         ) : (

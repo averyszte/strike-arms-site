@@ -9,6 +9,7 @@ import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { BotCheckStatus } from '@/components/BotCheckStatus';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { signInSchema, type SignInFormInput } from '@/lib/customer-account-validation';
@@ -59,9 +60,14 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
             type="email"
             autoComplete="email"
             aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? 'sign-in-email-error' : undefined}
             {...register('email')}
           />
-          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+          {errors.email && (
+            <p id="sign-in-email-error" className="text-xs text-destructive">
+              {errors.email.message}
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
           <div className="flex items-baseline justify-between gap-4">
@@ -75,9 +81,10 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
             type="password"
             autoComplete="current-password"
             aria-invalid={errors.password ? true : undefined}
+            aria-describedby="sign-in-password-note"
             {...register('password')}
           />
-          <p className={`text-xs ${errors.password ? 'text-destructive' : 'text-muted-foreground'}`}>
+          <p id="sign-in-password-note" className={`text-xs ${errors.password ? 'text-destructive' : 'text-muted-foreground'}`}>
             {errors.password?.message ?? PASSWORD_HINT}
           </p>
         </div>
@@ -94,6 +101,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
           <LogIn className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Signing in' : 'Sign in'}
         </Button>
+        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} />
       </form>
       <p className="mt-6 text-sm text-muted-foreground">
         New here?{' '}

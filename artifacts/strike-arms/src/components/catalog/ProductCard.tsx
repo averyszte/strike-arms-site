@@ -21,13 +21,12 @@ export function ProductCard({ product }: ProductCardProps) {
     <Link
       href={`/products/${slug}`}
       className="group block border border-border/60 bg-card transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      tabIndex={0}
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-white">
         <CardImage
           src={displayImage}
-          alt={name}
+          alt=""
           loading="lazy"
           sizes="(min-width: 1280px) 25vw, (min-width: 640px) 33vw, 50vw"
           className="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.03]"
@@ -77,8 +76,14 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-baseline gap-2 pt-0.5">
           {hasDiscount ? (
             <>
-              <span className="text-base font-black text-accent">{formatPrice(payableCents)}</span>
-              <span className="text-xs text-muted-foreground line-through">{formatPrice(price)}</span>
+              <span className="text-base font-black text-accent">
+                <span className="sr-only">Now </span>
+                {formatPrice(payableCents)}
+              </span>
+              <span className="text-xs text-muted-foreground line-through">
+                <span className="sr-only">Was </span>
+                {formatPrice(price)}
+              </span>
             </>
           ) : (
             <span className="text-base font-black text-foreground">{formatPrice(price)}</span>

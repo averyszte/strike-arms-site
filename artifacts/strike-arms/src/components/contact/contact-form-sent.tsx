@@ -9,7 +9,10 @@ export function ContactFormSent() {
     <div className={`${PANEL} p-6`}>
       <div className="flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
-        <h2 className={`${CARD_TITLE} text-lg`}>Thanks — we have it</h2>
+        {/* Focused when it replaces the form, so a screen reader hears the thank-you. */}
+        <h2 ref={(el) => el?.focus()} tabIndex={-1} className={`${CARD_TITLE} text-lg outline-none`}>
+          Thanks — we have it
+        </h2>
       </div>
       <p className="mt-3 text-muted-foreground leading-relaxed">
         We read every message and normally come back within a day or two. If it is urgent, ring

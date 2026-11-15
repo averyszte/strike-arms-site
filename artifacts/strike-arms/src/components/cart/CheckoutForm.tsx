@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AlertCircle, Lock } from 'lucide-react';
 
 import { BotCheck } from '@/components/BotCheck';
@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { CheckoutAgeConfirmation } from '@/components/cart/checkout-age-confirmation';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { DeliveryAddressFields } from '@/components/cart/DeliveryAddressFields';
+import { FormErrorSummary } from '@/components/form-error-summary';
+import { BotCheckStatus } from '@/components/BotCheckStatus';
+import { useCheckoutDraft } from '@/hooks/use-checkout-draft';
 import { useCheckoutPrefill } from '@/hooks/use-checkout-prefill';
+import { useFocusFirstError } from '@/hooks/use-focus-first-error';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import { applyCheckoutPrefill } from '@/lib/checkout-prefill';
-import {
-  EMPTY_CHECKOUT_DETAILS,
-  validateCheckoutDetails,
-  type CheckoutFieldErrors,
-} from '@/lib/checkout-validation';
+import { validateCheckoutDetails, type CheckoutFieldErrors } from '@/lib/checkout-validation';
 import { CTA_PRIMARY } from '@/lib/storefront-styles';
 import type { CheckoutDetails } from '@/types/cart';
 
@@ -30,8 +30,11 @@ export function CheckoutForm({
   submitError,
   onSubmit,
 }: CheckoutFormProps) {
-  const [details, setDetails] = useState<CheckoutDetails>(EMPTY_CHECKOUT_DETAILS);
+  const [details, setDetails] = useCheckoutDraft();
   const [errors, setErrors] = useState<CheckoutFieldErrors>({});
+  const formRef = useRef<HTMLFormElement>(null);
+  const reportErrors = useFocusFirstError(formRef);
+  const errorCount = Object.keys(errors).length;
   const prefill = useCheckoutPrefill();
   const [hasPrefilled, setHasPrefilled] = useState(false);
   const turnstile = useTurnstile('checkout');
@@ -53,6 +56,7 @@ export function CheckoutForm({
     const submitted = { ...details, wantsDelivery };
     const found = validateCheckoutDetails(submitted);
     setErrors(found);
+    reportErrors(Object.keys(found).length);
 
     if (Object.keys(found).length > 0 || isWaitingForBotCheck) return;
 
@@ -63,7 +67,9 @@ export function CheckoutForm({
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="space-y-6" onSubmit={handleSubmit} noValidate>
+      <FormErrorSummary count={errorCount} />
+
       <fieldset className="space-y-4">
         <legend className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
           Your details
@@ -132,6 +138,10 @@ export function CheckoutForm({
         <Lock className="h-4 w-4" aria-hidden="true" />
         {isSubmitting ? 'Taking you to payment…' : 'Continue to payment'}
       </Button>
+      <BotCheckStatus
+        isChecking={isWaitingForBotCheck && !turnstile.hasFailed}
+        className="-mt-3 text-center"
+      />
 
       <p className="text-center text-xs text-muted-foreground">
         Payment is handled by Stripe. We never see your card details.

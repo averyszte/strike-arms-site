@@ -4,7 +4,7 @@
  * the sort orders and the tag-shelf filters.
  */
 
-import { supabase } from '@/data/supabase-client';
+import { publicCatalogue } from '@/data/public-catalogue-client';
 import type { ProductFilters } from '@/types/product';
 
 /**
@@ -16,36 +16,49 @@ export const PRODUCT_COLUMNS =
 
 export type ProductQuery = ReturnType<typeof buildBaseQuery>;
 
-export function buildBaseQuery() {
-  return supabase.from('products').select(PRODUCT_COLUMNS, { count: 'exact' }).eq('is_published', true);
+/**
+ * With `withCount`, PostgREST also returns the exact number of matching rows,
+ * which costs a second scan of the filtered table. A "load more" grid needs
+ * that total once, on its first page; later pages pass false and reuse it
+ * (N-037).
+ */
+export function buildBaseQuery(withCount = true) {
+  return publicCatalogue
+    .from('products')
+    .select(PRODUCT_COLUMNS, withCount ? { count: 'exact' } : undefined)
+    .eq('is_published', true);
 }
 
 /**
+ * Every sort puts in-stock products first, so sold-out ones sink to the end
+ * of a listing whatever order the shopper picked (N-053).
+ *
  * Postgres does not guarantee row order for equal sort keys, so every sort
  * ends with `id` as a tiebreaker. Without it, "load more" pagination can
  * show the same product twice and skip another, because the second page is
  * a fresh query that is free to order the ties differently.
  */
 export function applySort(query: ProductQuery, sort: NonNullable<ProductFilters['sort']>) {
+  const inStockFirst = query.order('in_stock', { ascending: false });
   switch (sort) {
     case 'featured':
-      return query
+      return inStockFirst
         .order('is_featured', { ascending: false })
         .order('type_rank', { ascending: true })
         .order('created_at', { ascending: false })
         .order('id', { ascending: true });
     case 'newest':
-      return query.order('created_at', { ascending: false }).order('id', { ascending: true });
+      return inStockFirst.order('created_at', { ascending: false }).order('id', { ascending: true });
     case 'price-asc':
-      return query
+      return inStockFirst
         .order('effective_price_cents', { ascending: true })
         .order('id', { ascending: true });
     case 'price-desc':
-      return query
+      return inStockFirst
         .order('effective_price_cents', { ascending: false })
         .order('id', { ascending: true });
     case 'name-asc':
-      return query.order('name', { ascending: true }).order('id', { ascending: true });
+      return inStockFirst.order('name', { ascending: true }).order('id', { ascending: true });
   }
 }
 

@@ -1,14 +1,16 @@
-import { useState, type InputHTMLAttributes } from 'react';
+import { useState } from 'react';
 import { useForm, type FieldError } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'wouter';
 import { UserPlus } from 'lucide-react';
 
 import { FormError } from '@/components/account/FormError';
+import { PasswordInputWithToggle } from '@/components/account/password-input-with-toggle';
 import { BotCheck } from '@/components/BotCheck';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { BotCheckStatus } from '@/components/BotCheckStatus';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import { customerAuthError } from '@/lib/customer-auth-errors';
 import { signUpSchema, type SignUpFormInput } from '@/lib/customer-account-validation';
@@ -20,7 +22,7 @@ type SignUpFormProps = {
   onSubmit: (input: SignUpFormInput, captchaToken: string | null) => Promise<void>;
 };
 
-const EMPTY: SignUpFormInput = { fullName: '', email: '', password: '', confirmPassword: '' };
+const EMPTY: SignUpFormInput = { fullName: '', email: '', password: '' };
 
 export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -49,16 +51,29 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       <h2 className={`${CARD_TITLE} text-lg`}>Create an account</h2>
       <form onSubmit={(e) => void handleSubmit(submit)(e)} className="mt-4 space-y-4" noValidate>
         <Field id="sign-up-name" label="Your name" error={errors.fullName}>
-          <Input id="sign-up-name" autoComplete="name" {...register('fullName')} />
+          <Input
+            id="sign-up-name"
+            autoComplete="name"
+            {...fieldAria('sign-up-name', errors.fullName)}
+            {...register('fullName')}
+          />
         </Field>
         <Field id="sign-up-email" label="Email" error={errors.email}>
-          <Input id="sign-up-email" type="email" autoComplete="email" {...register('email')} />
+          <Input
+            id="sign-up-email"
+            type="email"
+            autoComplete="email"
+            {...fieldAria('sign-up-email', errors.email)}
+            {...register('email')}
+          />
         </Field>
         <Field id="sign-up-password" label="Password" error={errors.password} hint={PASSWORD_HINT}>
-          <Input id="sign-up-password" {...PASSWORD_INPUT} {...register('password')} />
-        </Field>
-        <Field id="sign-up-confirm" label="Password again" error={errors.confirmPassword}>
-          <Input id="sign-up-confirm" {...PASSWORD_INPUT} {...register('confirmPassword')} />
+          <PasswordInputWithToggle
+            id="sign-up-password"
+            autoComplete="new-password"
+            {...fieldAria('sign-up-password', errors.password, true)}
+            {...register('password')}
+          />
         </Field>
 
         <p className="text-xs text-muted-foreground">
@@ -81,6 +96,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
           <UserPlus className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Creating account' : 'Create account'}
         </Button>
+        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} />
       </form>
       <p className="mt-6 text-sm text-muted-foreground">
         Already have an account?{' '}
@@ -93,10 +109,13 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
   );
 }
 
-const PASSWORD_INPUT: InputHTMLAttributes<HTMLInputElement> = {
-  type: 'password',
-  autoComplete: 'new-password',
-};
+/** Ties an input to the note under it, and marks it invalid when that note is an error. */
+function fieldAria(id: string, error: FieldError | undefined, hasHint = false) {
+  return {
+    'aria-invalid': error ? true : undefined,
+    'aria-describedby': error || hasHint ? `${id}-note` : undefined,
+  };
+}
 
 type FieldProps = {
   id: string;
@@ -114,7 +133,9 @@ function Field({ id, label, error, hint, children }: FieldProps) {
       <Label htmlFor={id}>{label}</Label>
       {children}
       {note && (
-        <p className={`text-xs ${error ? 'text-destructive' : 'text-muted-foreground'}`}>{note}</p>
+        <p id={`${id}-note`} className={`text-xs ${error ? 'text-destructive' : 'text-muted-foreground'}`}>
+          {note}
+        </p>
       )}
     </div>
   );

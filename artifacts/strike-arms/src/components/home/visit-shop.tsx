@@ -2,18 +2,16 @@ import type { ReactNode } from "react";
 import { ArrowUpRight, Phone } from "lucide-react";
 
 import { BUSINESS } from "@/lib/site-config";
-import {
-  ADDRESS_LINES,
-  MAPS_DIRECTIONS_URL,
-  MAPS_EMBED_URL,
-  openingHoursLines,
-} from "@/lib/shop-location";
+import { ShopMapFacade } from "@/components/home/shop-map-facade";
+import { ADDRESS_LINES, MAPS_DIRECTIONS_URL, openingHoursLines } from "@/lib/shop-location";
 import { phoneHref } from "@/lib/storefront-styles";
+import { TRUST_CLAIMS } from "@/lib/trust-claims";
 
 /**
  * Combined homepage — where the shop is. Address, hours and phone on the
- * left, a live Google map on the right. The map is inverted to sit on the
- * dark page; hue-rotate puts the pin and roads back near their own colours.
+ * left, a click-to-load Google map on the right (components/home/
+ * shop-map-facade.tsx). Alan's trust claims are repeated here as still text,
+ * since the trust marquee is the only other place they appear.
  */
 
 const HOURS = openingHoursLines();
@@ -44,6 +42,14 @@ export function VisitShop() {
             Call in to handle the gear and ask questions, or drop a gun off for a repair or an
             upgrade fitted.
           </p>
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-foreground">
+            {TRUST_CLAIMS.map((claim) => (
+              <li key={claim} className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 shrink-0 bg-accent" aria-hidden="true" />
+                {claim}
+              </li>
+            ))}
+          </ul>
 
           <dl className="mt-8 divide-y divide-border border-y border-border">
             <DetailRow label="Address">
@@ -89,13 +95,7 @@ export function VisitShop() {
         </div>
 
         <div className="lg:col-span-7 relative min-h-[320px] md:min-h-[440px] border border-border bg-card overflow-hidden">
-          <iframe
-            title={`Map showing ${BUSINESS.name}, ${BUSINESS.addressLocality}`}
-            src={MAPS_EMBED_URL}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="absolute inset-0 h-full w-full border-0 [filter:invert(0.92)_hue-rotate(180deg)_saturate(0.7)_contrast(0.9)]"
-          />
+          <ShopMapFacade />
         </div>
       </div>
     </section>

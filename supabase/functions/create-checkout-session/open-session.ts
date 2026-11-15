@@ -113,7 +113,9 @@ export async function openCheckoutSession(
     // {CHECKOUT_SESSION_ID} is filled in by Stripe. With the order id it is
     // what lets the success page ask checkout-status for the order number.
     success_url: `${siteUrl}/checkout/success?order=${orderId}&session={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/cart`,
+    // ?cancelled=1 lets the cart say the payment did not go through and that
+    // the basket and typed details were kept (N-054).
+    cancel_url: `${siteUrl}/cart?cancelled=1`,
     metadata: { order_id: orderId },
     payment_intent_data: { metadata: { order_id: orderId } },
   }, {

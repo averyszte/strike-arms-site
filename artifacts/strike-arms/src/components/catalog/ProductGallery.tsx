@@ -24,7 +24,8 @@ export function ProductGallery({ product }: { product: Product }) {
               key={image + index}
               type="button"
               onClick={() => setActive(index)}
-              aria-label={`View image ${index + 1}`}
+              aria-label={`Image ${index + 1} of ${images.length}`}
+              aria-current={index === active ? 'true' : undefined}
               className={`h-16 w-16 overflow-hidden border-2 bg-white transition-colors ${index === active ? 'border-accent' : 'border-border/60 hover:border-foreground'}`}
             >
               <CardImage

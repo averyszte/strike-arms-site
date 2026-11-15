@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { ProductRecommendations } from '@/components/catalog/ProductRecommendations';
 import { ProductGallery } from '@/components/catalog/ProductGallery';
 import { ProductInfo } from '@/components/catalog/ProductInfo';
+import { ProductDescription } from '@/components/catalog/product-description';
 import { CatalogLoadErrorPage } from '@/components/catalog/CatalogLoadErrorPage';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -18,10 +19,16 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { useProduct } from '@/hooks/useProduct';
+import { useStoreRates } from '@/hooks/use-store-rates';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
 import { effectivePriceCents } from '@/lib/effective-price';
 import { formatCentsPlain } from '@/lib/format-price';
 import { SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
+import {
+  buildProductMetaDescription,
+  buildProductSchemaCrumbs,
+  buildProductTitle,
+} from '@/lib/product-page-meta';
 import {
   buildProductSchema,
   buildBreadcrumbSchema,
@@ -62,25 +69,29 @@ function buildCrumbs(product: Product): BreadcrumbEntry[] {
 }
 
 function ProductDetailView({ product }: { product: Product }) {
+  const { data: rates } = useStoreRates();
   const crumbs = buildCrumbs(product);
   const priceCents = effectivePriceCents(product.price, product.salePrice);
-  const description = product.shortDescription;
+  const title = buildProductTitle(product.name);
+  const description = buildProductMetaDescription(product);
 
   return (
     <SiteLayout>
       <Helmet>
-        <title>{`${product.name} | Strike Arms Airsoft Dublin`}</title>
+        <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={`${SITE_URL}/products/${product.slug}`} />
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${product.name} | Strike Arms`} />
+        <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={`${SITE_URL}/products/${product.slug}`} />
         <meta property="og:image" content={toAbsoluteUrl(product.images[0] ?? '/opengraph.jpg')} />
         <meta property="product:price:amount" content={formatCentsPlain(priceCents)} />
         <meta property="product:price:currency" content="EUR" />
       </Helmet>
-      <JsonLd data={[buildProductSchema(product), buildBreadcrumbSchema(crumbs)]} />
+      <JsonLd
+        data={[buildProductSchema(product, rates), buildBreadcrumbSchema(buildProductSchemaCrumbs(product))]}
+      />
 
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 md:py-10">
         <ProductCrumbs crumbs={crumbs} />
@@ -88,6 +99,7 @@ function ProductDetailView({ product }: { product: Product }) {
           <ProductGallery product={product} />
           <ProductInfo product={product} />
         </div>
+        <ProductDescription description={product.description} />
         <ProductRecommendations product={product} />
       </div>
     </SiteLayout>

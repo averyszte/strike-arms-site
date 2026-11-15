@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { Send } from 'lucide-react';
+import { useRef, useState } from 'react';
 
-import { BotCheck } from '@/components/BotCheck';
 import { CheckoutField } from '@/components/cart/CheckoutField';
 import { ConsentField } from '@/components/contact/consent-field';
 import { ContactFormSent } from '@/components/contact/contact-form-sent';
 import { HoneypotField } from '@/components/contact/honeypot-field';
-import { InquirySendError } from '@/components/contact/inquiry-send-error';
-import { Button } from '@/components/ui/button';
+import { InquiryFormFooter } from '@/components/contact/inquiry-form-footer';
+import { FormErrorSummary } from '@/components/form-error-summary';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useFocusFirstError } from '@/hooks/use-focus-first-error';
+import { useProductEnquirySubject } from '@/hooks/use-product-enquiry-subject';
 import { useSubmitInquiry } from '@/hooks/use-submit-inquiry';
 import { useTurnstile } from '@/hooks/use-turnstile';
 import {
   EMPTY_INQUIRY_FORM,
-  looksAutomated,
+  isHoneypotFilled,
+  isSubmittedTooFast,
   validateInquiry,
   type InquiryFieldErrors,
   type InquiryForm,
 } from '@/lib/inquiry-validation';
-import { CTA_PRIMARY } from '@/lib/storefront-styles';
 
 /**
  * The public contact form.
@@ -32,9 +32,13 @@ import { CTA_PRIMARY } from '@/lib/storefront-styles';
  */
 
 export function ContactForm() {
-  const [form, setForm] = useState<InquiryForm>(EMPTY_INQUIRY_FORM);
+  const productSubject = useProductEnquirySubject();
+  const [form, setForm] = useState<InquiryForm>(() => ({ ...EMPTY_INQUIRY_FORM, subject: productSubject }));
   const [errors, setErrors] = useState<InquiryFieldErrors>({});
   const [isSent, setIsSent] = useState(false);
+  const [isTooFast, setIsTooFast] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const reportErrors = useFocusFirstError(formRef);
 
   // When the form was first rendered, for the "no human types this fast" check.
   // Lazily, because the argument to useRef is evaluated on every render and
@@ -52,13 +56,17 @@ export function ContactForm() {
 
     const found = validateInquiry(form);
     setErrors(found);
+    reportErrors(Object.keys(found).length);
     if (Object.keys(found).length > 0 || isWaitingForBotCheck) return;
 
     // Answered exactly like a real submission, and quietly dropped.
-    if (looksAutomated(form, Date.now() - openedAt)) {
+    if (isHoneypotFilled(form)) {
       setIsSent(true);
       return;
     }
+    const isFast = isSubmittedTooFast(Date.now() - openedAt);
+    setIsTooFast(isFast);
+    if (isFast) return;
 
     submit.mutate(
       {
@@ -80,7 +88,8 @@ export function ContactForm() {
   if (isSent) return <ContactFormSent />;
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="space-y-4" onSubmit={handleSubmit} noValidate>
+      <FormErrorSummary count={Object.keys(errors).length} />
       <CheckoutField
         id="contact-name"
         label="Your name"
@@ -152,23 +161,13 @@ export function ContactForm() {
         onChange={(consent) => patch({ consent })}
       />
 
-      <BotCheck
-        containerRef={turnstile.ref}
-        isEnabled={turnstile.isEnabled}
-        hasFailed={turnstile.hasFailed}
+      <InquiryFormFooter
+        turnstile={turnstile}
+        isPending={submit.isPending}
+        sendError={submit.isError ? submit.errorMessage : null}
+        isTooFast={isTooFast}
+        idleLabel="Send message"
       />
-
-      {submit.isError && <InquirySendError message={submit.errorMessage} />}
-
-      <Button
-        type="submit"
-        size="lg"
-        disabled={submit.isPending || isWaitingForBotCheck}
-        className={CTA_PRIMARY}
-      >
-        <Send className="h-4 w-4" aria-hidden="true" />
-        {submit.isPending ? 'Sending…' : 'Send message'}
-      </Button>
     </form>
   );
 }

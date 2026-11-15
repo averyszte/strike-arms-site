@@ -17,17 +17,15 @@ const emailSchema = z
   .max(254, 'That email is too long')
   .email('That email address does not look right');
 
-export const signUpSchema = z
-  .object({
-    fullName: z.string().trim().min(1, 'Enter your name').max(MAX_NAME_LENGTH, 'That name is too long'),
-    email: emailSchema,
-    password: passwordSchema,
-    confirmPassword: z.string().min(1, 'Type the password again'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'The two passwords do not match',
-    path: ['confirmPassword'],
-  });
+/**
+ * One password field with a show toggle rather than a second "type it again"
+ * field (N-060): the shopper can check what they typed by looking at it.
+ */
+export const signUpSchema = z.object({
+  fullName: z.string().trim().min(1, 'Enter your name').max(MAX_NAME_LENGTH, 'That name is too long'),
+  email: emailSchema,
+  password: passwordSchema,
+});
 
 export type SignUpFormInput = z.infer<typeof signUpSchema>;
 

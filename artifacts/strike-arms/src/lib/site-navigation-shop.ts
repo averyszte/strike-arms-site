@@ -6,6 +6,7 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
   {
     name: "Rifles",
     href: "/store/rifles",
+    allLabel: "Shop all rifles",
     mega: [
       {
         title: "Electric (AEG)",
@@ -33,7 +34,6 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
           { label: "Rifle Accessories", href: "/store/rifles/rifle-accessories" },
           { label: "New Arrivals", href: "/new" },
           { label: "Pre-Loved", href: "/pre-loved" },
-          { label: "Best Sellers", href: "/new" },
         ],
       },
     ],
@@ -41,6 +41,7 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
   {
     name: "Pistols",
     href: "/store/pistols",
+    allLabel: "Shop all pistols",
     mega: [
       {
         title: "Pistol Types",
@@ -72,6 +73,7 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
   {
     name: "Consumables",
     href: "/store/consumables",
+    allLabel: "Shop all consumables",
     mega: [
       {
         title: "BBs & Ammo",
@@ -105,6 +107,7 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
   {
     name: "Accessories",
     href: "/store/accessories",
+    allLabel: "Shop all accessories",
     mega: [
       {
         title: "Sighting & Lighting",
@@ -141,6 +144,7 @@ export const SHOP_NAV_ITEMS: NavItem[] = [
   {
     name: "Gear",
     href: "/store/gear",
+    allLabel: "Shop all gear",
     mega: [
       {
         title: "Body Armour & Clothing",

@@ -18,6 +18,7 @@ export function CheckoutAgeConfirmation({ checked, error, onChange }: Props) {
         <Checkbox
           id="age-confirmed"
           checked={checked}
+          aria-invalid={error ? true : undefined}
           aria-describedby={error ? 'age-confirmed-error' : undefined}
           onCheckedChange={(next) => onChange(next === true)}
         />

@@ -1,31 +1,34 @@
-import { useCallback, useRef, useState, type KeyboardEvent } from 'react';
+import { useCallback, useId, useRef, useState, type KeyboardEvent } from 'react';
 
 import { useDelayedFocus } from '@/hooks/use-delayed-focus';
 import { useOutsideMousedown } from '@/hooks/use-outside-mousedown';
+import { useSearchBoxFocus } from '@/hooks/use-search-box-focus';
 import { useSearchNavigation } from '@/hooks/use-search-navigation';
 import { useSearchProducts } from '@/hooks/use-search-products';
 
 /** Short wait before focusing the full-width (mobile) search box once it mounts. */
 const FULL_WIDTH_FOCUS_DELAY_MS = 50;
-/** Lets a mousedown on a result land before blur closes the panel. */
-const BLUR_CLOSE_DELAY_MS = 150;
 
 /**
  * State and handlers for the header search box: the query, whether the panel
  * is open, the keyboard-highlighted row, and where Enter or a click goes.
+ * The ids follow the ARIA combobox pattern (the input points at the listbox
+ * and at the highlighted option).
  */
-export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
+export function useSearchDropdown(shouldAutoFocus: boolean, onClose?: () => void) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
+  const optionId = (index: number) => `${listId}-option-${index}`;
 
   const { results, isError, isPending } = useSearchProducts(query);
   const showPanel = open && query.length >= 2;
 
-  useDelayedFocus(inputRef, fullWidth, FULL_WIDTH_FOCUS_DELAY_MS);
+  useDelayedFocus(inputRef, shouldAutoFocus, FULL_WIDTH_FOCUS_DELAY_MS);
 
   const dismiss = useCallback(() => {
     setOpen(false);
@@ -33,6 +36,15 @@ export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
     setActiveIdx(-1);
   }, []);
   useOutsideMousedown(containerRef, showPanel, dismiss);
+
+  const { handleFocus, handleBlur } = useSearchBoxFocus(
+    containerRef,
+    () => {
+      setIsFocused(true);
+      setOpen(true);
+    },
+    dismiss,
+  );
 
   const closeAndClear = useCallback(() => {
     setOpen(false);
@@ -68,13 +80,6 @@ export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
     setActiveIdx(-1);
   };
 
-  const handleFocus = () => {
-    setIsFocused(true);
-    setOpen(true);
-  };
-
-  const handleBlur = () => setTimeout(dismiss, BLUR_CLOSE_DELAY_MS);
-
   const clearQuery = () => {
     setQuery('');
     setActiveIdx(-1);
@@ -82,7 +87,7 @@ export function useSearchDropdown(fullWidth: boolean, onClose?: () => void) {
   };
 
   return {
-    query, isFocused, activeIdx, setActiveIdx, inputRef, containerRef,
+    query, isFocused, activeIdx, setActiveIdx, inputRef, containerRef, listId, optionId,
     results, isError, isPending, showPanel,
     goToProduct, submitSearch, browseAll,
     handleKeyDown, handleChange, handleFocus, handleBlur, clearQuery,

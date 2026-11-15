@@ -16,6 +16,7 @@ export const navItems: NavItem[] = [
   {
     name: "Upgrades & Repairs",
     href: "/services",
+    allLabel: "All upgrades and repairs",
     mega: [
       {
         title: "Services",
@@ -35,6 +36,7 @@ export const navItems: NavItem[] = [
   {
     name: "Guides",
     href: "/guides",
+    allLabel: "All guides",
     mega: [
       {
         title: "Buying Guides",
@@ -65,6 +67,7 @@ export const navItems: NavItem[] = [
   {
     name: "More",
     href: "/store/more",
+    allLabel: "Shop all equipment and outdoor",
     mega: [
       {
         title: "Equipment & Tools",

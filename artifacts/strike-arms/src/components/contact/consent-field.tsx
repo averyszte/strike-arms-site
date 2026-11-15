@@ -17,6 +17,7 @@ export function ConsentField({ id, checked, error, onChange }: Props) {
         <Checkbox
           id={id}
           checked={checked}
+          aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           onCheckedChange={(next) => onChange(next === true)}
         />

@@ -1,12 +1,15 @@
 import { BUSINESS } from '@/lib/site-config';
 import { SERVICE_LINKS, SHOP_TEL } from '@/lib/site-navigation';
+import type { NavLinkGroup } from '@/types/navigation';
 
 // The mobile drawer's accordion. A flatter, shallower list than the desktop
 // mega menu in site-navigation.ts, so it is kept separate rather than
 // derived from it.
-export const mobileAccordionGroups: { title: string; links: { label: string; href: string }[] }[] = [
+export const mobileAccordionGroups: NavLinkGroup[] = [
   {
     title: "Rifles",
+    href: "/store/rifles",
+    allLabel: "Shop all rifles",
     links: [
       { label: "AEG Rifles", href: "/store/rifles/aeg-rifles" },
       { label: "Gas Rifles / GBBR", href: "/store/rifles/gbbr" },
@@ -18,6 +21,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Pistols",
+    href: "/store/pistols",
+    allLabel: "Shop all pistols",
     links: [
       { label: "Gas Blowback Pistols", href: "/store/pistols/gbb-pistols" },
       { label: "Electric Pistols", href: "/store/pistols/electric-pistols" },
@@ -29,6 +34,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Consumables",
+    href: "/store/consumables",
+    allLabel: "Shop all consumables",
     links: [
       { label: "BBs", href: "/store/consumables/bbs" },
       { label: "Bio BBs", href: "/store/consumables/bio-bbs" },
@@ -40,6 +47,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Accessories",
+    href: "/store/accessories",
+    allLabel: "Shop all accessories",
     links: [
       { label: "Optics", href: "/store/accessories/optics" },
       { label: "Flashlights", href: "/store/accessories/flashlights" },
@@ -50,6 +59,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Gear",
+    href: "/store/gear",
+    allLabel: "Shop all gear",
     links: [
       { label: "Plate Carriers / Vests", href: "/store/gear/plate-carriers" },
       { label: "Face & Eye Protection", href: "/store/gear/eye-protection" },
@@ -61,6 +72,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Upgrades & Repairs",
+    href: "/services",
+    allLabel: "All upgrades and repairs",
     links: [
       ...SERVICE_LINKS,
       { label: "Maintenance Guide", href: "/guides/airsoft-maintenance" },
@@ -69,6 +82,8 @@ export const mobileAccordionGroups: { title: string; links: { label: string; hre
   },
   {
     title: "Guides",
+    href: "/guides",
+    allLabel: "All guides",
     links: [
       { label: "AEG vs GBB vs Spring", href: "/guides/aeg-vs-gbb-vs-spring" },
       { label: "FPS & Joules Explained", href: "/guides/fps-and-joules-explained" },

@@ -3,7 +3,8 @@ import { Store, Truck } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
-import { BUSINESS } from '@/lib/site-config';
+import { ADDRESS_LINES, openingHoursLines } from '@/lib/shop-location';
+import { SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
 import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 
 type FulfillmentChoiceProps = {
@@ -25,15 +26,19 @@ export function FulfillmentChoice({
   onChange,
 }: FulfillmentChoiceProps) {
   const canDeliver = IS_DELIVERY_ENABLED && hasShippableItems;
+  const hours = openingHoursLines()
+    .map((line) => `${line.days} ${line.hours}`)
+    .join(', ');
 
   return (
     <div className={`${PANEL} p-5`}>
-      <h2 className={`${CARD_TITLE} text-lg`}>How would you like it?</h2>
+      <h2 id="fulfilment-heading" className={`${CARD_TITLE} text-lg`}>How would you like it?</h2>
       {!IS_DELIVERY_ENABLED && (
         <p className="mt-2 text-sm font-semibold text-accent">{DELIVERY_PAUSED_LINE}</p>
       )}
 
       <RadioGroup
+        aria-labelledby="fulfilment-heading"
         className="mt-4 space-y-3"
         value={wantsDelivery && canDeliver ? 'delivery' : 'pickup'}
         onValueChange={(value) => onChange(value === 'delivery')}
@@ -46,8 +51,9 @@ export function FulfillmentChoice({
               Collect in store
             </span>
             <span className="mt-1 block text-sm text-muted-foreground">
-              Pick everything up at {BUSINESS.addressLocality}. We will email you when it is ready.
+              Pick everything up at {ADDRESS_LINES.join(', ')}. We will email you when it is ready.
             </span>
+            <span className="mt-1 block text-xs text-muted-foreground">Open {hours}</span>
           </Label>
         </div>
 
@@ -70,7 +76,7 @@ export function FulfillmentChoice({
               {!IS_DELIVERY_ENABLED
                 ? 'Coming soon.'
                 : hasShippableItems
-                  ? 'Delivery across Ireland.'
+                  ? `${SHIPPING_LINE_POSTABLE}.`
                   : 'Nothing in your cart can be posted.'}
             </span>
           </Label>

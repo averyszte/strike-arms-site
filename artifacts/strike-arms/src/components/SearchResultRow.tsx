@@ -7,10 +7,12 @@ import { getCategory } from '@/lib/taxonomy';
 import type { Product } from '@/types/product';
 
 interface Props {
+  id: string;
   product: Product;
   isActive: boolean;
   onSelect: () => void;
   onHover: () => void;
+  onPointerDown: (e: React.MouseEvent) => void;
 }
 
 /**
@@ -20,19 +22,24 @@ interface Props {
  * the search box -- focus, keyboard, which of four states the panel is in --
  * rather than also being the markup for a row.
  *
- * onMouseDown rather than onClick, deliberately: the input's onBlur closes the
- * panel, and blur fires before click, so a click handler here would never run.
+ * The row is the listbox option itself, not a button inside one: the input
+ * keeps focus and points at the highlighted row with aria-activedescendant
+ * (the ARIA combobox pattern), and Enter in the input picks it. A mouse click
+ * is a plain onClick; the mousedown is cancelled so the input keeps focus and
+ * its blur does not close the panel first.
  */
-export function SearchResultRow({ product, isActive, onSelect, onHover }: Props) {
+export function SearchResultRow({ id, product, isActive, onSelect, onHover, onPointerDown }: Props) {
   return (
-    <li role="option" aria-selected={isActive}>
-      <button
-        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors border-b border-border/40 last:border-b-0 ${
-          isActive ? 'bg-accent/10' : 'hover:bg-muted/50'
-        }`}
-        onMouseDown={onSelect}
-        onMouseEnter={onHover}
-      >
+    <li
+      id={id}
+      role="option"
+      aria-selected={isActive}
+      onMouseDown={onPointerDown}
+      onClick={onSelect}
+      onMouseEnter={onHover}
+      className={`cursor-pointer border-b border-border/40 last:border-b-0 ${isActive ? 'bg-accent/10' : 'hover:bg-muted/50'}`}
+    >
+      <div className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors">
         <div className="w-9 h-9 bg-white rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
           {product.images[0] ? (
             <CardImage src={product.images[0]} alt="" sizes="36px" className="w-full h-full object-contain p-0.5" />
@@ -60,7 +67,7 @@ export function SearchResultRow({ product, isActive, onSelect, onHover }: Props)
             <p className="text-sm font-semibold">{formatPrice(product.price)}</p>
           )}
         </div>
-      </button>
+      </div>
     </li>
   );
 }

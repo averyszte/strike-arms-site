@@ -78,7 +78,7 @@ export function validateInquiry(form: InquiryForm): InquiryFieldErrors {
 const MIN_HUMAN_FILL_MS = 3000;
 
 /**
- * Whether this submission looks like a script rather than a customer.
+ * Whether the hidden honeypot field was filled, which only a script does.
  *
  * Takes anything carrying a honeypot field, so the contact form and the service
  * quote form share one answer rather than two that can disagree.
@@ -91,6 +91,18 @@ const MIN_HUMAN_FILL_MS = 3000;
  * A caught submission is answered with the same thank-you as a real one: a bot
  * told it failed simply tries again differently.
  */
-export function looksAutomated(form: { website: string }, elapsedMs: number): boolean {
-  return form.website.trim() !== '' || elapsedMs < MIN_HUMAN_FILL_MS;
+export function isHoneypotFilled(form: { website: string }): boolean {
+  return form.website.trim() !== '';
 }
+
+/**
+ * A browser that autofills the name and email, plus a pasted message, can
+ * beat three seconds. That person is told to send the form again rather than
+ * dropped (N-049); a bot that obeys the message still has to wait.
+ */
+export function isSubmittedTooFast(elapsedMs: number): boolean {
+  return elapsedMs < MIN_HUMAN_FILL_MS;
+}
+
+export const TOO_FAST_MESSAGE =
+  'That was quicker than we expected. Please check your details and send the form again.';

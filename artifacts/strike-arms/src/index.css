@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@plugin "@tailwindcss/typography";
+@import "./storefront-motion.css";
+@import "./inter-font.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -68,8 +69,10 @@
 
 /* Base — always-dark tactical theme */
 :root {
-  /* Sticky sidebar top offset = utility bar (~30px) + header (~60px) */
-  --header-height: 90px;
+  /* The sticky header stack's real height: below md only the header shows
+     (60px + 1px border); from md the 32px utility bar sits above it. Used for
+     sticky offsets and scroll-padding-top. */
+  --header-height: 61px;
 
   /* #0D0D0D — near-black charcoal base */
   --background: 0 0% 5%;
@@ -95,11 +98,15 @@
   --accent-foreground: 0 0% 4%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
-  /* #242424 — subtle border */
+  /* #242424 — subtle border, for dividers */
   --border: 0 0% 14%;
-  --input: 0 0% 14%;
+  /* #616161 — form field, checkbox and switch edges (3:1 on the background) */
+  --input: 0 0% 38%;
   --ring: 16 100% 56%;
   --radius: 0.5rem;
+  /* Outline variants in components/ui read these; they were never defined. */
+  --button-outline: hsl(var(--input));
+  --badge-outline: hsl(var(--input));
 
   --sidebar: 0 0% 9%;
   --sidebar-foreground: 30 15% 95%;
@@ -119,6 +126,24 @@
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-height: 93px;
+  }
+}
+
+html {
+  scroll-padding-top: var(--header-height);
+}
+
+/* A visible 2px keyboard focus ring on the storefront (links, buttons, cards).
+   Form fields keep their own shadcn ring, and focus targets such as <main>
+   (tabindex -1, focused after a route change) need no ring, so both are out. */
+body:has(.site-theme) :focus-visible:not(input, textarea, select, [tabindex="-1"]) {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 .dark {
@@ -141,7 +166,7 @@
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 14%;
-  --input: 0 0% 14%;
+  --input: 0 0% 38%;
   --ring: 16 100% 56%;
 
   --chart-1: 16 100% 56%;
@@ -255,13 +280,4 @@ body:has(.site-theme) [class*="rounded"]:not([class*="rounded-full"]) {
 
 .theme-drop .brands-reverse .w-px {
   display: none;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-33.333%); }
-}
-
-.animate-marquee {
-  animation: marquee 36s linear infinite;
 }
