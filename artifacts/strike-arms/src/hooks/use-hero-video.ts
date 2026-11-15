@@ -3,14 +3,19 @@ import { useEffect, useState } from "react";
 import {
   HERO_VIDEO_MIN_WIDTH_QUERY,
   REDUCED_MOTION_QUERY,
+  isSlowConnectionType,
   shouldPlayHeroVideo,
 } from "@/lib/hero-video-policy";
 
-type NetworkInformationLike = { saveData?: boolean };
+type NetworkInformationLike = {
+  saveData?: boolean;
+  effectiveType?: string;
+  addEventListener?: (type: "change", listener: () => void) => void;
+  removeEventListener?: (type: "change", listener: () => void) => void;
+};
 
-function readSaveData(): boolean {
-  const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
-  return connection?.saveData === true;
+function readConnection(): NetworkInformationLike | undefined {
+  return (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
 }
 
 /**
@@ -27,16 +32,21 @@ export function useHeroVideo(): boolean {
       setShouldPlay(
         shouldPlayHeroVideo({
           isWideScreen: wide.matches,
-          isSavingData: readSaveData(),
+          isSavingData: readConnection()?.saveData === true,
+          isSlowConnection: isSlowConnectionType(readConnection()?.effectiveType),
           prefersReducedMotion: reduced.matches,
         }),
       );
     update();
+    // A link that slows down (or turns on data saver) after load stops the video.
+    const connection = readConnection();
     wide.addEventListener("change", update);
     reduced.addEventListener("change", update);
+    connection?.addEventListener?.("change", update);
     return () => {
       wide.removeEventListener("change", update);
       reduced.removeEventListener("change", update);
+      connection?.removeEventListener?.("change", update);
     };
   }, []);
 

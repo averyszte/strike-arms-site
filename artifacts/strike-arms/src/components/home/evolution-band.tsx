@@ -4,6 +4,11 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { useEvolutionProducts } from "@/hooks/use-evolution-products";
 import { EVOLUTION_SHELF_HREF, SCENE_ALT, SCENE_IMAGE } from "@/lib/evolution-band";
+import {
+  EVOLUTION_BANNER_FULL_WIDTH,
+  EVOLUTION_BANNER_WIDTHS,
+  publicImageSrcSet,
+} from "@/lib/public-image-srcset";
 import { EYEBROW } from "@/lib/storefront-styles";
 import { EvolutionRailCard } from "@/components/home/evolution-rail-card";
 
@@ -32,7 +37,15 @@ export function EvolutionBand() {
   return (
     <section aria-labelledby="evolution-band-heading" className="relative bg-background border-y border-border/60 overflow-hidden">
       <div className="relative aspect-video md:aspect-[16/7] max-h-[85vh] w-full">
-        <img src={SCENE_IMAGE} alt={SCENE_ALT} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={SCENE_IMAGE}
+          srcSet={publicImageSrcSet(SCENE_IMAGE, EVOLUTION_BANNER_WIDTHS, EVOLUTION_BANNER_FULL_WIDTH)}
+          sizes="100vw"
+          alt={SCENE_ALT}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-l from-background/80 via-background/10 to-transparent pointer-events-none" />
 

@@ -2,17 +2,25 @@ import { Link } from "wouter";
 import { ArrowUpRight } from "lucide-react";
 
 /**
+ * Each tile is a landscape strip cut from the centre of the original portrait
+ * art (the band the tile always showed), at 896 and 448 px wide.
+ */
+function stripSrc(imageSlug: string, width: 896 | 448): string {
+  return `/images/category-${imageSlug}-strip-${width}.webp`;
+}
+
+/**
  * Combined homepage — Shop by Category. The five live categories plus the workshop, and the site's
  * tokens, but with bolder type and a firmer hover than the live CategoryStrip.
  * Laid out as full-width stacked rows (one category per row).
  */
 const CATEGORIES = [
-  { name: "Rifles", image: "/images/category-rifles.webp", href: "/store/rifles" },
-  { name: "Pistols", image: "/images/category-pistols.webp", href: "/store/pistols" },
-  { name: "Consumables", image: "/images/category-bbs.webp", href: "/store/consumables" },
-  { name: "Accessories", image: "/images/category-accessories.webp", href: "/store/accessories" },
-  { name: "Gear", image: "/images/category-gear.webp", href: "/store/gear" },
-  { name: "Repairs & Upgrades", image: "/images/category-repairs.webp", href: "/services" },
+  { name: "Rifles", imageSlug: "rifles", href: "/store/rifles" },
+  { name: "Pistols", imageSlug: "pistols", href: "/store/pistols" },
+  { name: "Consumables", imageSlug: "bbs", href: "/store/consumables" },
+  { name: "Accessories", imageSlug: "accessories", href: "/store/accessories" },
+  { name: "Gear", imageSlug: "gear", href: "/store/gear" },
+  { name: "Repairs & Upgrades", imageSlug: "repairs", href: "/services" },
 ];
 
 export function CategoryGrid() {
@@ -46,10 +54,12 @@ export function CategoryGrid() {
               className="group relative h-32 md:h-44 rounded-sm overflow-hidden bg-card block"
             >
               <img
-                src={cat.image}
-                alt={cat.name}
+                src={stripSrc(cat.imageSlug, 896)}
+                srcSet={`${stripSrc(cat.imageSlug, 448)} 448w, ${stripSrc(cat.imageSlug, 896)} 896w`}
+                sizes="(min-width: 1280px) 1232px, 100vw"
+                alt=""
                 width={896}
-                height={1280}
+                height={336}
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

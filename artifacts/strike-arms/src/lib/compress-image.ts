@@ -6,12 +6,13 @@
  * spends his bandwidth, the bucket's storage and every shopper's data
  * allowance on detail no one sees.
  *
- * Output is JPEG, except when the source is a PNG, which is kept as PNG so
- * transparency survives — a logo or a cut-out on a white background is the one
- * case where it matters. WebP would be smaller than both, and is deliberately
- * not used: Safari's canvas WebP encoding has been unreliable across versions,
- * and an encoder that silently produces an empty blob on one browser is worse
- * than a file that is 30% larger everywhere.
+ * Output is WebP, which is smaller than JPEG and keeps PNG transparency. Some
+ * browsers (older Safari) cannot encode WebP from a canvas; toBlob then hands
+ * back a PNG instead of failing, so the blob's type is checked and the photo is
+ * encoded again as JPEG (or PNG, for a PNG source, so transparency survives).
+ *
+ * Every photo is always re-encoded, never uploaded as the original file: the
+ * canvas drops EXIF and other metadata (camera, date, possibly GPS location).
  *
  * Layer note: this uses browser canvas APIs, so it is not pure. It stays in lib/
  * because it touches no network or storage; only data/storage-repository calls it.
@@ -31,10 +32,13 @@ const MAX_EDGE = 1600;
  * 2x screen. The storefront picks it through srcset; see product-image-variants.
  */
 const CARD_EDGE = 800;
-const JPEG_QUALITY = 0.82;
+const QUALITY = 0.82;
 
-const PNG = { contentType: 'image/png', extension: 'png' } as const;
-const JPEG = { contentType: 'image/jpeg', extension: 'jpg' } as const;
+type ImageFormat = { contentType: string; extension: string };
+
+const WEBP: ImageFormat = { contentType: 'image/webp', extension: 'webp' };
+const PNG: ImageFormat = { contentType: 'image/png', extension: 'png' };
+const JPEG: ImageFormat = { contentType: 'image/jpeg', extension: 'jpg' };
 
 /** The dimensions to draw at: unchanged unless the longest edge is over MAX_EDGE. */
 function scaleToFit(width: number, height: number, maxEdge: number): { width: number; height: number } {
@@ -69,25 +73,31 @@ async function encodeAt(bitmap: ImageBitmap, maxEdge: number, contentType: strin
   const context = canvas.getContext('2d');
   if (!context) throw new Error('The browser could not process this image.');
   context.drawImage(bitmap, 0, 0, width, height);
-  return canvasToBlob(canvas, contentType, JPEG_QUALITY);
+  return canvasToBlob(canvas, contentType, QUALITY);
 }
 
 export type CompressedImageSizes = { full: CompressedImage; card: CompressedImage };
 
-/** The full-size photo and the smaller card copy, from one decode. */
-export async function compressImageSizes(file: File): Promise<CompressedImageSizes> {
-  const target = file.type === 'image/png' ? PNG : JPEG;
-  const asImage = (blob: Blob): CompressedImage => ({ blob, ...target });
+async function encodeBoth(bitmap: ImageBitmap, format: ImageFormat): Promise<CompressedImageSizes> {
+  const full = await encodeAt(bitmap, MAX_EDGE, format.contentType);
+  const card = await encodeAt(bitmap, CARD_EDGE, format.contentType);
+  return { full: { blob: full, ...format }, card: { blob: card, ...format } };
+}
 
+/**
+ * The full-size photo and the smaller card copy, from one decode. Both are
+ * always the same format, because the card's path is derived from the full
+ * photo's (see product-image-variants).
+ */
+export async function compressImageSizes(file: File): Promise<CompressedImageSizes> {
   const bitmap = await createImageBitmap(file);
   try {
-    const full = await encodeAt(bitmap, MAX_EDGE, target.contentType);
-    const card = await encodeAt(bitmap, CARD_EDGE, target.contentType);
-    // Re-encoding an already-optimised file can make it bigger. When it does,
-    // and the original is a format we would have produced anyway, keep the
-    // original: it is smaller and it has not been through a lossy pass twice.
-    const keepOriginal = full.size >= file.size && file.type === target.contentType;
-    return { full: asImage(keepOriginal ? file : full), card: asImage(card) };
+    const webp = await encodeBoth(bitmap, WEBP);
+    if (webp.full.blob.type === WEBP.contentType && webp.card.blob.type === WEBP.contentType) {
+      return webp;
+    }
+    // This browser cannot encode WebP from a canvas.
+    return await encodeBoth(bitmap, file.type === 'image/png' ? PNG : JPEG);
   } finally {
     bitmap.close();
   }

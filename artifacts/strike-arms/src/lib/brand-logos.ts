@@ -8,6 +8,8 @@
  *  2. Add or edit an entry in BRAND_LOGOS below:
  *       - `src`  = "/images/brands/<your-file>"   (leading slash, no "public")
  *       - `name` = the brand's name (used as the image alt text)
+ *       - `width` / `height` = the file's pixel size
+ *       - `brandSlug` = its slug in lib/brands.ts, if the shop lists the brand
  *  3. Save. The carousel updates automatically — no other files to touch.
  *
  * Every logo renders at the SAME height (BRAND_LOGO_HEIGHT); width scales
@@ -25,30 +27,39 @@
 export const BRAND_LOGO_HEIGHT = 30;
 
 export interface BrandLogo {
-  /** Brand name — used as the image alt text. */
+  /** Brand name, used as the image alt text. */
   name: string;
   /** Public path to the logo, e.g. "/images/brands/krytac.webp". */
   src: string;
+  /** Intrinsic pixel width and height of the file, for the img width/height attributes. */
+  width: number;
+  height: number;
+  /**
+   * The brand's slug in `lib/brands.ts`, when the shop lists that brand. It is
+   * the key for a link to `/brands/<slug>` and for hiding unstocked brands.
+   * Logos without one are brands the catalogue does not list.
+   */
+  brandSlug?: string;
 }
 
 export const BRAND_LOGOS: BrandLogo[] = [
-  { name: "5.11 Tactical", src: "/images/brands/5-11.webp" },
-  { name: "A&K", src: "/images/brands/a-k.webp" },
-  { name: "Action Army", src: "/images/brands/action-army.webp" },
-  { name: "Arcturus", src: "/images/brands/arctus-tactical.webp" },
-  { name: "Ares", src: "/images/brands/ares.webp" },
-  { name: "Army Armament", src: "/images/brands/army-armement.webp" },
-  { name: "Cybergun", src: "/images/brands/cybergun.webp" },
-  { name: "CYMA", src: "/images/brands/cyma.webp" },
-  { name: "D-Boys", src: "/images/brands/d-boys.webp" },
-  { name: "Delta Armory", src: "/images/brands/delta-armory.webp" },
-  { name: "G&G Armament", src: "/images/brands/g-g-armament.webp" },
-  { name: "KJW", src: "/images/brands/kjw.webp" },
-  { name: "Novritsch", src: "/images/brands/novritsch.webp" },
-  { name: "Nuprol", src: "/images/brands/nuprol.webp" },
-  { name: "Specna Arms", src: "/images/brands/specna-arms.webp" },
-  { name: "Tokyo Marui", src: "/images/brands/tokyo-marui.webp" },
-  { name: "Umarex", src: "/images/brands/umarex.webp" },
-  { name: "VFC", src: "/images/brands/vfc.webp" },
-  { name: "WE", src: "/images/brands/we-airsoft.webp" },
+  { name: "5.11 Tactical", src: "/images/brands/5-11.webp", width: 67, height: 31 },
+  { name: "A&K", src: "/images/brands/a-k.webp", width: 48, height: 30 },
+  { name: "Action Army", src: "/images/brands/action-army.webp", width: 47, height: 31, brandSlug: "action-army" },
+  { name: "Arcturus", src: "/images/brands/arcturus.webp", width: 39, height: 31 },
+  { name: "Ares", src: "/images/brands/ares.webp", width: 58, height: 31 },
+  { name: "Army Armament", src: "/images/brands/army-armement.webp", width: 37, height: 31 },
+  { name: "Cybergun", src: "/images/brands/cybergun.webp", width: 68, height: 31 },
+  { name: "CYMA", src: "/images/brands/cyma.webp", width: 74, height: 31, brandSlug: "cyma" },
+  { name: "D-Boys", src: "/images/brands/d-boys.webp", width: 48, height: 31 },
+  { name: "Delta Armory", src: "/images/brands/delta-armory.webp", width: 29, height: 31 },
+  { name: "G&G Armament", src: "/images/brands/g-g-armament.webp", width: 38, height: 30, brandSlug: "gandg" },
+  { name: "KJW", src: "/images/brands/kjw.webp", width: 36, height: 31 },
+  { name: "Novritsch", src: "/images/brands/novritsch.webp", width: 81, height: 31 },
+  { name: "Nuprol", src: "/images/brands/nuprol.webp", width: 81, height: 30, brandSlug: "nuprol" },
+  { name: "Specna Arms", src: "/images/brands/specna-arms.webp", width: 82, height: 31, brandSlug: "specna-arms" },
+  { name: "Tokyo Marui", src: "/images/brands/tokyo-marui.webp", width: 44, height: 31, brandSlug: "tokyo-marui" },
+  { name: "Umarex", src: "/images/brands/umarex.webp", width: 111, height: 31, brandSlug: "umarex" },
+  { name: "VFC", src: "/images/brands/vfc.webp", width: 42, height: 31, brandSlug: "vfc" },
+  { name: "WE", src: "/images/brands/we-airsoft.webp", width: 38, height: 31, brandSlug: "we" },
 ];

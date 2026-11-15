@@ -5,6 +5,7 @@ import { HotspotPin } from "@/components/hotspot-pin";
 import { LoadoutProductCard } from "@/components/home/loadout-product-card";
 import { useLoadoutProducts } from "@/hooks/use-loadout-products";
 import { loadouts } from "@/lib/loadouts";
+import { LOADOUT_IMAGE_FULL_WIDTH, LOADOUT_IMAGE_WIDTHS, publicImageSrcSet } from "@/lib/public-image-srcset";
 
 /**
  * Homepage "Shop by play style": a tabbed photo with labelled hotspots and the
@@ -64,6 +65,8 @@ export function LoadoutShowcase() {
               >
                 <img
                   src={activeData.image}
+                  srcSet={publicImageSrcSet(activeData.image, LOADOUT_IMAGE_WIDTHS, LOADOUT_IMAGE_FULL_WIDTH)}
+                  sizes="(min-width: 1024px) 58vw, 100vw"
                   alt={activeData.name}
                   loading="lazy"
                   decoding="async"

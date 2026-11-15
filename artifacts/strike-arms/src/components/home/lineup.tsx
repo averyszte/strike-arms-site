@@ -1,31 +1,41 @@
 import { Link } from "wouter";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { GUIDES, type GuideSummary } from "@/lib/guides";
+import { publicImageSrcSet } from "@/lib/public-image-srcset";
 
 /**
  * Combined homepage — the guides, as Drop's big numbered photo cards on the
  * site's dark tokens with an asymmetric middle card. Titles, summaries and
  * links come from the guides registry, so they always match /guides.
  */
-const FEATURED: { path: string; img: string }[] = [
-  { path: "/guides/beginners-guide", img: "/images/guides/beginners-guide.webp" },
-  { path: "/guides/first-airsoft-gun", img: "/images/guides/choosing-your-first-gun.webp" },
+const BEGINNERS_IMG = "/images/guides/beginners-guide.webp";
+const FIRST_GUN_IMG = "/images/guides/choosing-your-first-gun.webp";
+
+/** The maintenance photo is only 640 px wide, so it has no smaller copy. */
+const FEATURED: { path: string; img: string; srcSet?: string }[] = [
+  { path: "/guides/beginners-guide", img: BEGINNERS_IMG, srcSet: publicImageSrcSet(BEGINNERS_IMG, [640], 1122) },
+  { path: "/guides/first-airsoft-gun", img: FIRST_GUN_IMG, srcSet: publicImageSrcSet(FIRST_GUN_IMG, [640], 1122) },
   { path: "/guides/airsoft-maintenance", img: "/images/guides/maintenance-guide.webp" },
 ];
 
-const CARDS = FEATURED.flatMap(({ path, img }) => {
+const CARDS = FEATURED.flatMap(({ path, img, srcSet }) => {
   const guide = GUIDES.find((g) => g.path === path);
-  return guide ? [{ guide, img }] : [];
+  return guide ? [{ guide, img, srcSet }] : [];
 });
 
-function GuideCard({ guide, img, index }: { guide: GuideSummary; img: string; index: number }) {
+type GuideCardProps = { guide: GuideSummary; img: string; srcSet?: string; index: number };
+
+function GuideCard({ guide, img, srcSet, index }: GuideCardProps) {
   return (
     <Link href={guide.path} className={`group flex flex-col ${index === 1 ? "md:mt-10" : ""}`}>
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-background">
         <img
           src={img}
+          srcSet={srcSet}
+          sizes={srcSet ? "(min-width: 768px) 33vw, 100vw" : undefined}
           alt=""
           loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
@@ -81,7 +91,7 @@ export function Lineup() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {CARDS.map((card, i) => (
-            <GuideCard key={card.guide.path} guide={card.guide} img={card.img} index={i} />
+            <GuideCard key={card.guide.path} guide={card.guide} img={card.img} srcSet={card.srcSet} index={i} />
           ))}
         </div>
       </div>
