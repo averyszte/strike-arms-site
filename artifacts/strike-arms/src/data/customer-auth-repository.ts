@@ -102,8 +102,14 @@ export async function signInCustomer(
   if (error) throw error;
 }
 
+/**
+ * This device only. The default scope is 'global', which ended every session
+ * the person had, the admin's included: the shop and the admin share one
+ * sign-in on strikearms.ie, so a customer sign-out left an open admin tab
+ * looking signed in while the database refused every save.
+ */
 export async function signOutCustomer(): Promise<void> {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: 'local' });
   if (error) throw error;
 }
 
