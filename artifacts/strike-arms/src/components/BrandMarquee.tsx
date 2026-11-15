@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 
+import { useBrands } from "@/hooks/use-brands";
 import { BRAND_LOGOS, BRAND_LOGO_HEIGHT, type BrandLogo } from "@/lib/brand-logos";
 
 const LOGO_CLASS = "w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300";
@@ -24,14 +25,15 @@ function LogoImage({ brand, isCopy }: { brand: BrandLogo; isCopy: boolean }) {
 /**
  * One run of logos. The first run is the one screen readers and the keyboard
  * reach; the two copies that make the loop seamless are hidden from both.
- * A logo whose brand the shop lists links to its brand page.
+ * A logo links to its brand page only while the catalogue has published
+ * products from that brand; otherwise the page would be "not found".
  */
-function BrandGroup({ isCopy }: { isCopy: boolean }) {
+function BrandGroup({ isCopy, listedSlugs }: { isCopy: boolean; listedSlugs: ReadonlySet<string> }) {
   return (
     <div className="flex items-center gap-10 shrink-0 pr-10" aria-hidden={isCopy || undefined}>
       {BRAND_LOGOS.map((brand) => (
         <span key={brand.src} className="flex items-center gap-10 shrink-0">
-          {brand.brandSlug ? (
+          {brand.brandSlug && listedSlugs.has(brand.brandSlug) ? (
             <Link href={`/brands/${brand.brandSlug}`} tabIndex={isCopy ? -1 : undefined}>
               <LogoImage brand={brand} isCopy={isCopy} />
             </Link>
@@ -47,6 +49,8 @@ function BrandGroup({ isCopy }: { isCopy: boolean }) {
 
 export function BrandMarquee() {
   const [isHovered, setIsHovered] = useState(false);
+  const { data: brands } = useBrands();
+  const listedSlugs = new Set((brands ?? []).map((entry) => entry.slug));
 
   return (
     <div
@@ -78,9 +82,9 @@ export function BrandMarquee() {
         onFocus={() => setIsHovered(true)}
         onBlur={() => setIsHovered(false)}
       >
-        <BrandGroup isCopy={false} />
-        <BrandGroup isCopy />
-        <BrandGroup isCopy />
+        <BrandGroup isCopy={false} listedSlugs={listedSlugs} />
+        <BrandGroup isCopy listedSlugs={listedSlugs} />
+        <BrandGroup isCopy listedSlugs={listedSlugs} />
       </div>
     </div>
   );

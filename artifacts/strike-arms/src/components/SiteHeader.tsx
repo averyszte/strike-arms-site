@@ -48,7 +48,7 @@ export function SiteHeader() {
               <Menu className="w-5 h-5" />
             </button>
 
-            <Link href="/" className="flex flex-col items-start leading-none group shrink-0">
+            <Link href="/" className="flex flex-col items-start leading-none group shrink-0 whitespace-nowrap">
               <span className="font-black text-base md:text-[1.1rem] tracking-tighter uppercase text-foreground group-hover:text-accent transition-colors">
                 Strike Arms
               </span>
@@ -58,8 +58,12 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          {/* CENTER ZONE — primary nav. Each menu panel sits straight after its
-              button, so Tab goes from the button into its links. */}
+          {/* CENTER ZONE — primary nav. At lg (1024px) the eight items only just
+              fit between the logo and search, hence the tighter padding, type
+              and right-hand gap below xl. The logo is nowrap so its column
+              cannot shrink under it and let the nav slide over it. Each menu
+              panel sits straight after its button, so Tab goes from the
+              button into its links. */}
           <nav
             ref={navRef}
             aria-label="Main"
@@ -79,7 +83,7 @@ export function SiteHeader() {
                     aria-controls={item.mega ? panelId : undefined}
                     onMouseEnter={() => menu.openMenu(item.name)}
                     onClick={() => menu.toggleMenu(item.name)}
-                    className={`relative h-full px-2 xl:px-2.5 flex items-center gap-0.5 xl:gap-1 whitespace-nowrap text-[0.82rem] font-medium tracking-wide transition-colors ${
+                    className={`relative h-full px-1.5 xl:px-2.5 flex items-center gap-0.5 xl:gap-1 whitespace-nowrap text-[0.78rem] xl:text-[0.82rem] font-medium tracking-wide transition-colors ${
                       isOpen ? "text-foreground" : "text-foreground/70 hover:text-foreground"
                     }`}
                   >
@@ -114,7 +118,7 @@ export function SiteHeader() {
           </nav>
 
           {/* RIGHT ZONE — search + account + cart */}
-          <div className="flex items-center justify-end gap-0 lg:gap-3 -mr-3 lg:mr-0 text-foreground">
+          <div className="flex items-center justify-end gap-0 lg:gap-1 xl:gap-3 -mr-3 lg:mr-0 text-foreground">
             {/* Search — desktop live dropdown */}
             <div className="hidden lg:flex items-center">
               <SearchDropdown />
