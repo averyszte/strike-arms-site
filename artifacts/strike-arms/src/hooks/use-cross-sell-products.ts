@@ -6,13 +6,14 @@ import { crossSellTargets } from '@/lib/cross-sell';
 import { PRODUCT_KEYS, STALE_TIME_HALF_HOUR } from '@/lib/query-keys';
 import { pickCrossSell } from '@/lib/rank-related';
 import type { Product } from '@/types/product';
+import type { RelatedRow } from '@/types/related-row';
 
 /** The "things that go with it" row under a product. */
 
 /** Per shelf, not in total -- enough to fill the row if other shelves are bare. */
 const PER_SHELF = 6;
 
-export function useCrossSellProducts(product: Product, limit: number): Product[] {
+export function useCrossSellProducts(product: Product, limit: number): RelatedRow {
   const targets = useMemo(() => crossSellTargets(product), [product]);
 
   // One query per shelf rather than one covering all of them. A pooled query
@@ -32,5 +33,8 @@ export function useCrossSellProducts(product: Product, limit: number): Product[]
   // here would need a key built from the pool to be worth anything, and the
   // sort it guards runs over a few dozen items.
   const pool = results.flatMap((result) => result.data ?? []);
-  return pickCrossSell(product, pool, targets, limit);
+  // Loading only until every shelf has answered once, so the row's space can be
+  // held rather than the page jumping when it arrives (N-033).
+  const isLoading = results.some((result) => result.isPending);
+  return { products: pickCrossSell(product, pool, targets, limit), isLoading };
 }

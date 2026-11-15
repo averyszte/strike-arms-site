@@ -7,7 +7,7 @@
  * it lets every count respond instantly to every filter.
  */
 
-import { supabase } from '@/data/supabase-client';
+import { publicCatalogue } from '@/data/public-catalogue-client';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { toProductCondition } from '@/lib/product-condition';
 import type { FacetRow } from '@/types/catalog-facets';
@@ -46,7 +46,7 @@ function toFacetRow(row: FacetDbRow): FacetRow {
 export async function listFacetRows(): Promise<FacetRow[]> {
   const rows: FacetRow[] = [];
   for (let from = 0; ; from += PAGE_ROWS) {
-    const { data, error } = await supabase
+    const { data, error } = await publicCatalogue
       .from('products')
       .select(FACET_COLUMNS)
       .eq('is_published', true)
@@ -66,7 +66,7 @@ export async function listFacetRows(): Promise<FacetRow[]> {
 export async function listSearchMatchIds(q: string): Promise<string[]> {
   const term = escapeSearchTerm(q);
   if (!term) return [];
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('products')
     .select('id')
     .eq('is_published', true)

@@ -5,6 +5,11 @@ import { flattenProductPages, nextProductPage } from '@/lib/product-pages';
 import { PRODUCT_KEYS } from '@/lib/query-keys';
 import type { ProductFilters } from '@/types/product';
 
+/** Which page to fetch, and the listing's total once page 1 has counted it. */
+type PageParam = { page: number; total?: number };
+
+const FIRST_PAGE: PageParam = { page: 1 };
+
 /**
  * A "load more" product grid (M-050). `filters.page` is how many pages the
  * grid should show; each page is fetched once and kept, so raising it fetches
@@ -16,9 +21,14 @@ export function useProductPages(filters: ProductFilters) {
 
   const query = useInfiniteQuery({
     queryKey: PRODUCT_KEYS.pages(rest),
-    queryFn: ({ pageParam }) => listProducts({ ...rest, page: pageParam }),
-    initialPageParam: 1,
-    getNextPageParam: nextProductPage,
+    queryFn: ({ pageParam }) => listProducts({ ...rest, page: pageParam.page }, pageParam.total),
+    initialPageParam: FIRST_PAGE,
+    // Later pages carry the first page's total, so only page 1 asks the
+    // database to count (N-037). A refetch starts again from page 1.
+    getNextPageParam: (lastPage, allPages): PageParam | undefined => {
+      const next = nextProductPage(lastPage, allPages);
+      return next === undefined ? undefined : { page: next, total: lastPage.total };
+    },
     placeholderData: (prev) => prev,
   });
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/data/supabase-client';
+import { publicCatalogue } from '@/data/public-catalogue-client';
 import type { FreshCartDetails } from '@/types/cart-freshness';
 
 /**
@@ -15,7 +15,7 @@ export async function fetchFreshCartDetails(
   const fresh = new Map<string, FreshCartDetails>();
   if (productIds.length === 0) return fresh;
 
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('products')
     .select('id, name, effective_price_cents, is_shippable, in_stock')
     .in('id', productIds)

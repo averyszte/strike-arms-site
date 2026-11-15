@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { rankSimilar } from '@/lib/rank-related';
+import type { RelatedRow } from '@/types/related-row';
 import { useProducts } from '@/hooks/useProducts';
 import type { Product } from '@/types/product';
 
@@ -18,7 +19,7 @@ import type { Product } from '@/types/product';
 /** How many candidates to consider before ranking. */
 const POOL = 12;
 
-export function useSimilarProducts(product: Product, limit: number): Product[] {
+export function useSimilarProducts(product: Product, limit: number): RelatedRow {
   const shelf = useProducts({
     category: product.category,
     subcategory: product.subcategory,
@@ -29,7 +30,8 @@ export function useSimilarProducts(product: Product, limit: number): Product[] {
   const shelfItems = shelf.data?.items;
   const widerItems = wider.data?.items;
 
-  return useMemo(() => {
+  const isLoading = shelf.isPending || wider.isPending;
+  const products = useMemo(() => {
     const seen = new Set<string>();
     const pool: Product[] = [];
     for (const candidate of [...(shelfItems ?? []), ...(widerItems ?? [])]) {
@@ -39,4 +41,6 @@ export function useSimilarProducts(product: Product, limit: number): Product[] {
     }
     return rankSimilar(product, pool, limit);
   }, [product, shelfItems, widerItems, limit]);
+
+  return { products, isLoading };
 }

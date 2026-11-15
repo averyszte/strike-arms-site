@@ -39,7 +39,7 @@
 
 ## Deferred, and why
 - **Re-encode the hero video to under 2 MB.** It needs a media tool and a visual check. It does not reach mobile, so it is not a launch blocker.
-- **A vite chunk over 500 kB.** It is a lazy admin or vendor chunk, not the storefront entry. Splitting it further is tuning.
+- **A vite chunk over 500 kB.** Corrected in phase 2 (N-031, N-036): this said the warning came from a lazy chunk only, which was wrong. The storefront entry itself was 839.5 kB raw (257.2 kB gzip), and the lazy AdminArea chunk was 652.9 kB. After phase 2 the entry is 474.3 kB raw (150.0 kB gzip): the storefront reads go through a PostgREST-only client, so supabase-js is a separate 196 kB chunk, and framer-motion loads only with the two home sections that use it. AdminArea is 258.9 kB, because recharts is lazy with the revenue card (396.7 kB, admin dashboard only). No chunk is over 500 kB now.
 
 ## Noticed, not touched
 - **The shop filter sidebar** still reads product rows, because its counts follow each ticked filter. This is by design.

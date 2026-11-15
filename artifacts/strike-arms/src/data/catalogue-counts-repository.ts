@@ -6,11 +6,11 @@
  * change with each ticked filter.
  */
 
-import { supabase } from '@/data/supabase-client';
+import { publicCatalogue } from '@/data/public-catalogue-client';
 
 /** Keyed `rifles` and `rifles/aeg-rifles`, the same keys countShelves uses. */
 export async function listShelfCounts(): Promise<Record<string, number>> {
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('catalogue_counts')
     .select('facet, category, subcategory, product_count')
     .in('facet', ['category', 'subcategory']);

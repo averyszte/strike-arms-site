@@ -10,7 +10,7 @@
  * Admin reads and writes live in admin-products-repository.ts.
  */
 
-import { supabase } from '@/data/supabase-client';
+import { publicCatalogue } from '@/data/public-catalogue-client';
 import { rowToProduct } from '@/lib/product-mappers';
 import { escapeSearchTerm } from '@/lib/escape-search-term';
 import { BRAND_NAMES, isListedBrand } from '@/lib/brands';
@@ -23,11 +23,19 @@ const SEARCH_RESULT_LIMIT = 6;
 
 // ─── Read operations ──────────────────────────────────────────────────────────
 
-export async function listProducts(filters: ProductFilters): Promise<ProductListResult> {
+/**
+ * One page of the published catalogue. `knownTotal` is the total a previous
+ * page of the same listing already counted; when it is given, the count is
+ * not asked for again (N-037).
+ */
+export async function listProducts(
+  filters: ProductFilters,
+  knownTotal?: number,
+): Promise<ProductListResult> {
   const page = filters.page ?? 1;
   const pageSize = filters.pageSize ?? 24;
 
-  let query = buildBaseQuery();
+  let query = buildBaseQuery(knownTotal === undefined);
 
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.subcategory) query = query.eq('subcategory', filters.subcategory);
@@ -62,7 +70,7 @@ export async function listProducts(filters: ProductFilters): Promise<ProductList
 
   return {
     items: (data ?? []).map(rowToProduct),
-    total: count ?? 0,
+    total: knownTotal ?? count ?? 0,
     page,
     pageSize,
   };
@@ -87,7 +95,7 @@ export async function searchCatalogue(
   const term = escapeSearchTerm(query);
   if (term.length < 2) return [];
 
-  const { data, error } = await supabase.rpc('search_products', {
+  const { data, error } = await publicCatalogue.rpc('search_products', {
     p_query: term,
     p_limit: limit,
   });
@@ -109,7 +117,7 @@ export async function searchCatalogue(
  * The category and subcategory come from the cross-sell map, never from a URL.
  */
 export async function listByTarget(target: CrossSellTarget, limit: number): Promise<Product[]> {
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('products')
     .select(PRODUCT_COLUMNS)
     .eq('is_published', true)
@@ -125,7 +133,7 @@ export async function listByTarget(target: CrossSellTarget, limit: number): Prom
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('products')
     .select(PRODUCT_COLUMNS)
     .eq('slug', slug)
@@ -138,7 +146,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 /** Published products for a hand-picked list of slugs, in no particular order. */
 export async function listProductsBySlugs(slugs: string[]): Promise<Product[]> {
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('products')
     .select(PRODUCT_COLUMNS)
     .in('slug', slugs)
@@ -156,7 +164,7 @@ export async function listProductsBySlugs(slugs: string[]): Promise<Product[]> {
 export async function listBrands(
   category?: Category,
 ): Promise<{ slug: string; name: string; count: number }[]> {
-  let query = supabase.from('catalogue_counts').select('brand, product_count');
+  let query = publicCatalogue.from('catalogue_counts').select('brand, product_count');
   query = category
     ? query.eq('facet', 'brand_category').eq('category', category)
     : query.eq('facet', 'brand');
@@ -184,7 +192,7 @@ export async function listBrands(
 export async function listBrandCategories(
   brand: string,
 ): Promise<{ category: Category; count: number }[]> {
-  const { data, error } = await supabase
+  const { data, error } = await publicCatalogue
     .from('catalogue_counts')
     .select('category, product_count')
     .eq('facet', 'brand_category')
