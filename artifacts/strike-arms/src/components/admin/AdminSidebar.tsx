@@ -17,12 +17,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 type NavItem = { label: string; href: string; icon: ElementType };
-type NavGroupDef = { label: string; matchPrefixes: string[]; items: NavItem[] };
+type NavGroupDef = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroupDef[] = [
   {
     label: 'Catalog',
-    matchPrefixes: ['/admin/products', '/admin/categories'],
     items: [
       { label: 'Products', href: '/admin/products', icon: Package },
       { label: 'Categories', href: '/admin/categories', icon: FolderOpen },
@@ -30,7 +29,6 @@ const NAV_GROUPS: NavGroupDef[] = [
   },
   {
     label: 'Sales',
-    matchPrefixes: ['/admin/orders', '/admin/inquiries'],
     items: [
       { label: 'Orders', href: '/admin/orders', icon: ShoppingCart },
       { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
@@ -57,16 +55,10 @@ function NavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
   );
 }
 
-function NavGroup({
-  group,
-  defaultOpen,
-  onNavigate,
-}: {
-  group: NavGroupDef;
-  defaultOpen: boolean;
-  onNavigate?: () => void;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
+// Open by default: closing every group on each page meant reopening Sales
+// to get to Orders every time. They can still be folded away by hand.
+function NavGroup({ group, onNavigate }: { group: NavGroupDef; onNavigate?: () => void }) {
+  const [open, setOpen] = useState(true);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex w-full items-center justify-between px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors">
@@ -114,12 +106,7 @@ export function AdminSidebar({ onNavigate }: Props) {
         </Link>
 
         {NAV_GROUPS.map(group => (
-          <NavGroup
-            key={group.label}
-            group={group}
-            defaultOpen={group.matchPrefixes.some(p => location.startsWith(p))}
-            onNavigate={onNavigate}
-          />
+          <NavGroup key={group.label} group={group} onNavigate={onNavigate} />
         ))}
       </nav>
 

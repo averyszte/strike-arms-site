@@ -25,6 +25,14 @@ const RevenueTrackerCard = lazy(() =>
 );
 
 /** The revenue card's height while its chunk loads, so the grid does not jump. */
+/**
+ * The system health card is for the developer (cron, outbox, webhook checks),
+ * so it is hidden from the shop's own dashboard. Problems still reach the
+ * owner: the health digest email, and the failed-email and unmatched-payment
+ * cards below, which appear only when something is wrong.
+ */
+const SHOW_SYSTEM_HEALTH = false;
+
 const REVENUE_CARD_FALLBACK = (
   <div className="h-[17.5rem] rounded-lg border border-border bg-card" aria-busy="true" />
 );
@@ -78,7 +86,7 @@ export default function DashboardPage() {
 
         <UnmatchedPaymentsCard />
         <FailedEmailsCard />
-        <SystemHealthCard />
+        {SHOW_SYSTEM_HEALTH && <SystemHealthCard />}
         {/* N-087: what needs doing comes before the figures. */}
         <OperationalAlertsCard
           orders={active}
