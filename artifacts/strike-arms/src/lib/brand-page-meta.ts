@@ -18,19 +18,35 @@ export type BrandPageMeta = {
   title: string;
   description: string;
   intro: string;
+  /** True for a brand too thin to index yet; see MIN_INDEXED_BRAND_PRODUCTS. */
+  noindex: boolean;
 };
+
+/**
+ * A brand with fewer products than this is `noindex,follow` (N-009): one or
+ * two products under a templated intro is a thin page competing with the
+ * products themselves. The page still works and still passes its links on.
+ * scripts/generate-sitemap.mjs leaves the same brands out; keep the two equal.
+ */
+export const MIN_INDEXED_BRAND_PRODUCTS = 3;
 
 function productWord(count: number): string {
   return count === 1 ? 'product' : 'products';
 }
 
+/**
+ * The title says only what is true of every brand: "Guns & Gear" was wrong for
+ * the eyewear and optics makers. Nor does the description promise delivery,
+ * because guns are collect in store only.
+ */
 export function brandPageMeta(name: string, count: number): BrandPageMeta {
   return {
-    title: `${name} Airsoft — Guns & Gear in Ireland | Strike Arms`,
+    title: `${name} Airsoft in Ireland | Strike Arms`,
     description: `Browse the ${name} range at Strike Arms in Swords, Co. Dublin. ${count} ${productWord(
       count,
-    )} listed, shipped across Ireland with in-house advice and support.`,
+    )} listed, with in-house advice and support.`,
     intro: `Everything we currently list from ${name}. Prices in euro, with the same in-house advice, servicing and support behind every purchase.`,
+    noindex: count < MIN_INDEXED_BRAND_PRODUCTS,
   };
 }
 

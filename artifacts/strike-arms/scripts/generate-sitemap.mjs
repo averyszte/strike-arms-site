@@ -17,7 +17,21 @@
  * It reads published rows through the anon key, which is the same view a
  * visitor gets -- the right definition of "indexable".
  *
+ * Only indexable pages go in (N-005, N-009). A page that carries a noindex
+ * tag is left out, because a sitemap that lists noindexed URLs is a
+ * contradiction Search Console reports:
+ *   - /gift-cards, until it has real copy (GiftCards.tsx sets noindex);
+ *   - /sale while nothing is on sale (Sale.tsx sets noindex when empty);
+ *   - brands with fewer than MIN_INDEXED_BRAND_PRODUCTS products, and the
+ *     placeholder brands, which have no page at all (brand-page-meta.ts and
+ *     brands.ts hold the same two rules for the pages themselves).
+ *
  * Run: pnpm --filter @workspace/strike-arms run sitemap
+ *
+ * The build runs it with --keep-on-error. There, a failed read leaves the
+ * committed public/sitemap.xml in place with a loud warning instead of
+ * failing the deploy: a sitemap a few days old is better than no urgent fix
+ * reaching a live shop because Supabase blinked. A manual run still fails.
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,6 +43,17 @@ const SITE_URL = 'https://strikearms.ie';
 
 /** PostgREST caps a response at 1000 rows however many you ask for. */
 const PAGE_SIZE = 1000;
+
+/** Keep in step with src/lib/brands.ts UNLISTED_BRANDS. */
+const UNLISTED_BRANDS = new Set(['unbranded']);
+
+/** Keep in step with src/lib/brand-page-meta.ts MIN_INDEXED_BRAND_PRODUCTS. */
+const MIN_INDEXED_BRAND_PRODUCTS = 3;
+
+/** Static pages that are in the sitemap only while they have products. */
+const SALE_PATH = '/sale';
+
+const KEEP_ON_ERROR = process.argv.includes('--keep-on-error');
 
 // Stable routes that exist today. Add new pages here as they ship.
 const STATIC_PATHS = [
@@ -58,7 +83,7 @@ const STATIC_PATHS = [
   '/evolution',
   '/jumble',
   '/safety-equipment',
-  '/gift-cards',
+  // /gift-cards is left out while the page is noindexed ("Coming soon").
   '/contact',
   '/privacy',
   '/terms',
@@ -91,14 +116,17 @@ const STATIC_PATHS = [
 
 /**
  * The two Vite variables, from the process environment or from the env files
- * Vite itself would read. `.env.local` wins, as it does for a dev server.
+ * Vite itself would read, with Vite's precedence: `.env.local` beats `.env`,
+ * and a variable already in the process environment beats both. The last
+ * part matters in the Pages build, where the real values come from the
+ * environment and the committed `.env` must not override them.
  *
  * Not a general .env parser: two known keys, no quoting rules, no expansion.
  * Anything cleverer belongs in a dependency, and this script does not deserve
  * one.
  */
 function readEnv() {
-  const found = { ...process.env };
+  const found = {};
   for (const name of ['.env', '.env.local']) {
     const file = resolve(ROOT, name);
     if (!existsSync(file)) continue;
@@ -107,10 +135,15 @@ function readEnv() {
       if (match) found[match[1]] = match[2].replace(/^['"]|['"]$/g, '');
     }
   }
-  return found;
+  return { ...found, ...process.env };
 }
 
 function fail(message) {
+  if (KEEP_ON_ERROR && existsSync(resolve(ROOT, 'public/sitemap.xml'))) {
+    console.warn(`sitemap: WARNING ${message}`);
+    console.warn('sitemap: WARNING keeping the committed public/sitemap.xml unchanged.');
+    process.exit(0);
+  }
   console.error(`sitemap: ${message}`);
   process.exit(1);
 }
@@ -120,12 +153,17 @@ async function fetchPublishedProducts(url, key) {
   for (let offset = 0; ; offset += PAGE_SIZE) {
     const query =
       `${url}/rest/v1/products` +
-      `?select=slug,brand,updated_at&is_published=eq.true&order=slug.asc` +
+      `?select=slug,brand,sale_price_cents,updated_at&is_published=eq.true&order=slug.asc` +
       `&limit=${PAGE_SIZE}&offset=${offset}`;
 
-    const response = await fetch(query, {
-      headers: { apikey: key, Authorization: `Bearer ${key}` },
-    });
+    let response;
+    try {
+      response = await fetch(query, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      });
+    } catch (error) {
+      fail(`could not reach Supabase: ${error instanceof Error ? error.message : error}`);
+    }
     if (!response.ok) {
       fail(`Supabase answered ${response.status} ${response.statusText}. ${await response.text()}`);
     }
@@ -142,20 +180,26 @@ function isoDate(timestamp) {
 }
 
 /**
- * One entry per brand that actually has something published.
+ * One entry per brand with a page worth indexing.
  *
  * `/brands/:slug` 404s when a brand has no published products, so listing
  * every name in src/lib/brands.ts -- as this script used to -- puts known
  * 404s in the sitemap. Counting published rows asks the same question the
  * page itself asks.
  *
+ * Placeholder brands such as "unbranded" have no page (BrandPage 404s on
+ * them), and brands with only one or two products are noindexed, so neither
+ * is listed.
+ *
  * A brand's lastmod is its most recently updated product, because that is
  * what changes the page.
  */
 function brandEntries(rows) {
   const latest = new Map();
+  const counts = new Map();
   for (const row of rows) {
-    if (!row.brand) continue;
+    if (!row.brand || UNLISTED_BRANDS.has(row.brand)) continue;
+    counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
     const date = isoDate(row.updated_at);
     const current = latest.get(row.brand);
     if (current === undefined || (date && (!current || date > current))) {
@@ -163,8 +207,18 @@ function brandEntries(rows) {
     }
   }
   return Array.from(latest.entries())
+    .filter(([slug]) => counts.get(slug) >= MIN_INDEXED_BRAND_PRODUCTS)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([slug, lastmod]) => ({ path: `/brands/${slug}`, lastmod }));
+}
+
+/** The static pages, less /sale when nothing is on sale. */
+function staticEntries(rows) {
+  const hasSale = rows.some((row) => row.sale_price_cents !== null);
+  return STATIC_PATHS.filter((path) => path !== SALE_PATH || hasSale).map((path) => ({
+    path,
+    lastmod: null,
+  }));
 }
 
 function urlEntry({ path, lastmod }) {
@@ -190,8 +244,9 @@ async function build() {
   }
 
   const brands = brandEntries(rows);
+  const statics = staticEntries(rows);
   const entries = [
-    ...STATIC_PATHS.map((path) => ({ path, lastmod: null })),
+    ...statics,
     ...brands,
     ...rows.map((row) => ({ path: `/products/${row.slug}`, lastmod: isoDate(row.updated_at) })),
   ];
@@ -202,7 +257,7 @@ async function build() {
 
   console.log(
     `Wrote ${entries.length} URLs to public/sitemap.xml ` +
-      `(${STATIC_PATHS.length} static, ${brands.length} brands, ${rows.length} products).`,
+      `(${statics.length} static, ${brands.length} brands, ${rows.length} products).`,
   );
 }
 

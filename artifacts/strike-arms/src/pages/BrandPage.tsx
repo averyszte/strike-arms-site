@@ -110,6 +110,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
       <Helmet>
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
+        {meta.noindex && <meta name="robots" content="noindex,follow" />}
         <link rel="canonical" href={`${SITE_URL}${path}`} />
         <meta property="og:title" content={meta.title} />
         <meta property="og:description" content={meta.description} />

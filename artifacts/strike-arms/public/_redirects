@@ -1,14 +1,41 @@
 # Cloudflare Pages redirects.
 #
-# 301s from the OLD strikearms.ie PHP site -> new URLs (preserve link equity).
-# Activate at cutover. Targets marked (future) must exist before the old site is
-# taken down, or point them at a live parent until then.
+# 301s from the OLD strikearms.ie sites -> new URLs (preserve link equity).
+# Every target must be a route that exists today; src/lib/redirect-targets.test.ts
+# checks that, so run `pnpm --filter @workspace/strike-arms run test` after
+# changing anything here. seo/site-migration-redirects.md is the inventory.
+#
+# Pages matches the source path case-sensitively, so each mixed-case .php rule
+# has a lowercase twin for old links that were typed or printed in lower case.
+
+# The custom PHP site (to 2026), pages found live and in the Wayback Machine.
 /Airsoft-and-the-Law.php    /airsoft-law              301
+/airsoft-and-the-law.php    /airsoft-law              301
 /Where-to-Play.php          /where-to-play            301
+/where-to-play.php          /where-to-play            301
 /Care-for-your-Rifle.php    /guides/airsoft-maintenance  301
+/care-for-your-rifle.php    /guides/airsoft-maintenance  301
 /About-Airsoft.php          /guides/beginners-guide   301
+/about-airsoft.php          /guides/beginners-guide   301
 /guns-n-gear.php            /store                    301
 /Contact-us.php             /contact                  301
+/contact-us.php             /contact                  301
+/Accessories.php            /store/accessories        301
+/accessories.php            /store/accessories        301
+/Airsoft-Guns.php           /store/rifles             301
+/airsoft-guns.php           /store/rifles             301
+/Consumables.php            /store/consumables        301
+/consumables.php            /store/consumables        301
+/Safety-Wear.php            /safety-equipment         301
+/safety-wear.php            /safety-equipment         301
+/index.php                  /                         301
+/Index.php                  /                         301
+
+# The 2016 WordPress shop. Its ?product= and ?page_id= links land on / already,
+# because _redirects cannot match a query string.
+/gear                       /store                    301
+/weapons                    /store/rifles             301
+/industry-news              /guides                   301
 
 # /search is not a page. Search results are /store?q=, which is the same
 # grid with the same filters and sorting -- a second URL for it would be a

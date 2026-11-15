@@ -12,6 +12,10 @@ export default function GiftCards() {
       <Helmet>
         <title>Gift Cards — Strike Arms Airsoft Dublin</title>
         <meta name="description" content="Give the gift of airsoft. Strike Arms gift cards are redeemable in-store and online." />
+        {/* Noindexed while the page says only "Coming soon" (N-009). Remove
+            this, and add /gift-cards back to scripts/generate-sitemap.mjs, once
+            the page has Alan's copy. */}
+        <meta name="robots" content="noindex,follow" />
         <link rel="canonical" href={`${SITE_URL}/gift-cards`} />
         <meta property="og:title" content="Gift Cards — Strike Arms Airsoft Dublin" />
         <meta property="og:description" content="Give the gift of airsoft. Strike Arms gift cards are redeemable in-store and online." />

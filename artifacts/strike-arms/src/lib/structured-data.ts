@@ -5,13 +5,11 @@
  * Rules: never fabricate data. No aggregateRating unless real review counts
  * exist; no geo coordinates until confirmed. Prices are real catalogue values.
  */
-import type { Product } from '@/types/product';
 import type { GlossaryTerm } from '@/lib/glossary';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, BUSINESS, toAbsoluteUrl } from '@/lib/site-config';
-import { isPreLoved } from '@/lib/product-condition';
-import { getBrandName } from '@/lib/brands';
-import { effectivePriceCents } from '@/lib/effective-price';
-import { formatCentsPlain } from '@/lib/format-price';
+import { READ_REVIEWS_URL } from '@/lib/google-review-links';
+
+export { buildProductSchema } from '@/lib/product-schema';
 
 export type JsonLdObject = Record<string, unknown>;
 
@@ -20,14 +18,46 @@ export type BreadcrumbEntry = {
   path: string;
 };
 
+/**
+ * A raster logo: Google wants at least 112 px and does not take SVG. The
+ * 180 px touch icon is the largest raster mark in public/ until a 512 px logo
+ * exists (N-008).
+ */
+const LOGO_PATH = '/apple-touch-icon.png';
+
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+const STORE_ID = `${SITE_URL}/#store`;
+
+/**
+ * A minimal, self-contained Organization node for pages that do not carry the
+ * full one. A bare `{ "@id" }` only resolves on a page that also defines the
+ * node, which only Home does, so validators reported it as unresolved (N-008).
+ */
+function organizationRef(): JsonLdObject {
+  return {
+    '@type': 'Organization',
+    '@id': ORGANIZATION_ID,
+    name: SITE_LEGAL_NAME,
+    url: SITE_URL,
+    logo: toAbsoluteUrl(LOGO_PATH),
+  };
+}
+
+/** The same for the shop itself, as a Service's provider. */
+function storeRef(): JsonLdObject {
+  return {
+    '@type': 'SportingGoodsStore',
+    '@id': STORE_ID,
+    name: BUSINESS.name,
+    url: SITE_URL,
+    telephone: BUSINESS.telephone,
+  };
+}
+
 export function buildOrganizationSchema(): JsonLdObject {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': `${SITE_URL}/#organization`,
-    name: SITE_LEGAL_NAME,
-    url: SITE_URL,
-    logo: toAbsoluteUrl('/favicon.svg'),
+    ...organizationRef(),
     telephone: BUSINESS.telephone,
   };
 }
@@ -39,18 +69,18 @@ export function buildWebsiteSchema(): JsonLdObject {
     '@id': `${SITE_URL}/#website`,
     name: SITE_NAME,
     url: SITE_URL,
-    publisher: { '@id': `${SITE_URL}/#organization` },
+    publisher: { '@id': ORGANIZATION_ID },
   };
 }
 
 export function buildLocalBusinessSchema(): JsonLdObject {
   return {
     '@context': 'https://schema.org',
-    '@type': 'SportingGoodsStore',
-    '@id': `${SITE_URL}/#store`,
-    name: BUSINESS.name,
-    url: SITE_URL,
-    telephone: BUSINESS.telephone,
+    ...storeRef(),
+    image: toAbsoluteUrl(LOGO_PATH),
+    // The Google Maps listing for the shop's Place ID (review-bank.ts), or the
+    // address search when no Place ID is set.
+    hasMap: READ_REVIEWS_URL,
     address: {
       '@type': 'PostalAddress',
       streetAddress: BUSINESS.streetAddress,
@@ -123,6 +153,8 @@ export function buildArticleSchema(opts: {
   description: string;
   path: string;
   isoDate: string;
+  /** The guide's hero image, site-relative or absolute. Omitted when absent. */
+  image?: string;
 }): JsonLdObject {
   return {
     '@context': 'https://schema.org',
@@ -130,10 +162,11 @@ export function buildArticleSchema(opts: {
     headline: opts.title,
     description: opts.description,
     url: toAbsoluteUrl(opts.path),
+    ...(opts.image ? { image: toAbsoluteUrl(opts.image) } : {}),
     datePublished: opts.isoDate,
     dateModified: opts.isoDate,
     author: { '@type': 'Organization', name: SITE_LEGAL_NAME },
-    publisher: { '@id': `${SITE_URL}/#organization` },
+    publisher: organizationRef(),
   };
 }
 
@@ -150,7 +183,7 @@ export function buildServiceSchema(opts: {
     description: opts.description,
     serviceType: opts.serviceType,
     url: toAbsoluteUrl(opts.path),
-    provider: { '@id': `${SITE_URL}/#store` },
+    provider: storeRef(),
     areaServed: { '@type': 'Country', name: 'Ireland' },
   };
 }
@@ -164,32 +197,5 @@ export function buildFaqSchema(items: FaqItem[]): JsonLdObject {
       name: item.question,
       acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
-  };
-}
-
-export function buildProductSchema(product: Product): JsonLdObject {
-  const priceCents = effectivePriceCents(product.price, product.salePrice);
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.shortDescription,
-    sku: product.id,
-    brand: { '@type': 'Brand', name: getBrandName(product.brand) },
-    image: product.images.map((image) => toAbsoluteUrl(image)),
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'EUR',
-      price: formatCentsPlain(priceCents),
-      availability: product.inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      // Was hardcoded to NewCondition, which made every pre-loved rifle a false
-      // claim in the rich result Google reads.
-      itemCondition: isPreLoved(product.condition)
-        ? 'https://schema.org/UsedCondition'
-        : 'https://schema.org/NewCondition',
-      url: `${SITE_URL}/products/${product.slug}`,
-    },
   };
 }

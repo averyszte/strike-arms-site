@@ -61,10 +61,10 @@
     <loc>https://strikearms.ie/new</loc>
   </url>
   <url>
-    <loc>https://strikearms.ie/sale</loc>
+    <loc>https://strikearms.ie/pre-loved</loc>
   </url>
   <url>
-    <loc>https://strikearms.ie/pre-loved</loc>
+    <loc>https://strikearms.ie/evolution</loc>
   </url>
   <url>
     <loc>https://strikearms.ie/jumble</loc>
@@ -73,13 +73,19 @@
     <loc>https://strikearms.ie/safety-equipment</loc>
   </url>
   <url>
-    <loc>https://strikearms.ie/gift-cards</loc>
-  </url>
-  <url>
     <loc>https://strikearms.ie/contact</loc>
   </url>
   <url>
     <loc>https://strikearms.ie/privacy</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/terms</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/returns</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/delivery</loc>
   </url>
   <url>
     <loc>https://strikearms.ie/airsoft-law</loc>
@@ -163,10 +169,6 @@
     <lastmod>2026-09-27</lastmod>
   </url>
   <url>
-    <loc>https://strikearms.ie/brands/bolle</loc>
-    <lastmod>2026-09-27</lastmod>
-  </url>
-  <url>
     <loc>https://strikearms.ie/brands/bushnell</loc>
     <lastmod>2026-09-27</lastmod>
   </url>
@@ -204,10 +206,6 @@
   </url>
   <url>
     <loc>https://strikearms.ie/brands/umarex</loc>
-    <lastmod>2026-09-27</lastmod>
-  </url>
-  <url>
-    <loc>https://strikearms.ie/brands/unbranded</loc>
     <lastmod>2026-09-27</lastmod>
   </url>
   <url>
@@ -515,12 +513,33 @@
     <lastmod>2026-09-27</lastmod>
   </url>
   <url>
+    <loc>https://strikearms.ie/products/evolution-ak-e-104-tanker</loc>
+  </url>
+  <url>
     <loc>https://strikearms.ie/products/evolution-m4-matrix-120rd-mid-cap-magazine</loc>
     <lastmod>2026-09-27</lastmod>
   </url>
   <url>
     <loc>https://strikearms.ie/products/evolution-m4-matrix-300rd-hi-cap-magazine</loc>
     <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-m40-sniper-rifle-od</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-recon-10-carbontech-black</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-recon-10-carbontech-black-tan</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-recon-14-5-carbontech-black</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-recon-14-5-carbontech-black-tan</loc>
+  </url>
+  <url>
+    <loc>https://strikearms.ie/products/evolution-recon-mk18-mod-1-metal-hybrid</loc>
   </url>
   <url>
     <loc>https://strikearms.ie/products/famas-rifle-wallhanger</loc>

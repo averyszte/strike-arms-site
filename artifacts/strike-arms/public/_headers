@@ -22,7 +22,8 @@
   Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   # style-src needs 'unsafe-inline': Radix and framer-motion both set style
-  # attributes on elements, and there is no nonce to give them. script-src
+  # attributes on elements, and there is no nonce to give them. Inter is
+  # self-hosted (N-035), so style-src and font-src name no font host. script-src
   # deliberately does not -- the app ships no inline script and must not start.
   # challenges.cloudflare.com is Turnstile, the bot check on checkout and order
   # lookup: its script, the iframe it draws in, and its calls home.
@@ -35,7 +36,17 @@
   # lists the hosts this site may call. Nothing here changes when that secret
   # is set. If the Supabase project ever changes, update the ref in img-src and
   # connect-src in the same deploy as VITE_SUPABASE_URL.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co https://challenges.cloudflare.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co https://challenges.cloudflare.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+
+# The home page's LCP image is the hero poster, which the browser otherwise
+# finds only after the JS bundle has run (N-023). These start it with the HTML.
+# A rule without a splat matches "/" alone. The files, media queries, srcset
+# and sizes must match the <picture> in HeroSection.tsx (src/lib/hero-poster.ts),
+# or the browser downloads the poster twice. With Early Hints on (N-040),
+# Cloudflare also sends these as a 103.
+/
+  Link: </images/hero-poster-mobile.webp>; rel=preload; as=image; type="image/webp"; media="(max-width: 767px)"; fetchpriority=high
+  Link: </images/strike-arms-hero-poster-desktop.webp>; rel=preload; as=image; type="image/webp"; media="(min-width: 768px)"; imagesrcset="/images/hero-poster-desktop-1280.webp 1280w, /images/strike-arms-hero-poster-desktop.webp 1920w"; imagesizes="100vw"; fetchpriority=high
 
 # Hashed filenames, so the content at a given URL never changes.
 /assets/*
@@ -72,6 +83,9 @@
 # Transactional and account pages. robots.txt asks crawlers not to fetch these;
 # a header is what stops one that fetched anyway from indexing the result.
 /cart
+  X-Robots-Tag: noindex, nofollow
+
+/checkout
   X-Robots-Tag: noindex, nofollow
 
 /checkout/*

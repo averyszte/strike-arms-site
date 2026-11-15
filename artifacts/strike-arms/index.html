@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IE">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0d0d" />
     <title>Strike Arms Airsoft</title>
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Inter is self-hosted (src/inter-font.css, N-035). This starts the
+         latin file with the HTML rather than after the CSS has parsed. -->
+    <link rel="preload" href="/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Every catalogue read goes to Supabase, so open that connection early
+         (N-034). The host is the project ref in public/_headers. crossorigin
+         because the REST calls are CORS requests. -->
+    <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
   </head>
   <body>
     <div id="root"></div>

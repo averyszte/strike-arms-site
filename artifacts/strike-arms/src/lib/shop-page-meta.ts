@@ -42,9 +42,16 @@ function deriveCanonical(
   }
 
   if (categorySlug && categoryDef) {
+    // A subcategory without its own SEO copy keeps the parent canonical, but
+    // gets its own title so the tab and the history list say which page it is
+    // ("SMGs | Airsoft Rifles | Strike Arms") rather than repeating the
+    // parent's (N-007).
+    const title = subcategoryDef
+      ? `${subcategoryDef.label} | ${categoryDef.label} | Strike Arms`
+      : `${categoryDef.label} | ${SITE_SUFFIX}`;
     return {
       canonicalPath: `/store/${categorySlug}`,
-      title: `${categoryDef.label} | ${SITE_SUFFIX}`,
+      title,
       description: `Shop ${categoryDef.label.toLowerCase()} at Strike Arms Airsoft Dublin.`,
     };
   }

@@ -15,6 +15,8 @@ import { parseFiltersFromSearch, filtersToSearchParams } from '@/lib/category-fi
 import { isValidCategorySlug, getSubcategory } from '@/lib/taxonomy';
 import { deriveShopPageMeta } from '@/lib/shop-page-meta';
 import { buildShopHeading } from '@/lib/shop-heading';
+import { buildShopSchemas } from '@/lib/shop-schema';
+import { JsonLd } from '@/components/JsonLd';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { Category, ProductFilters } from '@/types/product';
 import NotFound from '@/pages/not-found';
@@ -25,7 +27,7 @@ export default function ShopPage() {
     subcategory?: string;
   }>();
   const search = useSearch();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // ── Filters ──────────────────────────────────────────────────────────────────
@@ -57,6 +59,7 @@ export default function ShopPage() {
       helmetTitle={meta.title}
       helmetDescription={meta.description}
       introText={meta.intro}
+      isCanonicalView={search === '' && location === meta.canonicalPath}
       noindex={meta.noindex}
       filters={filters}
       mobileFiltersOpen={mobileFiltersOpen}
@@ -74,6 +77,8 @@ interface InnerProps {
   helmetTitle: string;
   helmetDescription: string;
   introText: string | undefined;
+  /** The URL is the canonical one: no query string, no folded subcategory. */
+  isCanonicalView: boolean;
   noindex: boolean;
   filters: ProductFilters;
   mobileFiltersOpen: boolean;
@@ -88,6 +93,7 @@ function ShopPageInner({
   helmetTitle,
   helmetDescription,
   introText,
+  isCanonicalView,
   noindex,
   filters,
   mobileFiltersOpen,
@@ -136,6 +142,13 @@ function ShopPageInner({
   }, [buildBasePath, setLocation]);
 
   const heading = buildShopHeading(categorySlug, rawSubcategory, filters.q);
+  const schemas = buildShopSchemas({
+    categorySlug,
+    subcategorySlug: rawSubcategory,
+    isNoindex: noindex,
+    isCanonicalView,
+    products: items,
+  });
 
   return (
     <SiteLayout>
@@ -145,6 +158,7 @@ function ShopPageInner({
         {noindex && <meta name="robots" content="noindex,follow" />}
         <link rel="canonical" href={`${SITE_URL}${canonicalPath}`} />
       </Helmet>
+      {schemas.length > 0 && <JsonLd data={schemas} />}
 
       <PageHero
         width="wide"
