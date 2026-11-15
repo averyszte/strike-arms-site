@@ -5,6 +5,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { useStoreRates } from '@/hooks/use-store-rates';
+import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { formatPrice } from '@/lib/format-price';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
@@ -65,6 +66,11 @@ export default function Delivery() {
         <div className={`mt-6 ${ARTICLE_PROSE} [&>section:first-child>h2]:mt-8`}>
           <section>
             <h2>Collect or deliver</h2>
+            {!IS_DELIVERY_ENABLED && (
+              <p>
+                <strong>{DELIVERY_PAUSED_LINE}</strong>
+              </p>
+            )}
             <p>
               Each product says whether it can be delivered or must be collected from the shop.
               Airsoft guns are collect in store only. If your basket has both kinds, you can have

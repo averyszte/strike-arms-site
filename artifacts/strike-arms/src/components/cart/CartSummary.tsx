@@ -1,6 +1,7 @@
 import { Info } from 'lucide-react';
 
 import { Separator } from '@/components/ui/separator';
+import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { formatPrice } from '@/lib/format-price';
 import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 import type { CartBasics, CartPricing } from '@/types/cart';
@@ -13,7 +14,7 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({ basics, pricing, wantsDelivery }: CartSummaryProps) {
-  const isDelivering = wantsDelivery && basics.hasShippableItems;
+  const isDelivering = IS_DELIVERY_ENABLED && wantsDelivery && basics.hasShippableItems;
 
   const shortfall = pricing
     ? pricing.freeShippingThresholdCents - basics.deliverableSubtotalCents
