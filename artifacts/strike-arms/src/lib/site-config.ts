@@ -3,8 +3,8 @@ import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 /**
  * Site-wide identity and business NAP (name, address, phone).
  *
- * NAP values are sourced from the existing strikearms.ie contact page.
- * Confirm with Alan before launch in case the new store's details differ.
+ * NAP values match the Google Business Profile word for word (checked
+ * 2026-11-14), so Google sees one consistent name, address and phone.
  * Geo coordinates are intentionally omitted until real lat/long is confirmed —
  * do not invent them (structured data must reflect reality).
  */
@@ -19,7 +19,7 @@ export const SITE_LEGAL_NAME = 'Strike Arms Airsoft';
 
 export const BUSINESS = {
   name: SITE_LEGAL_NAME,
-  streetAddress: 'Unit C3, Airside Enterprise Centre',
+  streetAddress: 'Ground Floor, Unit C3, Airside Enterprise Centre, Nevinstown East',
   addressLocality: 'Swords',
   addressRegion: 'Co. Dublin',
   postalCode: 'K67 T9H9',

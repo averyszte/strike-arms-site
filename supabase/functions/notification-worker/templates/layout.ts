@@ -15,7 +15,7 @@ export type RenderedEmail = { subject: string; html: string; text: string };
 // Mirrors BUSINESS in the site's lib/site-config.ts. Change both together.
 export const SHOP = {
   name: "Strike Arms",
-  address: "Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9",
+  address: "Ground Floor, Unit C3, Airside Enterprise Centre, Nevinstown East, Swords, Co. Dublin, K67 T9H9",
   phone: "+353 87 273 6351",
   email: "info@strikearms.ie",
   hours: "Tuesday to Sunday, 11:00 to 18:00",

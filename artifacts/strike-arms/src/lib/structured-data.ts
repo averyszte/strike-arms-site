@@ -54,14 +54,20 @@ function postalAddress(): JsonLdObject {
   };
 }
 
-/** The same for the shop itself, as a Service's provider. */
+/**
+ * The same for the shop itself, as a Service's provider. It carries the
+ * address and image too: Google reads any store node with a phone number as a
+ * local business and flags it without them, on every service page.
+ */
 function storeRef(): JsonLdObject {
   return {
     '@type': 'SportingGoodsStore',
     '@id': STORE_ID,
     name: BUSINESS.name,
     url: SITE_URL,
+    image: toAbsoluteUrl(LOGO_PATH),
     telephone: BUSINESS.telephone,
+    address: postalAddress(),
   };
 }
 
@@ -92,7 +98,6 @@ export function buildLocalBusinessSchema(): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     ...storeRef(),
-    image: toAbsoluteUrl(LOGO_PATH),
     // The Google Maps listing for the shop's Place ID (review-bank.ts), or the
     // address search when no Place ID is set.
     hasMap: READ_REVIEWS_URL,
