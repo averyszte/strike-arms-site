@@ -13,7 +13,7 @@ type OrdersBoardPanelProps = {
   isMoving: boolean;
   isTableForced: boolean;
   onSelect: (orderId: string) => void;
-  onAdvance: (order: Order, status: FulfillmentStatus) => void;
+  onAdvance: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
   onOpenTable: () => void;
 };
 

@@ -28,6 +28,7 @@ import { useProductImageUpload } from '@/hooks/use-product-image-upload';
 import { useToast } from '@/hooks/use-toast';
 import { DEFAULT_PRODUCT_FORM_VALUES, dirtyProductPatch, toFormValues, toProductInput } from '@/lib/product-form-values';
 import type { Product } from '@/types/product';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 interface Props {
   open: boolean;
@@ -85,7 +86,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
     } catch (err: unknown) {
       toast({
         title: 'Not saved',
-        description: err instanceof Error ? err.message : 'Something went wrong',
+        description: adminErrorMessage(err),
         variant: 'destructive',
       });
     }

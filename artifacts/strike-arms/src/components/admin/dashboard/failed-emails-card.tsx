@@ -22,7 +22,7 @@ import { useResendFailedEmail } from '@/hooks/use-resend-failed-email';
 import { useResolveEnqueueError } from '@/hooks/use-resolve-enqueue-error';
 import { useToast } from '@/hooks/use-toast';
 import type { FailedEmail } from '@/lib/failed-emails';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 import { ORDER_EMAIL_LABELS } from '@/lib/order-email-display';
 
 const WHEN = 'dd MMM, HH:mm';
@@ -65,7 +65,7 @@ export function FailedEmailsCard() {
     resend.mutate(toResend.id, {
       onSuccess: () => toast({ title: 'Queued again', description: 'It goes out within a minute.' }),
       onError: error =>
-        toast({ title: 'Not resent', description: loadErrorMessage(error), variant: 'destructive' }),
+        toast({ title: 'Not resent', description: adminErrorMessage(error), variant: 'destructive' }),
     });
     setToResend(null);
   }
@@ -73,7 +73,7 @@ export function FailedEmailsCard() {
   function markHandled(id: string) {
     resolve.mutate(id, {
       onError: error =>
-        toast({ title: 'Not marked', description: loadErrorMessage(error), variant: 'destructive' }),
+        toast({ title: 'Not marked', description: adminErrorMessage(error), variant: 'destructive' }),
     });
   }
 

@@ -81,7 +81,11 @@ export type Order = {
   // Set by flag_order when a payment did not match its order (029). Whether it is still open is needsAttention() in lib/order-attention.
   attentionReason: string | null;
   attentionRaisedAt: string | null;
+  // The customer's own 18+ tick at checkout, or the counter's in-person check.
   ageVerified: boolean;
+  // Staff confirmed photo ID when the order was collected (050, N-084).
+  idCheckedAt: string | null;
+  idCheckedBy: string | null;
   notes: string | null;
   // An Post number for posted items (033). Shown to the customer as a link.
   trackingNumber: string | null;
@@ -103,7 +107,8 @@ export type OrderStatusLogEntry = {
 };
 
 export type OrderListFilters = {
-  paymentStatus?: PaymentStatus;
+  // One or more payment statuses; the Abandoned tab is 'expired' and 'abandoned'.
+  paymentStatus?: PaymentStatus | PaymentStatus[];
   fulfillmentStatus?: FulfillmentStatus;
   search?: string;
   // Only orders whose attention flag is still open (lib/order-attention).

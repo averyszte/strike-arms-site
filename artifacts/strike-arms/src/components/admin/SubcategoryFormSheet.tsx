@@ -13,6 +13,7 @@ import { useUpdateSubcategory } from '@/hooks/use-update-subcategory';
 import { useToast } from '@/hooks/use-toast';
 import type { Category } from '@/types/product';
 import type { Subcategory } from '@/types/category';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 const CATEGORY_LABELS: Record<Category, string> = {
   rifles: 'Rifles', pistols: 'Pistols', consumables: 'Consumables',
@@ -68,7 +69,7 @@ export function SubcategoryFormSheet({ open, onClose, category, subcategory }: P
     } catch (err: unknown) {
       toast({
         title: 'Error',
-        description: err instanceof Error ? err.message : 'Something went wrong',
+        description: adminErrorMessage(err),
         variant: 'destructive',
       });
     }

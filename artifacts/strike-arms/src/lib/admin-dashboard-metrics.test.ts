@@ -57,3 +57,19 @@ test("revenue is dated by paid_at, not created_at", () => {
   assert.equal(rows[rows.length - 1].revenue, 10000);
   assert.equal(rows[rows.length - 2].revenue, 0);
 });
+
+test("orders today counts paid orders and reports abandoned checkouts apart (N-083)", () => {
+  const today = local(11, 14, 9);
+  const metrics = computeDashboardMetrics(
+    [
+      order({ createdAt: today, paidAt: today }),
+      order({ id: "o2", paymentStatus: "pending", paidAt: null, createdAt: today }),
+      order({ id: "o3", paymentStatus: "expired", paidAt: null, createdAt: today }),
+      order({ id: "o4", paymentStatus: "refunded", refundCents: 10000, createdAt: today, paidAt: today }),
+    ],
+    NOW,
+  );
+  assert.equal(metrics.ordersToday, 2);
+  assert.equal(metrics.ordersThisMonth, 2);
+  assert.equal(metrics.abandonedToday, 1);
+});

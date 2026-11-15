@@ -18,7 +18,7 @@ type OrdersTableProps = {
   onToggleSelect: (orderId: string) => void;
   onToggleAll: () => void;
   onSelect: (orderId: string) => void;
-  onStatusChange: (orderId: string, status: FulfillmentStatus) => void;
+  onStatusChange: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
   onToggleArchive: (order: Order) => void;
 };
 

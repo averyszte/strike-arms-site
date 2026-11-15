@@ -15,10 +15,10 @@ import type {
 
 export const FULFILLMENT_OPTIONS: { value: FulfillmentStatus; label: string }[] = [
   { value: 'pending', label: 'Pending' },
-  { value: 'ready_for_pickup', label: 'Ready for Pickup' },
+  { value: 'ready_for_pickup', label: 'Ready to collect' },
   { value: 'collected', label: 'Collected' },
   { value: 'packed', label: 'Packed' },
-  { value: 'shipped', label: 'Shipped' },
+  { value: 'shipped', label: 'Posted' },
   { value: 'delivered', label: 'Delivered' },
   { value: 'cancelled', label: 'Cancelled' },
 ];

@@ -1,3 +1,4 @@
+import { ageCheckLines } from '@/lib/order-age-check';
 import { countUnits, groupItemsForPicking } from '@/lib/order-document';
 import { FULFILLMENT_METHOD_LABELS } from '@/lib/order-display';
 import type { Order } from '@/types/order';
@@ -51,12 +52,13 @@ export function PackingSlip({ order }: Props) {
             {FULFILLMENT_METHOD_LABELS[order.fulfillmentMethod]}
             <br />
             {countUnits(order.items ?? [])} item(s) total
-            {order.ageVerified && (
-              <>
+            {/* Never "Age verified": a web tick is self-declared (N-084). */}
+            {ageCheckLines(order).map((line) => (
+              <span key={line}>
                 <br />
-                <span className="font-semibold">Age verified</span>
-              </>
-            )}
+                <span className="font-semibold">{line}</span>
+              </span>
+            ))}
           </p>
         </div>
       </section>

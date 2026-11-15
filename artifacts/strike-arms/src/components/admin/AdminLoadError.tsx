@@ -1,7 +1,7 @@
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { describeAdminError } from '@/lib/admin-error-message';
 
 /**
  * What an admin screen shows when its data could not be read.
@@ -20,6 +20,7 @@ type AdminLoadErrorProps = {
 };
 
 export function AdminLoadError({ what, error, isRetrying = false, onRetry }: AdminLoadErrorProps) {
+  const reason = describeAdminError(error);
   return (
     <div
       role="alert"
@@ -32,7 +33,14 @@ export function AdminLoadError({ what, error, isRetrying = false, onRetry }: Adm
           The request failed, so nothing is shown rather than a list that might be wrong. Check
           the connection and try again.
         </p>
-        <p className="break-words text-xs text-muted-foreground">{loadErrorMessage(error)}</p>
+        <p className="break-words text-xs text-muted-foreground">{reason.message}</p>
+        {/* The original wording, for whoever is asked to look into it (N-078). */}
+        {reason.details && (
+          <details className="text-xs text-muted-foreground">
+            <summary className="cursor-pointer">Details</summary>
+            <p className="mt-1 break-words font-mono">{reason.details}</p>
+          </details>
+        )}
       </div>
       <Button
         type="button"

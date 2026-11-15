@@ -63,6 +63,8 @@ export type OrderRow = {
   // 028: set when a paid order needs a human (e.g. a payment that did not
   // match its order, 029).
   attention_reason: string | null; attention_raised_at: string | null;
+  // 050: photo ID seen at collection. Optional so a read before 050 is applied still types.
+  id_checked_at?: string | null; id_checked_by?: string | null;
   created_at: string; updated_at: string;
 };
 

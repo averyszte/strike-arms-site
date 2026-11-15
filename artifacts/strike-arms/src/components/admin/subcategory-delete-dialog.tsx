@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useDeleteSubcategory } from '@/hooks/use-delete-subcategory';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 import type { Subcategory } from '@/types/category';
 
 type Props = {
@@ -31,7 +31,7 @@ export function SubcategoryDeleteDialog({ deleting, onClose }: Props) {
     } catch (error) {
       toast({
         title: 'Not deleted',
-        description: loadErrorMessage(error),
+        description: adminErrorMessage(error),
         variant: 'destructive',
       });
     } finally {

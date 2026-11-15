@@ -17,7 +17,7 @@ import { useAdminProducts } from '@/hooks/use-admin-products';
 import { useProductImport } from '@/hooks/use-product-import';
 import { useToast } from '@/hooks/use-toast';
 import { planIsEmpty, planProductImport, type ImportPlan } from '@/lib/product-import';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 import type { ImportOutcome } from '@/types/product-import';
 
 /**
@@ -94,7 +94,7 @@ export function ProductImportDialog({ open, onClose }: Props) {
     } catch (error) {
       toast({
         title: 'The import stopped',
-        description: error instanceof Error ? error.message : 'Nothing further was written.',
+        description: error instanceof Error ? adminErrorMessage(error) : 'Nothing further was written.',
         variant: 'destructive',
       });
     }
@@ -135,7 +135,7 @@ export function ProductImportDialog({ open, onClose }: Props) {
             {catalogue.isError && (
               <p className="text-xs text-destructive">
                 The catalogue could not be loaded, so nothing can be matched:{' '}
-                {loadErrorMessage(catalogue.error)}
+                {adminErrorMessage(catalogue.error)}
               </p>
             )}
           </div>

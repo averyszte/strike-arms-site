@@ -1,8 +1,7 @@
 import { useBulkUpdateProducts } from '@/hooks/use-bulk-update-products';
 import { useSetProductsArchived } from '@/hooks/use-set-products-archived';
 import { useToast } from '@/hooks/use-toast';
-import { failedItemsMessage } from '@/lib/admin-error-message';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage, failedItemsMessage } from '@/lib/admin-error-message';
 import type { Product, ProductBulkPatch } from '@/types/product';
 
 /**
@@ -33,7 +32,7 @@ export function useProductsActions(onDone: () => void, undoAction: UndoActionFac
 
   function failed(title: string, error: unknown, products: Product[]) {
     const names = new Map(products.map(p => [p.id, p.name]));
-    const description = failedItemsMessage(error, id => names.get(id), loadErrorMessage(error));
+    const description = failedItemsMessage(error, id => names.get(id), adminErrorMessage(error));
     toast({ title, description, variant: 'destructive' });
   }
 
@@ -67,7 +66,7 @@ export function useProductsActions(onDone: () => void, undoAction: UndoActionFac
       if (featured.length > 0) await bulkUpdate.mutateAsync({ ids: featured, patch: { isFeatured: true } });
       toast({ title: `${plural(flags.length)} put back as they were` });
     } catch (error) {
-      toast({ title: 'Undo did not finish', description: loadErrorMessage(error), variant: 'destructive' });
+      toast({ title: 'Undo did not finish', description: adminErrorMessage(error), variant: 'destructive' });
     }
   }
 

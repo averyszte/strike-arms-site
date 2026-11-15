@@ -1,10 +1,10 @@
 import { useSetOrderArchived } from '@/hooks/use-set-order-archived';
-import { useUpdateFulfillmentStatus } from '@/hooks/use-update-fulfillment-status';
+import { useFulfilmentChange } from '@/hooks/use-fulfilment-change';
 import { useOrdersBulkActions } from '@/hooks/use-orders-bulk-actions';
 import { useOrdersExport } from '@/hooks/use-orders-export';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
-import type { FulfillmentStatus, Order, OrderListFilters } from '@/types/order';
+import { adminErrorMessage } from '@/lib/admin-error-message';
+import type { Order, OrderListFilters } from '@/types/order';
 
 /**
  * The writes the orders screen makes, with their toasts. `selectedIds` and
@@ -21,23 +21,15 @@ type OrdersActionsInput = {
 };
 
 export function useOrdersActions({ filters, showArchived, selectedIds, orders, onDone }: OrdersActionsInput) {
-  const updateStatus = useUpdateFulfillmentStatus();
+  const statusChange = useFulfilmentChange();
   const setArchived = useSetOrderArchived();
   const bulk = useOrdersBulkActions({ showArchived, selectedIds, orders, onDone });
   const { exportOrders, isExporting } = useOrdersExport();
   const { toast } = useToast();
 
   function failed(description: string, error?: unknown) {
-    const reason = error === undefined ? '' : ` ${loadErrorMessage(error)}`;
+    const reason = error === undefined ? '' : ` ${adminErrorMessage(error)}`;
     toast({ title: 'Error', description: `${description}.${reason}`, variant: 'destructive' });
-  }
-
-  async function changeStatus(orderId: string, status: FulfillmentStatus) {
-    try {
-      await updateStatus.mutateAsync({ orderId, status });
-    } catch (error) {
-      failed('Status not changed', error);
-    }
   }
 
   async function toggleArchive(order: Order) {
@@ -65,11 +57,10 @@ export function useOrdersActions({ filters, showArchived, selectedIds, orders, o
   }
 
   return {
-    isMoving: updateStatus.isPending,
+    isMoving: statusChange.isMoving,
     isBulkPending: bulk.isBulkPending,
     isExporting,
-    changeStatus: (orderId: string, status: FulfillmentStatus) =>
-      void changeStatus(orderId, status),
+    changeStatus: statusChange.change,
     toggleArchive: (order: Order) => void toggleArchive(order),
     bulkToggleArchive: bulk.bulkToggleArchive,
     bulkChangeStatus: bulk.bulkChangeStatus,

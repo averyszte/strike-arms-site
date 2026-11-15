@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useHandledPaymentAlerts } from '@/hooks/use-handled-payment-alerts';
 import { useOpenPaymentAlerts } from '@/hooks/use-open-payment-alerts';
 import { useSetPaymentAlertResolved } from '@/hooks/use-set-payment-alert-resolved';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 /**
  * Money Stripe took that no order accounts for (migration 029).
@@ -60,7 +60,7 @@ export function UnmatchedPaymentsCard() {
       await setResolved.mutateAsync({ id, isResolved });
       return true;
     } catch (error) {
-      toast({ title: 'Not changed', description: loadErrorMessage(error), variant: 'destructive' });
+      toast({ title: 'Not changed', description: adminErrorMessage(error), variant: 'destructive' });
       return false;
     }
   }

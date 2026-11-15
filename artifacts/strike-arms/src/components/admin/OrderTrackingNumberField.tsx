@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSetTrackingNumber } from '@/hooks/use-set-tracking-number';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 import { anPostTrackingUrl, readTrackingNumber } from '@/lib/tracking-number';
 import type { Order } from '@/types/order';
 
@@ -34,7 +34,7 @@ export function OrderTrackingNumberField({ order }: { order: Order }) {
     } catch (caught) {
       toast({
         title: 'Tracking number not saved',
-        description: loadErrorMessage(caught),
+        description: adminErrorMessage(caught),
         variant: 'destructive',
       });
     }

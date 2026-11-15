@@ -18,7 +18,23 @@ export type DashboardMetrics = {
   pendingPickups: number;
   ordersToday: number;
   ordersThisMonth: number;
+  abandonedToday: number;
 };
+
+/**
+ * Orders a customer actually paid for (N-083). A Stripe checkout opens an
+ * order row before any money moves, so counting every created row made a
+ * browsed-and-closed checkout look like a sale. A refund later does not
+ * un-make the order, so refunded orders still count as orders here.
+ */
+function wasPaid(order: Order): boolean {
+  return countsAsRevenue(order) || order.paymentStatus === 'refunded';
+}
+
+/** A checkout that was opened and then left to expire. */
+function isAbandonedCheckout(order: Order): boolean {
+  return order.paymentStatus === 'expired' || order.paymentStatus === 'abandoned';
+}
 
 export type PeriodKey = '7d' | '30d' | '90d' | 'all';
 
@@ -52,9 +68,20 @@ export function computeDashboardMetrics(orders: Order[], now: Date = new Date())
     pendingPickups: workQueue(orders).filter(
       o => o.fulfillmentStatus === 'pending' && o.paymentStatus === 'paid',
     ).length,
-    ordersToday: orders.filter(o => isAfter(new Date(o.createdAt), dayStart)).length,
-    ordersThisMonth: orders.filter(o => isAfter(new Date(o.createdAt), monthStart)).length,
+    ordersToday: orders.filter(o => wasPaid(o) && isAfter(revenueDate(o), dayStart)).length,
+    ordersThisMonth: orders.filter(o => wasPaid(o) && isAfter(revenueDate(o), monthStart)).length,
+    abandonedToday: orders.filter(
+      o => isAbandonedCheckout(o) && isAfter(new Date(o.createdAt), dayStart),
+    ).length,
   };
+}
+
+/** The line under "Orders Today": paid orders, abandoned checkouts named apart (N-083). */
+export function ordersTodayDetail(metrics: DashboardMetrics): string {
+  const month = `${metrics.ordersThisMonth} paid this month`;
+  if (metrics.abandonedToday === 0) return month;
+  const noun = metrics.abandonedToday === 1 ? 'checkout' : 'checkouts';
+  return `${month}, ${metrics.abandonedToday} abandoned ${noun} today`;
 }
 
 /** How far back each fixed period reaches. 'all' has no lower bound. */

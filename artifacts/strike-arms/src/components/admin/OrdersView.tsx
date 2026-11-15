@@ -82,7 +82,7 @@ export function OrdersView() {
           isMoving={actions.isMoving}
           isTableForced={isTableForced}
           onSelect={setSelectedOrderId}
-          onAdvance={(order, status) => actions.changeStatus(order.id, status)}
+          onAdvance={actions.changeStatus}
           onOpenTable={() => setView('table')}
         />
       ) : (

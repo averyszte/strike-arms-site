@@ -22,7 +22,7 @@ type OrdersTableRowProps = {
   isSelected: boolean;
   onToggleSelect: (orderId: string) => void;
   onSelect: (orderId: string) => void;
-  onStatusChange: (orderId: string, status: FulfillmentStatus) => void;
+  onStatusChange: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
   onToggleArchive: (order: Order) => void;
 };
 
@@ -87,7 +87,7 @@ export function OrdersTableRow({
       <td className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
         <OrderFulfilmentSelect
           order={order}
-          onChange={(status) => onStatusChange(order.id, status)}
+          onChange={(status, isIdChecked) => onStatusChange(order, status, isIdChecked)}
         />
       </td>
 

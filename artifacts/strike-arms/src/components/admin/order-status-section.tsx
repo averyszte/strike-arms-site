@@ -1,26 +1,11 @@
 import { OrderFulfilmentSelect } from '@/components/admin/OrderFulfilmentSelect';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { useUpdateFulfillmentStatus } from '@/hooks/use-update-fulfillment-status';
-import { loadErrorMessage } from '@/lib/load-error-message';
-import type { FulfillmentStatus, Order } from '@/types/order';
+import { useFulfilmentChange } from '@/hooks/use-fulfilment-change';
+import type { Order } from '@/types/order';
 
 /** The order's payment status, and the fulfilment select that moves it along. */
 export function OrderStatusSection({ order }: { order: Order }) {
-  const updateFulfillment = useUpdateFulfillmentStatus();
-  const { toast } = useToast();
-
-  async function handleFulfillmentChange(status: FulfillmentStatus) {
-    try {
-      await updateFulfillment.mutateAsync({ orderId: order.id, status });
-    } catch (error) {
-      toast({
-        title: 'Status not changed',
-        description: loadErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }
+  const { change } = useFulfilmentChange();
 
   return (
     <section className="flex items-center gap-5 flex-wrap">
@@ -41,7 +26,7 @@ export function OrderStatusSection({ order }: { order: Order }) {
         </p>
         <OrderFulfilmentSelect
           order={order}
-          onChange={status => void handleFulfillmentChange(status)}
+          onChange={(status, isIdChecked) => change(order, status, isIdChecked)}
         />
       </div>
     </section>

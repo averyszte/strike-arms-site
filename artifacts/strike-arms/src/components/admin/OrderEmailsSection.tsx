@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { useOrderEmails } from '@/hooks/use-order-emails';
 import { useResendOrderEmail } from '@/hooks/use-resend-order-email';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 import {
   ORDER_EMAIL_LABELS,
   ORDER_EMAIL_STATUS_LABELS,
@@ -43,7 +43,7 @@ export function OrderEmailsSection({ orderId }: { orderId: string }) {
       await resend.mutateAsync(email.id);
       toast({ title: 'Email queued', description: 'It goes out within a minute.' });
     } catch (error) {
-      toast({ title: 'Not resent', description: loadErrorMessage(error), variant: 'destructive' });
+      toast({ title: 'Not resent', description: adminErrorMessage(error), variant: 'destructive' });
     }
   }
 

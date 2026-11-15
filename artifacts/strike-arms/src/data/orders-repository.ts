@@ -28,7 +28,11 @@ export function buildOrdersQuery(filters: OrderListFilters) {
     .eq('is_archived', filters.isArchived ?? false)
     .order('created_at', { ascending: false });
 
-  if (filters.paymentStatus) query = query.eq('payment_status', filters.paymentStatus);
+  if (Array.isArray(filters.paymentStatus)) {
+    query = query.in('payment_status', filters.paymentStatus);
+  } else if (filters.paymentStatus) {
+    query = query.eq('payment_status', filters.paymentStatus);
+  }
   if (filters.fulfillmentStatus) query = query.eq('fulfillment_status', filters.fulfillmentStatus);
   if (filters.needsAttention) {
     query = query
@@ -45,6 +49,7 @@ export function buildOrdersQuery(filters: OrderListFilters) {
     query = query.or(
       `customer_name.ilike.%${search}%,` +
       `customer_email.ilike.%${search}%,` +
+      `customer_phone.ilike.%${search}%,` +
       `order_number.ilike.%${search}%`,
     );
   }
@@ -104,6 +109,21 @@ export async function updateOrderFulfillment(
 
   if (error) throw error;
   return rowToOrder(data);
+}
+
+/**
+ * Records that staff saw photo ID at collection (050, N-084). The value sent
+ * is only a signal: the database stamps its own time and the signed-in admin,
+ * and keeps the first record if one exists.
+ */
+export async function recordOrderIdCheck(id: string): Promise<void> {
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ id_checked_at: new Date().toISOString() })
+    .eq('id', id)
+    .select('id');
+  if (error) throw error;
+  expectRows(data);
 }
 
 /** Null clears it. The database checks the format (033). */

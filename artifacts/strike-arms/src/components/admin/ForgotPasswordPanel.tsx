@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRequestPasswordReset } from '@/hooks/use-request-password-reset';
 import { useTurnstile } from '@/hooks/use-turnstile';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 interface Props {
   initialEmail: string;
@@ -67,7 +67,7 @@ export function ForgotPasswordPanel({ initialEmail, onBack }: Props) {
 
       {request.isError && (
         <p role="alert" className="text-sm text-destructive">
-          The reset email was not sent. {loadErrorMessage(request.error)}
+          The reset email was not sent. {adminErrorMessage(request.error)}
         </p>
       )}
 

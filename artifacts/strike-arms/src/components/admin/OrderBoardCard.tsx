@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 
+import { OrderIdCheckDialog } from '@/components/admin/OrderIdCheckDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { needsIdCheck } from '@/lib/order-age-check';
 import { formatPrice } from '@/lib/format-price';
 import { needsAttention } from '@/lib/order-attention';
 import { ORDER_CHANNEL_LABELS, formatOrderNumber } from '@/lib/order-display';
@@ -14,7 +17,8 @@ import type { FulfillmentStatus, Order } from '@/types/order';
  *
  * There is a single button and it moves the order one lane forward. Corrections
  * and cancellations are done in the detail sheet behind a click on the card,
- * where every state is listed and choosing one is deliberate.
+ * where every state is listed and choosing one is deliberate. Moving a web
+ * collection order to Collected asks for the photo-ID check first (N-084).
  */
 
 type OrderBoardCardProps = {
@@ -22,7 +26,7 @@ type OrderBoardCardProps = {
   nextStatus: FulfillmentStatus | null;
   isMoving: boolean;
   onSelect: (orderId: string) => void;
-  onAdvance: (order: Order, status: FulfillmentStatus) => void;
+  onAdvance: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
 };
 
 export function OrderBoardCard({
@@ -32,6 +36,13 @@ export function OrderBoardCard({
   onSelect,
   onAdvance,
 }: OrderBoardCardProps) {
+  const [isCheckingId, setIsCheckingId] = useState(false);
+
+  function advance(status: FulfillmentStatus) {
+    if (needsIdCheck(order, status)) setIsCheckingId(true);
+    else onAdvance(order, status);
+  }
+
   return (
     <li>
       <div
@@ -89,7 +100,7 @@ export function OrderBoardCard({
               size="sm"
               className="h-7 w-full text-xs"
               disabled={isMoving}
-              onClick={() => onAdvance(order, nextStatus)}
+              onClick={() => advance(nextStatus)}
             >
               {statusLabel(nextStatus)}
               <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
@@ -97,6 +108,14 @@ export function OrderBoardCard({
           </div>
         )}
       </div>
+      {isCheckingId && (
+        <OrderIdCheckDialog
+          order={order}
+          open={isCheckingId}
+          onClose={() => setIsCheckingId(false)}
+          onConfirm={() => onAdvance(order, 'collected', true)}
+        />
+      )}
     </li>
   );
 }

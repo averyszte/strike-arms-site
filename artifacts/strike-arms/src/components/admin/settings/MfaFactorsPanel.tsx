@@ -18,6 +18,7 @@ import { useAdminMfaFactors } from '@/hooks/use-admin-mfa-factors';
 import { useRemoveMfaFactor } from '@/hooks/use-remove-mfa-factor';
 import { useToast } from '@/hooks/use-toast';
 import type { TotpFactor } from '@/types/auth';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 const DATE = new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium' });
 
@@ -43,7 +44,7 @@ export function MfaFactorsPanel() {
     remove.mutate(toRemove.id, {
       onSuccess: () => toast({ title: `${toRemove.label} removed` }),
       onError: (error: Error) =>
-        toast({ title: 'Not removed', description: error.message, variant: 'destructive' }),
+        toast({ title: 'Not removed', description: adminErrorMessage(error), variant: 'destructive' }),
     });
     setToRemove(null);
   }

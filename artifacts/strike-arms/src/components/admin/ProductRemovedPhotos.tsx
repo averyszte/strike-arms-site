@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useOrphanedImages, type OrphanedImage } from '@/hooks/use-orphaned-images';
 import { useRestoreOrphanedImage } from '@/hooks/use-restore-orphaned-image';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 const DAY = new Intl.DateTimeFormat('en-IE', { day: 'numeric', month: 'short' });
 
@@ -30,7 +30,7 @@ export function ProductRemovedPhotos({ onRestore }: { onRestore: (url: string) =
         onRestore(photo.url);
         toast({ title: 'Photo put back', description: 'Save the product to keep it.' });
       },
-      onError: error => toast({ title: 'Not put back', description: loadErrorMessage(error), variant: 'destructive' }),
+      onError: error => toast({ title: 'Not put back', description: adminErrorMessage(error), variant: 'destructive' }),
     });
   }
 
@@ -49,7 +49,7 @@ export function ProductRemovedPhotos({ onRestore }: { onRestore: (url: string) =
       {isOpen && (
         <div className="mt-2 space-y-2">
           {list.isLoading && <p className="text-xs text-muted-foreground">Loading...</p>}
-          {list.isError && <p className="text-xs text-destructive">{loadErrorMessage(list.error)}</p>}
+          {list.isError && <p className="text-xs text-destructive">{adminErrorMessage(list.error)}</p>}
           {list.isSuccess && photos.length === 0 && (
             <p className="text-xs text-muted-foreground">No removed photos are waiting to be deleted.</p>
           )}

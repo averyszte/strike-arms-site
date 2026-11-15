@@ -120,6 +120,12 @@ export function OrdersBulkBar({
                 Paid orders are not refunded by this. Open each one and refund it from the order.
               </p>
             )}
+            {pendingStatus === 'collected' && (
+              <p className="text-sm text-muted-foreground">
+                No photo-ID check is recorded for a change made here. To record one, mark each
+                order collected from its own row or card.
+              </p>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

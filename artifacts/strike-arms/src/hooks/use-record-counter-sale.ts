@@ -4,6 +4,7 @@ import { draftToCounterOrderInput } from '@/lib/counter-order-draft';
 import type { ResolvedCounterLine } from '@/lib/counter-order-totals';
 import { formatPrice } from '@/lib/format-price';
 import type { CounterOrderDraft, CounterOrderLine } from '@/types/order';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 /** A product the sale used up that the website still lists as in stock. */
 export type StillListedProduct = { id: string; name: string };
@@ -50,7 +51,7 @@ export function useRecordCounterSale() {
     } catch (error: unknown) {
       toast({
         title: 'Could not record the sale',
-        description: error instanceof Error ? error.message : 'Something went wrong.',
+        description: adminErrorMessage(error),
         variant: 'destructive',
       });
       return null;

@@ -17,6 +17,7 @@ import {
   type StoreRatesErrors,
 } from '@/lib/store-rates-form';
 import type { StoreRates } from '@/types/store-settings';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 interface Props {
   rates: StoreRates;
@@ -53,7 +54,7 @@ export function StoreRatesForm({ rates }: Props) {
         toast({ title: 'Rates updated' });
       },
       onError: (error: Error) =>
-        toast({ title: 'Not saved', description: error.message, variant: 'destructive' }),
+        toast({ title: 'Not saved', description: adminErrorMessage(error), variant: 'destructive' }),
     });
   }
 

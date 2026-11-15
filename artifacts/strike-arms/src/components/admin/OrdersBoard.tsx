@@ -25,7 +25,7 @@ type OrdersBoardProps = {
   orders: Order[];
   isMoving: boolean;
   onSelect: (orderId: string) => void;
-  onAdvance: (order: Order, status: FulfillmentStatus) => void;
+  onAdvance: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
 };
 
 type LaneColumnProps = {
@@ -33,7 +33,7 @@ type LaneColumnProps = {
   board: OrderBoardKey;
   isMoving: boolean;
   onSelect: (orderId: string) => void;
-  onAdvance: (order: Order, status: FulfillmentStatus) => void;
+  onAdvance: (order: Order, status: FulfillmentStatus, isIdChecked?: boolean) => void;
 };
 
 function LaneColumn({ lane, board, isMoving, onSelect, onAdvance }: LaneColumnProps) {

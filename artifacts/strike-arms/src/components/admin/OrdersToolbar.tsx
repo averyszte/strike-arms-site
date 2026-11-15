@@ -22,12 +22,15 @@ import type { OrdersViewMode } from '@/hooks/use-orders-view';
  * approaching the file limit and the toolbar is the part that holds no state.
  */
 
+// Paid comes first because it is the default (N-083). "Pending" and
+// "Expired" read like orders waiting on Alan; they are checkouts a customer
+// opened and has not paid for, or never will.
 const PAYMENT_TABS: { value: PaymentFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
   { value: 'paid', label: 'Paid' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'expired', label: 'Expired' },
+  { value: 'pending', label: 'Unpaid (checkout open)' },
+  { value: 'expired', label: 'Abandoned' },
   { value: 'refunded', label: 'Refunded' },
+  { value: 'all', label: 'All' },
 ];
 
 type OrdersToolbarProps = {
@@ -134,7 +137,7 @@ export function OrdersToolbar({
           value={paymentFilter}
           onValueChange={(value) => onPaymentFilterChange(value as PaymentFilter)}
         >
-          <TabsList>
+          <TabsList className="h-auto flex-wrap">
             {PAYMENT_TABS.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {tab.label}
@@ -179,7 +182,7 @@ export function OrdersToolbar({
         <AdminSearchBox
           value={query}
           label="Search orders"
-          placeholder="Name, email or order number"
+          placeholder="Name, email, phone or order number"
           onSearch={onQueryChange}
         />
       </div>

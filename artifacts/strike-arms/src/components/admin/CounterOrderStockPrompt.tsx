@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { useBulkUpdateProducts } from '@/hooks/use-bulk-update-products';
 import { useToast } from '@/hooks/use-toast';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 export type SoldProduct = { id: string; name: string };
 
@@ -51,7 +51,7 @@ export function CounterOrderStockPrompt({ products, onClose }: Props) {
           onClose();
         },
         onError: error =>
-          toast({ title: 'Not changed', description: loadErrorMessage(error), variant: 'destructive' }),
+          toast({ title: 'Not changed', description: adminErrorMessage(error), variant: 'destructive' }),
       },
     );
   }

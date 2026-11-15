@@ -52,6 +52,8 @@ export function rowToOrder(row: OrderRow, items?: OrderItemRow[]): Order {
     attentionReason: row.attention_reason,
     attentionRaisedAt: row.attention_raised_at,
     ageVerified: row.age_verified,
+    idCheckedAt: row.id_checked_at ?? null,
+    idCheckedBy: row.id_checked_by ?? null,
     notes: row.notes,
     trackingNumber: row.tracking_number ?? null,
     isArchived: row.is_archived,

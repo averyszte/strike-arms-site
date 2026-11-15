@@ -17,6 +17,7 @@ import { formatPrice } from '@/lib/format-price';
 import { formatOrderNumber } from '@/lib/order-display';
 import { refundEligibility } from '@/lib/order-refund';
 import type { Order } from '@/types/order';
+import { adminErrorMessage } from '@/lib/admin-error-message';
 
 interface Props {
   order: Order;
@@ -62,7 +63,7 @@ export function OrderCancelDialog({ order, open, onClose, onCancel }: Props) {
           });
           cancelOnly();
         },
-        onError: e => setError(e instanceof Error ? e.message : 'The refund could not be sent.'),
+        onError: e => setError(e instanceof Error ? adminErrorMessage(e) : 'The refund could not be sent.'),
         onSettled: () => {
           isInFlight.current = false;
         },

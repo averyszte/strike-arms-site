@@ -42,6 +42,20 @@ export function CounterOrderProductPicker({
 
   const isSearching = query.trim().length >= 2;
 
+  function add(product: Product) {
+    onAdd(product);
+    setQuery('');
+  }
+
+  // N-089: Enter in the search box adds the top match instead of submitting
+  // the whole sale half-finished.
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    const first = matches.find((product) => !addedIds.has(product.id));
+    if (first) add(first);
+  }
+
   return (
     <div>
       <Label htmlFor="counter-product-search">Add a product</Label>
@@ -57,6 +71,7 @@ export function CounterOrderProductPicker({
           disabled={isLoading}
           className="pl-9"
           onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
 
@@ -74,10 +89,7 @@ export function CounterOrderProductPicker({
                 type="button"
                 className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-muted/40 disabled:opacity-50"
                 disabled={addedIds.has(product.id)}
-                onClick={() => {
-                  onAdd(product);
-                  setQuery('');
-                }}
+                onClick={() => add(product)}
               >
                 <Plus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <span className="min-w-0 flex-1">

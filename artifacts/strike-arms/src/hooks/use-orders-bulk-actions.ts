@@ -1,8 +1,7 @@
 import { useBulkFulfillmentStatus } from '@/hooks/use-bulk-fulfillment-status';
 import { useBulkSetArchived } from '@/hooks/use-bulk-set-archived';
 import { useToast } from '@/hooks/use-toast';
-import { failedItemsMessage } from '@/lib/admin-error-message';
-import { loadErrorMessage } from '@/lib/load-error-message';
+import { adminErrorMessage, failedItemsMessage } from '@/lib/admin-error-message';
 import { formatOrderNumber } from '@/lib/order-display';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
@@ -17,7 +16,7 @@ type OrdersBulkActionsInput = {
 /** Names the orders a chunked write refused, by order number (M-040). */
 function bulkFailedDescription(orders: Order[], description: string, error: unknown): string {
   const numbers = new Map(orders.map(o => [o.id, formatOrderNumber(o.orderNumber)]));
-  return failedItemsMessage(error, id => numbers.get(id), `${description}. ${loadErrorMessage(error)}`);
+  return failedItemsMessage(error, id => numbers.get(id), `${description}. ${adminErrorMessage(error)}`);
 }
 
 /** The orders table's writes to a whole selection, with their toasts. */

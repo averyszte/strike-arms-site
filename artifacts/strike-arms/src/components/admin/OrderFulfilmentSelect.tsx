@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { OrderCancelDialog } from '@/components/admin/OrderCancelDialog';
+import { OrderIdCheckDialog } from '@/components/admin/OrderIdCheckDialog';
 import {
   Select,
   SelectContent,
@@ -8,12 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { needsIdCheck } from '@/lib/order-age-check';
 import { fulfillmentChoices } from '@/lib/order-transitions';
 import type { FulfillmentStatus, Order } from '@/types/order';
 
 interface Props {
   order: Order;
-  onChange: (status: FulfillmentStatus) => void;
+  /** isIdChecked is true when staff confirmed photo ID on handover (N-084). */
+  onChange: (status: FulfillmentStatus, isIdChecked?: boolean) => void;
 }
 
 /**
@@ -22,13 +25,16 @@ interface Props {
  * can see the state exists without being able to pick it. Steps that email
  * the customer say so, so a mis-click is not a surprise. Cancelling asks
  * first, and offers the refund for a paid order (M-030), wherever the picker
- * is used.
+ * is used. Marking a web collection order collected asks for the photo-ID
+ * check first (N-084).
  */
 export function OrderFulfilmentSelect({ order, onChange }: Props) {
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false);
+  const [isCheckingId, setIsCheckingId] = useState(false);
 
   function handleChange(status: FulfillmentStatus) {
     if (status === 'cancelled') setIsConfirmingCancel(true);
+    else if (needsIdCheck(order, status)) setIsCheckingId(true);
     else onChange(status);
   }
 
@@ -63,6 +69,14 @@ export function OrderFulfilmentSelect({ order, onChange }: Props) {
           open={isConfirmingCancel}
           onClose={() => setIsConfirmingCancel(false)}
           onCancel={() => onChange('cancelled')}
+        />
+      )}
+      {isCheckingId && (
+        <OrderIdCheckDialog
+          order={order}
+          open={isCheckingId}
+          onClose={() => setIsCheckingId(false)}
+          onConfirm={() => onChange('collected', true)}
         />
       )}
     </>
