@@ -18,12 +18,17 @@ export function useUrlParams() {
 
   const params = useMemo(() => new URLSearchParams(search), [search]);
 
-  const setParam = useCallback(
-    (key: string, value: string) => {
+  /** Several keys in one navigation, so a second write cannot undo the first. */
+  const setParams = useCallback(
+    (updates: Record<string, string>) => {
       const next = new URLSearchParams(search);
-      if (value === 'all' || value === '' || (key === 'page' && value === '1')) next.delete(key);
-      else next.set(key, value);
-      if (key !== 'page') next.delete('page');
+      const keys = Object.keys(updates);
+      for (const key of keys) {
+        const value = updates[key];
+        if (value === 'all' || value === '' || (key === 'page' && value === '1')) next.delete(key);
+        else next.set(key, value);
+      }
+      if (keys.some((key) => key !== 'page')) next.delete('page');
 
       const nextQuery = next.toString();
       navigate(nextQuery ? `${path}?${nextQuery}` : path, { replace: true });
@@ -31,5 +36,10 @@ export function useUrlParams() {
     [search, path, navigate],
   );
 
-  return { params, setParam };
+  const setParam = useCallback(
+    (key: string, value: string) => setParams({ [key]: value }),
+    [setParams],
+  );
+
+  return { params, setParam, setParams };
 }

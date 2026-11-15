@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { FilterSidebarContent } from '@/components/catalog/FilterSidebar';
 import type { CategorySlug } from '@/lib/taxonomy';
 import type { ProductFilters } from '@/types/product';
@@ -39,6 +39,9 @@ export function MobileFilterSheet({
       <SheetContent side="left" className="flex w-[300px] flex-col gap-0 p-0">
         <SheetHeader className="border-b border-border px-6 py-5">
           <SheetTitle className="font-black uppercase tracking-tight">Filters</SheetTitle>
+          <SheetDescription className="sr-only">
+            Narrow the products shown. Filters apply as you choose them.
+          </SheetDescription>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <FilterSidebarContent

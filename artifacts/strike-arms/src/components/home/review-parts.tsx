@@ -17,9 +17,9 @@ export function GoogleG({ className = "w-6 h-6" }: { className?: string }) {
 
 export function Stars({ rating, className = "w-4 h-4" }: { rating: number; className?: string }) {
   return (
-    <span className="flex" aria-label={`${rating} out of 5 stars`}>
+    <span className="flex" role="img" aria-label={`${rating} out of 5 stars`}>
       {[0, 1, 2, 3, 4].map((i) => (
-        <Star key={i} className={`${className} ${i < rating ? "fill-accent text-accent" : "text-border"}`} />
+        <Star key={i} aria-hidden="true" className={`${className} ${i < rating ? "fill-accent text-accent" : "text-border"}`} />
       ))}
     </span>
   );
@@ -64,7 +64,8 @@ export function ReviewCard({ review }: { review: Review }) {
   return (
     <figure className="flex flex-col h-full bg-card border border-border/60 p-6 md:p-7">
       <Stars rating={review.rating} className={review.text ? "w-4 h-4" : "w-6 h-6"} />
-      {/* Long reviews are cut at six lines; the full text is in the title. */}
+      {/* Long reviews are cut at six lines on screen only: the full text stays in
+          the page, so screen readers read all of it, and the title shows it on hover. */}
       <blockquote className="flex-1 mt-5 text-lg leading-snug text-foreground line-clamp-6" title={review.text || undefined}>
         {review.text}
       </blockquote>

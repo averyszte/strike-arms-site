@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearch } from 'wouter';
 
 import { clearCheckoutAttemptId } from '@/data/checkout-attempt-repository';
+import { clearCheckoutDraft } from '@/data/checkout-draft-repository';
 import { fetchCheckoutStatus } from '@/data/checkout-status-repository';
 import { useCart } from '@/hooks/use-cart';
 import {
@@ -56,6 +57,9 @@ export function useCheckoutConfirmation(): {
     if (state !== 'paid') return;
     clearCart();
     clearCheckoutAttemptId();
+    // The saved name, email and address go with the order (N-054), so the
+    // next basket on a shared device does not open pre-filled.
+    clearCheckoutDraft();
   }, [state, clearCart]);
 
   const { refetch } = query;
