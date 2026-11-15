@@ -17,6 +17,7 @@ export const SHOP = {
   name: "Strike Arms",
   address: "Unit C3, Airside Enterprise Centre, Swords, Co. Dublin, K67 T9H9",
   phone: "+353 87 273 6351",
+  email: "info@strikearms.ie",
   hours: "Tuesday to Sunday, 11:00 to 18:00",
 };
 
@@ -91,7 +92,8 @@ function footer(): string {
   return `<td style="padding:20px 8px 32px;font-family:${FONT};font-size:12px;line-height:1.6;color:${COLOURS.muted};text-align:center;">
 <strong style="color:${COLOURS.text};">${escapeHtml(SHOP.name)}</strong><br>
 ${escapeHtml(SHOP.address)}<br>
-${escapeHtml(SHOP.phone)} · ${escapeHtml(SHOP.hours)}
+${escapeHtml(SHOP.phone)} · ${escapeHtml(SHOP.email)}<br>
+${escapeHtml(SHOP.hours)}
 </td>`;
 }
 

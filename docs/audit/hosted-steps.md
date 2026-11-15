@@ -228,6 +228,59 @@ curl.exe -I https://strikearms.ie/Contact-us.php
 - [ ] Admin > Dashboard: the system health card is all ok.
 - [ ] Disable or delete the sandbox webhook endpoint once live orders work.
 
+## After launch: phase 2 content and legal (S6)
+
+### Legal pages sign-off (phase 2 N-103)
+
+The site went live before a solicitor read the legal pages. Since phase 2, the "Draft, should be reviewed by a solicitor" notice and each page's list of open points show only in local development (`LegalDraftNotice.tsx`), so visitors no longer see them. The open points are still in each page's code (`OPEN_POINTS` in `Privacy.tsx`, `Terms.tsx`, `Returns.tsx` and `Delivery.tsx`), so nothing is lost. Run `pnpm --filter @workspace/strike-arms run dev` to read them in place.
+
+- [ ] **Book the solicitor's review.** They read, in full:
+  - `/privacy`, `/terms`, `/returns` (including the model cancellation form) and `/delivery`.
+  - `/airsoft-law`, which is not on any earlier review list.
+  - The account page data lines (`YourDataCard.tsx`) and the checkout age line.
+  - The order confirmation email's "Changed your mind?" block (it repeats the Returns page wording).
+- [ ] **Answer every open point.** Alan supplies the business facts: the legal name, and the company (CRO) number if it is a company; the VAT number (or the accountant does); delivery zones beyond the Republic of Ireland, including Northern Ireland; what happens when a customer cannot show ID at collection; which items ship sealed for hygiene reasons. The solicitor answers the legal points on each list.
+- [ ] **Give the solicitor the Privacy inputs (N-108):** the processor list from the B9 audit (Supabase, Stripe, Resend, Cloudflare, and Google while Fonts and Maps load from Google), the Supabase project region (Supabase dashboard > Project Settings > General), and every form that runs the Turnstile bot check.
+- [ ] **Hand the answers back for the code.** The new legal name, CRO and VAT numbers go in `BUSINESS` in `src/lib/site-config.ts` and in `SHOP` in `supabase/functions/notification-worker/templates/layout.ts` (the two must match). Each signed-off page then loses its `LegalDraftNotice` and `OPEN_POINTS`, and gets its "Last updated" date set to the sign-off date.
+  - *Check:* `/privacy`, `/terms`, `/returns` and `/delivery` show no draft notice, and each shows the sign-off date.
+
+### Email changes (phase 2 N-104, N-109)
+
+The email footer now shows the shop email address, and the order confirmation email links the returns policy and the terms of sale.
+
+- [ ] **Redeploy the email worker.** One command, from the repo root:
+
+```powershell
+npx supabase functions deploy notification-worker
+```
+
+  - *Check:* read the next real order confirmation that comes in: it has a "Changed your mind?" box with two working links, and the footer shows `info@strikearms.ie`. Do not place and refund a test order for this: Stripe is live, so it is a real charge, and Stripe keeps its processing fee on a refund.
+- [ ] **Re-paste the four Auth email templates.** The footer change reaches the Auth emails only when they are pasted again. Open `supabase/templates/paste-into-supabase.html` in a browser and paste each one into the Supabase Auth email templates page, as was done on 2026-09-28.
+  - *Check:* a password-reset email shows the shop email in its footer.
+
+### Checkout function redeploy (phase 2 N-054, N-115)
+
+`create-checkout-session` now sends a shopper who cancels on Stripe back to `/cart?cancelled=1`, so the cart can say the payment was cancelled. The site deploy alone does not ship this: until the function is redeployed, Stripe keeps sending people to plain `/cart` and the notice never shows. Nothing breaks in the meantime.
+
+- [ ] **Wait for the Stripe terms consent change (N-115)** if it is still being made in the same function folder, so both land in one deploy.
+- [ ] **Redeploy the function**, from the repo root:
+
+```powershell
+npx supabase functions deploy create-checkout-session
+```
+
+  - *Check:* on `/cart`, start a checkout and press the back link on the Stripe page. The cart shows the "payment cancelled" notice and the basket is unchanged. No card is needed for this check.
+
+### Held: needs a hosted change first (phase 2 N-060, N-053)
+
+- [ ] **Customer password minimum of 10 characters (PD8).** The site checks passwords against the Supabase Auth policy, which today is 12 characters with mixed case and a number, for admins and customers alike. A 10-character form rule would send passwords Supabase refuses, so the code change waits until the Auth policy is relaxed (Supabase dashboard > Authentication > Policies), with the admin rule kept strict in the admin forms. Tell the developer once it is set.
+- [ ] **Hide sold pre-loved items 30 days after selling out (PD12).** The catalogue has no record of when an item sold out, only `in_stock`. It needs a small migration (a sold-out date stamped when stock goes to zero) and a `db push` before the listing can hide them. Today sold items sink to the end of `/pre-loved` instead.
+
+### Cloudflare Web Analytics (phase 2 PD4, N-010)
+
+- [ ] **Switch Web Analytics off** in the Cloudflare dashboard (Web Analytics, site `strikearms.ie`). It stays off until the Privacy page is signed off.
+  - *Check:* no CSP violation for `cloudflareinsights.com` in the browser console on `/`.
+
 ## After launch: search, analytics and hand-over
 
 Not done yet. Do these once the phase 2 S1 fixes (sitemap, redirects, noindex rules) are deployed, so Google reads the corrected files first.

@@ -26,7 +26,7 @@ const TOPICS: Topic[] = [
   {
     id: 'is-it-legal',
     heading: 'Is airsoft legal in Ireland?',
-    body: 'Airsoft is widely sold and played across Ireland, with organised sites and an established community. How airsoft devices are classified in law, and what conditions apply to buying, owning and using them, is set out in Irish firearms legislation and enforced by An Garda Siochana. Because the detail matters and can change, confirm the current position with the official sources below rather than relying on second-hand accounts or UK rules, which are different.',
+    body: 'Airsoft is widely sold and played across Ireland, with organised sites and an established community. How airsoft devices are classified in law, and what conditions apply to buying, owning and using them, is set out in Irish firearms legislation and enforced by An Garda Síochána. Because the detail matters and can change, confirm the current position with the official sources below rather than relying on second-hand accounts or UK rules, which are different.',
   },
   {
     id: 'age-and-buying',
@@ -59,7 +59,7 @@ type Source = { name: string; url: string; note: string };
 
 const SOURCES: Source[] = [
   {
-    name: 'An Garda Siochana',
+    name: 'An Garda Síochána',
     url: 'https://www.garda.ie/',
     note: 'Firearms and imitation firearms: official guidance and enforcement.',
   },
@@ -79,7 +79,7 @@ const FAQ: FaqItem[] = [
   {
     question: 'Is airsoft legal in Ireland?',
     answer:
-      'Airsoft is widely sold and played across Ireland. How devices are classified and what conditions apply is set out in Irish firearms legislation and enforced by An Garda Siochana; confirm the current detail with the official sources before you buy or play, as UK rules do not apply.',
+      'Airsoft is widely sold and played across Ireland. How devices are classified and what conditions apply is set out in Irish firearms legislation and enforced by An Garda Síochána; confirm the current detail with the official sources before you buy or play, as UK rules do not apply.',
   },
   {
     question: 'Can I import an airsoft gun into Ireland?',

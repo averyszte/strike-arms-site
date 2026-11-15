@@ -1,5 +1,5 @@
 import type { EmailOrder } from "../load-order.ts";
-import { button, layout, panel, paragraph, SHOP, type RenderedEmail } from "./layout.ts";
+import { button, layout, panel, paragraph, SHOP, textLink, type RenderedEmail } from "./layout.ts";
 import {
   COLLECTION_LINES,
   hasCollection,
@@ -22,6 +22,10 @@ function nextSteps(order: EmailOrder): string[] {
   }
   return next;
 }
+
+// The same wording as the Returns page; the policy itself lives there.
+const CHANGED_MIND =
+  "You can cancel most online orders within 14 days of receiving the goods, without giving a reason. Our returns policy explains how, and the exceptions.";
 
 // A mixed order walks two lanes, so it gets no single progress bar.
 function startingSteps(order: EmailOrder): string {
@@ -47,7 +51,10 @@ export function orderConfirmedEmail(order: EmailOrder, siteUrl: string): Rendere
       (address.length > 0 ? panel("Posting to", address) : "") +
       (hasCollection(order) ? panel("Collecting from the shop", COLLECTION_LINES) : "") +
       panel("What happens next", next) +
-      button("Track your order", trackUrl),
+      button("Track your order", trackUrl) +
+      panel("Changed your mind?", [CHANGED_MIND]) +
+      textLink("Returns and cancellation policy", `${siteUrl}/returns`) +
+      textLink("Terms of sale", `${siteUrl}/terms`),
   });
 
   return {
@@ -61,7 +68,10 @@ export function orderConfirmedEmail(order: EmailOrder, siteUrl: string): Rendere
       hasCollection(order) ? `Collecting from the shop:\n${COLLECTION_LINES.join("\n")}` : "",
       ...next,
       `Track your order: ${trackUrl}`,
-      `${SHOP.name}, ${SHOP.phone}`,
+      `Changed your mind? ${CHANGED_MIND}`,
+      `Returns and cancellation policy: ${siteUrl}/returns`,
+      `Terms of sale: ${siteUrl}/terms`,
+      `${SHOP.name}, ${SHOP.phone}, ${SHOP.email}`,
     ].filter(Boolean).join("\n\n"),
   };
 }

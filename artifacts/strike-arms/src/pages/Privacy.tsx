@@ -42,8 +42,9 @@ export default function Privacy() {
             <p>
               Strike Arms is an airsoft retailer based at {BUSINESS.streetAddress},{' '}
               {BUSINESS.addressLocality}, {BUSINESS.addressRegion}. We are the data controller for the
-              personal data described here. You can contact us via our{' '}
-              <Link href="/contact">contact page</Link>.
+              personal data described here. You can contact us by email at{' '}
+              <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>, by phone on{' '}
+              {BUSINESS.telephone}, or via our <Link href="/contact">contact page</Link>.
             </p>
           </section>
 

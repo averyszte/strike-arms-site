@@ -1,5 +1,9 @@
 import { Link } from "wouter";
 
+import { BUSINESS, SITE_LEGAL_NAME } from "@/lib/site-config";
+import { ADDRESS_LINES } from "@/lib/shop-location";
+import { phoneHref } from "@/lib/storefront-styles";
+
 const LEGAL_LINKS = [
   { href: "/terms", label: "Terms of Sale" },
   { href: "/returns", label: "Returns" },
@@ -33,7 +37,7 @@ export function SiteFooter() {
 
           {/* Col 2: Quick Links */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-foreground mb-2">Quick Links</h4>
+            <h2 className="font-bold text-foreground mb-2">Quick Links</h2>
             <nav className="flex flex-col gap-3">
               <Link href="/" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Home</Link>
               <Link href="/store" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Shop</Link>
@@ -49,31 +53,34 @@ export function SiteFooter() {
 
           {/* Col 3: Categories */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-foreground mb-2">Categories</h4>
+            <h2 className="font-bold text-foreground mb-2">Categories</h2>
             <nav className="flex flex-col gap-3">
               <Link href="/store/rifles" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Rifles</Link>
               <Link href="/store/pistols" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Pistols</Link>
               <Link href="/store/consumables" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Ammo & BBs</Link>
               <Link href="/store/gear" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Tactical Gear</Link>
               <Link href="/store/accessories" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Accessories</Link>
+              <Link href="/store/more" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Equipment &amp; Outdoor</Link>
+              <Link href="/pre-loved" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Pre-loved</Link>
+              <Link href="/brands" className="text-sm text-muted-foreground hover:text-accent transition-colors w-fit">Brands</Link>
             </nav>
           </div>
 
           {/* Col 4: Contact */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-foreground mb-2">Contact</h4>
+            <h2 className="font-bold text-foreground mb-2">Contact</h2>
             <div className="flex flex-col gap-3 text-sm text-muted-foreground">
               <p>
                 <strong className="text-foreground font-semibold">Phone:</strong>{" "}
-                <a href="tel:+353872736351" className="hover:text-accent transition-colors">+353 87 273 6351</a>
+                <a href={phoneHref(BUSINESS.telephone)} className="hover:text-accent transition-colors">{BUSINESS.telephone}</a>
               </p>
               <p>
-                <strong className="text-foreground font-semibold">Location:</strong>{" "}
-                Swords, Co. Dublin
+                <strong className="text-foreground font-semibold">Address:</strong>{" "}
+                {ADDRESS_LINES.join(", ")}
               </p>
               <p>
                 <strong className="text-foreground font-semibold">Email:</strong>{" "}
-                <a href="mailto:info@strikearms.ie" className="hover:text-accent transition-colors">info@strikearms.ie</a>
+                <a href={`mailto:${BUSINESS.email}`} className="hover:text-accent transition-colors">{BUSINESS.email}</a>
               </p>
             </div>
           </div>
@@ -82,7 +89,7 @@ export function SiteFooter() {
 
         <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Strike Arms Airsoft. All rights reserved.
+            &copy; {new Date().getFullYear()} {SITE_LEGAL_NAME}. All rights reserved.
           </p>
           <nav aria-label="Legal" className="flex flex-wrap justify-center gap-x-4 gap-y-2">
             {LEGAL_LINKS.map((link) => (

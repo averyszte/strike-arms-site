@@ -16,6 +16,11 @@ Rules for this file:
 - Every step has a **Verify** line. A step is not done until its check passes.
 - The audit items are in `docs/audit/findings.md` (M-numbers). Its "Hosted
   config for Phil" section is the same checklist in short form.
+- **Still open after launch:** the legal pages sign-off (phase 2 N-103), the
+  email worker redeploy and Auth template re-paste, and the search and
+  analytics set-up (sitemap, Search Console, GA4, Bing, Business Profile).
+  They are listed, in order, under "After launch" in
+  `docs/audit/hosted-steps.md`.
 
 Supabase project ref: `cxnhkgndvzgyqhiwsvrr` (not a secret; it is in every
 browser request). Functions base URL:

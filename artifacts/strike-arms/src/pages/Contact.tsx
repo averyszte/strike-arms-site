@@ -7,6 +7,7 @@ import { ContactForm } from '@/components/contact/contact-form';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { ADDRESS_LINES, MAPS_SEARCH_URL } from '@/lib/shop-location';
 import { buildLocalBusinessSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 import {
@@ -20,9 +21,14 @@ import {
 
 const TITLE = 'Contact & Store — Airsoft Shop in Swords, Co. Dublin | Strike Arms';
 const DESCRIPTION =
-  'Visit Strike Arms, a walk-in airsoft shop in Swords, Co. Dublin. Find our address, phone number and opening hours, and get directions. We ship across Ireland.';
+  `Visit Strike Arms, a walk-in airsoft shop in Swords, Co. Dublin. Find our address, phone number, opening hours and directions.`;
 
 const TEL_HREF = phoneHref(BUSINESS.telephone);
+
+/** How orders reach the buyer; collection only while delivery is paused. */
+const FULFILMENT_INTRO = IS_DELIVERY_ENABLED
+  ? 'Prefer to shop from home? Items other than guns can be delivered in the Republic of Ireland; guns are collect in store only.'
+  : 'Orders are collect in store for now, and delivery is coming soon. Guns are collect in store only.';
 
 export default function Contact() {
   const crumbs = [
@@ -47,7 +53,7 @@ export default function Contact() {
         crumbs={[{ label: 'Contact' }]}
         eyebrow="Visit the shop"
         title="Contact & Store Info"
-        intro="Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repairs and upgrades. Prefer to shop from home? We ship across Ireland, Republic and Northern Ireland."
+        intro={`Strike Arms is a walk-in airsoft shop in Swords, Co. Dublin. Call in for hands-on advice, browse the range, or drop a gun off for repairs and upgrades. ${FULFILMENT_INTRO}`}
         width="medium"
       />
 

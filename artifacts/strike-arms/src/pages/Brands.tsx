@@ -10,9 +10,11 @@ import { SITE_URL } from '@/lib/site-config';
 import { CARD_TITLE } from '@/lib/storefront-styles';
 import { buildItemListSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 
-const TITLE = 'Airsoft Brands in Ireland — G&G, Specna, Tokyo Marui & More | Strike Arms';
+// Brand-neutral on purpose: naming brands here went stale and listed ones
+// with no stock (N-106). The live list below is the source of truth.
+const TITLE = 'Airsoft Brands in Ireland | Strike Arms';
 const DESCRIPTION =
-  'The airsoft brands we stock at Strike Arms Dublin: G&G, Specna Arms, Tokyo Marui, Krytac, ICS, ASG, WE, Nuprol and more. Genuine stock, shipped across Ireland.';
+  'Browse the airsoft brands we stock at Strike Arms in Swords, Co. Dublin: guns, gear and consumables, with genuine stock and in-house advice and support.';
 
 export default function Brands() {
   const { data: brands, isLoading } = useBrands();
@@ -44,7 +46,7 @@ export default function Brands() {
         crumbs={[{ label: 'Brands' }]}
         eyebrow="Genuine stock"
         title="Airsoft Brands"
-        intro="We stock the airsoft brands that earn their place on the field and the bench, from beginner-friendly AEGs to premium platforms and reliable consumables. Browse a brand to see what we carry, all shipped across Ireland with in-house advice and support."
+        intro="We stock the airsoft brands that earn their place on the field and the bench, from beginner-friendly AEGs to premium platforms and reliable consumables. Browse a brand to see what we carry, with in-house advice and support behind every purchase."
       />
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-12 md:py-16">

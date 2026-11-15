@@ -1,3 +1,5 @@
+import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
+
 /**
  * Site-wide identity and business NAP (name, address, phone).
  *
@@ -32,6 +34,25 @@ export const BUSINESS = {
     },
   ],
 } as const;
+
+/**
+ * Where an item can go, in one place so the copy cannot drift (N-105).
+ * Guns are collect in store only; everything else that may be posted goes to
+ * the Republic of Ireland only, since checkout takes Republic Eircodes. Change
+ * these only when Alan confirms a new delivery area.
+ */
+export const SHIPPING_LINE_GUNS = 'Collect in store in Swords, Co. Dublin';
+export const SHIPPING_LINE_POSTABLE = 'Delivery in the Republic of Ireland';
+
+/**
+ * What public copy (category intros, meta descriptions) says about postable
+ * items today. While delivery is paused (IS_DELIVERY_ENABLED is false) it
+ * says collect in store, so no page promises a delivery checkout cannot
+ * offer. It switches back by itself when delivery is turned on.
+ */
+export const SHIPPING_LINE_POSTABLE_NOW = IS_DELIVERY_ENABLED
+  ? SHIPPING_LINE_POSTABLE
+  : SHIPPING_LINE_GUNS;
 
 /** Resolve a site-relative path to an absolute URL for schema / OG tags. */
 export function toAbsoluteUrl(path: string): string {
