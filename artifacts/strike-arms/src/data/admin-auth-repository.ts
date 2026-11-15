@@ -7,6 +7,7 @@
  * failure is not folded into the answer.
  */
 import { supabase } from '@/data/supabase-client';
+import { isAuthSessionMissingError } from '@supabase/supabase-js';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import type { EmailLinkType } from '@/types/auth';
 
@@ -39,6 +40,26 @@ export async function signOut(): Promise<void> {
 export async function getSession(): Promise<Session | null> {
   const { data } = await supabase.auth.getSession();
   return data.session;
+}
+
+/**
+ * Whether Supabase still holds this browser's session.
+ *
+ * getSession() only reads local storage, and the access token stays valid for
+ * up to an hour after its session is ended on the server (a sign-out
+ * everywhere, a password change, a session removed in the dashboard). The
+ * admin then looks signed in at aal2 while is_admin_aal2() finds no
+ * auth.sessions row and refuses every save with zero rows.
+ *
+ * getUser() asks the server. For an ended session it answers
+ * session_not_found and supabase-js clears the local session itself, which
+ * fires SIGNED_OUT and sends the admin to the login page. Returns null when
+ * the server could not be asked, so a dropped connection signs nobody out.
+ */
+export async function isSessionLiveOnServer(): Promise<boolean | null> {
+  const { error } = await supabase.auth.getUser();
+  if (!error) return true;
+  return isAuthSessionMissingError(error) ? false : null;
 }
 
 /** Subscribe to sign-in, sign-out and token changes. Returns the unsubscribe. */

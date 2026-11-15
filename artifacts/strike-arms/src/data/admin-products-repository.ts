@@ -16,7 +16,8 @@ import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import { rowToProduct } from '@/lib/product-mappers';
 import { pageAll } from '@/data/orders-bulk-reads';
 import { writeInChunks } from '@/data/chunked-write';
-import { ZeroRowsError } from '@/data/expect-rows';
+import { SessionEndedError, ZeroRowsError } from '@/data/expect-rows';
+import { isSessionLiveOnServer } from '@/data/admin-auth-repository';
 import { StaleProductError } from '@/lib/stale-product-error';
 import type {
   AdminProductListFilters,
@@ -42,9 +43,13 @@ function adminRowToProduct(row: ProductRow): Product {
  * there.
  */
 async function zeroRowsReason(id: string, expectedUpdatedAt?: string): Promise<Error> {
-  if (!expectedUpdatedAt) return new ZeroRowsError();
-  const { data } = await supabase.from('products').select('updated_at').eq('id', id).maybeSingle();
-  if (data && data.updated_at !== expectedUpdatedAt) return new StaleProductError(data.updated_at);
+  if (expectedUpdatedAt) {
+    const { data } = await supabase.from('products').select('updated_at').eq('id', id).maybeSingle();
+    if (data && data.updated_at !== expectedUpdatedAt) return new StaleProductError(data.updated_at);
+  }
+  // Not a conflict, so is_admin_aal2() said no. With the admin and MFA gates
+  // passed in the browser, that means the server no longer has this session.
+  if ((await isSessionLiveOnServer()) === false) return new SessionEndedError();
   return new ZeroRowsError();
 }
 

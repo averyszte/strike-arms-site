@@ -4,6 +4,7 @@ import type { Session, User } from '@supabase/supabase-js';
 import {
   getSession,
   isCurrentUserAdmin,
+  isSessionLiveOnServer,
   onAuthStateChange,
   signInWithPassword,
   signOut as signOutOfSupabase,
@@ -45,7 +46,15 @@ async function resolveSession(session: Session | null, prev: AdminSession): Prom
   if (!session?.user) return SIGNED_OUT;
   const fallback = prev.user?.id === session.user.id ? prev.mfa : SIGNED_OUT.mfa;
   try {
-    const [isAdmin, mfa] = await Promise.all([isCurrentUserAdmin(), readMfa(fallback)]);
+    // The local session alone is not proof: one ended on the server keeps a
+    // valid-looking aal2 token for up to an hour, and every save is refused.
+    // supabase-js clears it when the server says so; SIGNED_OUT follows.
+    const [isAdmin, mfa, isLive] = await Promise.all([
+      isCurrentUserAdmin(),
+      readMfa(fallback),
+      isSessionLiveOnServer(),
+    ]);
+    if (isLive === false) return SIGNED_OUT;
     return { user: session.user, isAdmin, mfa, connectionError: null };
   } catch (error: unknown) {
     return {
