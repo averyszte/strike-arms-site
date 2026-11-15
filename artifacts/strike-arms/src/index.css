@@ -134,8 +134,15 @@
   }
 }
 
-html {
-  scroll-padding-top: var(--header-height);
+/* Keeps a link or field the browser scrolls to (Tab, an in-page anchor) clear
+   of the sticky header. Set on the page body and footer, not as
+   scroll-padding on html: that also covered the header's own controls, so
+   the browser thought the search box was hidden behind the header, scrolled
+   to reveal it, and did it again on every keystroke because a sticky box never
+   moves. :where() keeps it at zero specificity, so a section's own scroll-mt-*
+   still wins. */
+:where(.site-theme main, .site-theme footer) * {
+  scroll-margin-top: var(--header-height);
 }
 
 /* A visible 2px keyboard focus ring on the storefront (links, buttons, cards).
