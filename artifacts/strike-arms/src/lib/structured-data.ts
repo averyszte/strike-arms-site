@@ -43,6 +43,17 @@ function organizationRef(): JsonLdObject {
   };
 }
 
+function postalAddress(): JsonLdObject {
+  return {
+    '@type': 'PostalAddress',
+    streetAddress: BUSINESS.streetAddress,
+    addressLocality: BUSINESS.addressLocality,
+    addressRegion: BUSINESS.addressRegion,
+    postalCode: BUSINESS.postalCode,
+    addressCountry: BUSINESS.addressCountry,
+  };
+}
+
 /** The same for the shop itself, as a Service's provider. */
 function storeRef(): JsonLdObject {
   return {
@@ -58,7 +69,11 @@ export function buildOrganizationSchema(): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     ...organizationRef(),
+    // Google's Rich Results Test reads an Organization with a phone number as a
+    // local business, and flags it without an address and image.
+    image: toAbsoluteUrl(LOGO_PATH),
     telephone: BUSINESS.telephone,
+    address: postalAddress(),
   };
 }
 
@@ -81,14 +96,7 @@ export function buildLocalBusinessSchema(): JsonLdObject {
     // The Google Maps listing for the shop's Place ID (review-bank.ts), or the
     // address search when no Place ID is set.
     hasMap: READ_REVIEWS_URL,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: BUSINESS.streetAddress,
-      addressLocality: BUSINESS.addressLocality,
-      addressRegion: BUSINESS.addressRegion,
-      postalCode: BUSINESS.postalCode,
-      addressCountry: BUSINESS.addressCountry,
-    },
+    address: postalAddress(),
     openingHoursSpecification: BUSINESS.openingHours.map((h) => ({
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: h.days,
