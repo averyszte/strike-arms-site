@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { DEFAULT_PRODUCT_FORM_VALUES, dirtyProductPatch, toFormValues, toProductInput } from '@/lib/product-form-values';
 import type { Product } from '@/types/product';
 import { adminErrorMessage } from '@/lib/admin-error-message';
+import { StaleProductError } from '@/lib/stale-product-error';
 
 interface Props {
   open: boolean;
@@ -43,6 +44,10 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
   const upload = useProductImageUpload();
   const isEdit = !!product;
   const [isConfirmingDiscard, setIsConfirmingDiscard] = useState(false);
+  // The version this form saves against. A conflict moves it on to the
+  // current one, so the admin's second Update goes through on purpose
+  // instead of needing a full page reload.
+  const [loadedUpdatedAt, setLoadedUpdatedAt] = useState(product?.updatedAt);
 
   /**
    * Anything uploaded during this session but never saved onto the product is
@@ -74,7 +79,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
       const input = toProductInput(values);
       if (isEdit && product) {
         const patch = dirtyProductPatch(input, form.formState.dirtyFields);
-        await update.mutateAsync({ id: product.id, patch, expectedUpdatedAt: product.updatedAt });
+        await update.mutateAsync({ id: product.id, patch, expectedUpdatedAt: loadedUpdatedAt });
       } else {
         await create.mutateAsync(input);
       }
@@ -84,6 +89,7 @@ export function ProductFormSheet({ open, onClose, product }: Props) {
       toast({ title: isEdit ? 'Product updated' : 'Product created' });
       onClose();
     } catch (err: unknown) {
+      if (err instanceof StaleProductError) setLoadedUpdatedAt(err.currentUpdatedAt);
       toast({
         title: 'Not saved',
         description: adminErrorMessage(err),

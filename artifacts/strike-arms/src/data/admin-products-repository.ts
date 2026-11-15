@@ -17,6 +17,7 @@ import { rowToProduct } from '@/lib/product-mappers';
 import { pageAll } from '@/data/orders-bulk-reads';
 import { writeInChunks } from '@/data/chunked-write';
 import { ZeroRowsError } from '@/data/expect-rows';
+import { StaleProductError } from '@/lib/stale-product-error';
 import type {
   AdminProductListFilters,
   NewProduct,
@@ -33,12 +34,18 @@ function adminRowToProduct(row: ProductRow): Product {
   return { ...rowToProduct(row), updatedAt: row.updated_at };
 }
 
-/** Somebody else saved this product after it was loaded here. */
-export class StaleProductError extends Error {
-  constructor() {
-    super('This product was changed elsewhere since you opened it. Reload it and make the change again.');
-    this.name = 'StaleProductError';
-  }
+/**
+ * Why an update matched no row. Only a row that is still readable and has a
+ * newer updated_at is a real conflict. Anything else (an AAL1 session, a
+ * refused policy, a missing row) is reported as a refused save, not as
+ * "changed elsewhere", which sent people hunting for a conflict that was not
+ * there.
+ */
+async function zeroRowsReason(id: string, expectedUpdatedAt?: string): Promise<Error> {
+  if (!expectedUpdatedAt) return new ZeroRowsError();
+  const { data } = await supabase.from('products').select('updated_at').eq('id', id).maybeSingle();
+  if (data && data.updated_at !== expectedUpdatedAt) return new StaleProductError(data.updated_at);
+  return new ZeroRowsError();
 }
 
 /**
@@ -176,10 +183,7 @@ export async function updateProduct(
 
   const { data, error } = await query.select().maybeSingle();
   if (error) throw error;
-  if (!data) {
-    if (expectedUpdatedAt) throw new StaleProductError();
-    throw new ZeroRowsError();
-  }
+  if (!data) throw await zeroRowsReason(id, expectedUpdatedAt);
   return adminRowToProduct(data);
 }
 
