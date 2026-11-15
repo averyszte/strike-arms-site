@@ -4,10 +4,11 @@ import { Link } from 'wouter';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { LegalDraftNotice } from '@/components/LegalDraftNotice';
+import { IS_ANALYTICS_CONFIGURED } from '@/lib/analytics-config';
 import { SITE_URL, BUSINESS } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
-const UPDATED = 'September 2026';
+const UPDATED = 'November 2026';
 
 const OPEN_POINTS = [
   'How long order and accounting records are kept, in years (accountant).',
@@ -77,6 +78,9 @@ export default function Privacy() {
               <li>To meet legal obligations, such as keeping tax and accounting records.</li>
               <li>To protect checkout and order lookup from bots and abuse (legitimate interests).</li>
               <li>To send marketing emails only where you have opted in (consent), which you can withdraw at any time.</li>
+              {IS_ANALYTICS_CONFIGURED && (
+                <li>To count visits with Google Analytics, only if you accept analytics cookies (consent).</li>
+              )}
             </ul>
           </section>
 
@@ -111,11 +115,26 @@ export default function Privacy() {
 
           <section>
             <h2>Cookies and browser storage</h2>
+            {IS_ANALYTICS_CONFIGURED ? (
+              <p>
+                We do not use advertising cookies. If you press Accept on the cookie banner, we use
+                Google Analytics to count visits and see which pages are useful. It sets cookies
+                named <code>_ga</code> and <code>_ga_</code> followed by an ID, which last up to two
+                years. Google Signals and advertising features are switched off, and admin, account
+                and checkout pages are not counted. If you press Reject, or do nothing, no Google
+                Analytics script or cookie is loaded. You can change your choice at any time with
+                &ldquo;Cookie settings&rdquo; at the bottom of every page.
+              </p>
+            ) : (
+              <p>
+                We do not use analytics, advertising or tracking cookies. If we ever add analytics,
+                we will ask for your consent first.
+              </p>
+            )}
             <p>
-              We do not use analytics, advertising or tracking cookies. The site keeps your basket,
-              and your sign-in if you have an account, in your own browser&apos;s storage so they
-              survive a page reload. Signing out or clearing your browser data removes them. If we
-              ever add analytics, we will ask for your consent first.
+              The site keeps your basket, your cookie choice, and your sign-in if you have an
+              account, in your own browser&apos;s storage so they survive a page reload. Signing out
+              or clearing your browser data removes them.
             </p>
           </section>
 
@@ -125,7 +144,9 @@ export default function Privacy() {
               We share data only with the service providers needed to run the shop — for example our
               payments provider (Stripe), our hosting and database provider (Supabase) and our email
               provider (Resend), and Cloudflare, which hosts the site and runs the bot check
-              (Turnstile) on checkout and order lookup — and where required by law.
+              (Turnstile) on checkout and order lookup
+              {IS_ANALYTICS_CONFIGURED && ', and Google (Google Analytics), only if you accept analytics cookies'}
+              {' '}— and where required by law.
             </p>
           </section>
         </div>

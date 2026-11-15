@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/Home";
 import ComingSoon from "@/pages/ComingSoon";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { useComingSoon } from "@/hooks/use-coming-soon";
 import { useScrollToTop } from "@/hooks/use-scroll-to-top";
 import { CartProvider } from "@/components/cart/cart-provider";
@@ -68,6 +69,7 @@ function App() {
             <AppErrorBoundary>
               <Router />
             </AppErrorBoundary>
+            <CookieConsentBanner />
           </WouterRouter>
           <Toaster />
         </CartProvider>

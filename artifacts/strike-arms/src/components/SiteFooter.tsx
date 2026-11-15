@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 
+import { CookieSettingsButton } from "@/components/cookie-settings-button";
+
 import { BUSINESS, SITE_LEGAL_NAME } from "@/lib/site-config";
 import { ADDRESS_LINES } from "@/lib/shop-location";
 import { phoneHref } from "@/lib/storefront-styles";
@@ -97,6 +99,7 @@ export function SiteFooter() {
                 {link.label}
               </Link>
             ))}
+            <CookieSettingsButton />
           </nav>
         </div>
       </div>
