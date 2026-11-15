@@ -27,8 +27,13 @@ export async function signInWithPassword(
   if (error) throw error;
 }
 
+/**
+ * This device only. The default scope is 'global', which ends every session
+ * the account has: signing out on a phone would leave an admin tab open
+ * elsewhere looking signed in while the database refuses its saves.
+ */
 export async function signOut(): Promise<void> {
-  await supabase.auth.signOut();
+  await supabase.auth.signOut({ scope: 'local' });
 }
 
 export async function getSession(): Promise<Session | null> {
