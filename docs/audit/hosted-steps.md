@@ -287,14 +287,16 @@ Not done yet. Do these once the phase 2 S1 fixes (sitemap, redirects, noindex ru
 
 - [ ] **Sitemap:** S1 regenerates `public/sitemap.xml` from the routes and live products and wires it into the build (phase 2 N-005). Check `https://strikearms.ie/sitemap.xml` lists the real pages and no 404s.
 - [ ] **Google Search Console:** add `strikearms.ie` as a Domain property (DNS TXT record in Cloudflare). Submit `https://strikearms.ie/sitemap.xml`. If the old PHP site had a property, keep it: use it to watch the 301s and coverage.
-- [ ] **Google Analytics 4:** the consent banner, footer "Cookie settings" link, CSP and Privacy wording are built. Nothing loads, and the banner and wording stay hidden, until the Measurement ID is set in `GA4_MEASUREMENT_ID` (`src/lib/analytics-config.ts`).
-  1. analytics.google.com > Admin > Create > Property: name "Strike Arms", time zone Ireland, currency Euro.
-  2. Data streams > Web: URL `https://strikearms.ie`, stream name "strikearms.ie". Copy the Measurement ID (`G-...`; it is public).
-  3. On the stream, Enhanced measurement > the cog: untick "Page changes based on browser history events" (the site sends its own page views, so leaving it on double-counts).
-  4. Admin > Data collection and modification > Data collection: leave Google Signals off.
-  5. Admin > Data retention: pick 2 or 14 months, to match the Privacy page if you change it.
-  6. Send the `G-...` ID; it goes in `analytics-config.ts`, then push and deploy.
-  - *Check:* on strikearms.ie in a private window, the banner shows; Reject leaves no `_ga` cookie; Accept shows you in GA4 > Reports > Realtime within a minute.
+- [ ] **Google Analytics 4 through Google Tag Manager:** the consent banner, footer "Cookie settings" link, CSP and Privacy wording are built. Nothing loads, and the banner and wording stay hidden, until the container ID is set in `GTM_CONTAINER_ID` (`src/lib/analytics-config.ts`). The site loads GTM only after Accept, and pushes a `virtual_page_view` event (with `page_location`, `page_path`, `page_title`) on every route change except admin, account and checkout.
+  1. **GA4:** analytics.google.com > Admin > Create > Property "Strike Arms", Ireland, Euro. Add a Web stream for `https://strikearms.ie`. Copy the Measurement ID (`G-...`). In the stream's Enhanced measurement cog, untick "Page changes based on browser history events". Leave Google Signals off.
+  2. **GTM:** tagmanager.google.com > Create account "Strike Arms", container `strikearms.ie`, target Web. Copy the container ID (`GTM-...`). Ignore the install snippet; the site loads it.
+  3. **Variables:** Variables > User-Defined > New > Data Layer Variable, three of them: `page_location`, `page_path`, `page_title` (name each the same as its key).
+  4. **Trigger:** Triggers > New > Custom Event, event name `virtual_page_view`, all custom events. Name it "Virtual page view".
+  5. **Google tag:** Tags > New > Google tag, tag ID = the `G-...` ID. Under Configuration settings add `send_page_view` = `false`. Trigger: Initialization - All Pages.
+  6. **Page view tag:** Tags > New > Google Analytics: GA4 Event, measurement ID = the `G-...` ID, event name `page_view`, event parameters `page_location` = `{{page_location}}`, `page_title` = `{{page_title}}`. Trigger: "Virtual page view".
+  7. **Submit** > Publish. Send the `GTM-...` ID; it goes in `analytics-config.ts`, then push and deploy.
+  - Do not add Custom HTML tags: the site's CSP blocks inline scripts, so they will not run. Built-in tag types work. Any new third-party tag needs its domain added to the CSP in `public/_headers`.
+  - *Check:* on strikearms.ie in a private window, the banner shows; Reject leaves no `_ga` cookie; Accept shows you in GA4 > Reports > Realtime within a minute, one page view per page.
 - [ ] **Bing Webmaster Tools:** import from Search Console.
 - [ ] **Google Business Profile:** check the website link points to `https://strikearms.ie`, and the name, address and hours match the site footer.
 - [ ] **Watch the migration:** in Search Console, check Pages and the old URLs weekly for the first month. Add any old URL that shows as 404 to `public/_redirects`.

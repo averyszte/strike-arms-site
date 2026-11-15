@@ -121,8 +121,8 @@ export default function Privacy() {
                 Google Analytics to count visits and see which pages are useful. It sets cookies
                 named <code>_ga</code> and <code>_ga_</code> followed by an ID, which last up to two
                 years. Google Signals and advertising features are switched off, and admin, account
-                and checkout pages are not counted. If you press Reject, or do nothing, no Google
-                Analytics script or cookie is loaded. You can change your choice at any time with
+                and checkout pages are not counted. If you press Reject, or do nothing, no Google Tag Manager or
+                Google Analytics script or cookie is loaded. You can change your choice at any time with
                 &ldquo;Cookie settings&rdquo; at the bottom of every page.
               </p>
             ) : (

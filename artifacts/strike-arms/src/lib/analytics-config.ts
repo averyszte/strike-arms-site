@@ -1,11 +1,12 @@
 /**
- * Google Analytics 4. The measurement ID is public (it ships in every page
- * that loads the tag), so it lives here rather than in an env file.
- * While it is empty, no consent banner shows and nothing is loaded.
+ * Google Tag Manager container (it carries the GA4 tags). The container ID
+ * is public (it ships in every page that loads it), so it lives here rather
+ * than in an env file. While it is empty, no consent banner shows and
+ * nothing is loaded.
  */
-export const GA4_MEASUREMENT_ID = '';
+export const GTM_CONTAINER_ID = '';
 
-export const IS_ANALYTICS_CONFIGURED = /^G-[A-Z0-9]+$/.test(GA4_MEASUREMENT_ID);
+export const IS_ANALYTICS_CONFIGURED = /^GTM-[A-Z0-9]+$/.test(GTM_CONTAINER_ID);
 
 /** Staff, account and checkout pages are not counted. */
 const UNTRACKED_PREFIXES = ['/admin', '/account', '/checkout'];

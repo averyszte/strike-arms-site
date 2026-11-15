@@ -2,20 +2,21 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 
 import {
-  disableGoogleAnalytics,
-  loadGoogleAnalytics,
+  disableGoogleTagManager,
+  loadGoogleTagManager,
   sendPageView,
-} from '@/data/google-analytics-client';
+} from '@/data/google-tag-manager-client';
 import { useAnalyticsConsent } from '@/hooks/use-analytics-consent';
 import {
-  GA4_MEASUREMENT_ID,
+  GTM_CONTAINER_ID,
   IS_ANALYTICS_CONFIGURED,
   shouldTrackPath,
 } from '@/lib/analytics-config';
 
 /**
- * Loads GA4 once the visitor accepts, and sends one page view per route.
- * The page view waits briefly so react-helmet-async has set the new title.
+ * Loads Google Tag Manager once the visitor accepts, and pushes one page
+ * view per route. The push waits briefly so react-helmet-async has set the
+ * new title.
  */
 export function useGoogleAnalytics() {
   const { consent } = useAnalyticsConsent();
@@ -24,8 +25,8 @@ export function useGoogleAnalytics() {
 
   useEffect(() => {
     if (!IS_ANALYTICS_CONFIGURED) return;
-    if (isGranted) loadGoogleAnalytics(GA4_MEASUREMENT_ID);
-    else if (consent === 'denied') disableGoogleAnalytics(GA4_MEASUREMENT_ID);
+    if (isGranted) loadGoogleTagManager(GTM_CONTAINER_ID);
+    else if (consent === 'denied') disableGoogleTagManager();
   }, [isGranted, consent]);
 
   useEffect(() => {
