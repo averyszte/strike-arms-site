@@ -13,27 +13,40 @@ import type {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+function timeOf(iso: string | null): number {
+  return iso ? new Date(iso).getTime() : 0;
+}
+
 function isBetween(iso: string, from: number, to: number): boolean {
-  const at = new Date(iso).getTime();
+  const at = timeOf(iso);
   return at >= from && at < to;
+}
+
+/** The middle value; the mean of the two middle ones for an even count. */
+export function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
 export function computeCustomerStats(customers: AdminCustomer[], now: Date): CustomerStats {
   const today = now.getTime();
-  const ordered = customers.filter((c) => c.orderCount > 0);
-  const spentCents = ordered.reduce((sum, c) => sum + c.spentCents, 0);
+  const spends = customers.filter((c) => c.spentCents > 0).map((c) => c.spentCents);
   return {
     total: customers.length,
-    newLast30Days: customers.filter((c) => isBetween(c.createdAt, today - 30 * DAY_MS, today + 1)).length,
+    // No upper bound: a sign-up stamped by a server clock slightly ahead of
+    // this one still counts as new.
+    newLast30Days: customers.filter((c) => timeOf(c.createdAt) >= today - 30 * DAY_MS).length,
     newPrevious30Days: customers.filter((c) =>
       isBetween(c.createdAt, today - 60 * DAY_MS, today - 30 * DAY_MS),
     ).length,
     confirmed: customers.filter((c) => c.emailConfirmedAt !== null).length,
     marketingOptIns: customers.filter((c) => c.isMarketingOptIn).length,
-    withOrders: ordered.length,
+    withOrders: customers.filter((c) => c.orderCount > 0).length,
     repeat: customers.filter((c) => c.orderCount > 1).length,
-    spentCents,
-    averageSpendCents: ordered.length > 0 ? Math.round(spentCents / ordered.length) : 0,
+    spentCents: spends.reduce((sum, cents) => sum + cents, 0),
+    medianSpendCents: median(spends),
   };
 }
 
@@ -56,30 +69,46 @@ export function percentOf(part: number, whole: number): number {
   return whole > 0 ? Math.round((part / whole) * 100) : 0;
 }
 
-function matches(customer: AdminCustomer, term: string): boolean {
-  return [customer.email, customer.fullName, customer.phone].some((field) =>
-    field.toLowerCase().includes(term),
-  );
+function digitsOf(text: string): string {
+  return text.replace(/\D/g, '');
 }
 
-function timeOrZero(iso: string | null): number {
-  return iso ? new Date(iso).getTime() : 0;
+/** Phones match on digits alone, so "087 123" finds "087-1234567". */
+function matches(customer: AdminCustomer, term: string, termDigits: string): boolean {
+  if (customer.email.toLowerCase().includes(term)) return true;
+  if (customer.fullName.toLowerCase().includes(term)) return true;
+  return termDigits.length >= 3 && digitsOf(customer.phone).includes(termDigits);
 }
 
-const SORTERS: Record<CustomerSort, (a: AdminCustomer, b: AdminCustomer) => number> = {
-  newest: (a, b) => timeOrZero(b.createdAt) - timeOrZero(a.createdAt),
-  spent: (a, b) => b.spentCents - a.spentCents || b.orderCount - a.orderCount,
-  orders: (a, b) => b.orderCount - a.orderCount || b.spentCents - a.spentCents,
-  'last-sign-in': (a, b) => timeOrZero(b.lastSignInAt) - timeOrZero(a.lastSignInAt),
+type Keyed = { customer: AdminCustomer; created: number; signedIn: number };
+
+const SORTERS: Record<CustomerSort, (a: Keyed, b: Keyed) => number> = {
+  newest: (a, b) => b.created - a.created,
+  spent: (a, b) =>
+    b.customer.spentCents - a.customer.spentCents || b.customer.orderCount - a.customer.orderCount,
+  orders: (a, b) =>
+    b.customer.orderCount - a.customer.orderCount || b.customer.spentCents - a.customer.spentCents,
+  'last-sign-in': (a, b) => b.signedIn - a.signedIn,
 };
 
-/** Searches name, email and phone, then sorts. Never changes `customers`. */
+/**
+ * Searches name, email and phone, then sorts. Dates are parsed once per row
+ * rather than on every comparison. Never changes `customers`.
+ */
 export function filterAndSortCustomers(
   customers: AdminCustomer[],
   search: string,
   sort: CustomerSort,
 ): AdminCustomer[] {
   const term = search.trim().toLowerCase();
-  const found = term ? customers.filter((c) => matches(c, term)) : [...customers];
-  return found.sort(SORTERS[sort]);
+  const termDigits = digitsOf(term);
+  const found = term ? customers.filter((c) => matches(c, term, termDigits)) : customers;
+  return found
+    .map((customer) => ({
+      customer,
+      created: timeOf(customer.createdAt),
+      signedIn: timeOf(customer.lastSignInAt),
+    }))
+    .sort(SORTERS[sort])
+    .map((keyed) => keyed.customer);
 }

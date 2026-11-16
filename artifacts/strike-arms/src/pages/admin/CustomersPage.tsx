@@ -1,42 +1,32 @@
 import { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Download } from 'lucide-react';
 
 import { AdminLoadError } from '@/components/admin/AdminLoadError';
-import { AdminSearchBox } from '@/components/admin/AdminSearchBox';
+import { AdminPager } from '@/components/admin/AdminPager';
 import { CustomerStatsGrid } from '@/components/admin/customers/customer-stats-grid';
 import { CustomersTable } from '@/components/admin/customers/customers-table';
+import { CustomersToolbar } from '@/components/admin/customers/customers-toolbar';
 import { SignupsByMonthCard } from '@/components/admin/customers/signups-by-month-card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAdminCustomers } from '@/hooks/use-admin-customers';
-import { useCsvDownload } from '@/hooks/use-csv-download';
+import { useCustomersExport } from '@/hooks/use-customers-export';
 import { computeCustomerStats, filterAndSortCustomers, signupsByMonth } from '@/lib/customer-stats';
-import { customersToCsv } from '@/lib/customers-csv';
-import { csvFilename } from '@/lib/csv-write';
+import { ADMIN_PAGE_SIZE } from '@/lib/page-bounds';
 import type { CustomerSort } from '@/types/admin-customer';
-
-const SORT_LABELS: Record<CustomerSort, string> = {
-  newest: 'Newest first',
-  spent: 'Biggest spenders',
-  orders: 'Most orders',
-  'last-sign-in': 'Last signed in',
-};
-
-function isCustomerSort(value: string): value is CustomerSort {
-  return value in SORT_LABELS;
-}
 
 export default function CustomersPage() {
   const { data, isLoading, isFetching, isError, error, refetch } = useAdminCustomers();
+  const { exportCustomers, exportMailingList } = useCustomersExport();
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<CustomerSort>('newest');
-  const download = useCsvDownload();
+  const [page, setPage] = useState(1);
 
+  // Part of the memo keys so a tab left open past midnight moves its windows on.
+  const today = new Date().toDateString();
   const customers = useMemo(() => data ?? [], [data]);
-  const stats = useMemo(() => computeCustomerStats(customers, new Date()), [customers]);
-  const months = useMemo(() => signupsByMonth(customers, new Date()), [customers]);
+  const stats = useMemo(() => computeCustomerStats(customers, new Date(today)), [customers, today]);
+  const months = useMemo(() => signupsByMonth(customers, new Date(today)), [customers, today]);
   const shown = useMemo(() => filterAndSortCustomers(customers, search, sort), [customers, search, sort]);
+  const pageRows = shown.slice((page - 1) * ADMIN_PAGE_SIZE, page * ADMIN_PAGE_SIZE);
 
   return (
     <>
@@ -52,10 +42,11 @@ export default function CustomersPage() {
         </div>
 
         {isError ? (
-          <AdminLoadError what="customers" error={error} isRetrying={isFetching} onRetry={() => void refetch()} />
+          <AdminLoadError what="the customers" error={error} isRetrying={isFetching} onRetry={() => void refetch()} />
         ) : isLoading ? (
-          <div className="flex justify-center py-16">
-            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-accent" />
+          <div className="flex justify-center py-16" role="status">
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-accent" aria-hidden="true" />
+            <span className="sr-only">Loading customers</span>
           </div>
         ) : (
           <>
@@ -64,38 +55,36 @@ export default function CustomersPage() {
               <SignupsByMonthCard rows={months} />
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex-1">
-                <AdminSearchBox
-                  value={search}
-                  placeholder="Search by name, email or phone"
-                  label="Search customers"
-                  onSearch={setSearch}
-                />
-              </div>
-              <Select value={sort} onValueChange={(value) => isCustomerSort(value) && setSort(value)}>
-                <SelectTrigger className="sm:w-48" aria-label="Sort customers">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(SORT_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="outline"
-                disabled={shown.length === 0}
-                onClick={() => download(customersToCsv(shown), csvFilename('customers', new Date()))}
-              >
-                <Download className="w-4 h-4 mr-2" aria-hidden="true" />
-                Export CSV
-              </Button>
-            </div>
+            <CustomersToolbar
+              search={search}
+              sort={sort}
+              shownCount={shown.length}
+              optInCount={stats.marketingOptIns}
+              isFetching={isFetching}
+              onSearch={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+              onSort={(value) => {
+                setSort(value);
+                setPage(1);
+              }}
+              onRefresh={() => void refetch()}
+              onExport={() => exportCustomers(shown)}
+              onExportMailingList={() => exportMailingList(customers)}
+            />
 
-            <CustomersTable customers={shown} hasSearch={search.trim() !== ''} />
+            <div>
+              <CustomersTable customers={pageRows} hasSearch={search.trim() !== ''} />
+              <AdminPager
+                page={page}
+                pageSize={ADMIN_PAGE_SIZE}
+                total={shown.length}
+                noun="customers"
+                isFetching={isFetching}
+                onPageChange={setPage}
+              />
+            </div>
           </>
         )}
       </div>

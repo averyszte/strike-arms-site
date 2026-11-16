@@ -9,10 +9,11 @@ interface Props {
   stats: CustomerStats;
 }
 
+/** Plain counts, not percentages: "+3" means something at this size, "+60%" does not. */
 function changeDetail(current: number, previous: number): string {
   const change = current - previous;
-  if (change === 0) return 'same as the 30 days before';
-  return `${change > 0 ? 'up' : 'down'} ${Math.abs(change)} on the 30 days before`;
+  if (change === 0) return 'same as the previous 30 days';
+  return `${Math.abs(change)} ${change > 0 ? 'more' : 'fewer'} than the previous 30 days`;
 }
 
 export function CustomerStatsGrid({ stats }: Props) {
@@ -31,7 +32,7 @@ export function CustomerStatsGrid({ stats }: Props) {
         icon={UserPlus}
       />
       <StatCard
-        title="Have Ordered"
+        title="Customers Who Ordered"
         value={String(stats.withOrders)}
         detail={`${percentOf(stats.withOrders, stats.total)}% of accounts`}
         icon={ShoppingBag}
@@ -39,13 +40,13 @@ export function CustomerStatsGrid({ stats }: Props) {
       <StatCard
         title="Repeat Customers"
         value={String(stats.repeat)}
-        detail="two or more orders"
+        detail={`${percentOf(stats.repeat, stats.withOrders)}% of those who ordered came back`}
         icon={Repeat}
       />
       <StatCard
-        title="Spent by Account Holders"
+        title="Spent by Customers"
         value={formatWholeEuros(stats.spentCents)}
-        detail={`${formatWholeEuros(stats.averageSpendCents)} average per customer who ordered`}
+        detail={`${formatWholeEuros(stats.medianSpendCents)} typical spend; guests without an account not included`}
         icon={Euro}
       />
       <StatCard

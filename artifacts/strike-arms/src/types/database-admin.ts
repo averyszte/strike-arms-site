@@ -106,6 +106,7 @@ export type AdminFunctions = {
       full_name: string;
       phone: string;
       marketing_opt_in: boolean;
+      marketing_opt_in_at: string | null;
       created_at: string;
       email_confirmed_at: string | null;
       last_sign_in_at: string | null;

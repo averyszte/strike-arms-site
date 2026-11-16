@@ -1,5 +1,5 @@
 /**
- * The admin Customers page's one read: admin_customers() (053), which checks
+ * The admin Customers page's one read: admin_customers() (053, 054), which checks
  * for an admin with two-factor itself, because the emails and sign-in dates
  * come from auth.users.
  */
@@ -16,6 +16,7 @@ function toCustomer(row: CustomerRow): AdminCustomer {
     fullName: row.full_name,
     phone: row.phone,
     isMarketingOptIn: row.marketing_opt_in,
+    marketingOptInAt: row.marketing_opt_in_at,
     createdAt: row.created_at,
     emailConfirmedAt: row.email_confirmed_at,
     lastSignInAt: row.last_sign_in_at,

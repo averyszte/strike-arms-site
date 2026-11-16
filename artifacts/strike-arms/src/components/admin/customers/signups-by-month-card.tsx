@@ -14,11 +14,11 @@ export function SignupsByMonthCard({ rows }: Props) {
         <CardTitle className="text-sm font-medium">Sign-ups by Month</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="space-y-2.5">
+        <ul className="space-y-2.5" aria-label={`Sign-ups in each of the last ${rows.length} months`}>
           {rows.map((row) => (
             <li key={row.label} className="flex items-center gap-3 text-sm">
               <span className="w-16 shrink-0 text-xs text-muted-foreground">{row.label}</span>
-              <div className="h-2.5 flex-1 rounded-full bg-muted overflow-hidden">
+              <div className="h-2.5 flex-1 rounded-full bg-muted overflow-hidden" aria-hidden="true">
                 <div
                   className="h-full rounded-full bg-accent"
                   style={{ width: `${(row.count / highest) * 100}%` }}
