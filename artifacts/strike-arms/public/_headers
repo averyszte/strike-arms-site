@@ -28,6 +28,8 @@
   # challenges.cloudflare.com is Turnstile, the bot check on checkout and order
   # lookup: its script, the iframe it draws in, and its calls home.
   # www.google.com in frame-src is the shop map on the homepage.
+  # GTM/GA4 hosts use *.googletagmanager.com wildcards, as Google's CSP guide
+  # advises: Google may move the tag to another subdomain.
   # connect-src (M-014, checked 2026-11-14): the browser talks only to this
   # Supabase project (REST, Auth, Storage, Realtime and the edge functions) and
   # to Turnstile. Stripe Checkout is a full-page redirect, so it needs no
@@ -36,7 +38,7 @@
   # lists the hosts this site may call. Nothing here changes when that secret
   # is set. If the Supabase project ever changes, update the ref in img-src and
   # connect-src in the same deploy as VITE_SUPABASE_URL.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://www.googletagmanager.com; frame-src https://challenges.cloudflare.com https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co https://*.google-analytics.com https://www.googletagmanager.com; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://*.googletagmanager.com; frame-src https://challenges.cloudflare.com https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://cxnhkgndvzgyqhiwsvrr.supabase.co https://*.google-analytics.com https://*.googletagmanager.com; media-src 'self'; connect-src 'self' https://cxnhkgndvzgyqhiwsvrr.supabase.co wss://cxnhkgndvzgyqhiwsvrr.supabase.co https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
 
 # The home page's LCP image is the hero poster, which the browser otherwise
 # finds only after the JS bundle has run (N-023). These start it with the HTML.

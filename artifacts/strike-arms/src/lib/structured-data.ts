@@ -90,7 +90,14 @@ export function buildWebsiteSchema(): JsonLdObject {
     '@id': `${SITE_URL}/#website`,
     name: SITE_NAME,
     url: SITE_URL,
+    inLanguage: 'en-IE',
     publisher: { '@id': ORGANIZATION_ID },
+    // Store search is real: /store?q= runs it (category-filters.ts).
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/store?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
   };
 }
 
