@@ -5,6 +5,7 @@ import DashboardPage from '@/pages/admin/DashboardPage';
 import ProductsPage from '@/pages/admin/ProductsPage';
 import OrdersPage from '@/pages/admin/OrdersPage';
 import InquiriesPage from '@/pages/admin/InquiriesPage';
+import CustomersPage from '@/pages/admin/CustomersPage';
 import CategoriesPage from '@/pages/admin/CategoriesPage';
 import ChangePasswordPage from '@/pages/admin/ChangePasswordPage';
 import OrderPrintPage from '@/pages/admin/OrderPrintPage';
@@ -24,6 +25,7 @@ export default function AdminRoot() {
               <Route path="/admin/products" component={ProductsPage} />
               <Route path="/admin/orders" component={OrdersPage} />
               <Route path="/admin/inquiries" component={InquiriesPage} />
+              <Route path="/admin/customers" component={CustomersPage} />
               <Route path="/admin/categories" component={CategoriesPage} />
               <Route path="/admin/settings" component={SettingsPage} />
               <Route path="/admin/change-password" component={ChangePasswordPage} />

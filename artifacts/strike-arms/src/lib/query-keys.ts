@@ -115,6 +115,7 @@ export const ADMIN_KEYS = {
   inquiriesRoot: ['admin', 'inquiries'] as const,
   inquiries: (status: InquiryStatus | undefined, limit: number) =>
     ['admin', 'inquiries', status, limit] as const,
+  customers: ['admin', 'customers'] as const,
   paymentAlertsRoot: ['admin', 'payment-alerts'] as const,
   paymentAlerts: (view: 'open' | 'handled') => ['admin', 'payment-alerts', view] as const,
   // Under 'admin' so the QueryClient's admin defaults (always fresh, refetch

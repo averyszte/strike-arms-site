@@ -97,6 +97,23 @@ export type AdminFunctions = {
       last_error: string | null;
     }[];
   };
+  /** 053: every customer account (admins left out) with its orders. */
+  admin_customers: {
+    Args: Record<PropertyKey, never>;
+    Returns: {
+      user_id: string;
+      email: string;
+      full_name: string;
+      phone: string;
+      marketing_opt_in: boolean;
+      created_at: string;
+      email_confirmed_at: string | null;
+      last_sign_in_at: string | null;
+      order_count: number;
+      spent_cents: number;
+      last_order_at: string | null;
+    }[];
+  };
   /** 045: takes a photo off the queue. False when it was not queued. */
   restore_orphaned_image: {
     Args: { p_path: string };

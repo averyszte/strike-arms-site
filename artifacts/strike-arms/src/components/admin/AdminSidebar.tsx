@@ -7,6 +7,7 @@ import {
   FolderOpen,
   ShoppingCart,
   MessageSquare,
+  Users,
   LogOut,
   KeyRound,
   SlidersHorizontal,
@@ -32,6 +33,7 @@ const NAV_GROUPS: NavGroupDef[] = [
     items: [
       { label: 'Orders', href: '/admin/orders', icon: ShoppingCart },
       { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
+      { label: 'Customers', href: '/admin/customers', icon: Users },
     ],
   },
 ];
