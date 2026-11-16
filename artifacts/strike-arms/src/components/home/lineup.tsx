@@ -13,8 +13,8 @@ const FIRST_GUN_IMG = "/images/guides/choosing-your-first-gun.webp";
 
 /** The maintenance photo is only 640 px wide, so it has no smaller copy. */
 const FEATURED: { path: string; img: string; srcSet?: string }[] = [
-  { path: "/guides/beginners-guide", img: BEGINNERS_IMG, srcSet: publicImageSrcSet(BEGINNERS_IMG, [640], 1122) },
-  { path: "/guides/first-airsoft-gun", img: FIRST_GUN_IMG, srcSet: publicImageSrcSet(FIRST_GUN_IMG, [640], 1122) },
+  { path: "/guides/beginners-guide", img: BEGINNERS_IMG, srcSet: publicImageSrcSet(BEGINNERS_IMG, [640, 900], 1122) },
+  { path: "/guides/first-airsoft-gun", img: FIRST_GUN_IMG, srcSet: publicImageSrcSet(FIRST_GUN_IMG, [640, 900], 1122) },
   { path: "/guides/airsoft-maintenance", img: "/images/guides/maintenance-guide.webp" },
 ];
 

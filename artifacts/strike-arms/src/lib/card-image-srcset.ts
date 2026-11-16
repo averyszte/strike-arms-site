@@ -1,26 +1,33 @@
-// Relative, with the extension, so node --test can load this file (see
-// admin-dashboard-metrics.ts for the same pattern).
-import { cardVariantOf } from './product-image-variants.ts';
-
 /**
- * The srcset for a product photo shown at card size (M-044).
+ * The srcset for a product photo shown smaller than full size (grids, the
+ * Evolution rail, the cart, search results, gallery thumbnails).
  *
- * Only photos uploaded to the product-images bucket have an 800px card copy
- * beside them. Anything else (the placeholder, a pasted external URL) gets no
- * srcset, so the browser never asks for a card file that cannot exist. Photos
- * uploaded before the card copies existed still match here; the image's
- * onError drops the srcset so the browser falls back to the full photo.
+ * Photos in the product-images bucket are resized by Supabase's image
+ * transformation endpoint (Pro plan): the same path under
+ * /storage/v1/render/image/ with a width. That works for every photo,
+ * including ones uploaded before the 800px card copies existed (M-044), so
+ * those copies are no longer used for display. Supabase also serves WebP to
+ * browsers that accept it.
+ *
+ * Anything else (the placeholder, a pasted external URL) gets no srcset. If a
+ * resized copy fails to load, CardImage drops the srcset and the browser falls
+ * back to the full photo in `src`.
  */
 
-const STORED_PRODUCT_PHOTO = '/storage/v1/object/public/product-images/';
-/** Width of the stored card copy, on its long edge. */
-const CARD_WIDTH = 800;
-/** A width the browser treats as "bigger than the card", for the full photo. */
-const FULL_WIDTH = 1600;
+const OBJECT_PATH = '/storage/v1/object/public/product-images/';
+const RENDER_PATH = '/storage/v1/render/image/public/product-images/';
+
+/** Widths offered; the browser picks one from `sizes` and the screen density. */
+export const PRODUCT_IMAGE_WIDTHS = [160, 320, 480, 640, 960] as const;
+const QUALITY = 75;
+
+/** The resized copy of a stored product photo at `width`. */
+export function resizedProductImage(fullUrl: string, width: number): string {
+  const [base] = fullUrl.split('?');
+  return `${base.replace(OBJECT_PATH, RENDER_PATH)}?width=${width}&quality=${QUALITY}`;
+}
 
 export function cardImageSrcSet(fullUrl: string): string | undefined {
-  if (!fullUrl.includes(STORED_PRODUCT_PHOTO)) return undefined;
-  const card = cardVariantOf(fullUrl);
-  if (card === fullUrl) return undefined;
-  return `${card} ${CARD_WIDTH}w, ${fullUrl} ${FULL_WIDTH}w`;
+  if (!fullUrl.includes(OBJECT_PATH)) return undefined;
+  return PRODUCT_IMAGE_WIDTHS.map((w) => `${resizedProductImage(fullUrl, w)} ${w}w`).join(', ');
 }

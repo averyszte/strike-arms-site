@@ -42,7 +42,7 @@ export function HeroSection() {
   return (
     <section className="relative w-full h-[90vh] min-h-[580px] max-h-[900px] flex items-center justify-center overflow-hidden">
       {/* ── HERO BACKGROUND ──────────────────────────────────────────────
-          Video:   /videos/strike-arms-hero-desktop.webm (wide screens only,
+          Video:   /videos/strike-arms-hero-1600.webm (wide screens only,
                    not with data-saver or reduced motion: use-hero-video)
           Poster:  shown first, and in place of the video. Phones (up to 767px)
                    get /images/hero-poster-mobile.webp (828x1472 portrait crop);
@@ -87,7 +87,7 @@ export function HeroSection() {
             disableRemotePlayback
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
-            <source src="/videos/strike-arms-hero-desktop.webm" type="video/webm" />
+            <source src="/videos/strike-arms-hero-1600.webm" type="video/webm" />
           </video>
         )}
         {/* Overlays for text readability — pointer-events-none so they never block the video */}

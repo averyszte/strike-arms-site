@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowUpRight, Camera } from "lucide-react";
 
+import { CardImage } from "@/components/catalog/card-image";
 import { formatPrice } from "@/lib/format-price";
 import { payablePriceCents, shortEvolutionName } from "@/lib/evolution-band";
 import type { Product } from "@/types/product";
@@ -15,10 +16,12 @@ export function EvolutionRailCard({ product }: { product: Product }) {
     >
       <div className="aspect-[4/3] bg-white flex items-center justify-center overflow-hidden">
         {image ? (
-          <img
+          <CardImage
             src={image}
             alt={product.name}
+            sizes="(min-width: 768px) 14rem, 15rem"
             loading="lazy"
+            decoding="async"
             className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
