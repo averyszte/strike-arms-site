@@ -49,10 +49,13 @@ function matchesRoute(target: string, pattern: string, categories: Set<string>):
   });
 }
 
+/** The one rewrite: "/" is served from the prerendered home page file. */
+const HOME_REWRITE = { from: "/", to: "/home-page", status: "200" };
+
 test("every redirect target is a real storefront route", () => {
   const patterns = routePatterns();
   const categories = categorySlugs();
-  const rules = redirectRules();
+  const rules = redirectRules().filter((rule) => rule.status !== HOME_REWRITE.status);
   assert.ok(rules.length > 0, "no rules parsed from _redirects");
 
   for (const rule of rules) {
@@ -61,6 +64,11 @@ test("every redirect target is a real storefront route", () => {
     assert.ok(isRoute, `${rule.from} redirects to ${rule.to}, which is not a route`);
     assert.equal(rule.status, "301", `${rule.from} should be a 301`);
   }
+});
+
+test("the only rewrite is / to the prerendered home page", () => {
+  const rewrites = redirectRules().filter((rule) => rule.status === "200");
+  assert.deepEqual(rewrites, [HOME_REWRITE]);
 });
 
 test("no source path appears twice", () => {

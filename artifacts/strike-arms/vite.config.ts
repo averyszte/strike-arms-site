@@ -27,7 +27,41 @@ if (Number.isNaN(port) || port <= 0) {
 // works on / and 404s on every nested route.
 const basePath = process.env.BASE_PATH || "/";
 
-export default defineConfig(({ mode }) => {
+/** The site itself, served from dist/public. */
+function browserBuild() {
+  return {
+    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    emptyOutDir: true,
+    // 10-character hashes rather than Rollup's default 8. On 2026-11-15 some
+    // browsers cached index.html as a year-long immutable copy of the old
+    // 8-character bundle URLs (see functions/assets/[[path]].ts), so every
+    // asset URL had to change for them to recover. Keep the length as it is;
+    // changing it again moves every URL for no reason.
+    rollupOptions: {
+      output: {
+        entryFileNames: "assets/[name]-[hash:10].js",
+        chunkFileNames: "assets/[name]-[hash:10].js",
+        assetFileNames: "assets/[name]-[hash:10][extname]",
+      },
+    },
+  };
+}
+
+/**
+ * The prerender entry (src/entry-server.tsx), run once by scripts/prerender.mjs
+ * and never served. A fixed file name so the script can find it, and no copy
+ * of public/, which only the browser build needs.
+ */
+function ssrBuild() {
+  return {
+    outDir: path.resolve(import.meta.dirname, "dist/server"),
+    emptyOutDir: true,
+    copyPublicDir: false,
+    rollupOptions: { output: { entryFileNames: "[name].js" } },
+  };
+}
+
+export default defineConfig(({ mode, isSsrBuild }) => {
   // Fail the build rather than shipping a bundle whose Supabase credentials are
   // absent, still placeholders, or from two different projects. These values are
   // inlined here, so this is the last point at which the cause is still obvious.
@@ -51,22 +85,7 @@ export default defineConfig(({ mode }) => {
       dedupe: ["react", "react-dom"],
     },
     root: path.resolve(import.meta.dirname),
-    build: {
-      outDir: path.resolve(import.meta.dirname, "dist/public"),
-      emptyOutDir: true,
-      // 10-character hashes rather than Rollup's default 8. On 2026-11-15 some
-      // browsers cached index.html as a year-long immutable copy of the old
-      // 8-character bundle URLs (see functions/assets/[[path]].ts), so every
-      // asset URL had to change for them to recover. Keep the length as it is;
-      // changing it again moves every URL for no reason.
-      rollupOptions: {
-        output: {
-          entryFileNames: "assets/[name]-[hash:10].js",
-          chunkFileNames: "assets/[name]-[hash:10].js",
-          assetFileNames: "assets/[name]-[hash:10][extname]",
-        },
-      },
-    },
+    build: isSsrBuild ? ssrBuild() : browserBuild(),
     server: {
       port,
       strictPort: true,

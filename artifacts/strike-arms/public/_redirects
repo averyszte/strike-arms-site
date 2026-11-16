@@ -51,3 +51,12 @@
 # build, Pages already serves index.html for any path that is not a file,
 # which is the SPA fallback we want. Do not add a /* rule back, and do not add
 # a 404.html without adding the fallback another way.
+
+# The prerendered home page (scripts/prerender.mjs). It cannot be index.html:
+# that file is also the fallback for every path with no file of its own (the
+# cart, checkout, account, admin, a product added since the last build), and
+# those must get the plain shell, not the home page's content. A 200 is a
+# rewrite, not a redirect: the address bar stays on /. Exactly "/" only, so
+# it cannot catch /assets/* the way a /* rule would. The page's canonical
+# names /, so /home-page itself is never indexed as a second copy.
+/                           /home-page                200

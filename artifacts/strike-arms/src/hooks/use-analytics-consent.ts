@@ -9,10 +9,14 @@ import {
 import { IS_ANALYTICS_CONFIGURED } from '@/lib/analytics-config';
 
 export function useAnalyticsConsent() {
-  const consent = useSyncExternalStore<AnalyticsConsent | null>(
+  // The server snapshot is "not known yet" (undefined), not "no choice"
+  // (null): a prerendered page must not bake the banner into its HTML for
+  // visitors who already chose. The banner appears once the browser reads
+  // the stored choice.
+  const consent = useSyncExternalStore<AnalyticsConsent | null | undefined>(
     subscribeAnalyticsConsent,
     readAnalyticsConsent,
-    () => null,
+    () => undefined,
   );
 
   const accept = useCallback(() => writeAnalyticsConsent('granted'), []);

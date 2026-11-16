@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "node scripts/generate-sitemap.mjs --keep-on-error && node scripts/generate-migration-manifest.mjs && vite build --config vite.config.ts",
+    "build": "node scripts/generate-sitemap.mjs --keep-on-error && node scripts/generate-migration-manifest.mjs && vite build --config vite.config.ts && vite build --config vite.config.ts --ssr src/entry-server.tsx && node scripts/prerender.mjs",
+    "prerender": "node scripts/prerender.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "manifest": "node scripts/generate-migration-manifest.mjs",
     "sitemap": "node scripts/generate-sitemap.mjs",
