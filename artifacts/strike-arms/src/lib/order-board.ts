@@ -10,17 +10,16 @@ import type { FulfillmentMethod, FulfillmentStatus, Order } from '@/types/order'
  * separate boards because they are separate pieces of work with almost no
  * overlap: nobody packs a parcel for a customer who is standing in the shop.
  *
- * Mixed orders get a third board rather than appearing on both. An order has
- * one fulfillment_status, so a mixed order cannot be "packed" for its delivery
- * half and "ready for pickup" for its collection half at the same time.
- * Showing it twice would imply the two halves move independently when they do
- * not. Tracking them separately needs a status per half in the schema, which is
- * a decision rather than a detail.
+ * There is no third board for mixed orders (part collected, part posted).
+ * Delivery covers everything the shop sells, so nobody is expected to split
+ * an order. One that still comes in is shown on the delivery board: its
+ * packed, shipped and delivered steps are lanes there, and a collection step
+ * lands in "Not on this board", from where the detail sheet moves it.
  */
 
-export type OrderBoardKey = FulfillmentMethod;
+export type OrderBoardKey = Exclude<FulfillmentMethod, 'mixed'>;
 
-export const ORDER_BOARD_KEYS: OrderBoardKey[] = ['pickup', 'delivery', 'mixed'];
+export const ORDER_BOARD_KEYS: OrderBoardKey[] = ['pickup', 'delivery'];
 
 /**
  * Cancelled orders are absent from every board. The board is a to-do list, and
@@ -52,9 +51,11 @@ export function statusLabel(status: FulfillmentStatus): string {
 }
 
 export function boardOrders(orders: Order[], board: OrderBoardKey): Order[] {
-  return orders.filter(
-    (order) => order.fulfillmentMethod === board && order.fulfillmentStatus !== 'cancelled',
-  );
+  return orders.filter((order) => {
+    if (order.fulfillmentStatus === 'cancelled') return false;
+    const method = order.fulfillmentMethod === 'mixed' ? 'delivery' : order.fulfillmentMethod;
+    return method === board;
+  });
 }
 
 export function buildOrderBoardLanes(orders: Order[], board: OrderBoardKey): OrderBoardLanes {

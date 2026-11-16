@@ -16,7 +16,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 export type OrdersViewMode = 'table' | 'board';
 
-const STORAGE_KEY = 'strike-arms:admin:orders-view:v1';
+// v2: the board became the default, so a table remembered from before starts
+// on the board once.
+const STORAGE_KEY = 'strike-arms:admin:orders-view:v2';
 
 function isViewMode(value: unknown): value is OrdersViewMode {
   return value === 'table' || value === 'board';
@@ -25,11 +27,11 @@ function isViewMode(value: unknown): value is OrdersViewMode {
 function readStoredView(): OrdersViewMode {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return isViewMode(raw) ? raw : 'table';
+    return isViewMode(raw) ? raw : 'board';
   } catch {
-    // Private browsing and blocked site data both throw here. The table is a
-    // fine answer to not knowing.
-    return 'table';
+    // Private browsing and blocked site data both throw here; fall back to
+    // the default.
+    return 'board';
   }
 }
 
