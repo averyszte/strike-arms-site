@@ -14,7 +14,7 @@ import { useBrands } from '@/hooks/use-brands';
 import { useProductPages } from '@/hooks/use-product-pages';
 import { brandCategoryLinks, brandPageMeta } from '@/lib/brand-page-meta';
 import { TEXT_LINK } from '@/lib/storefront-styles';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/structured-data';
 import NotFound from '@/pages/not-found';
 
@@ -116,6 +116,7 @@ function BrandPageInner({ slug, name, count }: { slug: string; name: string; cou
         <meta property="og:description" content={meta.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}${path}`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd data={schema} />
 

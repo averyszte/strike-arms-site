@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { ProductGrid } from '@/components/catalog/ProductGrid';
 import { useProducts } from '@/hooks/useProducts';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { buildBreadcrumbSchema } from '@/lib/structured-data';
 import type { ProductFilters } from '@/types/product';
 
@@ -42,6 +42,7 @@ export function ProductListingPage(props: ProductListingPageProps) {
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}${path}`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd data={buildBreadcrumbSchema(crumbs)} />
 

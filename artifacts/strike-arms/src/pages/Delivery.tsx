@@ -7,7 +7,7 @@ import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { useStoreRates } from '@/hooks/use-store-rates';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { formatPrice } from '@/lib/format-price';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
 const UPDATED = 'September 2026';
@@ -51,6 +51,11 @@ export default function Delivery() {
           content="Delivery costs and areas, and how to collect your order from the Strike Arms shop in Swords, Co. Dublin."
         />
         <link rel="canonical" href={`${SITE_URL}/delivery`} />
+        <meta property="og:title" content="Delivery and Collection | Strike Arms Airsoft Dublin" />
+        <meta property="og:description" content="Delivery costs and areas, and how to collect your order from the Strike Arms shop in Swords, Co. Dublin." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/delivery`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <PageHero
         crumbs={[{ label: 'Delivery' }]}

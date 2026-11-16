@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBrands } from '@/hooks/use-brands';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { CARD_TITLE } from '@/lib/storefront-styles';
 import { buildItemListSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 
@@ -39,6 +39,7 @@ export default function Brands() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/brands`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd data={schema} />
 

@@ -8,7 +8,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { ServiceTiles } from '@/components/service/ServiceTiles';
 import { SERVICES, type ServiceIcon } from '@/lib/services';
-import { BUSINESS, SITE_URL } from '@/lib/site-config';
+import { BUSINESS, SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import {
   CARD_TITLE,
   CONTENT_TITLE,
@@ -56,6 +56,7 @@ export default function ServicesHub() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/services`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd
         data={[

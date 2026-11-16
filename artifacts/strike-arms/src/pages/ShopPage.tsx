@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useSearch, useLocation } from 'wouter';
 import { Helmet } from 'react-helmet-async';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { ResultsHeader } from '@/components/catalog/ResultsHeader';
@@ -157,6 +157,11 @@ function ShopPageInner({
         <meta name="description" content={helmetDescription} />
         {noindex && <meta name="robots" content="noindex,follow" />}
         <link rel="canonical" href={`${SITE_URL}${canonicalPath}`} />
+        <meta property="og:title" content={helmetTitle} />
+        <meta property="og:description" content={helmetDescription} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}${canonicalPath}`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       {schemas.length > 0 && <JsonLd data={schemas} />}
 

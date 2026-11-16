@@ -8,7 +8,7 @@ import { ServiceHero } from '@/components/service/ServiceHero';
 import { ServiceQuoteBlock } from '@/components/service/ServiceQuoteBlock';
 import { ServiceTocNav, type ServiceTocItem } from '@/components/service/ServiceTocNav';
 import type { ServiceFact } from '@/components/service/ServiceTiles';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { CONTENT_TITLE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 import {
   buildBreadcrumbSchema,
@@ -95,6 +95,7 @@ export function ServiceLayout(props: ServiceLayoutProps) {
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}${path}`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd data={schema} />
 

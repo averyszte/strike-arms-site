@@ -6,7 +6,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { ContactForm } from '@/components/contact/contact-form';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { ADDRESS_LINES, MAPS_SEARCH_URL } from '@/lib/shop-location';
 import { buildLocalBusinessSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
@@ -46,6 +46,7 @@ export default function Contact() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/contact`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd data={[buildLocalBusinessSchema(), buildBreadcrumbSchema(crumbs)]} />
 

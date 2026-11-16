@@ -59,3 +59,6 @@ export function toAbsoluteUrl(path: string): string {
   if (path.startsWith('http')) return path;
   return `${SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
+
+/** The share image for pages without one of their own (1200x630, public/). */
+export const DEFAULT_OG_IMAGE = toAbsoluteUrl('/opengraph.jpg');

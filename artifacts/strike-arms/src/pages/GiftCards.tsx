@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { SITE_URL } from "@/lib/site-config";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/site-config";
 import { Link } from "wouter";
 
 import { SiteLayout } from "@/components/SiteLayout";
@@ -21,6 +21,7 @@ export default function GiftCards() {
         <meta property="og:description" content="Give the gift of airsoft. Strike Arms gift cards are redeemable in-store and online." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/gift-cards`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <PageHero
         crumbs={[{ label: "Gift cards" }]}

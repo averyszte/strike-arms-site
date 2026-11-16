@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { LegalDraftNotice } from '@/components/LegalDraftNotice';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS, PANEL } from '@/lib/storefront-styles';
 
 const UPDATED = 'September 2026';
@@ -36,6 +36,11 @@ export default function Returns() {
           content="How to cancel an online order from Strike Arms within 14 days, how returns work, who pays return postage and when you are refunded."
         />
         <link rel="canonical" href={`${SITE_URL}/returns`} />
+        <meta property="og:title" content="Returns and Cancellations | Strike Arms Airsoft Dublin" />
+        <meta property="og:description" content="How to cancel an online order from Strike Arms within 14 days, how returns work, who pays return postage and when you are refunded." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/returns`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <PageHero
         crumbs={[{ label: 'Returns' }]}

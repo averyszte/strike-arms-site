@@ -5,7 +5,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { GLOSSARY, groupGlossaryByLetter, type GlossaryTerm } from '@/lib/glossary';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import {
   buildDefinedTermSetSchema,
   buildBreadcrumbSchema,
@@ -33,6 +33,7 @@ export default function Glossary() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`${SITE_URL}/glossary`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd
         data={[

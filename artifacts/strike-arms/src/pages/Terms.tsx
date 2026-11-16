@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { LegalDraftNotice } from '@/components/LegalDraftNotice';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
 const UPDATED = 'September 2026';
@@ -25,6 +25,11 @@ export default function Terms() {
           content="The terms that apply when you buy from Strike Arms: who we are, prices, payment, the 18+ rule, collection, faulty goods and complaints."
         />
         <link rel="canonical" href={`${SITE_URL}/terms`} />
+        <meta property="og:title" content="Terms of Sale | Strike Arms Airsoft Dublin" />
+        <meta property="og:description" content="The terms that apply when you buy from Strike Arms: who we are, prices, payment, the 18+ rule, collection, faulty goods and complaints." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/terms`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <PageHero
         crumbs={[{ label: 'Terms of sale' }]}

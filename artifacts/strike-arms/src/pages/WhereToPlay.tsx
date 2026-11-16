@@ -6,7 +6,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { CtaBand } from '@/components/CtaBand';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import {
   buildArticleSchema,
   buildFaqSchema,
@@ -89,6 +89,7 @@ export default function WhereToPlay() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`${SITE_URL}/where-to-play`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd
         data={[

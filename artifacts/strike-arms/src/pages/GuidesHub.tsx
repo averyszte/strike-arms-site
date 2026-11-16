@@ -6,7 +6,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { JsonLd } from '@/components/JsonLd';
 import { PageHero } from '@/components/PageHero';
 import { GUIDES, groupGuides, type GuideSummary } from '@/lib/guides';
-import { SITE_URL } from '@/lib/site-config';
+import { SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { buildItemListSchema, buildBreadcrumbSchema } from '@/lib/structured-data';
 import { CARD_TITLE, CONTENT_TITLE, PAGE_WIDTHS, PANEL, TEXT_LINK } from '@/lib/storefront-styles';
 
@@ -31,6 +31,7 @@ export default function GuidesHub() {
         <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/guides`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <JsonLd
         data={[

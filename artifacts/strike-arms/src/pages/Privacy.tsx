@@ -5,7 +5,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { PageHero } from '@/components/PageHero';
 import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { IS_ANALYTICS_CONFIGURED } from '@/lib/analytics-config';
-import { SITE_URL, BUSINESS } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
 const UPDATED = 'November 2026';
@@ -25,6 +25,11 @@ export default function Privacy() {
           content="How Strike Arms collects, uses and protects your personal data, and your rights under GDPR."
         />
         <link rel="canonical" href={`${SITE_URL}/privacy`} />
+        <meta property="og:title" content="Privacy Policy | Strike Arms Airsoft Dublin" />
+        <meta property="og:description" content="How Strike Arms collects, uses and protects your personal data, and your rights under GDPR." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/privacy`} />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <PageHero
         crumbs={[{ label: 'Privacy' }]}
