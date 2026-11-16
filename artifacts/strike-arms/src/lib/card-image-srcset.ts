@@ -21,10 +21,15 @@ const RENDER_PATH = '/storage/v1/render/image/public/product-images/';
 export const PRODUCT_IMAGE_WIDTHS = [160, 320, 480, 640, 960] as const;
 const QUALITY = 75;
 
-/** The resized copy of a stored product photo at `width`. */
+/**
+ * The resized copy of a stored product photo at `width`. resize=contain keeps
+ * the whole photo: with a width alone, Supabase's default (cover) keeps the
+ * original height and crops the sides, so a square 884px photo came back as
+ * a 480x884 strip from its middle.
+ */
 export function resizedProductImage(fullUrl: string, width: number): string {
   const [base] = fullUrl.split('?');
-  return `${base.replace(OBJECT_PATH, RENDER_PATH)}?width=${width}&quality=${QUALITY}`;
+  return `${base.replace(OBJECT_PATH, RENDER_PATH)}?width=${width}&resize=contain&quality=${QUALITY}`;
 }
 
 export function cardImageSrcSet(fullUrl: string): string | undefined {
