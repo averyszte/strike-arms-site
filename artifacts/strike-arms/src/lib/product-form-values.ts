@@ -42,7 +42,8 @@ export const DEFAULT_PRODUCT_FORM_VALUES: ProductFormValues = {
   isPublished: false,
   isNew: false,
   isFeatured: false,
-  isShippable: false,
+  // Everything the shop sells can be posted (migration 052).
+  isShippable: true,
   inStock: true,
   tags: '',
   images: [],
