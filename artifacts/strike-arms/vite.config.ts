@@ -54,6 +54,18 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: path.resolve(import.meta.dirname, "dist/public"),
       emptyOutDir: true,
+      // 10-character hashes rather than Rollup's default 8. On 2026-11-15 some
+      // browsers cached index.html as a year-long immutable copy of the old
+      // 8-character bundle URLs (see functions/assets/[[path]].ts), so every
+      // asset URL had to change for them to recover. Keep the length as it is;
+      // changing it again moves every URL for no reason.
+      rollupOptions: {
+        output: {
+          entryFileNames: "assets/[name]-[hash:10].js",
+          chunkFileNames: "assets/[name]-[hash:10].js",
+          assetFileNames: "assets/[name]-[hash:10][extname]",
+        },
+      },
     },
     server: {
       port,
