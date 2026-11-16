@@ -70,7 +70,7 @@ npx supabase secrets set "SITE_HOSTNAME=strikearms.ie,strike-arms-site.pages.dev
 npx supabase secrets unset ALLOW_INSECURE_NO_CAPTCHA
 ```
 
-- [ ] **Confirm every other secret is present (runbook section 1):** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `OWNER_EMAIL`, `REPLY_TO`.
+- [ ] **Confirm every other secret is present (runbook section 1):** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `OWNER_EMAIL`, `REPLY_TO`, `HEALTH_EMAIL` (where the daily health digest goes; the site maintainer, not the owner).
 
 ```powershell
 npx supabase secrets list

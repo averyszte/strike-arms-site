@@ -80,6 +80,22 @@ async function skipJob(admin: SupabaseClient, job: NotificationJob, reason: stri
   }
 }
 
+/**
+ * "owner" is resolved here so the address lives in a secret, not in rows.
+ * The daily health digest is technical, so it goes to whoever runs the site
+ * (HEALTH_EMAIL), never to the shop owner. If HEALTH_EMAIL is not set the
+ * digest fails on its own rather than falling back to the owner, and other
+ * emails are unaffected.
+ */
+function resolveRecipient(job: NotificationJob): string {
+  if (job.event_type === "owner.health_digest") {
+    const health = optionalEnv("HEALTH_EMAIL");
+    if (!health) throw new PermanentJobError("HEALTH_EMAIL is not set; health digest not sent");
+    return health;
+  }
+  return job.recipient === "owner" ? requireEnv("OWNER_EMAIL") : job.recipient;
+}
+
 async function deliver(admin: SupabaseClient, job: NotificationJob, siteUrl: string): Promise<JobOutcome> {
   const rendered = await renderJob(admin, job, siteUrl);
   if (rendered.kind === "skip") {
@@ -87,8 +103,7 @@ async function deliver(admin: SupabaseClient, job: NotificationJob, siteUrl: str
     return "skipped";
   }
   const { email } = rendered;
-  // "owner" is resolved here so the address lives in one secret, not in rows.
-  const to = job.recipient === "owner" ? requireEnv("OWNER_EMAIL") : job.recipient;
+  const to = resolveRecipient(job);
   await sendEmail({
     to,
     subject: email.subject,
