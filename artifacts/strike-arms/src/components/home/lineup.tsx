@@ -68,7 +68,7 @@ export function Lineup() {
             <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-3">
               Advice from the counter
             </p>
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[0.9]">
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.02]">
               Airsoft
               <br />
               guides

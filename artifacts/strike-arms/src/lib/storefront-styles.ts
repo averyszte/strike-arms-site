@@ -11,19 +11,19 @@ export const EYEBROW = 'text-xs font-black uppercase tracking-[0.3em] text-accen
 
 /** Page title in a PageHero. */
 export const DISPLAY_TITLE =
-  'font-black uppercase tracking-tight leading-[0.9] text-foreground text-4xl md:text-6xl';
+  'font-black uppercase tracking-tight leading-[1.02] text-foreground text-4xl md:text-6xl';
 
 /** Compact page title, for utility pages (cart, account, sign-in). */
 export const DISPLAY_TITLE_COMPACT =
-  'font-black uppercase tracking-tight leading-[0.9] text-foreground text-3xl md:text-5xl';
+  'font-black uppercase tracking-tight leading-[1.02] text-foreground text-3xl md:text-5xl';
 
 /** A band's heading, one step down from the homepage's section h2. */
 export const SECTION_TITLE =
-  'font-black uppercase tracking-tight leading-[0.9] text-foreground text-3xl md:text-5xl';
+  'font-black uppercase tracking-tight leading-[1.02] text-foreground text-3xl md:text-5xl';
 
 /** A heading inside long-form content (guides, service pages, legal). */
 export const CONTENT_TITLE =
-  'font-black uppercase tracking-tight leading-[0.95] text-foreground text-2xl md:text-3xl';
+  'font-black uppercase tracking-tight leading-[1.1] text-foreground text-2xl md:text-3xl';
 
 /** A card or panel heading. */
 export const CARD_TITLE = 'font-black uppercase tracking-tight leading-tight text-foreground';
@@ -86,7 +86,7 @@ export function phoneHref(display: string): string {
 export const ARTICLE_PROSE =
   'text-foreground ' +
   '[&_h2]:mt-14 [&_h2]:text-2xl md:[&_h2]:text-3xl [&_h2]:font-black [&_h2]:uppercase ' +
-  '[&_h2]:tracking-tight [&_h2]:leading-[0.95] [&_h2]:text-foreground ' +
+  '[&_h2]:tracking-tight [&_h2]:leading-[1.1] [&_h2]:text-foreground ' +
   '[&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-black [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:text-foreground ' +
   '[&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted-foreground [&_strong]:text-foreground ' +
   '[&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:text-muted-foreground ' +

@@ -58,7 +58,7 @@ export function ProductInfo({ product }: { product: Product }) {
       <p className={EYEBROW}>
         {getBrandName(product.brand)}
       </p>
-      <h1 className="mt-3 text-3xl md:text-4xl font-black uppercase tracking-tight leading-[0.95] text-foreground">{product.name}</h1>
+      <h1 className="mt-3 text-3xl md:text-4xl font-black uppercase tracking-tight leading-[1.05] text-foreground">{product.name}</h1>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         {hasDiscount ? (

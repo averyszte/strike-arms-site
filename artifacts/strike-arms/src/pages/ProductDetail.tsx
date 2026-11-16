@@ -95,7 +95,7 @@ function ProductDetailView({ product }: { product: Product }) {
 
       <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 md:py-10">
         <ProductCrumbs crumbs={crumbs} />
-        <div className="mt-8 grid gap-8 md:grid-cols-2 md:gap-12">
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
           <ProductGallery product={product} />
           <ProductInfo product={product} />
         </div>

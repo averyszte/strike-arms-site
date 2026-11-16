@@ -12,6 +12,9 @@ import { TRUST_CLAIMS } from "@/lib/trust-claims";
  * Screen readers get the claims once, as a list; the moving copies are hidden
  * from them. It stands still for reduced motion.
  */
+/** Four short claims make a short loop, so it runs quicker than the default to move at the same pace as the logos. */
+const TRUST_MARQUEE_DURATION = "16s";
+
 export function TrustMarquee() {
   const loop = [...TRUST_CLAIMS, ...TRUST_CLAIMS, ...TRUST_CLAIMS];
 
@@ -20,7 +23,11 @@ export function TrustMarquee() {
       <ul className="sr-only">
         {TRUST_CLAIMS.map((claim) => <li key={claim}>{claim}</li>)}
       </ul>
-      <div className="flex whitespace-nowrap animate-marquee" aria-hidden="true">
+      <div
+        className="flex whitespace-nowrap animate-marquee"
+        style={{ ["--marquee-duration" as string]: TRUST_MARQUEE_DURATION }}
+        aria-hidden="true"
+      >
         {loop.map((claim, i) => (
           <span key={i} className="flex items-center">
             <span className="text-sm md:text-base font-black uppercase tracking-tight px-6">

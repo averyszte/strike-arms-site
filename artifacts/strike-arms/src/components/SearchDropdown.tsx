@@ -37,7 +37,7 @@ export function SearchDropdown({ onClose, fullWidth = false, shouldAutoFocus = f
           value={search.query}
           onChange={(e) => search.handleChange(e.target.value)}
           onKeyDown={search.handleKeyDown}
-          className="bg-transparent text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
+          className="bg-transparent text-base lg:text-xs font-medium text-foreground placeholder:text-muted-foreground outline-none w-full"
           aria-label="Search products"
           role="combobox"
           aria-expanded={hasOptions}

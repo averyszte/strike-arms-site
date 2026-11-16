@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Link } from "wouter";
 
 import { useBrands } from "@/hooks/use-brands";
-import { BRAND_LOGOS, BRAND_LOGO_HEIGHT, type BrandLogo } from "@/lib/brand-logos";
+import { BRAND_LOGO_HEIGHT, MARQUEE_LOGOS, type BrandLogo } from "@/lib/brand-logos";
+
+/** Long enough that the logos drift at the pace they had before Evolution was added. */
+const MARQUEE_DURATION = "54s";
 
 const LOGO_CLASS = "w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300";
 
@@ -31,18 +34,26 @@ function LogoImage({ brand, isCopy }: { brand: BrandLogo; isCopy: boolean }) {
 function BrandGroup({ isCopy, listedSlugs }: { isCopy: boolean; listedSlugs: ReadonlySet<string> }) {
   return (
     <div className="flex items-center gap-10 shrink-0 pr-10" aria-hidden={isCopy || undefined}>
-      {BRAND_LOGOS.map((brand) => (
-        <span key={brand.src} className="flex items-center gap-10 shrink-0">
-          {brand.brandSlug && listedSlugs.has(brand.brandSlug) ? (
-            <Link href={`/brands/${brand.brandSlug}`} tabIndex={isCopy ? -1 : undefined}>
-              <LogoImage brand={brand} isCopy={isCopy} />
-            </Link>
-          ) : (
-            <LogoImage brand={brand} isCopy={isCopy} />
-          )}
-          <span className="w-px h-4 bg-white/8 shrink-0" aria-hidden="true" />
-        </span>
-      ))}
+      {MARQUEE_LOGOS.map((brand, index) => {
+        // Evolution repeats through the run; only its first logo is announced.
+        const isRepeat = isCopy || MARQUEE_LOGOS.indexOf(brand) !== index;
+        return (
+          <span key={`${brand.src}-${index}`} className="flex items-center gap-10 shrink-0">
+            {brand.brandSlug && listedSlugs.has(brand.brandSlug) ? (
+              <Link
+                href={`/brands/${brand.brandSlug}`}
+                tabIndex={isRepeat ? -1 : undefined}
+                aria-hidden={isRepeat || undefined}
+              >
+                <LogoImage brand={brand} isCopy={isRepeat} />
+              </Link>
+            ) : (
+              <LogoImage brand={brand} isCopy={isRepeat} />
+            )}
+            <span className="w-px h-4 bg-white/8 shrink-0" aria-hidden="true" />
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -76,7 +87,7 @@ export function BrandMarquee() {
           focus on a logo link pauses it too, so the link holds still. */}
       <div
         className="flex items-center animate-marquee"
-        style={{ width: "max-content" }}
+        style={{ width: "max-content", ["--marquee-duration" as string]: MARQUEE_DURATION }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onFocus={() => setIsHovered(true)}

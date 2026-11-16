@@ -64,7 +64,7 @@ export function ReviewsFeature() {
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-3">Reviews</p>
-          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[0.9] mb-6">
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.02] mb-6">
             Heard at <span className="text-accent">the counter</span>
           </h2>
           <RatingLine />

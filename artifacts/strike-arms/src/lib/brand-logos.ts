@@ -17,7 +17,8 @@
  * more horizontal room. You never set a per-logo size.
  *
  * Notes:
- *  - Order in this array = left-to-right order in the carousel.
+ *  - Order in this array = left-to-right order in the carousel, except that
+ *    FEATURED_BRAND_LOGO is slotted in as every third logo (MARQUEE_LOGOS).
  *  - Logos are auto-recoloured to white and dimmed, so colour doesn't matter —
  *    only a clean, transparent shape does. Avoid photos/heavy gradients.
  *  - Supported formats: anything the browser renders (.svg, .png, .webp, ...).
@@ -63,3 +64,24 @@ export const BRAND_LOGOS: BrandLogo[] = [
   { name: "VFC", src: "/images/brands/vfc.webp", width: 42, height: 31, brandSlug: "vfc" },
   { name: "WE", src: "/images/brands/we-airsoft.webp", width: 38, height: 31, brandSlug: "we" },
 ];
+
+/** The house brand, shown as every third logo in the carousel. */
+export const FEATURED_BRAND_LOGO: BrandLogo = {
+  name: "Evolution",
+  src: "/images/brands/evolution.png",
+  width: 501,
+  height: 304,
+  brandSlug: "evolution",
+};
+
+/** Puts `featured` after every `every - 1` logos, e.g. A B F C D F ... */
+export function interleaveFeatured(
+  logos: readonly BrandLogo[],
+  featured: BrandLogo,
+  every: number,
+): BrandLogo[] {
+  return logos.flatMap((logo, i) => ((i + 1) % (every - 1) === 0 ? [logo, featured] : [logo]));
+}
+
+/** The carousel's running order: the brands above, Evolution every third. */
+export const MARQUEE_LOGOS = interleaveFeatured(BRAND_LOGOS, FEATURED_BRAND_LOGO, 3);

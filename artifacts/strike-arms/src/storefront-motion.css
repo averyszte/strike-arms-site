@@ -6,8 +6,9 @@
   100% { transform: translateX(-33.333%); }
 }
 
+/* A marquee can set --marquee-duration to suit the length of its loop. */
 .animate-marquee {
-  animation: marquee 36s linear infinite;
+  animation: marquee var(--marquee-duration, 36s) linear infinite;
 }
 
 /* The pause button on each marquee sets data-paused on its wrapper. */

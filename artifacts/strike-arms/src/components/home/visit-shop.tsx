@@ -35,7 +35,7 @@ export function VisitShop() {
           <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-4">
             Visit the shop
           </p>
-          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[0.9] text-foreground">
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.02] text-foreground">
             Swords, Co. Dublin
           </h2>
           <p className="mt-5 text-lg text-muted-foreground max-w-md">

@@ -22,9 +22,9 @@ interface CtaBandProps {
 }
 
 /**
- * Closing call to action for content pages, a smaller cut of the homepage's
- * FinalCta: card surface, grid paper, accent glow, a black uppercase headline
- * and the square accent / outline button pair.
+ * Closing call to action for the homepage and content pages: card surface,
+ * faint grid paper, a black uppercase headline and the square accent /
+ * outline button pair. No glow, so it sits quietly with the rest of the site.
  */
 export function CtaBand({
   eyebrow = 'Come in. Handle the gear.',
@@ -36,7 +36,6 @@ export function CtaBand({
   return (
     <section className="relative overflow-hidden border-t border-border/60 bg-card py-16 md:py-24">
       <div className={`pointer-events-none absolute inset-0 ${GRID_TEXTURE}`} />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" />
 
       <div className="relative mx-auto max-w-4xl px-4 text-center md:px-6">
         <p className={EYEBROW}>{eyebrow}</p>
@@ -51,7 +50,7 @@ export function CtaBand({
           </Link>
           {shouldShowPhone && (
             <a href={phoneHref(BUSINESS.telephone)} className={`${CTA_SECONDARY} w-full sm:w-auto`}>
-              <Phone className="h-5 w-5" />
+              <Phone className="h-5 w-5" aria-hidden="true" />
               Call {BUSINESS.telephone}
             </a>
           )}

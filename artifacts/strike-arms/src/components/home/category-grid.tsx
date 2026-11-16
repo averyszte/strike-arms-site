@@ -32,7 +32,7 @@ export function CategoryGrid() {
             <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-3">
               The range
             </p>
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[0.9]">
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.02]">
               Shop by
               <br />
               category
