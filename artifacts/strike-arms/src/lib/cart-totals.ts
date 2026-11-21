@@ -13,8 +13,8 @@ export function calculateCartBasics(lines: CartLine[], wantsDelivery: boolean): 
     0,
   );
 
-  // Guns are collect-in-store only, so asking for delivery does not make a
-  // rifle deliverable, and its value must not count towards free delivery.
+  // A collection-only item stays collection even when delivery is asked for,
+  // and its value must not count towards free delivery.
   const deliverableSubtotalCents = wantsDelivery
     ? lines
         .filter((line) => line.isShippable)

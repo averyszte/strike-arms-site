@@ -37,12 +37,16 @@ export const BUSINESS = {
 
 /**
  * Where an item can go, in one place so the copy cannot drift (N-105).
- * Guns are collect in store only; everything else that may be posted goes to
- * the Republic of Ireland only, since checkout takes Republic Eircodes. Change
- * these only when Alan confirms a new delivery area.
+ * Every product can be posted (migration 052, at Alan's request), to the
+ * Republic of Ireland only, since checkout takes Republic Eircodes. A product
+ * Alan marks collection-only in the admin uses SHIPPING_LINE_COLLECT. Change
+ * these only when Alan confirms a new delivery area or delivery time.
  */
-export const SHIPPING_LINE_GUNS = 'Collect in store in Swords, Co. Dublin';
-export const SHIPPING_LINE_POSTABLE = 'Delivery in the Republic of Ireland';
+export const SHIPPING_LINE_COLLECT = 'Collect in store in Swords, Co. Dublin';
+export const SHIPPING_LINE_POSTABLE = 'Delivery anywhere in the Republic of Ireland';
+/** Alan's estimate is 2 working days; the site promises 3 for leeway. */
+export const DELIVERY_TIME_LINE = 'usually within 3 working days';
+export const DELIVERY_WORKING_DAYS_MAX = 3;
 
 /**
  * What public copy (category intros, meta descriptions) says about postable
@@ -52,7 +56,17 @@ export const SHIPPING_LINE_POSTABLE = 'Delivery in the Republic of Ireland';
  */
 export const SHIPPING_LINE_POSTABLE_NOW = IS_DELIVERY_ENABLED
   ? SHIPPING_LINE_POSTABLE
-  : SHIPPING_LINE_GUNS;
+  : SHIPPING_LINE_COLLECT;
+
+/** Category intros: both ways to get an order, or collection while delivery is paused. */
+export const DELIVERY_OR_COLLECT_LINE_NOW = IS_DELIVERY_ENABLED
+  ? `${SHIPPING_LINE_POSTABLE}, or collect in store in Swords, Co. Dublin`
+  : SHIPPING_LINE_COLLECT;
+
+/** The short form, for meta descriptions where every character counts. */
+export const DELIVERY_OR_COLLECT_SHORT_NOW = IS_DELIVERY_ENABLED
+  ? 'Delivered in Ireland or collect in Swords'
+  : SHIPPING_LINE_COLLECT;
 
 /** Resolve a site-relative path to an absolute URL for schema / OG tags. */
 export function toAbsoluteUrl(path: string): string {

@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { ADDRESS_LINES, openingHoursLines } from '@/lib/shop-location';
-import { SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
+import { DELIVERY_TIME_LINE, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
 import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 
 type FulfillmentChoiceProps = {
@@ -15,9 +15,10 @@ type FulfillmentChoiceProps = {
 };
 
 /**
- * Guns are collect-in-store only under our shop policy, so a basket
- * containing one is always at least partly a collection. Saying so here,
- * before the customer enters an address, is the whole point of the control.
+ * Every product can be posted unless Alan marks one collection-only in the
+ * admin, so a basket holding one of those is always at least partly a
+ * collection. Saying so here, before the customer enters an address, is the
+ * whole point of the control.
  */
 export function FulfillmentChoice({
   wantsDelivery,
@@ -76,7 +77,7 @@ export function FulfillmentChoice({
               {!IS_DELIVERY_ENABLED
                 ? 'Coming soon.'
                 : hasShippableItems
-                  ? `${SHIPPING_LINE_POSTABLE}.`
+                  ? `${SHIPPING_LINE_POSTABLE}, ${DELIVERY_TIME_LINE}.`
                   : 'Nothing in your cart can be posted.'}
             </span>
           </Label>

@@ -1,4 +1,4 @@
-import { SHIPPING_LINE_GUNS, SHIPPING_LINE_POSTABLE_NOW } from '@/lib/site-config';
+import { DELIVERY_OR_COLLECT_LINE_NOW, DELIVERY_OR_COLLECT_SHORT_NOW, SHIPPING_LINE_POSTABLE_NOW } from '@/lib/site-config';
 import type { CategoryDef } from '@/types/taxonomy';
 
 /**
@@ -17,9 +17,9 @@ export const TAXONOMY: CategoryDef[] = [
         seo: {
           title: 'AEG Rifles Ireland | Electric Airsoft Rifles | Strike Arms',
           description:
-            `Buy AEG electric airsoft rifles in Ireland, from beginner-friendly platforms to upgrade-ready builds. ${SHIPPING_LINE_GUNS}.`,
+            `Buy AEG electric airsoft rifles in Ireland, from beginner-friendly platforms to upgrade-ready builds. ${DELIVERY_OR_COLLECT_SHORT_NOW}.`,
           intro:
-            `AEG electric rifles are the most popular choice for skirmish airsoft: reliable, efficient to run and unaffected by cold weather. From beginner-friendly platforms to upgrade-ready builds, we stock rifles from established manufacturers and back every gun with in-house repairs and advice. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+            `AEG electric rifles are the most popular choice for skirmish airsoft: reliable, efficient to run and unaffected by cold weather. From beginner-friendly platforms to upgrade-ready builds, we stock rifles from established manufacturers and back every gun with in-house repairs and advice. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
         },
       },
       { slug: 'smgs', label: 'SMGs' },
@@ -31,9 +31,9 @@ export const TAXONOMY: CategoryDef[] = [
         seo: {
           title: 'Gas Airsoft Rifles (GBBR) Ireland | Strike Arms',
           description:
-            `Gas blowback airsoft rifles (GBBR) in Ireland: realistic recoil, with advice on gas in the Irish climate. ${SHIPPING_LINE_GUNS}.`,
+            `Gas blowback airsoft rifles (GBBR) in Ireland: realistic recoil, with advice on gas in the Irish climate. ${DELIVERY_OR_COLLECT_SHORT_NOW}.`,
           intro:
-            `Gas blowback rifles deliver strong recoil and realistic operation that electric guns cannot match. The trade-off is that green gas loses power in the cold, so they need more care in the Irish climate and reward good maintenance. We stock GBBR platforms and can advise on gas, magazines and upkeep. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+            `Gas blowback rifles deliver strong recoil and realistic operation that electric guns cannot match. The trade-off is that green gas loses power in the cold, so they need more care in the Irish climate and reward good maintenance. We stock GBBR platforms and can advise on gas, magazines and upkeep. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
         },
       },
       {
@@ -42,9 +42,9 @@ export const TAXONOMY: CategoryDef[] = [
         seo: {
           title: 'Airsoft Sniper Rifles Ireland | Bolt-Action | Strike Arms',
           description:
-            `Airsoft sniper rifles in Ireland: bolt-action platforms built for range and accuracy, with in-house tuning. ${SHIPPING_LINE_GUNS}.`,
+            `Airsoft sniper rifles in Ireland: bolt-action platforms built for range and accuracy, with in-house tuning. ${DELIVERY_OR_COLLECT_SHORT_NOW}.`,
           intro:
-            `Airsoft sniper rifles reward patience and precision. These bolt-action platforms are built for range and a consistent single shot, and most benefit from tuning and heavier BBs to reach their potential. We stock capable base rifles, and our workshop can tune them further. It is rarely the best first gun. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+            `Airsoft sniper rifles reward patience and precision. These bolt-action platforms are built for range and a consistent single shot, and most benefit from tuning and heavier BBs to reach their potential. We stock capable base rifles, and our workshop can tune them further. It is rarely the best first gun. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
         },
       },
       { slug: 'shotguns', label: 'Shotguns' },
@@ -64,9 +64,9 @@ export const TAXONOMY: CategoryDef[] = [
         seo: {
           title: 'Gas Blowback Pistols Ireland | GBB Airsoft | Strike Arms',
           description:
-            `Gas blowback (GBB) airsoft pistols in Ireland from Tokyo Marui, ASG, WE and more, with advice on gas. ${SHIPPING_LINE_GUNS}.`,
+            `Gas blowback (GBB) airsoft pistols in Ireland from Tokyo Marui, ASG, WE and more, with advice on gas. ${DELIVERY_OR_COLLECT_SHORT_NOW}.`,
           intro:
-            `A gas blowback pistol is the classic airsoft sidearm: realistic recoil, a moving slide and a reliable backup for CQB or sniper loadouts. We stock Tokyo Marui, ASG, WE and more, and can advise on green gas versus CO2 and how each performs in the cold. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+            `A gas blowback pistol is the classic airsoft sidearm: realistic recoil, a moving slide and a reliable backup for CQB or sniper loadouts. We stock Tokyo Marui, ASG, WE and more, and can advise on green gas versus CO2 and how each performs in the cold. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
         },
       },
       { slug: 'electric-pistols', label: 'Electric Pistols' },

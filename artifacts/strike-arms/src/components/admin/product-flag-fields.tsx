@@ -13,8 +13,8 @@ const BOOLEAN_FIELDS: [BooleanFieldName, string][] = [
   ['isPublished', 'Published'],
   ['isNew', 'New'],
   ['isFeatured', 'Featured'],
-  // Off by default. Guns are collect-in-store only, so an item is never
-  // posted unless someone has explicitly ticked this.
+  // On by default: Alan posts everything (migration 052). Untick it for an
+  // item that must be collected from the shop.
   ['isShippable', 'Can be posted'],
 ];
 

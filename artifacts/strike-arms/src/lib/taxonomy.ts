@@ -1,5 +1,10 @@
 import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
-import { SHIPPING_LINE_GUNS, SHIPPING_LINE_POSTABLE, SHIPPING_LINE_POSTABLE_NOW } from '@/lib/site-config';
+import {
+  DELIVERY_OR_COLLECT_LINE_NOW,
+  SHIPPING_LINE_COLLECT,
+  SHIPPING_LINE_POSTABLE,
+  SHIPPING_LINE_POSTABLE_NOW,
+} from '@/lib/site-config';
 import { TAXONOMY } from '@/lib/taxonomy-data';
 import type { CategoryDef, CategorySlug, SubcategoryDef } from '@/types/taxonomy';
 
@@ -27,9 +32,9 @@ export function isValidCategorySlug(slug: string): slug is CategorySlug {
  */
 export const CATEGORY_INTROS: Record<CategorySlug, string> = {
   rifles:
-    `Airsoft rifles are the backbone of any skirmish loadout. Electric AEGs suit most players and are the usual first buy, gas blowback rifles add realism, and bolt-action springers cover the sniper role. We stock rifles from established manufacturers and back every gun with in-house repairs and upgrades. Not sure which to pick? Our team will match a rifle to how and where you play. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+    `Airsoft rifles are the backbone of any skirmish loadout. Electric AEGs suit most players and are the usual first buy, gas blowback rifles add realism, and bolt-action springers cover the sniper role. We stock rifles from established manufacturers and back every gun with in-house repairs and upgrades. Not sure which to pick? Our team will match a rifle to how and where you play. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
   pistols:
-    `An airsoft pistol makes a reliable sidearm and a great backup for CQB or sniper loadouts. Gas blowback models give realistic recoil, while electric and spring pistols keep things simple and affordable. We stock Tokyo Marui, ASG, WE and more, with advice on the right gas and magazines for the Irish climate. In-house servicing keeps your pistol running. ${SHIPPING_LINE_GUNS}; guns cannot be posted.`,
+    `An airsoft pistol makes a reliable sidearm and a great backup for CQB or sniper loadouts. Gas blowback models give realistic recoil, while electric and spring pistols keep things simple and affordable. We stock Tokyo Marui, ASG, WE and more, with advice on the right gas and magazines for the Irish climate. In-house servicing keeps your pistol running. ${DELIVERY_OR_COLLECT_LINE_NOW}.`,
   consumables:
     `Consumables are what keep you shooting: BBs, gas, batteries and chargers. The right BB weight and quality make a real difference to accuracy and feeding, and many outdoor sites ask for biodegradable BBs, so check with your site. We stock quality BBs, green gas, CO2, and both LiPo and NiMH batteries. Unsure what suits your gun? Check our guides or ask the team. ${SHIPPING_LINE_POSTABLE_NOW}.`,
   accessories:
@@ -46,8 +51,8 @@ export function getCategoryIntro(slug: string): string | undefined {
 
 /** How things reach the buyer, for the /store intro; collection only while delivery is paused. */
 const STORE_FULFILMENT_LINE = IS_DELIVERY_ENABLED
-  ? `${SHIPPING_LINE_GUNS} for guns, which cannot be posted. ${SHIPPING_LINE_POSTABLE} for most other items.`
-  : `${SHIPPING_LINE_GUNS}. Guns cannot be posted, and delivery for other items is coming soon.`;
+  ? `${SHIPPING_LINE_POSTABLE}, or collect in store in Swords, Co. Dublin.`
+  : `${SHIPPING_LINE_COLLECT}. Delivery is coming soon.`;
 
 /** Intro copy for the /store root (all products) page. */
 export const STORE_INTRO =

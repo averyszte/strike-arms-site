@@ -27,8 +27,8 @@ const TEL_HREF = phoneHref(BUSINESS.telephone);
 
 /** How orders reach the buyer; collection only while delivery is paused. */
 const FULFILMENT_INTRO = IS_DELIVERY_ENABLED
-  ? 'Prefer to shop from home? Items other than guns can be delivered in the Republic of Ireland; guns are collect in store only.'
-  : 'Orders are collect in store for now, and delivery is coming soon. Guns are collect in store only.';
+  ? 'Prefer to shop from home? We deliver anywhere in the Republic of Ireland, usually within 3 working days.'
+  : 'Orders are collect in store for now, and delivery is coming soon.';
 
 export default function Contact() {
   const crumbs = [

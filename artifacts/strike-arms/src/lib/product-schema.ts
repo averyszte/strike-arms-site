@@ -9,16 +9,17 @@
  *     a merchant SKU;
  *   - no return policy until the Returns terms are signed off (N-103).
  *
- * Shipping follows the store rules: guns are collect in store only, so they
- * say they do not ship; everything else ships to the Republic of Ireland only,
- * at the rates in the store_settings row, when the caller has them. While
+ * Shipping follows the store rules: an item marked collection-only says it
+ * does not ship; everything else ships to the Republic of Ireland only, at the
+ * rates in the store_settings row, when the caller has them, within the
+ * working days the Delivery page promises. While
  * delivery is paused (IS_DELIVERY_ENABLED false) every item is collect in
  * store, so every item says it does not ship.
  */
 import type { Product } from '@/types/product';
 import type { StoreRates } from '@/types/store-settings';
 import type { JsonLdObject } from '@/lib/structured-data';
-import { SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
+import { DELIVERY_WORKING_DAYS_MAX, SITE_URL, toAbsoluteUrl } from '@/lib/site-config';
 import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { isPreLoved } from '@/lib/product-condition';
 import { getBrandName, isListedBrand } from '@/lib/brands';
@@ -27,6 +28,18 @@ import { calculateShippingCents } from '@/lib/shipping';
 import { formatCentsPlain } from '@/lib/format-price';
 
 const SHIPPING_COUNTRY = 'IE';
+
+/** Up to a day to dispatch, then 1 to 2 in transit: the 3 working days promised. */
+const DELIVERY_TIME = {
+  '@type': 'ShippingDeliveryTime',
+  handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+  transitTime: {
+    '@type': 'QuantitativeValue',
+    minValue: 1,
+    maxValue: DELIVERY_WORKING_DAYS_MAX - 1,
+    unitCode: 'DAY',
+  },
+} as const;
 
 const IRELAND_DESTINATION = {
   '@type': 'DefinedRegion',
@@ -58,6 +71,7 @@ export function buildShippingDetails(
       currency: 'EUR',
       value: formatCentsPlain(calculateShippingCents(priceCents, rates)),
     },
+    deliveryTime: DELIVERY_TIME,
   };
 }
 

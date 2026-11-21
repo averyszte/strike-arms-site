@@ -74,7 +74,7 @@ function toInsertRow(slug: string, fields: ParsedFields): InsertRow | null {
     in_stock: fields.inStock ?? true,
     is_new: fields.isNew ?? false,
     is_featured: fields.isFeatured ?? false,
-    is_shippable: fields.isShippable ?? false,
+    is_shippable: fields.isShippable ?? true,
     tags: fields.tags ?? [],
   };
 }

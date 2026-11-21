@@ -7,15 +7,12 @@ import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { useStoreRates } from '@/hooks/use-store-rates';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { formatPrice } from '@/lib/format-price';
-import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE } from '@/lib/site-config';
+import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE, DELIVERY_TIME_LINE } from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
-const UPDATED = 'September 2026';
+const UPDATED = 'November 2026';
 
 const OPEN_POINTS = [
-  'Delivery zones beyond the Republic of Ireland, if any (Alan).',
-  'Delivery cost and free-delivery threshold: the figures below are the current store settings, still placeholders (Alan).',
-  'Courier and typical delivery time (Alan).',
   'How long collect-in-store orders are held (Alan).',
 ];
 
@@ -77,9 +74,9 @@ export default function Delivery() {
               </p>
             )}
             <p>
-              Each product says whether it can be delivered or must be collected from the shop.
-              Airsoft guns are collect in store only. If your basket has both kinds, you can have
-              the deliverable items posted and collect the rest.
+              Choose delivery or collection in your basket. You can collect any order from the shop
+              for free. If a product can only be collected, its page says so, and you can have the
+              rest of your order posted.
             </p>
           </section>
 
@@ -98,11 +95,14 @@ export default function Delivery() {
 
           <section>
             <h2>Delivery</h2>
-            <p>We deliver to addresses in the Republic of Ireland.</p>
+            <p>
+              We deliver anywhere in the Republic of Ireland, {DELIVERY_TIME_LINE} from when you
+              order. We do not deliver to Northern Ireland or the UK.
+            </p>
             <DeliveryCharge />
             <p>
-              We email you when your order is posted, with tracking details where the courier
-              provides them. You can also follow it on <Link href="/account">your account</Link>.
+              We email you when your order is posted. You can check its status at any time on{' '}
+              <Link href="/account">your account</Link>.
             </p>
           </section>
 

@@ -37,7 +37,7 @@ function productWord(count: number): string {
 /**
  * The title says only what is true of every brand: "Guns & Gear" was wrong for
  * the eyewear and optics makers. Nor does the description promise delivery,
- * because guns are collect in store only.
+ * which Alan can switch off per product.
  */
 export function brandPageMeta(name: string, count: number): BrandPageMeta {
   return {

@@ -33,8 +33,8 @@ export type Product = {
   description?: string | null;
   // Set by hand in the admin (038). A sale does not change it.
   inStock: boolean;
-  // Guns are collect-in-store only. False is the safe default: an item is
-  // never posted unless someone has explicitly said it may be.
+  // Whether the item may be posted. True for every product since migration
+  // 052; Alan can untick it in the admin to make one collection-only.
   isShippable: boolean;
   isPublished?: boolean;
   isNew?: boolean;

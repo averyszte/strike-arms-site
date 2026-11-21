@@ -1,7 +1,7 @@
 import { getBrandName, isListedBrand } from '@/lib/brands';
 import { effectivePriceCents } from '@/lib/effective-price';
 import { formatPrice } from '@/lib/format-price';
-import { SHIPPING_LINE_GUNS, SHIPPING_LINE_POSTABLE_NOW } from '@/lib/site-config';
+import { SHIPPING_LINE_COLLECT, SHIPPING_LINE_POSTABLE_NOW } from '@/lib/site-config';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
 import type { BreadcrumbEntry } from '@/lib/structured-data';
 import type { Product } from '@/types/product';
@@ -53,7 +53,7 @@ function baseCopy(product: Product): string {
 
 function fulfilmentLine(product: Product): string {
   if (!product.inStock) return 'Currently out of stock';
-  return product.isShippable ? SHIPPING_LINE_POSTABLE_NOW : SHIPPING_LINE_GUNS;
+  return product.isShippable ? SHIPPING_LINE_POSTABLE_NOW : SHIPPING_LINE_COLLECT;
 }
 
 /**

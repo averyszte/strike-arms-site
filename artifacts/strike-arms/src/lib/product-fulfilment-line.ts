@@ -1,5 +1,5 @@
 import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
-import { SHIPPING_LINE_GUNS, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
+import { DELIVERY_TIME_LINE, SHIPPING_LINE_COLLECT, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
 
 /**
  * The one line a product page shows about how the item reaches the buyer
@@ -8,7 +8,7 @@ import { SHIPPING_LINE_GUNS, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
  * a delivery the basket cannot offer.
  */
 export function productFulfilmentLine(isShippable: boolean): string {
-  if (!isShippable) return `${SHIPPING_LINE_GUNS} only. We do not post this item.`;
+  if (!isShippable) return `${SHIPPING_LINE_COLLECT} only. We do not post this item.`;
   if (!IS_DELIVERY_ENABLED) return 'Collect in store in Swords, Co. Dublin. Delivery is coming soon.';
-  return `${SHIPPING_LINE_POSTABLE}, or collect in store`;
+  return `${SHIPPING_LINE_POSTABLE}, ${DELIVERY_TIME_LINE}, or collect in store`;
 }

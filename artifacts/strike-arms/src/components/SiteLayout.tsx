@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { DeliveryAnnouncementBar } from "@/components/DeliveryAnnouncementBar";
 import { UtilityBar } from "@/components/UtilityBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -33,6 +34,8 @@ export function SiteLayout({ children, className = "" }: SiteLayoutProps) {
       >
         Skip to content
       </a>
+
+      <DeliveryAnnouncementBar />
 
       {/* Sticky header block — utility bar + main header stick together */}
       <div className="sticky top-0 z-50">
