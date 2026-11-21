@@ -67,7 +67,7 @@ function LaneColumn({ lane, board, isMoving, onSelect, onAdvance }: LaneColumnPr
 }
 
 export function OrdersBoard({ orders, isMoving, onSelect, onAdvance }: OrdersBoardProps) {
-  const [board, setBoard] = useState<OrderBoardKey>('pickup');
+  const [board, setBoard] = useState<OrderBoardKey>(ORDER_BOARD_KEYS[0]);
 
   const counts = useMemo(
     () =>

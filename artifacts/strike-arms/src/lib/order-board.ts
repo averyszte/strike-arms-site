@@ -19,7 +19,8 @@ import type { FulfillmentMethod, FulfillmentStatus, Order } from '@/types/order'
 
 export type OrderBoardKey = Exclude<FulfillmentMethod, 'mixed'>;
 
-export const ORDER_BOARD_KEYS: OrderBoardKey[] = ['pickup', 'delivery'];
+/** Delivery first: most orders are posted now, so it is the board that opens. */
+export const ORDER_BOARD_KEYS: OrderBoardKey[] = ['delivery', 'pickup'];
 
 /**
  * Cancelled orders are absent from every board. The board is a to-do list, and
