@@ -42,7 +42,7 @@ export function InquiryFormFooter({ turnstile, isPending, sendError, isTooFast, 
         <Send className="h-4 w-4" aria-hidden="true" />
         {isPending ? 'Sending…' : idleLabel}
       </Button>
-      <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} />
+      <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} needsClick={turnstile.needsClick} />
     </>
   );
 }

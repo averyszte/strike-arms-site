@@ -7,17 +7,20 @@
  */
 type BotCheckStatusProps = {
   isChecking: boolean;
+  /** Cloudflare is showing a box to tick, so waiting will not help. */
+  needsClick?: boolean;
   /** Classes for the visible line, such as alignment or spacing. */
   className?: string;
 };
 
 const CHECKING_MESSAGE = 'Checking your browser, this takes a second or two…';
+const CLICK_MESSAGE = 'Tick the "Verify you are human" box above to continue.';
 
-export function BotCheckStatus({ isChecking, className = '' }: BotCheckStatusProps) {
+export function BotCheckStatus({ isChecking, needsClick = false, className = '' }: BotCheckStatusProps) {
   const visibleClass = `text-xs text-muted-foreground ${className}`.trim();
   return (
     <p aria-live="polite" className={isChecking ? visibleClass : 'sr-only'}>
-      {isChecking ? CHECKING_MESSAGE : ''}
+      {isChecking ? (needsClick ? CLICK_MESSAGE : CHECKING_MESSAGE) : ''}
     </p>
   );
 }

@@ -43,6 +43,8 @@ export type TurnstileState = {
   token: string | null;
   isEnabled: boolean;
   hasFailed: boolean;
+  /** The widget is showing a box the visitor has to tick. */
+  needsClick: boolean;
   reset: () => void;
 };
 
@@ -52,6 +54,7 @@ export function useTurnstile(action: TurnstileAction): TurnstileState {
   const widgetId = useRef<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [hasFailed, setHasFailed] = useState(false);
+  const [needsClick, setNeedsClick] = useState(false);
 
   useEffect(() => {
     if (!siteKey) return;
@@ -68,6 +71,7 @@ export function useTurnstile(action: TurnstileAction): TurnstileState {
             size: 'flexible',
             callback: (value) => {
               setHasFailed(false);
+              setNeedsClick(false);
               setToken(value);
             },
             'expired-callback': () => setToken(null),
@@ -75,6 +79,8 @@ export function useTurnstile(action: TurnstileAction): TurnstileState {
               setToken(null);
               setHasFailed(true);
             },
+            'before-interactive-callback': () => setNeedsClick(true),
+            'after-interactive-callback': () => setNeedsClick(false),
           }) ?? null;
       })
       .catch(() => {
@@ -93,5 +99,5 @@ export function useTurnstile(action: TurnstileAction): TurnstileState {
     if (widgetId.current) window.turnstile?.reset(widgetId.current);
   }, []);
 
-  return { ref, token, isEnabled: Boolean(siteKey), hasFailed, reset };
+  return { ref, token, isEnabled: Boolean(siteKey), hasFailed, needsClick, reset };
 }

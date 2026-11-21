@@ -101,7 +101,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
           <LogIn className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Signing in' : 'Sign in'}
         </Button>
-        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} />
+        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} needsClick={turnstile.needsClick} />
       </form>
       <p className="mt-6 text-sm text-muted-foreground">
         New here?{' '}

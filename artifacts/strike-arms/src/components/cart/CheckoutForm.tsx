@@ -140,6 +140,7 @@ export function CheckoutForm({
       </Button>
       <BotCheckStatus
         isChecking={isWaitingForBotCheck && !turnstile.hasFailed}
+        needsClick={turnstile.needsClick}
         className="-mt-3 text-center"
       />
 

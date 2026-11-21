@@ -96,7 +96,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
           <UserPlus className="h-4 w-4" aria-hidden="true" />
           {isSubmitting ? 'Creating account' : 'Create account'}
         </Button>
-        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} />
+        <BotCheckStatus isChecking={isWaitingForBotCheck && !turnstile.hasFailed} needsClick={turnstile.needsClick} />
       </form>
       <p className="mt-6 text-sm text-muted-foreground">
         Already have an account?{' '}

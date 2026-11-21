@@ -17,6 +17,9 @@ export type TurnstileRenderOptions = {
   callback: (token: string) => void;
   'expired-callback': () => void;
   'error-callback': () => void;
+  /** Cloudflare wants a tick in the box: the check will not pass on its own. */
+  'before-interactive-callback'?: () => void;
+  'after-interactive-callback'?: () => void;
 };
 
 export type TurnstileApi = {
