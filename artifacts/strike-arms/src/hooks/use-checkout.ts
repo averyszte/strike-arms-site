@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 
 import { getCheckoutAttemptId } from '@/data/checkout-attempt-repository';
+import { sendEcommerceEvent } from '@/data/google-tag-manager-client';
 import {
   createCheckoutSession,
   CheckoutError,
   type AlreadyPaidOrder,
 } from '@/data/checkout-repository';
+import { buildEcommercePayload } from '@/lib/analytics-ecommerce';
 import { CART_FULL_MESSAGE, isCartOverLimit } from '@/lib/cart-limits';
 import type { CartLine, CheckoutDetails } from '@/types/cart';
 
@@ -73,6 +75,7 @@ export function useCheckout() {
       }
       setIsSubmitting(true);
       setError(null);
+      sendEcommerceEvent('begin_checkout', buildEcommercePayload(lines));
 
       try {
         const session = await createCheckoutSession(

@@ -7,7 +7,11 @@
  * tag on that event.
  */
 
-type AnalyticsWindow = Window & { dataLayer?: unknown[] };
+import { readAnalyticsConsent } from '@/data/analytics-consent-repository';
+import { IS_ANALYTICS_CONFIGURED } from '@/lib/analytics-config';
+import type { EcommerceEventName, EcommercePayload } from '@/lib/analytics-ecommerce';
+
+type AnalyticsWindow =Window & { dataLayer?: unknown[] };
 
 const SCRIPT_ID = 'gtm-container';
 
@@ -52,6 +56,19 @@ export function sendPageView(path: string, title: string): void {
     page_path: path,
     page_title: title,
   });
+}
+
+/**
+ * A GA4 ecommerce event. Checks consent itself rather than whether the
+ * script has loaded: the success page's first render, straight back from
+ * Stripe, runs before the container script is added, and GTM reads anything
+ * already queued in the dataLayer when it starts. The `ecommerce: null` push
+ * stops one event's items leaking into the next, as Google recommends.
+ */
+export function sendEcommerceEvent(event: EcommerceEventName, ecommerce: EcommercePayload): void {
+  if (!IS_ANALYTICS_CONFIGURED || readAnalyticsConsent() !== 'granted') return;
+  dataLayer().push({ ecommerce: null });
+  dataLayer().push({ event, ecommerce });
 }
 
 /** Tells the loaded tags to stop storing, and removes the GA cookies. */

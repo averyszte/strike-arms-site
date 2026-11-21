@@ -19,6 +19,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { useProduct } from '@/hooks/useProduct';
+import { useTrackViewItem } from '@/hooks/use-track-view-item';
 import { useStoreRates } from '@/hooks/use-store-rates';
 import { getCategory, getSubcategory } from '@/lib/taxonomy';
 import { effectivePriceCents } from '@/lib/effective-price';
@@ -40,6 +41,7 @@ import NotFound from '@/pages/not-found';
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, isError, isFetching, refetch } = useProduct(slug);
+  useTrackViewItem(product);
 
   if (isLoading) return <ProductDetailSkeleton />;
   // Only a read that succeeded and found nothing is a 404. A failed read

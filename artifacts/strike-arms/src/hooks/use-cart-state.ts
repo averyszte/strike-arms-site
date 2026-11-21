@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 import { loadCart, saveCart } from '@/data/cart-storage-repository';
+import { sendEcommerceEvent } from '@/data/google-tag-manager-client';
+import { buildEcommercePayload } from '@/lib/analytics-ecommerce';
 import { canAddToCart, MAX_QUANTITY_PER_LINE } from '@/lib/cart-limits';
 import { calculateCartBasics } from '@/lib/cart-totals';
 import type { CartContextValue, CartLine } from '@/types/cart';
@@ -46,6 +48,7 @@ export function useCartState(isHydrating = false): CartContextValue {
   const addLine = useCallback(
     (line: Omit<CartLine, 'quantity'>, quantity = 1) => {
       if (!canAddToCart(lines, line.productId)) return false;
+      sendEcommerceEvent('add_to_cart', buildEcommercePayload([{ ...line, quantity }]));
       setLines((current) => {
         const existing = current.find((entry) => entry.productId === line.productId);
         if (!existing) return [...current, { ...line, quantity: clampQuantity(quantity) }];

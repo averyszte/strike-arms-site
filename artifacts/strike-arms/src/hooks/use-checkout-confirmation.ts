@@ -1,11 +1,13 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearch } from 'wouter';
 
 import { clearCheckoutAttemptId } from '@/data/checkout-attempt-repository';
 import { clearCheckoutDraft } from '@/data/checkout-draft-repository';
 import { fetchCheckoutStatus } from '@/data/checkout-status-repository';
+import { sendEcommerceEvent } from '@/data/google-tag-manager-client';
 import { useCart } from '@/hooks/use-cart';
+import { buildEcommercePayload } from '@/lib/analytics-ecommerce';
 import {
   confirmationState,
   nextPollDelay,
@@ -32,7 +34,12 @@ export function useCheckoutConfirmation(): {
   const hasIds = orderId !== '' && sessionId !== '';
   const queryKey = CHECKOUT_KEYS.status(orderId, sessionId);
   const queryClient = useQueryClient();
-  const { clearCart } = useCart();
+  const { lines, clearCart } = useCart();
+  // Read inside the paid effect without re-running it when clearCart empties the basket.
+  const linesRef = useRef(lines);
+  useEffect(() => {
+    linesRef.current = lines;
+  }, [lines]);
 
   const query = useQuery({
     queryKey,
@@ -53,14 +60,20 @@ export function useCheckoutConfirmation(): {
     ? confirmationState(query.data, polls, query.isError)
     : 'unconfirmed';
 
+  const transactionId = query.data?.orderNumber ?? orderId;
   useEffect(() => {
     if (state !== 'paid') return;
+    // The basket survives the trip to Stripe, so it is what was bought. It is
+    // cleared just below, so a reload of this page sends no second purchase.
+    if (linesRef.current.length > 0) {
+      sendEcommerceEvent('purchase', buildEcommercePayload(linesRef.current, transactionId));
+    }
     clearCart();
     clearCheckoutAttemptId();
     // The saved name, email and address go with the order (N-054), so the
     // next basket on a shared device does not open pre-filled.
     clearCheckoutDraft();
-  }, [state, clearCart]);
+  }, [state, clearCart, transactionId]);
 
   const { refetch } = query;
   const checkAgain = useCallback(() => {
