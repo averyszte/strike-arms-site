@@ -36,6 +36,13 @@ export const BUSINESS = {
 } as const;
 
 /**
+ * Orders can be collected at weekends only (Alan is not in the shop on
+ * weekdays), even though the shop's listed opening hours are longer. The
+ * order emails carry the same line (notification-worker templates/layout.ts).
+ */
+export const COLLECTION_HOURS_LINE = 'Saturday and Sunday, 11:00 to 18:00';
+
+/**
  * Where an item can go, in one place so the copy cannot drift (N-105).
  * Every product can be posted (migration 052, at Alan's request), to the
  * Republic of Ireland only, since checkout takes Republic Eircodes. A product

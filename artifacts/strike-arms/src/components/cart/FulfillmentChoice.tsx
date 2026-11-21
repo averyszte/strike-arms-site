@@ -3,8 +3,8 @@ import { Store, Truck } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
-import { ADDRESS_LINES, openingHoursLines } from '@/lib/shop-location';
-import { DELIVERY_TIME_LINE, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
+import { ADDRESS_LINES } from '@/lib/shop-location';
+import { COLLECTION_HOURS_LINE, DELIVERY_TIME_LINE, SHIPPING_LINE_POSTABLE } from '@/lib/site-config';
 import { CARD_TITLE, PANEL } from '@/lib/storefront-styles';
 
 type FulfillmentChoiceProps = {
@@ -27,9 +27,6 @@ export function FulfillmentChoice({
   onChange,
 }: FulfillmentChoiceProps) {
   const canDeliver = IS_DELIVERY_ENABLED && hasShippableItems;
-  const hours = openingHoursLines()
-    .map((line) => `${line.days} ${line.hours}`)
-    .join(', ');
 
   return (
     <div className={`${PANEL} p-5`}>
@@ -79,7 +76,9 @@ export function FulfillmentChoice({
             <span className="mt-1 block text-sm text-muted-foreground">
               Pick everything up at {ADDRESS_LINES.join(', ')}. We will email you when it is ready.
             </span>
-            <span className="mt-1 block text-xs text-muted-foreground">Open {hours}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">
+              Collection {COLLECTION_HOURS_LINE}
+            </span>
           </Label>
         </div>
       </RadioGroup>

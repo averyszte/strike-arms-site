@@ -7,7 +7,13 @@ import { LegalDraftNotice } from '@/components/LegalDraftNotice';
 import { useStoreRates } from '@/hooks/use-store-rates';
 import { DELIVERY_PAUSED_LINE, IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import { formatPrice } from '@/lib/format-price';
-import { SITE_URL, BUSINESS, DEFAULT_OG_IMAGE, DELIVERY_TIME_LINE } from '@/lib/site-config';
+import {
+  SITE_URL,
+  BUSINESS,
+  COLLECTION_HOURS_LINE,
+  DEFAULT_OG_IMAGE,
+  DELIVERY_TIME_LINE,
+} from '@/lib/site-config';
 import { ARTICLE_PROSE, PAGE_WIDTHS } from '@/lib/storefront-styles';
 
 const UPDATED = 'November 2026';
@@ -15,11 +21,6 @@ const UPDATED = 'November 2026';
 const OPEN_POINTS = [
   'How long collect-in-store orders are held (Alan).',
 ];
-
-const [OPENING_HOURS] = BUSINESS.openingHours;
-const OPENING_HOURS_TEXT =
-  `${OPENING_HOURS.days[0]} to ${OPENING_HOURS.days[OPENING_HOURS.days.length - 1]}, ` +
-  `${OPENING_HOURS.opens} to ${OPENING_HOURS.closes}`;
 
 /** The live rates, so this page can never quote a different price from the basket. */
 function DeliveryCharge() {
@@ -85,7 +86,10 @@ export default function Delivery() {
             <p>
               Collection is free. We email you when your order is ready. Our shop is at{' '}
               {BUSINESS.streetAddress}, {BUSINESS.addressLocality}, {BUSINESS.addressRegion}{' '}
-              {BUSINESS.postalCode}, open {OPENING_HOURS_TEXT}.
+              {BUSINESS.postalCode}.
+            </p>
+            <p>
+              <strong>Orders can be collected {COLLECTION_HOURS_LINE}.</strong>
             </p>
             <p>
               <strong>Bring photo ID showing you are 18 or over.</strong> We cannot hand over an

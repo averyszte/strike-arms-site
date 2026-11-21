@@ -19,6 +19,8 @@ export const SHOP = {
   phone: "+353 87 273 6351",
   email: "info@strikearms.ie",
   hours: "Tuesday to Sunday, 11:00 to 18:00",
+  // Mirrors COLLECTION_HOURS_LINE in lib/site-config.ts.
+  collectionHours: "Collection Saturday and Sunday, 11:00 to 18:00",
 };
 
 // The site's dark background and orange primary (index.css).

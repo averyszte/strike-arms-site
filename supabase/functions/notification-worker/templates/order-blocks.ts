@@ -9,7 +9,7 @@ const CELL = `font-family:${FONT};font-size:14px;line-height:1.45;color:${COLOUR
 
 export const COLLECTION_LINES = [
   SHOP.address,
-  SHOP.hours,
+  SHOP.collectionHours,
   "Bring photo ID showing you are 18 or over.",
 ];
 
