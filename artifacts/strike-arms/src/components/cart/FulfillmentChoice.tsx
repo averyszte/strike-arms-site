@@ -45,20 +45,6 @@ export function FulfillmentChoice({
         onValueChange={(value) => onChange(value === 'delivery')}
       >
         <div className="flex items-start gap-3">
-          <RadioGroupItem value="pickup" id="fulfilment-pickup" className="mt-1" />
-          <Label htmlFor="fulfilment-pickup" className="cursor-pointer font-normal">
-            <span className="flex items-center gap-2 font-bold text-foreground">
-              <Store className="h-4 w-4 text-accent" aria-hidden="true" />
-              Collect in store
-            </span>
-            <span className="mt-1 block text-sm text-muted-foreground">
-              Pick everything up at {ADDRESS_LINES.join(', ')}. We will email you when it is ready.
-            </span>
-            <span className="mt-1 block text-xs text-muted-foreground">Open {hours}</span>
-          </Label>
-        </div>
-
-        <div className="flex items-start gap-3">
           <RadioGroupItem
             value="delivery"
             id="fulfilment-delivery"
@@ -80,6 +66,20 @@ export function FulfillmentChoice({
                   ? `${SHIPPING_LINE_POSTABLE}, ${DELIVERY_TIME_LINE}.`
                   : 'Nothing in your cart can be posted.'}
             </span>
+          </Label>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <RadioGroupItem value="pickup" id="fulfilment-pickup" className="mt-1" />
+          <Label htmlFor="fulfilment-pickup" className="cursor-pointer font-normal">
+            <span className="flex items-center gap-2 font-bold text-foreground">
+              <Store className="h-4 w-4 text-accent" aria-hidden="true" />
+              Collect in store
+            </span>
+            <span className="mt-1 block text-sm text-muted-foreground">
+              Pick everything up at {ADDRESS_LINES.join(', ')}. We will email you when it is ready.
+            </span>
+            <span className="mt-1 block text-xs text-muted-foreground">Open {hours}</span>
           </Label>
         </div>
       </RadioGroup>

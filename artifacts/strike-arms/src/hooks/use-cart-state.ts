@@ -5,6 +5,7 @@ import { sendEcommerceEvent } from '@/data/google-tag-manager-client';
 import { buildEcommercePayload } from '@/lib/analytics-ecommerce';
 import { canAddToCart, MAX_QUANTITY_PER_LINE } from '@/lib/cart-limits';
 import { calculateCartBasics } from '@/lib/cart-totals';
+import { IS_DELIVERY_ENABLED } from '@/lib/delivery-availability';
 import type { CartContextValue, CartLine } from '@/types/cart';
 
 const noSubscription = () => () => {};
@@ -30,7 +31,10 @@ export function useCartState(isHydrating = false): CartContextValue {
   // flashes empty.
   const [lines, setLines] = useState<CartLine[]>(() => (isHydrating ? [] : loadCart()));
   const [hasLoaded, setHasLoaded] = useState(!isHydrating);
-  const [wantsDelivery, setWantsDelivery] = useState(false);
+  // Delivery is the default choice while it is switched on. Everything that
+  // reads this also checks the basket has postable items, so a collect-only
+  // basket still falls back to collection.
+  const [wantsDelivery, setWantsDelivery] = useState(IS_DELIVERY_ENABLED);
   const isHydrated = useIsHydrated();
 
   // Set during render, not in an effect: React re-renders at once, before
